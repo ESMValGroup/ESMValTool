@@ -47,7 +47,7 @@ def get_input_cubes(metadata):
         short_name = attributes["short_name"]
         if short_name in inputs:
             raise ValueError(
-                f"Multiple input files found for variable '{short_name}'."
+                f"Multiple input files found for variable '{short_name}'.",
             )
         filename = attributes["filename"]
         logger.info("Loading variable %s", short_name)
@@ -88,7 +88,7 @@ def compute_vapour_pressure(tdps):
         (
             "Actual water vapour pressure of air near the surface calculated",
             " from tdps using Tetens formula",
-        )
+        ),
     )
     return esat
 
@@ -116,7 +116,7 @@ def save(xrds, var_name, dataset, cfg):
             var_name,
             str(start_year),
             str(end_year),
-        ]
+        ],
     )
     output_file = get_diagnostic_filename(basename, cfg)
     xrds.to_netcdf(output_file, encoding={var_name: {"_FillValue": 1.0e20}})

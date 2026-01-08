@@ -25,10 +25,10 @@ def _get_ancestor_files(cfg, obs_name, projects=None):
     datasets = []
     for project in projects:
         datasets.extend(
-            select_metadata(cfg["input_data"].values(), project=project)
+            select_metadata(cfg["input_data"].values(), project=project),
         )
     datasets.extend(
-        select_metadata(cfg["input_data"].values(), dataset=obs_name)
+        select_metadata(cfg["input_data"].values(), dataset=obs_name),
     )
     return [d["filename"] for d in datasets]
 

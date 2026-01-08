@@ -159,8 +159,30 @@ described in more detail in the sections below.
 This includes checks for invalid syntax and formatting errors.
 :ref:`pre-commit` is a handy tool that can run all of these checks automatically
 just before you commit your code.
-It knows knows which tool to run for each filetype, and therefore provides
+It knows which tool to run for each filetype, and therefore provides
 a convenient way to check your code.
+
+To enable pre-commit checks (these will be run every time you commit something),
+go to the ``ESMValTool`` directory and run:
+
+.. code-block:: bash
+
+    pre-commit install
+
+just once, after you have cloned the ESMValTool repository.
+
+If you have installed the pre-commit checks, but for some reason need to skip
+them (not recommended), use the ``-n`` flag:
+
+.. code-block:: bash
+
+    git commit -n
+
+To run the automatic code formatting and basic code quality checks, use the command:
+
+.. code-block:: bash
+
+    pre-commit run -a
 
 Python
 ~~~~~~
@@ -173,15 +195,36 @@ We make use of
 to document Python functions that are visible on
 `readthedocs <https://docs.esmvaltool.org>`__.
 
-To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`_
+To automatically format and check if code adheres to the standard, we use
+`ruff <https://docs.astral.sh/ruff/>`_. Automatic formatting and basic code
+quality checks are enforced through pre-commit. In addition to these basic
+quality checks, we use ruff to make recommendations on how your code could be
+even better.
 
-::
+To automatically format your code and perform basic quality checks, run:
 
-   prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
+.. code-block:: bash
 
-In addition to prospector, we also use `ruff <https://docs.astral.sh/ruff/>`_
-to automatically check for obvious bugs and formatting mistakes.
+    pre-commit run -a
+
+To perform the additional code quality checks and automatically fix many of
+the reported issues, run:
+
+.. code-block:: bash
+
+   ruff check --fix esmvaltool/diag_scripts/your_diagnostic/your_script.py
+
+Each code quality check performed by ruff is called a ``rule`` and has a unique
+code, e.g. ``RET504``. For a detailed explanation of the purpose of these rules,
+you can visit the
+`rules page on the ruff website <https://docs.astral.sh/ruff/rules>`__ or
+run the command:
+
+.. code-block:: bash
+
+    ruff rule RET504
+
+where ``RET504`` is an arbitrary example of a rule code.
 
 When you make a pull request, adherence to the Python development best practices
 is checked in two ways:
@@ -190,35 +233,29 @@ is checked in two ways:
    `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_,
    see the section on Tests_ for more information.
 #. `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
-   is a service that runs prospector (and other code quality tools) on changed
+   is a service that runs ruff (and other code quality tools) on changed
    files and reports the results.
-   Click the 'Details' link behind the Codacy check entry and then click
-   'View more details on Codacy Production' to see the results of the static
+   Click on the 'Codacy Static Code Analysis' check entry below your pull request
+   and then click the 'Resolve' button or the
+   'View more details on Codacy Production' link to see the results of the static
    code analysis done by Codacy_.
    If you need to log in, you can do so using your GitHub account.
+   If Codacy says that there are issues, but you cannot see them on the Codacy
+   webpage for some reason, please run the command ``ruff check`` on your own
+   computer to see what the issues are.
 
-A pull request should preferably not introduce any new prospector issues.
+A pull request should preferably not introduce new code quality issues.
 However, we understand that there is a limit to how much time can be spent on
-polishing code, so up to 10 new (non-trivial) issues is still an acceptable
+polishing code, so up to 10 new issues reported by Codacy/ruff is still an acceptable
 amount.
-Formatting issues are considered trivial to resolve and need to be addressed by running
-``pre-commit run -a``.
-Note that the automatic code quality checks by prospector are really helpful to
-improve the quality of your code, but they are not flawless.
-For example, writing a new cmorizer *requires* you to define a new function
-that takes more than 5 arguments, which Codacy considers a code style issue.
-If you suspect prospector or Codacy may be wrong, please ask the
-`@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
+However, a pull request where the CircleCI/pre-commit tests are failing cannot be merged.
 
-Note that running prospector locally will give you quicker and sometimes more
-accurate results than waiting for Codacy.
+.. note::
 
-Most formatting issues in Python code can be fixed automatically by
-running the command:
-
-::
-
-   pre-commit run --all
+    The automatic code quality checks by ruff are really helpful to
+    improve the quality of your code, but they are not flawless.
+    If you suspect ruff or Codacy may be wrong or you just need help,
+    please ask the `@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
 
 NCL
 ~~~
@@ -275,7 +312,7 @@ There are two main ways of adding documentation:
 #. As written text in the directory
    `doc/sphinx/source <https://github.com/ESMValGroup/ESMValTool/tree/main/doc/sphinx/source>`__.
    When writing
-   `reStructuredText <https://www.sphinx-doc.org/en/main/usage/restructuredtext/basics.html>`_
+   `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
    (``.rst``) files, please try to limit the line length to 80 characters and
    always start a sentence on a new line.
    This makes it easier to review changes to documentation on GitHub.
@@ -354,7 +391,7 @@ Successful checks have a green ✓ in front, a ❌ means the test job failed.
 
 Integration with the ESMValCore documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The `ESMValCore documentation <https://docs.esmvaltool.org/projects/esmvalcore>`_
+The `ESMValCore documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html>`_
 is hosted as a
 `subproject <https://docs.readthedocs.io/en/stable/subprojects.html>`_
 of the ESMValTool documentation on readthedocs.
@@ -443,10 +480,13 @@ see :ref:`recording-provenance` for more information.
 Dependencies
 ------------
 
+We follow the guidelines set out in `SPEC-0 <https://scientific-python.org/specs/spec-0000/>`_
+regarding the supported Python versions and dependencies.
+
 Before considering adding a new dependency, carefully check that the
-`license <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-software.html>`__
+`license <https://book.the-turing-way.org/reproducible-research/licensing/>`__
 of the dependency you want to add and any of its dependencies are
-`compatible <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-compatibility.html>`__
+`compatible <https://book.the-turing-way.org/reproducible-research/licensing/licensing-compatibility/>`__
 with the
 `Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/main/LICENSE/>`_
 license that applies to the ESMValTool.
@@ -465,9 +505,6 @@ the following files:
 - ``environment_osx.yml``
   contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
   but currently without multi language support.
-- ``esmvaltool/install/Julia/Project.toml``
-  contains Julia dependencies that can be installed from the default Julia
-  package registry
 - ``pyproject.toml``
   contains all Python dependencies, regardless of their installation source
 

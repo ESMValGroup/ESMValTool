@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.11 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.12 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
@@ -58,7 +58,7 @@ for your conda environments instead of
 much faster, see `move-to-mamba`_ for more information.
 
 For a minimal mamba installation (recommended) go to
-https://mamba.readthedocs.io/en/latest/installation.html.
+https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html.
 
 .. note::
     It is recommended that you always use the latest version of mamba, as
@@ -172,7 +172,7 @@ Installation of subpackages
 ---------------------------
 
 The diagnostics bundled in ESMValTool are scripts in four different programming
-languages: Python, NCL, R, and Julia.
+languages: Python, NCL, and R.
 
 There are three language specific packages available:
 
@@ -181,13 +181,11 @@ There are three language specific packages available:
 * ``esmvaltool-r``
 
 The main ``esmvaltool`` package contains all three subpackages listed above.
-For the Julia dependencies, there is no subpackage yet, but there are special
-:ref:`installation instructions <install_julia_dependencies>`.
 If you only need to run a recipe with diagnostics in some of these languages, it
 is possible to install only the dependencies needed to do just that.
 The diagnostic script(s) used in each recipe, are documented in :ref:`recipes`.
 The extension of the diagnostic script can be used to see in which language a
-diagnostic script is written (``.py`` for Python, ``.ncl`` for NCL, ``.R`` for R, and ``.jl`` for Julia diagnostics).
+diagnostic script is written (``.py`` for Python, ``.ncl`` for NCL, ``.R`` for R diagnostics).
 
 To install support for diagnostics written in Python and NCL into an existing
 environment, run
@@ -204,28 +202,13 @@ Note that the ESMValTool source code is contained in the ``esmvaltool-python``
 package, so this package will always be installed as a dependency if you install
 one or more of the packages for other languages.
 
-.. _install_julia_dependencies:
-
-Installation of Julia dependencies
-----------------------------------
-
-If you want to use the ESMValTool Julia functionality, you will also need to
-install Julia. If you are just getting started, we suggest that you
-come back to this step later when, and if you need it.
-To perform the Julia installation, make sure that your conda
-environment is activated and then execute
-
-.. code-block:: bash
-
-    curl -fsSL https://install.julialang.org | sh -s -- --yes
-    esmvaltool install Julia
 .. _install_on_macosx:
 
 ESMValTool installation on MacOS
 ---------------------------------
 
-The Python diagnostics of the ESMValTool are supported on MacOS, but Julia,
-NCL, and R are not.
+The Python diagnostics of the ESMValTool are supported on MacOS, but NCL,
+and R are not.
 If any of these are needed, deployment through a
 :ref:`Docker<install_with_docker>`
 container is advised.
@@ -354,7 +337,7 @@ or (when on MacOS)
 
 This will install all of the required development dependencies.
 Note that the MacOS environment file contains only Python dependencies,
-so you will not be able to run NCL, R, or Julia diagnostics with it.
+so you will not be able to run NCL, or R diagnostics with it.
 
 .. note::
     The environment is called ``esmvaltool`` in the example above, but it is
@@ -389,22 +372,14 @@ code (called ``ESMValTool`` if you did not choose a different name):
 
 .. code-block:: bash
 
-    pip install --editable '.[develop]'
+    pip install --no-deps --editable '.[develop]'
 
 Using the ``--editable`` flag will cause the installer to create a symbolic link
 from the installation location to your source code, so any changes you make to
 the source code will immediately be available in the installed version of the
 tool.
 
-If you would like to run Julia diagnostic scripts, you will need to
-install Julia and the ESMValTool Julia dependencies:
-
-.. code-block:: bash
-
-    curl -fsSL https://install.julialang.org | sh -s -- --yes
-    esmvaltool install Julia
-
-If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
+If you are planning to do any coding, install the :ref:`pre-commit`
 hooks by running:
 
 .. code-block:: bash
@@ -496,7 +471,7 @@ and then install ESMValCore in development mode
 
 .. code-block:: bash
 
-    pip install --editable '.[develop]'
+    pip install --no-deps --editable '.[develop]'
 
 To check that the installation was successful, run
 
@@ -507,11 +482,11 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
+e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.13/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
-``pip install --editable '.[develop]'`` again.
+``pip install --no-deps --editable '.[develop]'`` again.
 
-Finally, also install the :ref:`esmvaltool:pre-commit` hooks by running:
+Finally, also install the :ref:`pre-commit` hooks by running:
 
 .. code-block:: bash
 
@@ -665,14 +640,6 @@ ESMValTool and any remaining Python dependencies with the command:
 
     pip install esmvaltool
 
-If you would like to run Julia diagnostic scripts, you will also need to
-install Julia and the ESMValTool Julia dependencies:
-
-.. code-block:: bash
-
-    curl -fsSL https://install.julialang.org | sh -s -- --yes
-    esmvaltool install Julia
-
 .. _installation_from_the_conda_lock_file:
 
 Installation from the conda lock file
@@ -721,7 +688,7 @@ trust the usual PyPI URLs you can declare them with the option
 
 .. code-block:: bash
 
-    pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]
+    pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org --no-deps -e .[develop]
 
 If R packages fail to download, you might be able to solve this by
 setting the environment variable ``http_proxy`` to the correct value, e.g.

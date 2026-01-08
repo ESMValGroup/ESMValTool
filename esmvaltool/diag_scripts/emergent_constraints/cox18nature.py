@@ -77,10 +77,10 @@ def _get_ancestor_files(cfg, obs_name, projects=None):
     datasets = []
     for project in projects:
         datasets.extend(
-            select_metadata(cfg["input_data"].values(), project=project)
+            select_metadata(cfg["input_data"].values(), project=project),
         )
     datasets.extend(
-        select_metadata(cfg["input_data"].values(), dataset=obs_name)
+        select_metadata(cfg["input_data"].values(), dataset=obs_name),
     )
     return sorted([d["filename"] for d in datasets])
 
@@ -170,7 +170,7 @@ def get_external_cubes(cfg):
         filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
         cube = cube.extract(
-            ih.iris_project_constraint(["OBS"], input_data, negate=True)
+            ih.iris_project_constraint(["OBS"], input_data, negate=True),
         )
         cubes.append(cube)
     cubes = ih.intersect_dataset_coordinates(cubes)
@@ -198,7 +198,8 @@ def get_psi(cfg):
     psi_cubes = {}
     psi_obs = []
     for dataset, [data] in group_metadata(
-        io.netcdf_to_metadata(cfg, pattern="psi_*.nc"), "dataset"
+        io.netcdf_to_metadata(cfg, pattern="psi_*.nc"),
+        "dataset",
     ).items():
         cube = iris.load_cube(data["filename"])
         cube = cube.aggregated_by("year", iris.analysis.MEAN)
@@ -227,8 +228,8 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
     for cube in tas_cubes.values():
         cube.data -= np.mean(
             cube.extract(
-                iris.Constraint(year=lambda cell: 1961 <= cell <= 1990)
-            ).data
+                iris.Constraint(year=lambda cell: 1961 <= cell <= 1990),
+            ).data,
         )
 
     # Save netcdf file and provenance
@@ -295,7 +296,9 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
         "The psi values are calculated for windows of width {2} yr, after "
         "linear de-trending in each window. These {2}-yr windows are shown "
         "for different end times.".format(
-            project, obs_name, cfg.get("window_length", 55)
+            project,
+            obs_name,
+            cfg.get("window_length", 55),
         ),
         ["corr", "var"],
         ["times"],
@@ -342,11 +345,12 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
 def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
     """Plot emergent relationship."""
     filename = "emergent_relationship_{}".format(
-        obs_cube.attributes["dataset"]
+        obs_cube.attributes["dataset"],
     )
     cube = ecs_cube.copy()
     cube.add_aux_coord(
-        iris.coords.AuxCoord(psi_cube.data, **ih.convert_to_iris(PSI_ATTRS)), 0
+        iris.coords.AuxCoord(psi_cube.data, **ih.convert_to_iris(PSI_ATTRS)),
+        0,
     )
     netcdf_path = get_diagnostic_filename(filename, cfg)
     io.iris_save(cube, netcdf_path)
@@ -357,7 +361,7 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         "dashed lines. The vertical blue lines show the observational "
         "constraint from the {} observations: the mean (dot-dashed line) and "
         "the mean plus and minus one standard deviation (dashed lines).".format(
-            obs_cube.attributes["dataset"]
+            obs_cube.attributes["dataset"],
         ),
         ["mean", "corr", "var"],
         ["scatter"],
@@ -391,10 +395,16 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         label="Linear regression",
     )
     AXES.plot(
-        lines["x"], lines["y_minus_err"], color="black", linestyle="dashed"
+        lines["x"],
+        lines["y_minus_err"],
+        color="black",
+        linestyle="dashed",
     )
     AXES.plot(
-        lines["x"], lines["y_plus_err"], color="black", linestyle="dashed"
+        lines["x"],
+        lines["y_plus_err"],
+        color="black",
+        linestyle="dashed",
     )
     AXES.axvline(
         obs_mean,
@@ -431,7 +441,8 @@ def plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
         units="K-1",
     )
     cube.add_aux_coord(
-        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0
+        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)),
+        0,
     )
     io.iris_save(cube, netcdf_path)
     project = _get_project(cfg)
@@ -490,7 +501,8 @@ def plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
         units="1",
     )
     cube.add_aux_coord(
-        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0
+        iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)),
+        0,
     )
     io.iris_save(cube, netcdf_path)
     project = _get_project(cfg)
@@ -522,10 +534,14 @@ def plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
         label=f"{project} models",
     )
     AXES.axhline(
-        (1.0 - confidence_level) / 2.0, color="black", linestyle="dashdot"
+        (1.0 - confidence_level) / 2.0,
+        color="black",
+        linestyle="dashdot",
     )
     AXES.axhline(
-        (1.0 + confidence_level) / 2.0, color="black", linestyle="dashdot"
+        (1.0 + confidence_level) / 2.0,
+        color="black",
+        linestyle="dashdot",
     )
 
     # Plot appearance
@@ -566,7 +582,8 @@ def get_ecs_range(cfg, ecs_lin, ecs_pdf):
 def main(cfg):
     """Run the diagnostic."""
     input_data = select_metadata(
-        cfg["input_data"].values(), short_name="tas"
+        cfg["input_data"].values(),
+        short_name="tas",
     ) + select_metadata(cfg["input_data"].values(), short_name="tasa")
     input_data = sorted_metadata(input_data, ["short_name", "exp", "dataset"])
     if not input_data:
@@ -588,7 +605,11 @@ def main(cfg):
         plot_psi(cfg, psi_cubes, lambda_cube, obs_name)
         obs_cube = psi_cubes[obs_name]
         plot_emergent_relationship(
-            cfg, psi_cube, ecs_cube, lambda_cube, obs_cube
+            cfg,
+            psi_cube,
+            ecs_cube,
+            lambda_cube,
+            obs_cube,
         )
         (ecs_lin, ecs_pdf) = ec.target_pdf(
             psi_cube.data,

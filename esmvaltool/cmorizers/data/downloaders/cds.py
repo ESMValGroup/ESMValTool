@@ -42,16 +42,17 @@ class CDSDownloader(BaseDownloader):
         dataset_info,
         overwrite,
         extra_name="",
+        cds_url="https://cds.climate.copernicus.eu/api",
     ):
         super().__init__(config, dataset, dataset_info, overwrite)
         try:
-            self._client = cdsapi.Client()
+            self._client = cdsapi.Client(url=cds_url)
         except Exception as ex:
             if str(ex).endswith(".cdsapirc"):
                 logger.error(
                     "Could not connect to the CDS due to issues with your "
                     '".cdsapirc" file. More info in '
-                    "https://cds.climate.copernicus.eu/api-how-to."
+                    "https://cds.climate.copernicus.eu/api-how-to.",
                 )
             raise
         self._product_name = product_name
@@ -59,7 +60,12 @@ class CDSDownloader(BaseDownloader):
         self.extra_name = extra_name
 
     def download(
-        self, year, month, day=None, file_pattern=None, file_format="tar"
+        self,
+        year,
+        month,
+        day=None,
+        file_pattern=None,
+        file_format="tar",
     ):
         """Download a specific month from the CDS.
 
@@ -96,6 +102,28 @@ class CDSDownloader(BaseDownloader):
         file_path = f"{file_pattern}_{date_str}.{file_format}"
         self.download_request(file_path, request_dict)
 
+    def download_year(self, year, file_pattern=None, file_format="zip"):
+        """Download a specific year from the CDS.
+
+        Parameters
+        ----------
+        year : int
+            Year to download
+        file_pattern : str, optional
+            Filename pattern, by default None
+        file_format : str, optional
+            File format, by default tar
+        """
+        request_dict = self._request_dict.copy()
+        request_dict["year"] = f"{year}"
+        request_dict["month"] = [f"{m:02d}" for m in range(1, 13)]
+
+        os.makedirs(self.local_folder, exist_ok=True)
+        if file_pattern is None:
+            file_pattern = f"{self._product_name}"
+        file_path = f"{file_pattern}_{year}.{file_format}"
+        self.download_request(file_path, request_dict)
+
     def download_request(self, filename, request=None):
         """Download a specific request.
 
@@ -116,7 +144,8 @@ class CDSDownloader(BaseDownloader):
                 os.remove(filename)
             else:
                 logger.info(
-                    "File %s already downloaded. Skipping...", filename
+                    "File %s already downloaded. Skipping...",
+                    filename,
                 )
                 return
         try:

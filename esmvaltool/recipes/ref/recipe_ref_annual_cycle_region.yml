@@ -11,6 +11,7 @@ documentation:
     - lindenlaub_lukas
     - schlund_manuel
     - weigel_katja
+    - andela_bouwe
   maintainer:
     - lauer_axel
   references:
@@ -18,10 +19,69 @@ documentation:
   projects:
     - dlrmabak
 
+regions: &regions
+  - "Arabian-Peninsula"
+  - "Arabian-Sea"
+  - "Arctic-Ocean"
+  - "Bay-of-Bengal"
+  - "C.Australia"
+  - "C.North-America"
+  - "Caribbean"
+  - "Central-Africa"
+  - "E.Antarctica"
+  - "E.Asia"
+  - "E.Australia"
+  - "E.C.Asia"
+  - "E.Europe"
+  - "E.North-America"
+  - "E.Siberia"
+  - "E.Southern-Africa"
+  - "Equatorial.Atlantic-Ocean"
+  - "Equatorial.Indic-Ocean"
+  - "Equatorial.Pacific-Ocean"
+  - "Greenland/Iceland"
+  - "Madagascar"
+  - "Mediterranean"
+  - "N.Atlantic-Ocean"
+  - "N.Australia"
+  - "N.Central-America"
+  - "N.E.North-America"
+  - "N.E.South-America"
+  - "N.Eastern-Africa"
+  - "N.Europe"
+  - "N.Pacific-Ocean"
+  - "N.South-America"
+  - "N.W.North-America"
+  - "N.W.South-America"
+  - "New-Zealand"
+  - "Russian-Arctic"
+  - "Russian-Far-East"
+  - "S.Asia"
+  - "S.Atlantic-Ocean"
+  - "S.Australia"
+  - "S.Central-America"
+  - "S.E.Asia"
+  - "S.E.South-America"
+  - "S.Eastern-Africa"
+  - "S.Indic-Ocean"
+  - "S.Pacific-Ocean"
+  - "S.South-America"
+  - "S.W.South-America"
+  - "Sahara"
+  - "South-American-Monsoon"
+  - "Southern-Ocean"
+  - "Tibetan-Plateau"
+  - "W.Antarctica"
+  - "W.C.Asia"
+  - "W.North-America"
+  - "W.Siberia"
+  - "W.Southern-Africa"
+  - "West&Central-Europe"
+  - "Western-Africa"
 
 datasets:
   # Dataset to be benchmarked
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true, plot_label: 'MIROC6'}
+  - {project: CMIP6, exp: historical, dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
 
 preprocessors:
   pp_abs:
@@ -30,11 +90,9 @@ preprocessors:
       scheme: linear
     extract_shape:
       shapefile: ar6
-      crop: true
       decomposed: true
       ids:
-        Name:
-          - N.Europe
+        Name: *regions
     climate_statistics:
       period: monthly
     area_statistics:
@@ -50,11 +108,9 @@ preprocessors:
       scheme: linear
     extract_shape:
       shapefile: ar6
-      crop: true
       decomposed: true
       ids:
-        Name:
-          - N.Europe
+        Name: *regions
     climate_statistics:
       period: monthly
     area_statistics:
@@ -62,55 +118,22 @@ preprocessors:
 
 
 diagnostics:
-  anncyc:
+  near-surface_air_temperature_annual_cycle:
     description: Plot global mean mean annual cycle for the given period including a reference dataset.
     variables:
       tas: &var_default_abs
         start_year: 1980
         end_year: 2009
         preprocessor: pp_abs
-        project: CMIP6
         mip: Amon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        reference_dataset: HadCRUT5
         additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis,
-             tier: 2, reference_for_metric: true'}
-      pr:
-        <<: *var_default_abs
-        reference_dataset: GPCP-V2.3
-        additional_datasets:
-          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1,
-             reference_for_metric: true'}
-      psl:
-        <<: *var_default_abs
-        reference_dataset: ERA-5
-        additional_datasets:
-          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
-             reference_for_metric: true'}
-      hus_200:
-        <<: *var_default_abs
-        short_name: hus
-        reference_dataset: ERA5
-        preprocessor: pp_abs_200
-        additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, reference_for_metric: true'}
-      ua_200:
-        <<: *var_default_abs
-        short_name: ua
-        reference_dataset: ERA-5
-        preprocessor: pp_abs_200
-        additional_datasets:
-          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
-             reference_for_metric: true'}
+          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2}
     scripts:
-      allplots:
+      figures: &figures
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
+        group_variables_by: shape_id
+        plot_filename: "{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_{shape_id}"
         plots:
           annual_cycle:
             plot_kwargs:
@@ -145,4 +168,45 @@ diagnostics:
                 linewidth: 2
                 zorder: 3
             pyplot_kwargs:
-              title: '{long_name} N.Europe'
+              title: '{long_name} {shape_id}'
+              ylabel: '{short_name} [{units}]'
+  precipitation_annual_cycle:
+    description: Plot global mean mean annual cycle for the given period including a reference dataset.
+    variables:
+      pr:
+        <<: *var_default_abs
+        additional_datasets:
+          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
+    scripts:
+      figures: *figures
+  sea_level_pressure_annual_cycle:
+    description: Plot global mean mean annual cycle for the given period including a reference dataset.
+    variables:
+      psl:
+        <<: *var_default_abs
+        additional_datasets:
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1}
+    scripts:
+      figures: *figures
+  specific_humidity_annual_cycle:
+    description: Plot global mean mean annual cycle for the given period including a reference dataset.
+    variables:
+      hus_200:
+        <<: *var_default_abs
+        short_name: hus
+        preprocessor: pp_abs_200
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+    scripts:
+      figures: *figures
+  eastward_wind_annual_cycle:
+    description: Plot global mean mean annual cycle for the given period including a reference dataset.
+    variables:
+      ua_200:
+        <<: *var_default_abs
+        short_name: ua
+        preprocessor: pp_abs_200
+        additional_datasets:
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1}
+    scripts:
+      figures: *figures

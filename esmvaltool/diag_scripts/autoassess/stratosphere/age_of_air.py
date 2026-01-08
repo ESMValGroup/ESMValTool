@@ -235,7 +235,7 @@ def calculate_analysis_years(run):
             analysis_start_year = analysis_end_year - 5
 
     else:
-        raise ValueError()
+        raise ValueError
 
     analysis_start_dt = datetime.datetime(analysis_start_year - 1, 12, 1)
     analysis_end_dt = datetime.datetime(analysis_end_year, 11, 1)
@@ -256,13 +256,18 @@ def age_of_air(run):
         # Set up to only run for 5 year period
         analysis_start_dt, analysis_end_dt = calculate_analysis_years(run)
         constraint = dict(
-            from_dt=analysis_start_dt, to_dt=analysis_end_dt, lbproc=128
+            from_dt=analysis_start_dt,
+            to_dt=analysis_end_dt,
+            lbproc=128,
         )
         # Calculate age of air metrics if appropriate diagnostic available
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", ".*orography.*", UserWarning)
             agecube = load_run_ss(
-                run, "monthly", "age_of_stratospheric_air", **constraint
+                run,
+                "monthly",
+                "age_of_stratospheric_air",
+                **constraint,
             )  # m01s34i150
     except iris.exceptions.ConstraintMismatchError:
         logger.warning("Age of air fields absent.  Skipping this diagnostic.")
@@ -333,10 +338,10 @@ def multi_age_plot(run):
 
     # Set up constraints to deal with loading data
     trop_cons = iris.Constraint(
-        cube_func=lambda c: c.var_name == "tropical_age_of_air"
+        cube_func=lambda c: c.var_name == "tropical_age_of_air",
     )
     midl_cons = iris.Constraint(
-        cube_func=lambda c: c.var_name == "midlat_age_of_air"
+        cube_func=lambda c: c.var_name == "midlat_age_of_air",
     )
 
     # Set up generic input file name

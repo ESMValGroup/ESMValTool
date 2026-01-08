@@ -99,23 +99,12 @@ repository and on the mailing-list_.
 
 .. _core-team:
 
-Core development team
----------------------
+Development team
+----------------
 
--  Deutsches Zentrum für Luft- und Raumfahrt (DLR), Institut für Physik
-   der Atmosphäre, Germany (Co-PI)
-
-   - ESMValTool Core Co-PI and Developer: contact for requests to use the ESMValTool and for collaboration with the development team, access to the PRIVATE GitHub repository.
-
--  Met Office, United Kingdom (Co-PI)
--  Alfred Wegener institute (AWI) Bremerhaven, Germany
--  Barcelona Supercomputing Center (BSC), Spain
--  Netherlands eScience Center (NLeSC), The Netherlands
--  Ludwig Maximilian University of Munich, Germany
--  Plymouth Marine Laboratory (PML), United Kingdom
--  Swedish Meteorological and Hydrological Institute (SMHI), Sweden
--  University of Bremen, Germany
--  University of Reading, United Kingdom
+ESMValTool is developed by a community of scientists and research software
+engineers from multiple institutes. An overview of the team is available
+on the `development team page <https://esmvaltool.org/team/>`__.
 
 Recipes and diagnostics
 -----------------------

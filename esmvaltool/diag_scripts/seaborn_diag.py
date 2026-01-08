@@ -76,6 +76,14 @@ reset_index: bool, optional (default: False)
     indices. This avoids the deletion of coordinate information if different
     groups of datasets have different dimensions but increases the memory
     footprint of this diagnostic.
+write_netcdf: bool, optional (default: False)
+    Output netCDF file for plotted data. What is written into the file
+    is decided based on the pandas data frame and the
+    seaborn kwargs: "x", "y", "hue" and "col".
+    Because there is no direct way to write panda data frames into netCDF
+    and to make data CF complient, the data frame is converted to an iris
+    CubeList first. This is not possible for all data frames and often
+    reset_index: true is required. Therefore the default is set to False.
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
@@ -108,14 +116,18 @@ from pprint import pformat
 import iris
 import iris.pandas
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
+from iris.cube import CubeList
 from matplotlib.colors import LogNorm, Normalize
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
+    get_diagnostic_filename,
     get_plot_filename,
     group_metadata,
+    io,
     run_diagnostic,
 )
 
@@ -136,7 +148,8 @@ def _create_plot(
 ) -> None:
     """Create plot."""
     logger.debug(
-        "Using main data frame as input for plotting:\n%s", data_frame
+        "Using main data frame as input for plotting:\n%s",
+        data_frame,
     )
 
     # Plot
@@ -191,13 +204,17 @@ def _create_plot(
                 pos_joint_ax.y0,
                 pos_marg_x_ax.width,
                 pos_joint_ax.height,
-            ]
+            ],
         )
         # reposition the colorbar using new x positions and y
         # positions of the joint ax
         plot_obj.fig.axes[-1].set_position(
-            [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height]
+            [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height],
         )
+
+    # Save plot data
+    if cfg["write_netcdf"]:
+        _save_nc_data(data_frame, cfg)
 
     # Save plot
     plot_path = get_plot_filename(cfg["plot_filename"], cfg)
@@ -213,8 +230,16 @@ def _create_plot(
         "authors": ["schlund_manuel"],
         "caption": caption,
     }
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(plot_path, provenance_record)
+    if cfg["write_netcdf"]:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(
+                get_diagnostic_filename(cfg["plot_filename"], cfg),
+                provenance_record,
+            )
+    else:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
 
 
 def _get_grouped_data(cfg: dict) -> dict:
@@ -227,13 +252,13 @@ def _get_grouped_data(cfg: dict) -> dict:
         if groupby_facet not in dataset:
             raise ValueError(
                 f"groupby_facet '{groupby_facet}' is not available for "
-                f"dataset {dataset['filename']}"
+                f"dataset {dataset['filename']}",
             )
         for facet in cfg["facets_as_columns"]:
             if facet not in dataset:
                 raise ValueError(
                     f"Facet '{facet}' used for option 'facets_as_columns' is "
-                    f"not available for dataset {dataset['filename']}"
+                    f"not available for dataset {dataset['filename']}",
                 )
 
     # Group data accordingly
@@ -282,7 +307,7 @@ def _get_dataframe(cfg: dict) -> pd.DataFrame:
     groupby_facet = cfg["groupby_facet"]
     df_main = pd.concat(df_dict.values(), ignore_index=cfg["reset_index"])
     df_main = df_main.astype(
-        {f: "category" for f in cfg["facets_as_columns"] + [groupby_facet]}
+        dict.fromkeys(cfg["facets_as_columns"] + [groupby_facet], "category"),
     )
 
     logger.info("Successfully retrieved main data frame from input data")
@@ -313,7 +338,7 @@ def _get_df_for_group(
         if variable_group in UNITS and UNITS[variable_group] != units:
             raise ValueError(
                 f"Got duplicate units for variable '{variable_group}': "
-                f"'{units}' and '{UNITS[variable_group]}'"
+                f"'{units}' and '{UNITS[variable_group]}'",
             )
         UNITS.setdefault(variable_group, units)
 
@@ -325,7 +350,8 @@ def _get_df_for_group(
             add_ancillary_variables=cfg["add_ancillary_variables"],
         )
         df_dataset = df_dataset.rename(
-            {cube.name(): variable_group}, axis="columns"
+            {cube.name(): variable_group},
+            axis="columns",
         )
 
         # Merge
@@ -341,7 +367,7 @@ def _get_df_for_group(
                 raise ValueError(
                     f"Dimensions of cube {filename} differ from other cubes "
                     f"of group '{group}'. Cubes of that group:\n"
-                    f"{pformat([d['filename'] for d in datasets])}"
+                    f"{pformat([d['filename'] for d in datasets])}",
                 )
 
             # Make sure that facet values used as columns match across datasets
@@ -354,7 +380,7 @@ def _get_df_for_group(
                         f"from value of other datasets of group '{group}': "
                         f"expected '{val}', got '{dataset[facet]}'. Datasets "
                         f"of that group:\n"
-                        f"{pformat([d['filename'] for d in datasets])}"
+                        f"{pformat([d['filename'] for d in datasets])}",
                     )
             df_group = pd.merge(
                 df_group,
@@ -399,6 +425,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("plot_object_methods", {})
     cfg.setdefault("plot_filename", f"seaborn_{cfg.get('seaborn_func', '')}")
     cfg.setdefault("reset_index", False)
+    cfg.setdefault("write_netcdf", False)
     cfg.setdefault(
         "savefig_kwargs",
         {
@@ -428,10 +455,17 @@ def _get_plot_func(cfg: dict) -> callable:
             f"Invalid seaborn_func '{cfg['seaborn_func']}' (must be a "
             f"function of the module seaborn; an overview of seaborn plotting "
             f"functions is given here: https://seaborn.pydata.org/tutorial/"
-            f"function_overview.html)"
+            f"function_overview.html)",
         )
     logger.info("Using plotting function seaborn.%s", cfg["seaborn_func"])
     return getattr(sns, cfg["seaborn_func"])
+
+
+def _is_strictly_monotonic(arr):
+    """Test if np.array is strictly monotonic."""
+    result = np.all(np.diff(arr) > 0) | np.all(np.diff(arr) < 0)
+
+    return result
 
 
 def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
@@ -443,13 +477,15 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         if func not in allowed_funcs:
             raise ValueError(
                 f"Got invalid operation '{func}' for option 'data_frame_ops', "
-                f"expected one of {allowed_funcs}"
+                f"expected one of {allowed_funcs}",
             )
         op_str = f"'{func}' with argument '{expr}'"
         logger.info("Modifying main data frame through operation %s", op_str)
         data_frame = getattr(data_frame, func)(expr)
         logger.debug(
-            "Main data frame after operation %s:\n%s", op_str, data_frame
+            "Main data frame after operation %s:\n%s",
+            op_str,
+            data_frame,
         )
 
     # dropna_kwargs
@@ -463,6 +499,79 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     return data_frame
 
 
+def _prepare_cube(cube, cubes_to_aux, cubes_to_coord, cfg):
+    """Prepare cube to save data as netCDF."""
+    cube.attributes.globals["seaborn_func"] = cfg["seaborn_func"]
+    cube.attributes.globals["seaborn_kwargs"] = _get_str_from_kwargs(
+        cfg["seaborn_kwargs"],
+    )
+    for auxcube in cubes_to_aux:
+        aux_coord = iris.coords.AuxCoord(
+            auxcube.data,
+            long_name=auxcube.long_name,
+        )
+        # Add the auxiliary coordinate to the cube
+        cube.add_aux_coord(aux_coord, data_dims=0)
+
+    for dimcube in cubes_to_coord:
+        dim_coord = iris.coords.DimCoord(
+            dimcube.data,
+            long_name=dimcube.long_name,
+        )
+        # Add the auxiliary coordinate to the cube
+        cube.add_dim_coord(dim_coord, data_dims=0)
+
+    return cube
+
+
+def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
+    """Save netCDF files for plot."""
+    cubes_to_save = CubeList()
+    cubes_to_aux = CubeList()
+    cubes_to_coord = CubeList()
+
+    strings_to_save = []
+    for key in cfg["seaborn_kwargs"]:
+        if key in ["x", "y", "hue", "col"]:
+            strings_to_save.append(cfg["seaborn_kwargs"][key])
+
+    for something in dframe:
+        if something in strings_to_save:
+            testcube = iris.pandas.as_cubes(dframe[something])[0]
+            testcube.var_name = something
+            testcube.remove_coord("unknown")
+
+            if something in UNITS:
+                testcube.units = UNITS[something]
+
+            if something in ["shape_id", "dataset", "alias"]:
+                testcube.data = testcube.data.astype(str)
+                cubes_to_aux.append(testcube)
+            elif something in [
+                "latitude",
+                "longitude",
+                "height",
+                "plev",
+                "time",
+            ] and _is_strictly_monotonic(testcube.data):
+                cubes_to_coord.append(testcube)
+            else:
+                cubes_to_save.append(testcube)
+
+    for cube in cubes_to_save:
+        cube = _prepare_cube(
+            cube,
+            cubes_to_aux,
+            cubes_to_coord,
+            cfg,
+        )
+
+    io.iris_save(
+        cubes_to_save,
+        get_diagnostic_filename(cfg["plot_filename"], cfg),
+    )
+
+
 def _set_legend_title(plot_obj, legend_title: str) -> None:
     """Set legend title."""
     if hasattr(plot_obj, "get_legend"):  # Axes
@@ -474,18 +583,20 @@ def _set_legend_title(plot_obj, legend_title: str) -> None:
         handles, labels = plot_obj.ax_joint.get_legend_handles_labels()
         if handles and labels:
             legend = plot_obj.ax_joint.legend(
-                handles=handles, labels=labels, title=legend_title
+                handles=handles,
+                labels=labels,
+                title=legend_title,
             )
         else:
             legend = None
     else:
         raise ValueError(
             f"Cannot set legend title, `{type(plot_obj).__name__}` does not "
-            f"support legends"
+            f"support legends",
         )
     if legend is None:
         raise ValueError(
-            "Cannot set legend title, plot does not contain legend"
+            "Cannot set legend title, plot does not contain legend",
         )
     logger.debug("Setting `legend_title='%s'`", legend_title)
     legend.set_title(legend_title)
@@ -508,7 +619,7 @@ def _validate_config(cfg: dict) -> dict:
             else:
                 raise ValueError(
                     f"String value for `hue_norm` can only be `linear` or "
-                    f"`log`, got `{hue_norm}`"
+                    f"`log`, got `{hue_norm}`",
                 )
             cfg["seaborn_kwargs"]["hue_norm"] = hue_norm
         if isinstance(hue_norm, list):
