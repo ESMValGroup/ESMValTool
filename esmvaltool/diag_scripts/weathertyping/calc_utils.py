@@ -81,8 +81,8 @@ def calc_slwt_obs(
 
     wt_data_prcp = []
     for wt_ in range(1, 28):
-        target_indices = da.where(lwt == wt_).compute()
-        if not target_indices[0]:
+        target_indices = da.where(lwt == wt_)[0].compute()
+        if target_indices.size == 0:
             logger.info(
                 "calc_slwt_obs - CAUTION: Skipped wt %s \
                 for dataset %s!",
@@ -98,7 +98,7 @@ def calc_slwt_obs(
             extracted_cube = cube[target_indices]
         else:
             extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0]),
+                iris.Constraint(time=lambda t, d=dates: t.point in d),
             )
         wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
 
@@ -597,16 +597,19 @@ def calc_lwt_slwt_model(
             f"{cfg.get('work_dir')}/wt_mapping_dict_ERA5.json",
         ).open("r", encoding="utf-8") as file:
             mapping_dict_era5_f = json.load(file)
+            mapping_dict_era5 = reverse_convert_dict(mapping_dict_era5_f)
 
         with Path(
             f"{cfg.get('work_dir')}/wt_mapping_dict_E-OBS.json",
         ).open("r", encoding="utf-8") as file:
             mapping_dict_eobs_f = json.load(file)
-        mapping_dict_era5 = reverse_convert_dict(mapping_dict_era5_f)
-        mapping_dict_eobs = reverse_convert_dict(mapping_dict_eobs_f)
+            mapping_dict_eobs = reverse_convert_dict(mapping_dict_eobs_f)
 
         slwt_era5 = map_lwt_to_slwt(lwt, mapping_dict_era5)
         slwt_eobs = map_lwt_to_slwt(lwt, mapping_dict_eobs)
+
+        print("ERA5: ", slwt_era5)
+        print("EOBS: ", slwt_eobs)
     else:
         predefined_slwt = check_mapping_dict_format(predefined_slwt)
         write_mapping_dict(cfg.get("work_dir"), "ERA5", predefined_slwt)
@@ -705,7 +708,7 @@ def process_prcp_mean(
                 "correlation_threshold",
             ) and rmse_matrix[i][j] <= cfg.get("rmse_threshold"):
                 selected_pairs.append(
-                    ((i + 1, j + 1),),
+                    (i + 1, j + 1),
                 )
 
     # write matrices to csv
@@ -762,7 +765,7 @@ def calc_wt_means(
 
     for wt in range(1, len(counts)):
         target_indices = da.where(wt_array == wt)[0].compute()
-        if len(target_indices) < 1:
+        if target_indices.size == 0:
             logger.info(
                 "calc_wt_means - CAUTION: Skipped %s %s \
                 for dataset %s!",
@@ -877,7 +880,7 @@ def calc_wt_anomalies(
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
         target_indices = da.where(wt_array == wt).compute()
-        if not target_indices[0]:
+        if target_indices.size == 0:
             logger.info(
                 "calc_wt_anomalies - CAUTION: Skipped wt %s \
                 for dataset %s!",
@@ -954,7 +957,7 @@ def calc_wt_std(
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
         target_indices = da.where(wt_array == wt).compute()
-        if not target_indices[0]:
+        if target_indices.size == 0:
             logger.info(
                 "calc_slwt_obs - CAUTION: Skipped wt %s \
                 for dataset %s!",

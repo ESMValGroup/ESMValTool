@@ -78,12 +78,13 @@ def process_models_automatic_slwt(
             # plot means
             if cfg.get("plotting", False):
                 # load wt files
+                wt_cube_path = f"{cfg.get('work_dir')}/{output_file_path}"
+                f"/{data_info['dataset']}"
+                f"{data_info['driver']}_"
+                f"{data_info['timerange']}.nc"
+
                 wt_cubes = load_wt_files(
-                    f"{cfg.get('work_dir')}/{output_file_path}"
-                    f"/{data_info['dataset']}"
-                    f"{data_info['driver']}_"
-                    f"{data_info['ensemble']}_"
-                    f"{data_info['timerange']}.nc",
+                    wt_cube_path, f"{data_info['ensemble']}_"
                 )
 
                 var_dict = {
@@ -96,7 +97,9 @@ def process_models_automatic_slwt(
                     data_info["preproc_path"] = var_data[1]
 
                     plot_means(cfg, var_data[0], wt_cubes, data_info)
-                plot_seasonal_occurrence(cfg, wt_cubes, data_info)
+                plot_seasonal_occurrence(
+                    cfg, wt_cubes, data_info, wt_cube_path
+                )
 
 
 def process_era5_automatic_slwt(
@@ -163,9 +166,8 @@ def process_era5_automatic_slwt(
     combine_wt_to_file(cfg, wt_list, wt_preproc, data_info["dataset"])
 
     # load weathertype files as cubes
-    wt_cubes = load_wt_files(
-        f"{cfg.get('work_dir')}/{data_info['dataset']}.nc",
-    )
+    wt_cube_path = f"{cfg.get('work_dir')}/{data_info['dataset']}.nc"
+    wt_cubes = load_wt_files(wt_cube_path)
 
     if cfg.get("plotting", False):
         var_dict = get_looping_dict(
@@ -177,7 +179,7 @@ def process_era5_automatic_slwt(
             data_info["preproc_path"] = var_data[1]
 
             plot_means(cfg, var_data[0], wt_cubes, data_info)
-        plot_seasonal_occurrence(cfg, wt_cubes, data_info)
+        plot_seasonal_occurrence(cfg, wt_cubes, data_info, wt_cube_path)
 
 
 def run_automatic_slwt(cfg: dict):
@@ -256,8 +258,9 @@ def process_era5_lwt(
     write_lwt_to_file(cfg, lwt, wt_preproc, data_info["dataset"])
 
     # load wt files
+    wt_cube_path = f"{cfg.get('work_dir')}/{data_info['dataset']}.nc"
     wt_cubes = load_wt_files(
-        f"{cfg.get('work_dir')}/{data_info['dataset']}.nc",
+        wt_cube_path,
         mode="lwt",
     )
 
@@ -271,7 +274,7 @@ def process_era5_lwt(
             data_info["preproc_path"] = var_data[1]
 
             plot_means(cfg, var_data[0], wt_cubes, data_info, "lwt")
-        plot_seasonal_occurrence(cfg, wt_cubes, data_info)
+        plot_seasonal_occurrence(cfg, wt_cubes, data_info, wt_cube_path)
 
 
 def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
@@ -308,12 +311,14 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
             calc_lwt_model(cfg, wt_preproc, data_info)
 
             # load wt files
+            wt_cube_path = f"{cfg.get('work_dir')}/{output_file_path}"
+            f"/{data_info['dataset']}"
+            f"{data_info['driver']}"
+            f"_{data_info['ensemble']}_"
+            f"{data_info['timerange']}.nc"
+
             wt_cubes = load_wt_files(
-                f"{cfg.get('work_dir')}/{output_file_path}"
-                f"/{data_info['dataset']}"
-                f"{data_info['driver']}"
-                f"_{data_info['ensemble']}_"
-                f"{data_info['timerange']}.nc",
+                wt_cube_path,
                 mode="lwt",
             )
 
@@ -334,7 +339,9 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
                         data_info,
                         "lwt",
                     )
-                plot_seasonal_occurrence(cfg, wt_cubes, data_info)
+                plot_seasonal_occurrence(
+                    cfg, wt_cubes, data_info, wt_cube_path
+                )
 
 
 def run_lwt(cfg: dict):

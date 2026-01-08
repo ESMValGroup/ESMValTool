@@ -50,6 +50,7 @@ def plot_seasonal_occurrence(
     cfg: dict,
     wt_cubes: iris.cube.Cube,
     data_info: dict,
+    cube_path: str,
 ):
     """Plot seasonal occurrences of weathertypes.
 
@@ -61,6 +62,8 @@ def plot_seasonal_occurrence(
         List of cubes of lwt, slwt_ERA5 and slwt_EOBS
     data_info
         Dictionary with info to dataset
+    cube_path
+        Paths to weathertype cubes (ancestors)
     """
     driver = get_driver(data_info)
 
@@ -154,14 +157,13 @@ def plot_seasonal_occurrence(
         plt.close()
         # ancestors here are just the wt_cubes i guess
         ancestors = [
-            f"{data_info.get('preproc_path')}",
-            f"{cfg.get('work_dir')}/ERA5.nc",
+            f"{cube_path}",
         ]
         provenance_record = get_provenance_record(
             f"Seasonal occurrences for {wt_string}, ",
             ancestors,
             ["wt occurrences"],
-            ["stackplot"],
+            ["seas"],
         )
 
         local_path = f"{cfg.get('plot_dir')}/mean"
@@ -381,8 +383,8 @@ def plot_corr_rmse_heatmaps(
 
     Parameters
     ----------
-    cf
-        gConfiguration dictionary from recipe
+    cfg
+        Configuration dictionary from recipe
     pattern_correlation_matrix
         Pattern correlation matrix
     rmse_matrix
@@ -458,6 +460,38 @@ def plot_corr_rmse_heatmaps(
         plt.savefig(f"{output_path}/rmse_matrix_{dataset}_{timerange}.png")
         plt.savefig(f"{output_path}/rmse_matrix_{dataset}_{timerange}.pdf")
         plt.close()
+    # log provenance
+    # rmse matrix
+    ancestors = [
+        f"{cfg.get('work_dir')}/ERA5.nc",
+    ]
+    provenance_record = get_provenance_record(
+        "rmse matrix",
+        ancestors,
+        ["rmse"],
+        ["other"],
+    )
+
+    local_path = f"{cfg.get('plot_dir')}/"
+
+    log_provenance(
+        f"{local_path}/rmse_matrix_{dataset}_{timerange}.png",
+        cfg,
+        provenance_record,
+    )
+    # correlation matrix
+    provenance_record = get_provenance_record(
+        "correlation matrix",
+        ancestors,
+        ["correlation"],
+        ["other"],
+    )
+
+    log_provenance(
+        f"{local_path}/correlation_matrix_{dataset}_{timerange}.png",
+        cfg,
+        provenance_record,
+    )
 
 
 def get_colormap(colormap_string: str) -> ListedColormap:
