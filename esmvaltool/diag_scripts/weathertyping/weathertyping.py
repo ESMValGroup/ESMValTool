@@ -77,15 +77,14 @@ def process_models_automatic_slwt(
             # plot means
             if cfg.get("plotting", False):
                 # load wt files
-                wt_cube_path = f"{cfg.get('work_dir')}/{output_file_path}"
-                f"/{data_info['dataset']}"
-                f"{data_info['driver']}_"
-                f"{data_info['timerange']}.nc"
-
-                wt_cubes = load_wt_files(
-                    wt_cube_path,
-                    f"{data_info['ensemble']}_",
+                wt_cube_path = (
+                    f"{cfg.get('work_dir')}/{output_file_path}"
+                    f"/{data_info['dataset']}"
+                    f"{data_info['driver']}_"
+                    f"{data_info['timerange']}.nc"
                 )
+
+                wt_cubes = load_wt_files(wt_cube_path)
 
                 var_dict = {
                     f"{ensemble_var.get('short_name')}": get_preproc_lists_ensemble(
@@ -314,11 +313,13 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
             calc_lwt_model(cfg, wt_preproc, data_info)
 
             # load wt files
-            wt_cube_path = f"{cfg.get('work_dir')}/{output_file_path}"
-            f"/{data_info['dataset']}"
-            f"{data_info['driver']}"
-            f"_{data_info['ensemble']}_"
-            f"{data_info['timerange']}.nc"
+            wt_cube_path = (
+                f"{cfg.get('work_dir')}/{output_file_path}"
+                f"/{data_info['dataset']}"
+                f"{data_info['driver']}"
+                f"_{data_info['ensemble']}_"
+                f"{data_info['timerange']}.nc"
+            )
 
             wt_cubes = load_wt_files(
                 wt_cube_path,
