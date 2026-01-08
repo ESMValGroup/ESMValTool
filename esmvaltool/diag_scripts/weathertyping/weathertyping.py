@@ -343,7 +343,10 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
                         "lwt",
                     )
                 plot_seasonal_occurrence(
-                    cfg, wt_cubes, data_info, wt_cube_path
+                    cfg,
+                    wt_cubes,
+                    data_info,
+                    wt_cube_path,
                 )
 
 
