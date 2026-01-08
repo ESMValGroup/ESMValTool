@@ -7,7 +7,7 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-    - cron: "00 06 * * 0"
+    - cron: "00 00 1 * *" # monthly
 
 jobs:
   linkChecker:
@@ -28,7 +28,7 @@ jobs:
           args: >
             ./doc/sphinx/**/*.rst
             --max-concurrency 1 --no-progress
-            --accept "200..=204, 429"
+            --accept "200..=204, 302, 429"
 
       - name: Set current date
         run: echo "REPORT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV

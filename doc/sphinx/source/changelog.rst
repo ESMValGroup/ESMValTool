@@ -609,7 +609,7 @@ Highlights
    provide the basis for the CMIP6 model evaluation for the further application
    of causal discovery.
    The results are discussed in the article
-   `"Causal model evaluation of Arctic-midlatitude teleconnections in CMIP6" <https://essopenarchive.org/doi/full/10.1002/essoar.10512569.1>`__
+   `"Causal model evaluation of Arctic-midlatitude teleconnections in CMIP6" <https://doi.org/10.1002/essoar.10512569.1>`__
    by Galytska et al. (in review in Journal of Geophysical Research: Atmospheres).
 
 -  It is now possible to use the
