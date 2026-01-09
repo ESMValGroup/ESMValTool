@@ -5,9 +5,9 @@ Obtaining input data
 ********************
 
 ESMValTool supports input data from climate models participating in
-`CMIP6 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip6>`__,
-`CMIP5 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip5>`__,
-`CMIP3 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip3>`__, and
+`CMIP6 <https://wcrp-cmip.org/cmip-phases/cmip6/>`__,
+`CMIP5 <https://wcrp-cmip.org/cmip-phases/cmip5/>`__,
+`CMIP3 <https://wcrp-cmip.org/cmip-phases/cmip3/>`__, and
 `CORDEX <https://cordex.org/>`__
 as well as observations, reanalysis, and any other data, provided that it
 adheres to the
@@ -22,7 +22,7 @@ as used in the various
 .. note::
 
     CORDEX support is still
-    `work in progress <https://github.com/orgs/ESMValGroup/projects/11>`__.
+    work in progress.
     Contributions, in the form of
     :ref:`pull request reviews <reviewing>` or
     :ref:`pull requests <esmvalcore:contributing>`
@@ -44,9 +44,7 @@ but many more exist around the world.
 
 If you do not have access to such a facility through your institute or the
 project you are working on, you can request access by applying for the
-`ENES Climate Analytics Service <https://portal.enes.org/data/data-metadata-service/climate-analytics-service>`__
-or, if you need longer term access or more computational resources, the
-`IS-ENES3 Trans-national Access call <https://portal.enes.org/data/data-metadata-service/analysis-platforms>`__.
+`ENES Climate Analytics Service <https://is.enes.org/sdm-climate-analytics-data/>`.
 
 If the options above are not available to you, ESMValTool also offers a feature
 to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
@@ -82,8 +80,8 @@ See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
 available configuration options.
 
 Alternatively, you can use an external tool called
-`Synda <http://prodiguer.github.io/synda/index.html>`__
-to maintain your own collection of ESGF data.
+`esgpull <https://github.com/ESGF/esgf-download>`__
+to download and store files from ESGF.
 
 
 .. _inputdata_observations:

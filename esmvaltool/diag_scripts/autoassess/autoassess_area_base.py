@@ -54,8 +54,7 @@ def _import_package(area):
         module = root_import + area
         area_package = importlib.import_module(module)
         return area_package
-    else:
-        raise Exception("Unknown area: " + area)
+    raise Exception("Unknown area: " + area)
 
 
 def _fix_cube(cube_list):
@@ -185,7 +184,9 @@ def _process_obs(cfg, obs_list, obs_loc):
         for obs in cfg["obs_models"]
     ]
     for obs_file_group, obs_name in zip(
-        group_files, cfg["obs_models"], strict=True
+        group_files,
+        cfg["obs_models"],
+        strict=True,
     ):
         cubes_list_obs = iris.load(obs_file_group)
         cubes_list_obs = _fix_cube(cubes_list_obs)
@@ -300,7 +301,8 @@ def _setup_input(cfg):
         metrics_dict["control_model"],
     )
     logger.info(
-        "Files for exp model for metrics: %s", metrics_dict["exp_model"]
+        "Files for exp model for metrics: %s",
+        metrics_dict["exp_model"],
     )
     logger.info("Files for ALL metrics: %s", metrics_dict)
     logger.info("Files for obs model NOT for metrics: %s", obs_list)
@@ -425,17 +427,18 @@ def run_area(cfg):
             metrics = metric_function(run_obj)
             # check duplication
             duplicate_metrics = list(
-                set(all_metrics.keys()) & set(metrics.keys())
+                set(all_metrics.keys()) & set(metrics.keys()),
             )
             if duplicate_metrics:
                 raise AssertionError(
-                    "Duplicate Metrics " + str(duplicate_metrics)
+                    "Duplicate Metrics " + str(duplicate_metrics),
                 )
             all_metrics.update(metrics)
 
         # write metrics to file
         with open(
-            os.path.join(run_obj["dump_output"], "metrics.csv"), "w"
+            os.path.join(run_obj["dump_output"], "metrics.csv"),
+            "w",
         ) as file_handle:
             writer = csv.writer(file_handle)
             for metric in all_metrics.items():

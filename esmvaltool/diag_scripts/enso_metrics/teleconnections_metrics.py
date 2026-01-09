@@ -223,7 +223,7 @@ def diagnostic_level_2(enso_cube, glb_cube, mask_cube, season):
         # if season is DJF offset by 1
         years = [y + 1 for y in years] if season == "DJF" else years
         year_enso = iris.Constraint(
-            time=lambda cell, years=years: cell.point.year in years
+            time=lambda cell, years=years: cell.point.year in years,
         )
         cube_2 = glb_cube.extract(year_enso)  # extract from glb cube
         cube_2 = climate_statistics(cube_2, operator="mean")

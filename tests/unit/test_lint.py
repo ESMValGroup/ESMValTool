@@ -21,8 +21,8 @@ def test_nclcodestyle():
 
     print(
         "Formatting check of NCL code in directories: {}\n".format(
-            ", ".join(str(p) for p in check_paths)
-        )
+            ", ".join(str(p) for p in check_paths),
+        ),
     )
 
     exclude_paths = [
@@ -43,7 +43,7 @@ def test_nclcodestyle():
             prefixed with filename:line number:column number.
 
             Please fix the mentioned issues.
-        """)
+        """),
         )
 
     assert success, "Your NCL code does not follow our formatting standards."
@@ -51,7 +51,8 @@ def test_nclcodestyle():
 
 @pytest.mark.installation
 @pytest.mark.skipif(
-    sys.platform == "darwin", reason="ESMValTool R not supported on OSX"
+    sys.platform == "darwin",
+    reason="ESMValTool R not supported on OSX",
 )
 def test_r_lint(monkeypatch):
     """Test R lint."""
@@ -72,7 +73,7 @@ def test_r_lint(monkeypatch):
             Your R code does not follow our formatting standards.
 
             Please fix the following issues:
-        """)
+        """),
         )
         print(ex.output)
 

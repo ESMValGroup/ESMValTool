@@ -94,7 +94,9 @@ def main(cfg):
             # Call diagnostics functions
             print("prepro")
             (file_da_an_zm, file_mo_an) = zmnam_preproc(
-                ifile, hemisphere, tempdir=run_dir
+                ifile,
+                hemisphere,
+                tempdir=run_dir,
             )
             print("calc")
             outfiles = zmnam_calc(file_da_an_zm, out_dir + "/", ifile_props)
@@ -124,7 +126,9 @@ def main(cfg):
                     caption = "Unspecified zmnam diagnostic"
 
                 prov_record = get_provenance_record(
-                    caption, props, ancestor_files=[ifile]
+                    caption,
+                    props,
+                    ancestor_files=[ifile],
                 )
                 with ProvenanceLogger(cfg) as provenance_logger:
                     provenance_logger.log(file, prov_record)
