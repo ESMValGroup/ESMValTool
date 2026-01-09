@@ -141,7 +141,9 @@ class FTPDownloader(BaseDownloader):
         """
         os.makedirs(os.path.join(self.local_folder, sub_folder), exist_ok=True)
         local_path = os.path.join(
-            self.local_folder, sub_folder, os.path.basename(server_path)
+            self.local_folder,
+            sub_folder,
+            os.path.basename(server_path),
         )
         if not self.overwrite and os.path.isfile(local_path):
             logger.info("File %s already downloaded. Skipping...", server_path)
@@ -201,7 +203,11 @@ class CCIDownloader(FTPDownloader):
 
     def __init__(self, config, dataset, dataset_info, overwrite):
         super().__init__(
-            config, "anon-ftp.ceda.ac.uk", dataset, dataset_info, overwrite
+            config,
+            "anon-ftp.ceda.ac.uk",
+            dataset,
+            dataset_info,
+            overwrite,
         )
         self.ftp_name = self.dataset_name[7:]
 
@@ -232,8 +238,8 @@ class CCIDownloader(FTPDownloader):
     def download_files(self, filename, path=None):
         """Download file(s).
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         filename : str
             Name of file (w/o path) to download (wildcards are allowed)
         path : str
@@ -247,7 +253,7 @@ class CCIDownloader(FTPDownloader):
             for file in matching_files:
                 super().download_file(file)
         else:
-            logger.info('No files %s found.', filename)
+            logger.info("No files %s found.", filename)
 
     def download_year(self, year):
         """Download a specific year.
@@ -262,8 +268,8 @@ class CCIDownloader(FTPDownloader):
     def file_exists(self, filename, path=None):
         """Check if a file exists.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         filename : str
             Name of file (w/o path) to check (wildcards are allowed)
         path : str

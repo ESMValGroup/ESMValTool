@@ -13,7 +13,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -27,10 +27,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -47,24 +47,20 @@ jobs:
           mamba --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install Julia from source
-        run: curl -fsSL https://install.julialang.org | sh -s -- --yes
-      - name: Install Julia dependencies
-        run: esmvaltool install Julia
+        run: pip install --no-deps -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Install development version of ESMValCore
         run: |
           cd ..
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
-          pip install -e .[develop]
+          pip install --no-deps -e .[develop]
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Develop_Test_Linux_python_${{ matrix.python-version }}
           path: develop_test_linux_artifacts_python_${{ matrix.python-version }}

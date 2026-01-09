@@ -54,6 +54,26 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
++------------+-----------------------+------------------+
+|  Date      | Release manager       | Version          |
++============+=======================+==================+
+| 2026 Q1    | DLR                   | 2.14.0           |
++------------+-----------------------+------------------+
+| 2026 Q2    | ACCESS-NRI            | 2.15.0           |
++------------+-----------------------+------------------+
+| 2026 Q4    | Met Office            | 2.16.0           |
++------------+-----------------------+------------------+
+| 2027 Q1    | NLeSC                 | 2.17.0           |
++------------+-----------------------+------------------+
+| 2027 Q2    | NERC (NCAS)           | 2.18.0           |
++------------+-----------------------+------------------+
+| 2027 Q4    | BSC                   | 2.19.0           |
++------------+-----------------------+------------------+
+
+
+Past releases
+^^^^^^^^^^^^^
+
 - 2.13.0 (Release Manager: `Julien Lenhardt`_)
 
 +------------+------------+----------------------------------------+-------------------------------------+
@@ -61,15 +81,12 @@ Upcoming releases
 +============+============+========================================+=====================================+
 | 2025-08-18 |            | ESMValCore `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2025-08-29 |            | ESMValCore Release 2.13.0              |                                     |
+| 2025-08-29 | 2025-10-16 | ESMValCore Release 2.13.0              | :ref:`esmvalcore:changelog-v2-13-0` |
 +------------+------------+----------------------------------------+-------------------------------------+
 | 2025-09-01 |            | ESMValTool `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2025-09-12 |            | ESMValTool Release 2.13.0              |                                     |
+| 2025-09-12 | 2025-10-20 | ESMValTool Release 2.13.0              |      :ref:`changelog-v2-13-0`       |
 +------------+------------+----------------------------------------+-------------------------------------+
-
-Past releases
-^^^^^^^^^^^^^
 
 - 2.12.0 (Release Manager: `Saskia Loosveldt Tomas`_)
 
@@ -493,6 +510,9 @@ Make a pull request and get it merged into ``main``.
 4. Create a release branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Create a branch off the ``main`` branch and push it to GitHub.
+The name of the release branch should be of the form ``vX.Y.x``,
+where ``X.Y`` is the major and minor version number of the release, e.g.
+``v2.1.x`` for the releases ``v2.1.0``, ``v2.1.1``, etc.
 Ask someone with administrative permissions to set up branch protection rules
 for it so only you and the person helping you with the release can push to it.
 Announce the name of the branch in an issue and ask the members of the
@@ -545,11 +565,13 @@ on that branch.
 
 The package is automatically uploaded to the
 `PyPI <https://pypi.org/project/ESMValTool/>`__
-by a GitHub action.
-If has failed for some reason, build and upload the package manually by
-following the instructions below.
+by a GitHub action. Note that for security reasons, the upload needs to be
+approved by someone from the
+`ESMValGroup/technical-lead-development-team <https://github.com/orgs/ESMValGroup/teams/technical-lead-development-team>`__
+who is not the author of the release.
 
-Follow these steps to create a new Python package:
+If the automatic build and upload has failed for some reason, do it manually by
+following these instructions:
 
 -  Check out the tag corresponding to the release,
    e.g. ``git checkout tags/v2.1.0``
@@ -557,9 +579,9 @@ Follow these steps to create a new Python package:
    of ``git status`` and by running ``git clean -xdf`` to remove any files
    ignored by git.
 -  Install the required packages:
-   ``python3 -m pip install --upgrade pep517 twine``
+   ``python3 -m pip install --upgrade build twine``
 -  Build the package:
-   ``python3 -m pep517.build --source --binary --out-dir dist/ .``
+   ``python3 -m build``
    This command should generate two files in the ``dist`` directory, e.g.
    ``ESMValTool-2.1.0-py3-none-any.whl`` and ``ESMValTool-2.1.0.tar.gz``.
 -  Upload the package:
@@ -626,7 +648,7 @@ built correctly by
 1. checking that the version tag is available on `Dockerhub`_ and the ``stable``
    tag has been updated,
 2. running some recipes with the ``stable`` tag Docker container, for example one
-   recipe for Python, NCL, R, and Julia,
+   recipe for Python, NCL, and R,
 3. running a recipe with a Singularity container built from the ``stable`` tag.
 
 If there is a problem with the automatically built container image, you can fix

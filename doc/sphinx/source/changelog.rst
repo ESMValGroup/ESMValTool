@@ -3,6 +3,207 @@
 Changelog
 =========
 
+.. _changelog-v2-13-0:
+
+v2.13.0
+-------
+
+Highlights
+~~~~~~~~~~
+
+Constellation of CMORizers and diagnostics updated/implemented as part of the
+`Rapid Evaluation Framework (REF) <https://wcrp-cmip.org/cmip-phases/cmip7/rapid-evaluation-framework/>`__:
+
+- CMORizers:
+
+   - Update of the ESACCI-OZONE CMORizer
+   - ESACCI-SEAICE CMORizer
+   - Update of the OSI-450 (OSISAF/CCI) CMORizer
+
+- :ref:`Diagnostics <recipes_REF>`:
+
+   - Seasonal cycle and time series of Arctic/Antarctic sea ice area
+   - :ref:`Zero Emissions Commitment (ZEC) <recipes_zec>`
+   - Cloud radiative effects
+   - :ref:`Transient Climate Response to Emissions (TCRE) <recipes_tcre>`
+   - :ref:`ENSO metrics <recipes_enso_metrics>`
+   - 2D histograms and scatterplots for clouds
+   - Regional historical changes
+   - :ref:`Evaluation of climate variables at Global warming levels <recipes_recipe_calculate_gwl_exceedance_stats>`
+   - :ref:`Sea surface temperature bias (IPCC AR6 Ch3 Fig. 3.24) <recipes_ipccwg1ar6ch3>`
+   - :ref:`Climate drivers for fire <recipe_ref_fire>`
+   - :ref:`Rate of sea ice area loss per degree of warming <recipe_seaice_sensitivity>`
+   - Ozone metrics and climatology
+
+This release includes
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Refactor diagnostic `monitor/multi_datasets.py` (:pull:`4002`) by :user:`schlunma`
+   Plot option `annual_mean_kwargs`: This will be ignored now. Previously,
+   this could lead to errors in rare cases. Instead, explicitly specify a
+   dataset that uses the annual_statistics preprocessor in the recipe,
+   for example `esmvaltool/recipes/monitor/recipe_monitor_with_refs.yml#L132-L139`.
+-  Retire recipe schlund20jgr (:pull:`4022`) by :user:`axel-lauer`
+-  Retire julia recipes (:pull:`4045`) by :user:`bettina-gier`
+-  Retire psyplot recipe and diagnostic (:pull:`4063`) by :user:`valeriupredoi`
+
+Community
+~~~~~~~~~
+
+-  Added stale action (:pull:`4100`) by :user:`schlunma`
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Update citation and changelog for version 2.12 (:pull:`3945`) by :user:`sloosvel`
+-  Use Python-only environment for ReadTheDocs builds (:pull:`3955`) by :user:`valeriupredoi`
+-  Add explanatory note in documentation advice on Codacy (:pull:`4020`) by :user:`alistairsellar`
+-  Extend broken recipe policy (:pull:`3913`) by :user:`axel-lauer`
+-  Remove some more Julia references from documentation (but keep some) (:pull:`4073`) by :user:`valeriupredoi`
+-  Add footer with legal info (:pull:`4072`) by :user:`axel-lauer`
+-  Add mention of NSC HPC servers (:pull:`4084`) by :user:`jlenh`
+-  Update figure selection and layout of the gallery (:pull:`4060`) by :user:`bettina-gier`
+-  Update timeline for release 2.13.0 (:pull:`4096`) by :user:`jlenh`
+-  Refer to esmvaltool.org webpage for development team information (:pull:`3892`) by :user:`bouweandela`
+-  Remove mention of Julia in documentation ahead of discontinued support in v2.13 (:pull:`4156`) by :user:`jlenh`
+-  Update `cartopy` documentation link to fix documentation build fail (:pull:`4179`) by :user:`jlenh`
+-  Add debugging help (:pull:`2638`) by :user:`zklaus`
+
+Diagnostics
+~~~~~~~~~~~
+
+-  Add recipe for seasonal cycle and time series of Arctic/Antarctic sea ice area (REF) (:pull:`3891`) by :user:`axel-lauer`
+-  Add recipe and diagnostic for ZEC (Zero Emissions Commitment) (:pull:`3897`) by :user:`bettina-gier`
+-  Create scatterplots for the REF (:pull:`3923`) by :user:`LisaBock`
+-  Evaluate key climate variables at Global warming levels (:pull:`3927`) by :user:`rswamina`
+-  Add SST bias diagnostic for IPCC AR6 Ch3 Fig. 3.24. Can be used for REF. (:pull:`3944`) by :user:`malininae`
+-  Update recipe_combined_indices.yml for R versions larger than 4.2 (:pull:`3967`) by :user:`bouweandela`
+-  Added option to plot horizontal lines in monitoring line plots (:pull:`3977`) by :user:`schlunma`
+-  Fix R recipes for R > 4.2 (:pull:`3985`) by :user:`sloosvel`
+-  REF ozone recipe (:pull:`3988`) by :user:`hb326`
+-  Faster and lower memory version of recipe_ref_scatterplot.yml (:pull:`3992`) by :user:`bouweandela`
+-  Update GPCP and ERA5 obs4MIPs datasets in recipe_ref_scatterplot.yml (:pull:`4011`) by :user:`bouweandela`
+-  Add option to specify caption in recipe for `monitor/multi_datasets.py` (:pull:`4028`) by :user:`schlunma`
+-  Optimize caption produced by `tcr.py` (:pull:`4042`) by :user:`schlunma`
+-  Optimize caption produced by `ecs.py` (:pull:`4040`) by :user:`schlunma`
+-  Fix tcre metric diagnostic (:pull:`4044`) by :user:`valeriupredoi`
+-  Optimize `tcre.py` diagnostic (caption and usability via Python API) (:pull:`4056`) by :user:`schlunma`
+-  Add additional diagnostics to recipe_ocean_quadmap.yml (:pull:`3953`) by :user:`SophieHall2024`
+-  New CH4 lifetime diagnostic (:pull:`3507`) by :user:`FranziskaWinterstein`
+-  New recipe: rate of sea ice area loss per degree warming (:pull:`3983`) by :user:`alistairsellar`
+-  Remove unused option `annual_mean_kwargs` from all recipes (:pull:`4133`) by :user:`schlunma`
+-  Aeronet format updates and diagnostic changes (:pull:`4131`) by :user:`nchawang`
+-  Use obs4MIPs consistently in all recipes (:pull:`4142`) by :user:`bouweandela`
+-  Add missing method in `seaice_drift.py` (:pull:`4161`) by :user:`sloosvel`
+-  Update the name of the `remapscon2` operator in R recipes (:pull:`4164`) by :user:`jlenh`
+-  Trace gases (CO2, CH4, N2O) surface concentration diagnostic (:pull:`4014`) by :user:`jlenh`
+-  Climate drivers for fire for REF (:pull:`3975`) by :user:`jlenh`
+-  Exchange toz reference data in ozone REF recipe (:pull:`4008`) by :user:`axel-lauer`
+-  Add captions to REF recipe for basic sea ice area diags (:pull:`4033`) by :user:`axel-lauer`
+-  CLIVAR ENSO metrics for REF (:pull:`3972`) by :user:`flicj191`
+-  Update and combine drought diagnostics (:pull:`3907`) by :user:`lukruh`
+-  Regional historical changes for REF (:pull:`3926`) by :user:`katjaweigel`
+-  Add more datasets to recipe_easy_ipcc.yml (:pull:`3920`) by :user:`bouweandela`
+-  ACCESS-NRI ENSO diagnostics CLIVAR porting (:pull:`3905`) by :user:`flicj191`
+-  Correct typo in "pearsonr" (:pull:`4140`) by :user:`katjaweigel`
+-  Update time ranges in REF 'cloud radiative effect' recipe (:pull:`4057`) by :user:`LisaBock`
+-  Fix caption and time range for REF diagnostic "Cloud scatterplots" (:pull:`4066`) by :user:`LisaBock`
+-  Portrait plot example: remove sea surface temperature (:pull:`4099`) by :user:`lukruh`
+-  Recipes ipccwg1ar5ch9: Update CERES and GPCP versions to match ESGF (:pull:`3440`) by :user:`rbeucher`
+-  Recipe_schlund20esd Remove CERES-EBAF version to fix ESGF search (:pull:`3441`) by :user:`rbeucher`
+-  Adding basic sanity checks (:pull:`4120`) by :user:`LisaBock`
+-  Adding optional data output for seaborn_diag.py (:pull:`4144`) by :user:`katjaweigel`
+-  Fix `recipe_williams09climdyn_CREM.yml` by replacing `np.NAN` with `np.nan` (:pull:`4160`) by :user:`jlenh`
+-  Fix `recipe_carvalhais14nat.yml` to avoid the usage of `vars()` inside a function (:pull:`4170`) by :user:`jlenh`
+-  Fix small matplotlib errors in `recipe_zmnam.yml` (:pull:`4177`) by :user:`jlenh`
+-  Fix `_fix_lons` function in `recipe_flato13ipcc_figure_914.yml` due to `numpy` error [#4034] (:pull:`4178`) by :user:`jlenh`
+-  Improve the handling of options in recipe_ref_fire.yml (:pull:`4184`) by :user:`bouweandela`
+-  Fix small matplotlib errors in `recipe_zmnam.yml` (:pull:`4177`) by :user:`jlenh`
+-  Fix minor NCL errors for `recipe_russel18jgr.yml` (:pull:`4183`) by :user:`jlenh`
+-  Fix specification for WOA dataset in recipe_ocean_quadmap (:pull:`4176`) by :user:`TomasTorsvik`
+-  Fix autoassess normalise error (:pull:`4187`) by :user:`alistairsellar`
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Update ESACCI-OZONE CMORizer(formatter and downloader) for REF (:pull:`3899`) by :user:`diegokam`
+-  Update CMORizer for OSI-450 aka OSISAF/CCI (sea ice concentration) (:pull:`3963`) by :user:`axel-lauer`
+-  Adding HadEX3 CMORizer (:pull:`3636`) by :user:`malininae`
+-  Downloader & cmorizer for NOAA GML surface flask trace gases  (:pull:`3847`) by :user:`jlenh`
+-  Use nested update to parse configuration options given to CMORizer interface (:pull:`4113`) by :user:`schlunma`
+-  Aeronet-header-fix to handle V3 data (:pull:`4101`) by :user:`nchawang`
+-  Cmorizer for the Wetland Area and Dynamics for Methane Modeling (WAD2M) dataset (:pull:`4110`) by :user:`jlenh`
+-  Cmorizer for the Global Lakes and Wetlands Database (GLWD) version 2.0 dataset (:pull:`4112`) by :user:`jlenh`
+-  Update ESACCI Cloud CMORizer (daily and monthly data)  (:pull:`3756`) by :user:`diegokam`
+-  Fix coords in ESACCI-CLOUD cmorizer (:pull:`4129`) by :user:`LisaBock`
+-  Added CMORizer for Yang2020 data (:pull:`4090`) by :user:`schlunma`
+-  Add CMORized NOAA GML surface flask concentration measurement of N2O (:pull:`4059`) by :user:`jlenh`
+-  CMORizer for ESACCI-BIOMASS (:pull:`4121`) by :user:`axel-lauer`
+-  Faster OSI-450-nh and OSI-450-sh CMORizer and respect Dask settings (:pull:`3990`) by :user:`bouweandela`
+-  CMORiser for the IAPv4.2 global ocean temperature dataset (:pull:`3887`) by :user:`rbeucher`
+-  Update recipe_check_obs.yml to match the latest AERONET data (:pull:`4171`) by :user:`hb326`
+-  Update version facet for ESACCI-CLOUD in recipe_check_obs.yml (:pull:`4166`) by :user:`jlenh`
+-  Remove `end_year` facet for NOAA-GML datasets in `recipe_check_obs.yml` (:pull:`4167`) by :user:`jlenh`
+-  New version of JRA-25 CMORizer (:pull:`3470`) by :user:`axel-lauer`
+-  Add CAMS cmorizer (:pull:`3749`) by :user:`bettina-gier`
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Use mamba>=2 for Circle CI upstream development test (:pull:`3949`) by :user:`valeriupredoi`
+-  Use python-only environment file for Circle build documentation (:pull:`3981`) by :user:`valeriupredoi`
+-  Use conda exec instead of mamba for circleCI `build_documentation` test (:pull:`4003`) by :user:`valeriupredoi`
+-  Run pre-commit on main (:pull:`4026`) by :user:`schlunma`
+-  Try set a longer no output time limit for Circle tests (:pull:`4035`) by :user:`valeriupredoi`
+-  Only run imagehash tests on Linux machines (:pull:`4039`) by :user:`schlunma`
+-  Do not run conda install package Github Action with Python 3.13 (yet) (:pull:`4071`) by :user:`valeriupredoi`
+-  Fix Cicle CI tests (prepend Julia to PATH for the containerized run tests) (:pull:`4086`) by :user:`valeriupredoi`
+-  Automatically open pull requests to update GitHub Actions (:pull:`4143`) by :user:`valeriupredoi`
+-  Run esmvalbot test PR twice a month (:pull:`3976`) by :user:`bouweandela`
+-  Add DKRZ resources for RTW to `dkrz-recipes.jinja` (:pull:`3986`) by :user:`ehogan`
+-  Add JASMIN resources for RTW to `jasmin-recipes.jinja` (:pull:`3987`) by :user:`ehogan`
+-  Use site directories in the RTW (:pull:`3984`) by :user:`ehogan`
+-  Update MO paths in the RTW (:pull:`4006`) by :user:`ehogan`
+-  Select directories for comparison carefully in the RTW (:pull:`4007`) by :user:`ehogan`
+-  Implement additional user configuration options in RTW (:pull:`4009`) by :user:`ehogan`
+-  Generate "recipe status" HTML after each Recipe Test Workflow cycle (:pull:`4013`) by :user:`chrisbillowsMO`
+-  Update RTW to use the `git` scheme (:pull:`4030`) by :user:`ehogan`
+-  Add housekeeping to RTW (:pull:`4019`) by :user:`ehogan`
+-  Revert "Update RTW to use the `git` scheme" (:pull:`4041`) by :user:`ehogan`
+-  Update location of `recipe_consecdrydays.yml` in the RTW (:pull:`4052`) by :user:`ehogan`
+-  Monitor Tests workflow fails (:pull:`4065`) by :user:`chrisbillowsMO`
+-  RTW status report shows missing compare tasks as succeeded (:pull:`4064`) by :user:`chrisbillowsMO`
+-  Use compare command in recipe test workflow (:pull:`4087`) by :user:`alistairsellar`
+-  Separate `BRANCH` variable for recipe_test_workflow cloning Core and Tool (:pull:`4070`) by :user:`alistairsellar`
+-  Update RTW to use new user configuration (:pull:`4017`) by :user:`ehogan`
+
+Installation
+~~~~~~~~~~~~
+
+-  Remove Julia from conda dependency environment (but keep tests for `esmvaltool install Julia`)
+   and add docs how to install from source (:pull:`3921`) by :user:`valeriupredoi`
+-  Unpin upper limit `r-base` (:pull:`3971`) by :user:`valeriupredoi`
+-  Drop support for Python 3.10 (:pull:`4027`) by :user:`schlunma`
+-  Support Python 3.13 (:pull:`3805`) by :user:`valeriupredoi`
+-  Tackle Julia in DockerHub container builds: remove nstallation of packages
+   (and remove dependencies in Project.jl bar :beer: YAML) (:pull:`4083`) by :user:`valeriupredoi`
+-  Use `pyproject.toml` and retire `setup.py` with NO Ruff configuration changes (:pull:`4088`) by :user:`valeriupredoi`
+-  Update environment to use ESMValCore v2.13.0rc1 (:pull:`4169`) by :user:`bouweandela`
+-  Update ESMValCore version also for OSX (:pull:`4174`) by :user:`bouweandela`
+
+Improvements
+~~~~~~~~~~~~
+
+-  Replace flake8, yapf, and isort with ruff (:pull:`3893`) by :user:`bouweandela`
+-  Remove `test_recipe` command (:pull:`4031`) by :user:`alistairsellar`
+-  Replace deprecated horizontal regridding scheme `linear_extrapolate` with generic scheme (:pull:`4081`) by :user:`schlunma`
+-  Add compare command, via new develop command group (:pull:`4054`) by :user:`alistairsellar`
+-  Add extra Ruff rules and switch to `requires-python = ">=3.11"` in pyproject.toml (:pull:`4085`) by :user:`valeriupredoi`
+-  Move dependabot configuration to correct path (:pull:`4145`) by :user:`bouweandela`
+-  Use trusted publisher routine for PyPI and retire token-based type (:pull:`4150`) by :user:`valeriupredoi`
+-  Fix pypa Github Action version (:pull:`4151`) by :user:`valeriupredoi`
 
 .. _changelog-v2-12-0:
 
@@ -408,7 +609,7 @@ Highlights
    provide the basis for the CMIP6 model evaluation for the further application
    of causal discovery.
    The results are discussed in the article
-   `"Causal model evaluation of Arctic-midlatitude teleconnections in CMIP6" <https://essopenarchive.org/doi/full/10.1002/essoar.10512569.1>`__
+   `"Causal model evaluation of Arctic-midlatitude teleconnections in CMIP6" <https://doi.org/10.1002/essoar.10512569.1>`__
    by Galytska et al. (in review in Journal of Geophysical Research: Atmospheres).
 
 -  It is now possible to use the
@@ -511,7 +712,7 @@ Highlights
    <https://doi.org/10.1175/JCLI-D-22-0181.1>`__.
    See :ref:`recipe documentation <recipes_clouds>` about added recipes.
 -  Addition of a set of recipes for extreme events, regional and impact
-   evaluation as used in `Weigel et al. (2021), J. Climate
+   evaluation as used in `Weigel et al. (2021), GMD
    <https://doi.org/10.5194/gmd-14-3159-2021>`__ and in IPCC AR5.
    See :ref:`recipe documentation <recipes_ipccwg1ar5ch9>` about added recipes.
 
@@ -708,7 +909,7 @@ v2.7.0
 Highlights
 ~~~~~~~~~~
 
--  This release has seen the inclusion of the code for figures 3.3, 3.4, 3.5, 3,13 and 3.15 of the IPCC AR6 WG1 report, see them in the `new documentation <https://esmvaltool--2533.org.readthedocs.build/en/2533/recipes/recipe_ipccwg1ar6ch3.html>`__
+-  This release has seen the inclusion of the code for figures 3.3, 3.4, 3.5, 3,13 and 3.15 of the IPCC AR6 WG1 report, see them in the `new documentation <https://docs.esmvaltool.org/en/latest/recipes/recipe_ipccwg1ar6ch3.html>`__
 -  We have also included new diagnostics and recipe necessary to produce the plots and tables for the journal article "Climate model projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6" by `Tebaldi et al. in ESD 2020-68 <https://doi.org/10.5194/esd-2020-68>`__ from 2021; also see the `recipe entry <https://docs.esmvaltool.org/en/latest/recipes/recipe_tebaldi21esd.html>`__
 -  We have also extended the support for MERRA2 observational dataset, by adding support for a large number of variables, including 3D variables, see the `table of supported obs datasets <https://docs.esmvaltool.org/en/latest/input.html#supported-datasets-for-which-a-cmorizer-script-is-available>`__
 
@@ -1107,7 +1308,7 @@ Documentation
 -  Add titles to ocean recipes (maintainer Lovato) (:pull:`2375`) :user:`tomaslovato`
 -  Add titles for three c3s-magic recipes (:pull:`2378`) :user:`zklaus`
 -  Add title for recipe maintained by Ruth Lorenz (:pull:`2379`) :user:`zklaus`
--  Fix toymodel recipe (:pull:`2381`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Fix toymodel recipe (:pull:`2381`) Javier Vegas-Regidor
 -  Added titles for recipes of maintainer `schlund_manuel` (:pull:`2377`) :user:`schlunma`
 -  Write_plots and titles for deangelis15nat, li17natcc, martin18grl, pv_capacity_factor (:pull:`2382`) :user:`katjaweigel`
 -  Add titles for some recipes (:pull:`2383`) :user:`zklaus`
@@ -1245,7 +1446,7 @@ Automatic testing
 Installation
 ~~~~~~~~~~~~
 
--  Fix conda build by skipping documentation test (:pull:`2058`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Fix conda build by skipping documentation test (:pull:`2058`) Javier Vegas-Regidor
 -  Update pin on esmvalcore pick up esmvalcore=2.3.0 (:pull:`2200`) :user:`valeriupredoi`
 -  Pin Python to 3.9 for development installation (:pull:`2208`) :user:`bouweandela`
 
@@ -1258,7 +1459,7 @@ Improvements
 -  Update use of fx vars to new syntax  (:pull:`2145`) :user:`sloosvel`
 -  Add recipe for climate impact research (:pull:`2072`) :user:`Peter9192`
 -  Update references "master" to "main" (:pull:`2172`) :user:`axel-lauer`
--  Force git to ignore VSCode workspace files (:pull:`2186`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Force git to ignore VSCode workspace files (:pull:`2186`) Javier Vegas-Regidor
 -  Update to new ESMValTool logo (:pull:`2168`) :user:`axel-lauer`
 -  Python cmorizers for CDR1 and CDR2 ESACCI H2O (TCWV=prw) data. (:pull:`2152`) :user:`katjaweigel`
 -  Remove obsolete conda package (closes #2100) (:pull:`2103`) :user:`zklaus`
@@ -1291,7 +1492,7 @@ Bug fixes
 -  Fix logging import in cmorize_obs again since last merge was nulled by pre-commit hooks (:pull:`2022`) :user:`valeriupredoi`
 -  Refactor the functions in derive_evspsblpot due to new iris (:pull:`2023`) :user:`SarahAlidoost`
 -  Avoid importing private ESMValCore functions in CMORizer (:pull:`2027`) :user:`bouweandela`
--  Fix extract_seasons in validation recipe  (:pull:`2054`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Fix extract_seasons in validation recipe  (:pull:`2054`) Javier Vegas-Regidor
 
 Deprecations
 ~~~~~~~~~~~~
@@ -1323,8 +1524,8 @@ Documentation
 -  List Remi Kazeroni as a code owner and sole merger of CMORizers (:pull:`2017`) :user:`bouweandela`
 -  Install documentation: mention that we build conda package with python>=3.7 (:pull:`2030`) :user:`valeriupredoi`
 -  Recipe and documentation update for ERA5-Land. (:pull:`1906`) :user:`katjaweigel`
--  Update changelog and changelog tool for v2.2.0 (:pull:`2043`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
--  Final update to the changelog for v2.2.0 (:pull:`2056`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Update changelog and changelog tool for v2.2.0 (:pull:`2043`) Javier Vegas-Regidor
+-  Final update to the changelog for v2.2.0 (:pull:`2056`) Javier Vegas-Regidor
 
 Diagnostics
 ~~~~~~~~~~~
@@ -1385,7 +1586,7 @@ Improvements
 -  Align ESMValTool to ESMValCore=2.2.0 (adopt iris3, fix environment for new Core release) (:pull:`1874`) :user:`stefsmeets`
 -  Make it possible to use write_plots and write_netcdf from recipe instead of config-user.yml (:pull:`2018`) :user:`bouweandela`
 -  Revise lisflood and hype recipes (:pull:`2035`) :user:`SarahAlidoost`
--  Set version to 2.2.0 (:pull:`2042`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Set version to 2.2.0 (:pull:`2042`) Javier Vegas-Regidor
 
 .. _changelog-v2-1-1:
 
@@ -1443,7 +1644,7 @@ Documentation
 Improvements
 ~~~~~~~~~~~~
 
--  Fix R installation in WSL (:pull:`1789`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Fix R installation in WSL (:pull:`1789`) Javier Vegas-Regidor
 -  Add pre-commit for linting/formatting (:pull:`1796`) :user:`stefsmeets`
 -  Speed up tests on CircleCI and use pytest to run them (:pull:`1804`) :user:`bouweandela`
 -  Move pre-commit excludes to top-level and correct order of lintr and styler (:pull:`1805`) :user:`stefsmeets`
@@ -1451,7 +1652,7 @@ Improvements
 -  GitHub Actions (:pull:`1806`) :user:`valeriupredoi`
 -  Fix yapf-isort import formatting conflict (:pull:`1822`) :user:`stefsmeets`
 -  Replace vmprof with vprof as the default profiler (:pull:`1829`) :user:`bouweandela`
--  Update ESMValCore v2.1.0 requirement (:pull:`1839`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Update ESMValCore v2.1.0 requirement (:pull:`1839`) Javier Vegas-Regidor
 -  Pin iris to version 2 (:pull:`1881`) :user:`bouweandela`
 -  Pin eccodes to not use eccodes=2.19.0 for cdo to work fine (:pull:`1869`) :user:`valeriupredoi`
 -  Increase version to 2.1.0 and add release notes (:pull:`1868`) :user:`valeriupredoi`
@@ -1479,17 +1680,17 @@ Bug fixes
 -  Fix small errors in the arctic_ocean diagnostic (:pull:`1722`) :user:`koldunovn`
 -  Flatten ancestor lists for diag_spei.R and diag_spi.R. (:pull:`1745`) :user:`katjaweigel`
 -  Fix for recipe_ocean_ice_extent.yml (:pull:`1744`) :user:`mattiarighi`
--  Fix recipe_combined_indices.yml provenance (:pull:`1746`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
--  Fix provenance in recipe_multimodel_products (:pull:`1747`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Fix recipe_combined_indices.yml provenance (:pull:`1746`) Javier Vegas-Regidor
+-  Fix provenance in recipe_multimodel_products (:pull:`1747`) Javier Vegas-Regidor
 -  Exclude FGOALS-g2 due to ESMValCore issue #728 (:pull:`1749`) :user:`mattiarighi`
--  Fix recipe_modes_of_variability (:pull:`1753`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Fix recipe_modes_of_variability (:pull:`1753`) Javier Vegas-Regidor
 -  Flatten lists for ancestors for hyint to prevent nested lists. (:pull:`1752`) :user:`katjaweigel`
 -  Fix bug in cmorize_obs_eppley_vgpm_modis.py (#1729) (:pull:`1759`) :user:`tomaslovato`
 -  Correct mip for clltkisccp in example derive preprocessor recipe (:pull:`1768`) :user:`bouweandela`
 -  Update date conversion in recipe_hype.yml (:pull:`1769`) :user:`bouweandela`
 -  Fix recipe_correlation.yml (:pull:`1767`) :user:`bouweandela`
 -  Add attribute positive: down to plev coordinate in ERA-Interim CMORizer (:pull:`1771`) :user:`bouweandela`
--  Fix sispeed in recipe_preprocessor_derive_test (:pull:`1772`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Fix sispeed in recipe_preprocessor_derive_test (:pull:`1772`) Javier Vegas-Regidor
 -  Fix extreme events and extreme index ancestors (:pull:`1774`) :user:`katjaweigel`
 -  Correct date in output filenames of ERA5 CMORizer recipe (:pull:`1773`) :user:`bouweandela`
 -  Exclude WOA from multi-model stats in recipe_ocean_bgc (:pull:`1778`) :user:`mattiarighi`
@@ -1516,7 +1717,7 @@ Diagnostics
 -  Add mask albedolandcover (:pull:`1673`) :user:`bascrezee`
 -  IPCC AR5 fig. 9.3 (seasonality) (:pull:`1726`) :user:`axel-lauer`
 -  Added additional emergent constraints on ECS (:pull:`1585`) :user:`schlunma`
--  A diagnostic to evaluate the turnover times of land ecosystem carbon (:pull:`1395`) `koir-su <https://github.com/koir-su>`__
+-  A diagnostic to evaluate the turnover times of land ecosystem carbon (:pull:`1395`) koir-su
 -  Removed multi_model_statistics step in recipe_oceans_example.yml as a workaround (:pull:`1779`) :user:`valeriupredoi`
 
 Documentation
@@ -1544,17 +1745,17 @@ Improvements
 -  Remove curly brackets around issue number in pull request template (:pull:`1637`) :user:`bouweandela`
 -  Fix style issue in test (:pull:`1639`) :user:`bouweandela`
 -  Update Codacy badges (:pull:`1662`) :user:`bouweandela`
--  Support extra installation methods in R (:pull:`1360`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Support extra installation methods in R (:pull:`1360`) Javier Vegas-Regidor
 -  Add ncdf4.helpers package as a dependency again (:pull:`1678`) :user:`bouweandela`
 -  Speed up conda installation (:pull:`1677`) :user:`bouweandela`
 -  Update CMORizers and recipes for ESMValCore v2.0.0 (:pull:`1699`) :user:`SarahAlidoost`
 -  Update setup.py for PyPI package (:pull:`1700`) :user:`bouweandela`
 -  Cleanup recipe headers before the release (:pull:`1740`) :user:`mattiarighi`
--    Add colortables as esmvaltool subcommand (:pull:`1666`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-    Add colortables as esmvaltool subcommand (:pull:`1666`) Javier Vegas-Regidor
 -  Increase version to v2.0.0 (:pull:`1756`) :user:`bouweandela`
 -  Update job script (:pull:`1757`) :user:`mattiarighi`
 -  Read authors and description from .zenodo.json (:pull:`1758`) :user:`bouweandela`
--  Update docker recipe to install from source (:pull:`1651`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Update docker recipe to install from source (:pull:`1651`) Javier Vegas-Regidor
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1589,7 +1790,7 @@ Bug fixes
 Diagnostics
 ~~~~~~~~~~~
 
--  Applicate sea ice negative feedback (:pull:`1299`) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Applicate sea ice negative feedback (:pull:`1299`) Javier Vegas-Regidor
 -  Add Russell18jgr ocean diagnostics (:pull:`1592`) :user:`bouweandela`
 -  Refactor marrmot recipe and diagnostic to use ERA5 daily data made by new cmorizer (:pull:`1600`) :user:`SarahAlidoost`
 -  In recipe_wflow, use daily ERA5 data from the new cmorizer. (:pull:`1599`) :user:`Peter9192`

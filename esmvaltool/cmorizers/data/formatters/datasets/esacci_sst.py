@@ -43,10 +43,11 @@ def extract_variable(raw_info):
     constraint = iris.NameConstraint(var_name=rawvar)
     if rawvar == "analysed_sst_uncertainty":
         tmp_cube = iris.load_cube(
-            raw_info["file"], iris.NameConstraint(var_name="analysed_sst")
+            raw_info["file"],
+            iris.NameConstraint(var_name="analysed_sst"),
         )
         ancillary_var = tmp_cube.ancillary_variable(
-            "sea_water_temperature standard_error"
+            "sea_water_temperature standard_error",
         )
         cube = tmp_cube.copy(ancillary_var.core_data())
     else:
@@ -55,7 +56,7 @@ def extract_variable(raw_info):
         except iris.exceptions.ConstraintMismatchError as constraint_error:
             raise ValueError(
                 f"No data available for variable {rawvar} in file"
-                f" {raw_info['file']}"
+                f" {raw_info['file']}",
             ) from constraint_error
 
     # Remove ancillary data
@@ -65,11 +66,18 @@ def extract_variable(raw_info):
 
 
 def get_monthly_cube(
-    cfg, var, vals, raw_info, attrs, inpfile_pattern, year, month
+    cfg,
+    var,
+    vals,
+    raw_info,
+    attrs,
+    inpfile_pattern,
+    year,
+    month,
 ):
     data_cubes = []
     month_inpfile_pattern = inpfile_pattern.format(
-        year=str(year) + f"{month:02}"
+        year=str(year) + f"{month:02}",
     )
     logger.info("Pattern: %s", month_inpfile_pattern)
     inpfiles = sorted(glob.glob(month_inpfile_pattern))
@@ -84,7 +92,9 @@ def get_monthly_cube(
     for inpfile in inpfiles:
         raw_info["file"] = inpfile
         logger.info(
-            "CMORizing var %s from file type %s", var, raw_info["file"]
+            "CMORizing var %s from file type %s",
+            var,
+            raw_info["file"],
         )
         data_cubes.append(extract_variable(raw_info))
 
@@ -162,11 +172,13 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 if "Stderr" not in var:
                     logger.info("Calculating monthly mean")
                     iris.coord_categorisation.add_month_number(
-                        monthly_cube, "time"
+                        monthly_cube,
+                        "time",
                     )
                     iris.coord_categorisation.add_year(monthly_cube, "time")
                     monthly_cube = monthly_cube.aggregated_by(
-                        ["month_number", "year"], iris.analysis.MEAN
+                        ["month_number", "year"],
+                        iris.analysis.MEAN,
                     )
                     monthly_cube.remove_coord("month_number")
                     monthly_cube.remove_coord("year")

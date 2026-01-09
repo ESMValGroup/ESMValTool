@@ -32,8 +32,3 @@ More details can be found in the :ref:`broken recipe policy
      - v2.11.0
      - CESM1 CMIP5 Omon data no longer available
      - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
-   * - :ref:`recipe_zmnam.yml <recipes_zmnam>`
-     - ``zmnam``
-     - v2.12.0
-     - Diagnostic failure
-     - `#3938 <https://github.com/ESMValGroup/ESMValTool/issues/3938>`_

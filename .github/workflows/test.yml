@@ -7,7 +7,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -21,10 +21,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -34,7 +34,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
-          mamba-version: "2.0.8"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       - run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
@@ -45,34 +44,20 @@ jobs:
       - name: Inspect environment
         run: conda list
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: pip install --no-deps -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Inspect environment
         run: conda list
-      - name: Install Julia from source
-        run: curl -fsSL https://install.julialang.org | sh -s -- --yes
-      - name: Install Julia dependencies
-        run: esmvaltool install Julia
-      - name: Export Python minor version
-        run: echo "pver1=$(python -V)" >> $GITHUB_ENV
-      - name: Exit if Python minor version changed
-        if: ${{ env.pver1 != env.pver0}}
-        run: |
-          echo "Python minor version changed after Julia install"
-          python -V
-          exit 1
-      - name: Inspect environment
-        run: conda list
-      - name: Check Julia and NCL
-        run: |
-          ncl -V
-          julia --version
+      - name: Check dependencies are compatible
+        run: pip check
+      - name: Check NCL
+        run: ncl -V
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation" 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Test_Linux_python_${{ matrix.python-version }}
           path: test_linux_artifacts_python_${{ matrix.python-version }}
@@ -82,12 +67,11 @@ jobs:
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-        architecture: ["x64"]  # need to force Intel, arm64 builds have issues
+        python-version: ["3.12", "3.13"]
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -98,7 +82,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
-          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       # - name: Install libomp with homebrew
       #   run: brew install libomp
       - run: mkdir -p test_osx_artifacts_python_${{ matrix.python-version }}
@@ -112,19 +95,19 @@ jobs:
         run: |
           which git
           git --version
-      - name: Install git
-        run: mamba install -c conda-forge git
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: pip install --no-deps -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Inspect environment
         run: conda list
+      - name: Check dependencies are compatible
+        run: pip check
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation" 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Test_OSX_python_${{ matrix.python-version }}
           path: test_osx_artifacts_python_${{ matrix.python-version }}

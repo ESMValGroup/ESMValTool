@@ -21,7 +21,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -61,7 +61,7 @@ jobs:
           which python
           pip --version
       - name: Install ESMValTool
-        run: pip install -e .[develop]
+        run: pip install --no-deps -e .[develop]
       - name: Check ESMValTool version
         run: esmvaltool --help
       - name: Check ESMValTool help
@@ -73,7 +73,7 @@ jobs:
       # Automated PR
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Automated PR if conda lock file has changed
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Updating Linux condalock file

@@ -7,7 +7,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 4 * * *'
+    - cron: "0 4 * * *"
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -17,11 +17,11 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
-    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
+    if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]  # add "3.13" when pkg built
+        python-version: ["3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: conda-incubator/setup-miniconda@v3
@@ -40,11 +40,12 @@ jobs:
         run: mamba install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Verify installation
         run: |
+          pip check
           esmvaltool --help
           esmvaltool version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Conda_Install_Linux_python_${{ matrix.python-version }}
           path: conda_install_linux_artifacts_python_${{ matrix.python-version }}
@@ -72,7 +73,7 @@ jobs:
 #      - run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
 #      - run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
 #      # ncurses needs to be from conda-forge and not main channel
-#      # for now it's turned off since we're not testing R/Julia installs
+#      # for now it's turned off since we're not testing R installs
 #      # - run: conda uninstall -y ncurses
 #      # - run: conda list ncurses
 #      # - run: conda install -y conda-forge::ncurses
@@ -83,7 +84,7 @@ jobs:
 #      - run: esmvaltool version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
 #      - name: Upload artifacts
 #        if: ${{ always() }}  # upload artifacts even if fail
-#        uses: actions/upload-artifact@v4
+#        uses: actions/upload-artifact@v6
 #        with:
 #          name: Conda_Install_OSX_python_${{ matrix.python-version }}
 #          path: conda_install_osx_artifacts_python_${{ matrix.python-version }}
