@@ -13,6 +13,7 @@ import iris
 import cf_units
 import calendar
 import os
+import numpy as np
 
 from ...utilities import fix_coords
 from esmvaltool.cmorizers.data import utilities as utils
@@ -48,6 +49,36 @@ overpass_time = {'SSMI13': {
                     'NIGHT': 23.67,
                 }
 }
+
+# from CCI SNOW CMORISER
+def _create_nan_cube(cube, year, month, day):
+    """Create cube containing only nan from existing cube."""
+    nan_cube = cube.copy()
+    #nan_cube.data = np.ma.masked_greater(cube.core_data(), -1e20)
+    nan_cube.data = np.full_like(nan_cube.data, np.nan, dtype=np.float32)
+
+    logger.info('##############################')
+    logger.info(f"{type(nan_cube.coord('time').points[0])}")
+
+    # Read dataset time unit and calendar from file
+    dataset_time_unit = str(nan_cube.coord('time').units)
+    dataset_time_calender = nan_cube.coord('time').units.calendar
+
+    logger.info(f"{dataset_time_unit=}  {dataset_time_calender=}")
+
+    # Convert datetime
+    newtime = datetime.datetime(year=year, month=month, day=day)
+    newtime = cf_units.date2num(newtime, dataset_time_unit,
+                                dataset_time_calender)
+    
+    logger.info(f"{newtime=}")
+    nan_cube.coord('time').points = np.float32(newtime)
+
+    logger.info(f"{type(nan_cube.coord('time').points[0])}")
+    logger.info(f"{nan_cube.coord('time').points[0]}")
+      
+
+    return nan_cube
 
 def load_callback(cube, field, filename):
 
@@ -103,7 +134,22 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                             vals['raw'],
                                             callback = load_callback)
                         except: # chek what the exception is
-                            continue
+                            logger.info(f"*************************{current_date=}  MISSING *****************************")
+                            cube = _create_nan_cube(month_cube_list[0], current_date.year,
+                                                    current_date.month, current_date.day)
+                            
+
+                        # logger.info(f"{cube=}")
+                        # print(cube)
+                        
+                        # logger.info(f"{cube.coord('time')=}")
+                        # logger.info(f"{cube.coord('time').points=}")
+                        # logger.info(f"{cube.coord('latitude')}=")
+                        # logger.info(f"{cube.coord('longitude')}=")
+
+                        # logger.info(f"{cube.data.dtype=}")
+                        # print(0/0)
+
 
                         cube = fix_coords(cube)
 
@@ -111,10 +157,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     
                     current_date = current_date + datetime.timedelta(days=1)
 
-                logger.info(f"{month_cube_list=}")
+                
+                logger.info(f"{month_cube_list[0].coord('time')=}")
+                logger.info(f"{month_cube_list[1].coord('time')=}")
+
+                print(f"{month_cube_list[0].coord('time')=}")
+                print(f"{month_cube_list[1].coord('time')=}")
+
                 all_cubes =  month_cube_list.concatenate_cube()
                 logger.info(f"{all_cubes=}")
-
+      
                 # this is needed for V1 data, V3 data is ok
                 # try:
                 #     cube.coords()[2].standard_name = 'longitude'
