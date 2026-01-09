@@ -8,11 +8,9 @@ Should be exapandable to any single sensor CCI LST product, daily or monthly
 
 import datetime
 import logging
-import glob
 import iris
 import cf_units
 import calendar
-import os
 import numpy as np
 
 from ...utilities import fix_coords
@@ -77,7 +75,6 @@ def _create_nan_cube(cube, year, month, day):
     logger.info(f"{type(nan_cube.coord('time').points[0])}")
     logger.info(f"{nan_cube.coord('time').points[0]}")
       
-
     return nan_cube
 
 def load_callback(cube, field, filename):
@@ -111,7 +108,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             end_date = datetime.datetime(vals['end_year'], 12, 31)
             current_date = start_date
 
-            while current_date <= datetime.datetime(vals['start_year'], 2,1): # end_date:
+            while current_date <= end_date:
 
                 month_cube_list = iris.cube.CubeList([])
                 # put all cubes in here then concat
@@ -135,38 +132,27 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                             callback = load_callback)
                         except: # chek what the exception is
                             logger.info(f"*************************{current_date=}  MISSING *****************************")
-                            cube = _create_nan_cube(month_cube_list[0], current_date.year,
+                            if len(month_cube_list) > 0:
+                                cube = _create_nan_cube(month_cube_list[0], current_date.year,
                                                     current_date.month, current_date.day)
+                            else:
+                                # no first of the month to template from
+                                logger.info("NO 1st of the month template")
+                                continue
                             
-
-                        # logger.info(f"{cube=}")
-                        # print(cube)
-                        
-                        # logger.info(f"{cube.coord('time')=}")
-                        # logger.info(f"{cube.coord('time').points=}")
-                        # logger.info(f"{cube.coord('latitude')}=")
-                        # logger.info(f"{cube.coord('longitude')}=")
-
-                        # logger.info(f"{cube.data.dtype=}")
-                        # print(0/0)
-
-
                         cube = fix_coords(cube)
 
                         month_cube_list.append(cube)
                     
                     current_date = current_date + datetime.timedelta(days=1)
 
-                
-                logger.info(f"{month_cube_list[0].coord('time')=}")
-                logger.info(f"{month_cube_list[1].coord('time')=}")
+                try:
+                    all_cubes =  month_cube_list.concatenate_cube()
+                except ValueError:
+                    # happens when no files in a month
+                    logger.info("No files for this month")
+                    continue
 
-                print(f"{month_cube_list[0].coord('time')=}")
-                print(f"{month_cube_list[1].coord('time')=}")
-
-                all_cubes =  month_cube_list.concatenate_cube()
-                logger.info(f"{all_cubes=}")
-      
                 # this is needed for V1 data, V3 data is ok
                 # try:
                 #     cube.coords()[2].standard_name = 'longitude'
@@ -222,6 +208,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     out_dir,
                     glob_attrs,
                     unlimited_dimensions=["time"],
+                    zlib=True
                 )
 
                 # need to put this back
