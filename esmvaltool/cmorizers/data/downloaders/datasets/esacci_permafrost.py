@@ -36,9 +36,9 @@ def download_dataset(
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(1997, 1, 1, tzinfo=datetime.timezone.utc)
+        start_date = datetime(1997, 1, 1)
     if end_date is None:
-        end_date = datetime(2019, 12, 31, tzinfo=datetime.timezone.utc)
+        end_date = datetime(2019, 12, 31)
 
     downloader = CCIDownloader(
         config=config,
