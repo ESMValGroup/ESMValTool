@@ -16,14 +16,14 @@ variables:
     mip: Lyr
     raw: ALT
     file: 'ESACCI-PERMAFROST-L4-ALT-*-AREA4_PP-{year}-fv03.0.nc'
-    weights_dir: '/work/bd0854/b380103/esacci-permafrost-weights'
+    weights_dir: './esacci-permafrost-weights'
   gtd:
     mip: Lyr
     raw: [GST, T1m, T2m, T5m, T10m]
     file: 'ESACCI-PERMAFROST-L4-GTD-*-AREA4_PP-{year}-fv03.0.nc'
-    weights_dir: '/work/bd0854/b380103/esacci-permafrost-weights'
+    weights_dir: './esacci-permafrost-weights'
   pfr:
     mip: Lyr
     raw: PFR
     file: 'ESACCI-PERMAFROST-L4-PFR-*-AREA4_PP-{year}-fv03.0.nc'
-    weights_dir: '/work/bd0854/b380103/esacci-permafrost-weights'
+    weights_dir: './esacci-permafrost-weights'
