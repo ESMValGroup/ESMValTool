@@ -93,8 +93,12 @@ figure_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
     default, uses ``{constrained_layout: True}``.
 group_variables_by: str, optional (default: 'short_name')
-    Facet which is used to create variable groups. For each variable group, an
-    individual plot is created.
+    Facet or coordinate which is used to create variable groups. For each
+    variable group, an individual plot is created. Specifying a coordinate
+    allows to create one plot for each point along a dimension. For example,
+    when used in combination with the preprocessor function
+    :func:`esmvalcore.preprocessor.extract_shape` the `shape_id` coordinate
+    can be used to create one plot for each shape.
 matplotlib_rc_params: dict, optional
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
@@ -590,7 +594,8 @@ class MultiDatasets(MonitorBase):
             },
             "benchmarking_map": {
                 "function": partial(
-                    self.create_2d_benchmarking_plot, "benchmarking_map"
+                    self.create_2d_benchmarking_plot,
+                    "benchmarking_map",
                 ),
                 "coords": (["longitude", "latitude"],),
                 "provenance": {
@@ -628,7 +633,8 @@ class MultiDatasets(MonitorBase):
             },
             "benchmarking_zonal": {
                 "function": partial(
-                    self.create_2d_benchmarking_plot, "benchmarking_zonal"
+                    self.create_2d_benchmarking_plot,
+                    "benchmarking_zonal",
                 ),
                 "coords": (
                     ["latitude", "air_pressure"],
@@ -672,7 +678,8 @@ class MultiDatasets(MonitorBase):
             },
             "hovmoeller_anncyc_vs_lat_or_lon": {
                 "function": partial(
-                    self.create_2d_plot, "hovmoeller_anncyc_vs_lat_or_lon"
+                    self.create_2d_plot,
+                    "hovmoeller_anncyc_vs_lat_or_lon",
                 ),
                 "coords": (
                     ["month_number", "latitude"],
@@ -696,7 +703,8 @@ class MultiDatasets(MonitorBase):
             },
             "hovmoeller_time_vs_lat_or_lon": {
                 "function": partial(
-                    self.create_2d_plot, "hovmoeller_time_vs_lat_or_lon"
+                    self.create_2d_plot,
+                    "hovmoeller_time_vs_lat_or_lon",
                 ),
                 "coords": (["time", "latitude"], ["time", "longitude"]),
                 "provenance": {
@@ -717,7 +725,8 @@ class MultiDatasets(MonitorBase):
             },
             "hovmoeller_z_vs_time": {
                 "function": partial(
-                    self.create_2d_plot, "hovmoeller_z_vs_time"
+                    self.create_2d_plot,
+                    "hovmoeller_z_vs_time",
                 ),
                 "coords": (["time", "air_pressure"], ["time", "altitude"]),
                 "provenance": {
@@ -1508,6 +1517,10 @@ class MultiDatasets(MonitorBase):
         if not input_data:
             raise ValueError("No input data given")
 
+        slices = not any(
+            self.cfg["group_variables_by"] in ds for ds in input_data
+        )
+        datasets = []
         for dataset in input_data:
             filename = dataset["filename"]
             logger.info("Loading %s", filename)
@@ -1566,12 +1579,23 @@ class MultiDatasets(MonitorBase):
                 z_coord = cube.coord("altitude")
                 z_coord.attributes["positive"] = "up"
 
-            dataset["cube"] = cube
-
             # Save ancestors
             dataset["ancestors"] = [filename]
 
-        return input_data
+            if slices:
+                slice_coord_name = self.cfg["group_variables_by"]
+                for subcube in cube.slices_over([slice_coord_name]):
+                    dataset_copy = deepcopy(dataset)
+                    dataset_copy["cube"] = subcube
+                    dataset_copy[slice_coord_name] = subcube.coord(
+                        slice_coord_name,
+                    ).points[0]
+                    datasets.append(dataset_copy)
+            else:
+                dataset_copy = deepcopy(dataset)
+                dataset_copy["cube"] = cube
+                datasets.append(dataset_copy)
+        return datasets
 
     def _plot_1d_data(
         self,
@@ -1634,7 +1658,7 @@ class MultiDatasets(MonitorBase):
             [
                 self.plots[plot_type]["projection"] is not None,
                 plot_func is iris.plot.contourf,
-            ]
+            ],
         )
         if fix_cartopy_bug:
             plot_kwargs["transform_first"] = True
@@ -1921,10 +1945,12 @@ class MultiDatasets(MonitorBase):
         cubes_to_save = CubeList()
         for var_key, dataset in benchmark_datasets.items():
             df_single_var = dframe[dframe["Variable"] == var_key].drop(
-                "Variable", axis=1
+                "Variable",
+                axis=1,
             )
             cube: Cube = iris.pandas.as_cubes(
-                df_single_var, aux_coord_cols=["Dataset"]
+                df_single_var,
+                aux_coord_cols=["Dataset"],
             )[0]  # type: ignore
             cube.var_name = var_key
             cube.long_name = dataset["long_name"]
@@ -1968,7 +1994,9 @@ class MultiDatasets(MonitorBase):
         # Save single plot file
         plot_path = self._save_plot(plot_type, representative_dataset, fig)
         provenance_record = self._get_provenance_record(
-            plot_type, representative_dataset, list(datasets.values())
+            plot_type,
+            representative_dataset,
+            list(datasets.values()),
         )
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1978,7 +2006,9 @@ class MultiDatasets(MonitorBase):
             netcdf_path = self._get_netcdf_path(plot_path, suffix=label)
             io.iris_save(dataset["cube"], netcdf_path)
             provenance_record = self._get_provenance_record(
-                plot_type, dataset, [dataset]
+                plot_type,
+                dataset,
+                [dataset],
             )
             provenance_record["ancestors"] = dataset["ancestors"]
             with ProvenanceLogger(self.cfg) as provenance_logger:
@@ -2074,7 +2104,8 @@ class MultiDatasets(MonitorBase):
             # percentile range (the defintion of "outside" depends on the
             # metric)
             hatching_cube = self._get_benchmark_mask(
-                dataset, percentile_datasets
+                dataset,
+                percentile_datasets,
             )
             hatching_plot_kwargs = {
                 "axes": axes,
@@ -2083,7 +2114,9 @@ class MultiDatasets(MonitorBase):
                 "levels": [0.5, 1.5],
             }
             plot_hatching = self._plot_2d(
-                plot_type, hatching_cube, **hatching_plot_kwargs
+                plot_type,
+                hatching_cube,
+                **hatching_plot_kwargs,
             )
             plot_hatching.set_edgecolor("black")
             plot_hatching.set_linewidth(0.0)
@@ -2166,7 +2199,7 @@ class MultiDatasets(MonitorBase):
                 raise ValueError(
                     f"Plot {plot_type} only supports a single dataset with "
                     f"'benchmark_dataset: True' for variable '{var_key}', got "
-                    f"{len(benchmark_datasets):d}"
+                    f"{len(benchmark_datasets):d}",
                 )
             benchmark_dataset = benchmark_datasets[0]
             all_benchmark_datasets[var_key] = benchmark_dataset
