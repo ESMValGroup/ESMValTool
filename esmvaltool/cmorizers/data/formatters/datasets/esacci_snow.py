@@ -24,12 +24,12 @@ import logging
 import os
 from copy import deepcopy
 from datetime import datetime
-from dateutil import relativedelta
 
 import cf_units
 import iris
 import numpy as np
 from dask import array as da
+from dateutil import relativedelta
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import regrid
 
@@ -56,32 +56,33 @@ def _create_nan_cube(cube, year, month, day):
     nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
 
     # Read dataset time unit and calendar from file
-    dataset_time_unit = str(nan_cube.coord('time').units)
-    dataset_time_calender = nan_cube.coord('time').units.calendar
+    dataset_time_unit = str(nan_cube.coord("time").units)
+    dataset_time_calender = nan_cube.coord("time").units.calendar
     # Convert datetime
     newtime = datetime(year=year, month=month, day=day)
-    newtime = cf_units.date2num(newtime, dataset_time_unit,
-                                dataset_time_calender)
-    nan_cube.coord('time').points = float(newtime)
+    newtime = cf_units.date2num(
+        newtime, dataset_time_unit, dataset_time_calender
+    )
+    nan_cube.coord("time").points = float(newtime)
 
     return nan_cube
 
 
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
-    axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude'}
-    axes = ['T', 'X', 'Y']
+    axis2def = {"T": "time", "X": "longitude", "Y": "latitude"}
+    axes = ["T", "X", "Y"]
 
     for axis in axes:
         coord_def = definition.coordinates.get(axis2def[axis])
         if coord_def:
             coord = cube.coord(axis=axis)
-            if axis == 'T':
-                coord.convert_units('days since 1850-1-1 00:00:00.0')
+            if axis == "T":
+                coord.convert_units("days since 1850-1-1 00:00:00.0")
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
             coord.long_name = coord_def.long_name
-            coord.points = coord.core_points().astype('float64')
+            coord.points = coord.core_points().astype("float64")
             if len(coord.points) > 1:
                 if coord.bounds is not None:
                     coord.bounds = None
@@ -91,27 +92,40 @@ def _fix_coordinates(cube, definition):
 
 
 def _extract_variable(in_files, var, cfg, out_dir, year):
-    logger.info("CMORizing variable '%s' from input files '%s'",
-                var['short_name'], ', '.join(in_files))
-    attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
-    attributes['raw'] = var['raw']
-    cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    logger.info(
+        "CMORizing variable '%s' from input files '%s'",
+        var["short_name"],
+        ", ".join(in_files),
+    )
+    attributes = deepcopy(cfg["attributes"])
+    attributes["mip"] = var["mip"]
+    attributes["raw"] = var["raw"]
+    cmor_table = CMOR_TABLES[attributes["project_id"]]
+    definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
-    cube_list = iris.load(in_files, var['raw'], callback=_load_callback)
+    cube_list = iris.load(in_files, var["raw"], callback=_load_callback)
     # global attributes to remove
     drop_attrs = [
-        'source', 'date_created', 'history', 'tracking_id',
-        'id', 'time_coverage_start', 'time_coverage_end', 'platform',
-        'sensor', 'keywords'
+        "source",
+        "date_created",
+        "history",
+        "tracking_id",
+        "id",
+        "time_coverage_start",
+        "time_coverage_end",
+        "platform",
+        "sensor",
+        "keywords",
     ]
     # variable attributes to remove
     drop_var_attrs = [
-        'flag_meanings', 'flag_values', 'grid_mapping', 'actual_range',
-        'ancillary_variables'
+        "flag_meanings",
+        "flag_values",
+        "grid_mapping",
+        "actual_range",
+        "ancillary_variables",
     ]
     for cube in cube_list:
         for attr in drop_attrs:
@@ -130,17 +144,17 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
     time_list = []
 
     for cube in cube_list:
-        loncoord = cube.coord('longitude')
-        latcoord = cube.coord('latitude')
-#        loncoord.points = da.round(loncoord.core_points(), 3)
-#        latcoord.points = da.round(latcoord.core_points(), 3)
+        loncoord = cube.coord("longitude")
+        latcoord = cube.coord("latitude")
+        #        loncoord.points = da.round(loncoord.core_points(), 3)
+        #        latcoord.points = da.round(latcoord.core_points(), 3)
         loncoord.points = np.round(loncoord.core_points(), 3)
         latcoord.points = np.round(latcoord.core_points(), 3)
 
     # create list of available days ('time_list')
 
     for cube in cube_list:
-        timecoord = cube.coord('time')
+        timecoord = cube.coord("time")
         cubetime = timecoord.units.num2date(timecoord.points)
         time_list.append(cubetime)
 
@@ -149,23 +163,25 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
 
     while loop_date <= datetime(year, 12, 31):
         date_available = False
-        for idx, cubetime in enumerate(time_list):
+        for _idx, cubetime in enumerate(time_list):
             if loop_date == cubetime:
                 date_available = True
                 break
         if date_available:
-            full_list.append(cube_list[idx])
+            full_list.append(cube_list[_idx])
         else:
             logger.debug(f"No data available for {loop_date}")
-            nan_cube = _create_nan_cube(cube_list[0], loop_date.year,
-                                        loop_date.month, loop_date.day)
+            nan_cube = _create_nan_cube(
+                cube_list[0], loop_date.year, loop_date.month, loop_date.day
+            )
             full_list.append(nan_cube)
         loop_date += relativedelta.relativedelta(days=1)
 
     iris.util.unify_time_units(full_list)
     cube = full_list.concatenate_cube()
-    cube.coord('time').points = cube.coord('time').core_points().astype(
-        'float64')
+    cube.coord("time").points = (
+        cube.coord("time").core_points().astype("float64")
+    )
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -178,68 +194,78 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
     cube.units = definition.units
 
     # Fix data type
-    cube.data = cube.core_data().astype('float32')
+    cube.data = cube.core_data().astype("float32")
 
     # Roll longitude
-    cube.coord('longitude').points = cube.coord('longitude').points + 180.
-    nlon = len(cube.coord('longitude').points)
+    cube.coord("longitude").points = cube.coord("longitude").points + 180.0
+    nlon = len(cube.coord("longitude").points)
     cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
-    cube.attributes.update({"geospatial_lon_min": "0",
-                            "geospatial_lon_max": "360"})
+    cube.attributes.update(
+        {"geospatial_lon_min": "0", "geospatial_lon_max": "360"}
+    )
 
     # Fix coordinates
     cube = _fix_coordinates(cube, definition)
-    cube.coord('latitude').attributes = None
-    cube.coord('longitude').attributes = None
+    cube.coord("latitude").attributes = None
+    cube.coord("longitude").attributes = None
 
     # remove flags and other invalid points
-    if cube.var_name == 'snc':
+    if cube.var_name == "snc":
         cube.data = da.ma.masked_greater(cube.core_data(), 100)
-    elif cube.var_name == 'snw':
+    elif cube.var_name == "snw":
         cube.data = da.ma.masked_less(cube.core_data(), 0)
 
     # regridding from 0.05x0.05 to 0.5x0.5 to save space
-    cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
-    cube.attributes.update({"geospatial_lon_resolution": "0.5",
-                            "geospatial_lat_resolution": "0.5",
-                            "spatial_resolution": "0.5"})
+    cube = regrid(cube, target_grid="0.5x0.5", scheme="area_weighted")
+    cube.attributes.update(
+        {
+            "geospatial_lon_resolution": "0.5",
+            "geospatial_lat_resolution": "0.5",
+            "spatial_resolution": "0.5",
+        }
+    )
 
     # Save results
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
-    save_variable(cube, cube.var_name,
-                  out_dir, attributes,
-                  unlimited_dimensions=['time'])
-    logger.info("Finished CMORizing %s", ', '.join(in_files))
+    save_variable(
+        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+    )
+    logger.info("Finished CMORizing %s", ", ".join(in_files))
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize ESACCI-SNOW dataset."""
-    glob_attrs = cfg['attributes']
+    glob_attrs = cfg["attributes"]
 
-    logger.info("Starting cmorization for tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
+    logger.info(
+        "Starting cmorization for tier%s OBS files: %s",
+        glob_attrs["tier"],
+        glob_attrs["dataset_id"],
+    )
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
-    logger.info('CMORizing ESACCI-SNOW version %s', glob_attrs['version'])
+    logger.info("CMORizing ESACCI-SNOW version %s", glob_attrs["version"])
 
     if start_date is None:
         start_date = datetime(1979, 1, 1)
     if end_date is None:
         end_date = datetime(2019, 12, 31)
 
-    for short_name, var in cfg['variables'].items():
-        if 'short_name' not in var:
-            var['short_name'] = short_name
+    for short_name, var in cfg["variables"].items():
+        if "short_name" not in var:
+            var["short_name"] = short_name
         loop_date = start_date
         while loop_date <= end_date:
             filepattern = os.path.join(
-                in_dir, var['file'].format(year=loop_date.year)
-                )
+                in_dir, var["file"].format(year=loop_date.year)
+            )
             in_files = glob.glob(filepattern)
             if not in_files:
-                logger.info(f'{loop_date.year}: no data not found for '
-                            f'variable {short_name}')
+                logger.info(
+                    f"{loop_date.year}: no data not found for "
+                    f"variable {short_name}"
+                )
             else:
                 _extract_variable(in_files, var, cfg, out_dir, loop_date.year)
 
