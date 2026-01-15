@@ -22,31 +22,7 @@ logger = logging.getLogger(__name__)
 # ECT taken from https://space.oscar.wmo.int/satellites
 # times with a comment are what is on the Oscar website (HHMM)
 # times without a comment are the 12 hour differences
-overpass_time = {'SSMI13': {
-                    'ASC': 17.85,
-                    'DES': 5.85,  # 0551
-                    },
-                'SSMI17': {
-                    'ASC': 18.58,
-                    'DES': 6.58,  # 0635
-                    },
-                'AMSR_E': {
-                    'ASC': 2.30,
-                    'DES': 14.30,  # 1418
-                    },
-                'AMSR_2': {
-                    'ASC': 1.50,
-                    'DES': 13.50,  # 1330
-                    },
-                'MODISA': {
-                    'DAY': 14.30,  # 1418
-                    'NIGHT': 2.30,
-                    },
-                'MODIST': {
-                    'DAY': 9.67,  # 0940
-                    'NIGHT': 23.67,
-                }
-}
+# moved entirely to yml for easier user changes
 
 # from CCI SNOW CMORISER
 def _create_nan_cube(cube, year, month, day):
@@ -109,6 +85,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             current_date = start_date
 
             while current_date <= end_date:
+
+                overpass_time = vals[f'{ir_mw.lower()}_overpass_time']
 
                 month_cube_list = iris.cube.CubeList([])
                 # put all cubes in here then concat
@@ -201,6 +179,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 old_version = glob_attrs["dataset_id"]
                 glob_attrs["dataset_id"] = glob_attrs["dataset_id"] + f"_{glob_attrs['platform']}" + f"_{ir_mw}"
+
+
+                all_cubes.attributes['overpass_time'] = overpass_time
 
                 utils.save_variable(
                     all_cubes,

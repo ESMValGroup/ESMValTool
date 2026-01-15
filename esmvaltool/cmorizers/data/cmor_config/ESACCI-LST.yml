@@ -2,7 +2,6 @@
 # For MW datasets
 ---
 
-
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: ESACCI-LST
@@ -13,34 +12,59 @@ attributes:
   modeling_realm: sat
   reference: 'esacci_lst'
   comment: ''
-  start_year: 2004
-  end_year: 2004
+  start_year: 2003
+  end_year: 2020
 
 # Variables to cmorize
 # These go into the vals dictionary in the python script
 variables:
-  # ts:
-  #   # mip: Eday for daily files, Amon for monthly
-  #   mip: Eday
-  #   raw: land surface temperature
-  #   raw_units: kelvin
-
-  #   # file_base for the start of the file, don't put the final - in the string
-  #   file_base: 'ESACCI-LST-L3C-LST'
-    
-  #   # These parameters build the file name
-  #   platform: 'AMSR_E'
-  #   spatial_resolution: '0.125deg'
-  #   temporal_resolution: '1DAILY'
-  #   # MW datasets need ASC and DES
-  #   # IR datasets need DAY and NIGHT
-  #   day_or_asc: 'ASC'
-  #   night_or_des: 'DES'
-    
-  #   start_year: 2004
-  #   end_year: 2004
-
   # new variable format to match CCI Ozone approach
+  ts_amsre:
+    # mip: Eday for daily files, Amon for monthly
+    mip: Eday
+    raw: land surface temperature
+    raw_units: kelvin
+
+    # file_base for the start of the file, don't put the final - in the string
+    file_base: 'ESACCI-LST-L3C-LST'
+    
+    # These parameters build the file name
+    platform: 'AMSR_E'
+    spatial_resolution: '0.125deg'
+    temporal_resolution: '1DAILY'
+    # MW datasets need ASC and DES
+    # IR datasets need DAY and NIGHT
+    ir_or_mw: 'mw'
+
+    asc_overpass_time: 2.30
+    des_overpass_time: 14.30
+
+    start_year: 2003
+    end_year: 2011
+
+  ts_amsr2:
+    # mip: Eday for daily files, Amon for monthly
+    mip: Eday
+    raw: land surface temperature
+    raw_units: kelvin
+
+    # file_base for the start of the file, don't put the final - in the string
+    file_base: 'ESACCI-LST-L3C-LST'
+    
+    # These parameters build the file name
+    platform: 'AMSR_2'
+    spatial_resolution: '0.125deg'
+    temporal_resolution: '1DAILY'
+    # MW datasets need ASC and DES
+    # IR datasets need DAY and NIGHT
+    ir_or_mw: 'mw'
+
+    asc_overpass_time: 1.50
+    des_overpass_time: 13.50
+
+    start_year: 2013
+    end_year: 2020
+
   ts_ssmi13:
     # mip: Eday for daily files, Amon for monthly
     mip: Eday
@@ -58,10 +82,31 @@ variables:
     # IR datasets need DAY and NIGHT
     ir_or_mw: 'mw'
 
-    day_overpass: 0.0
-    night_overpass : 0.0
-    asc_overpass_time: 0.0
-    des_overpass_time: 0.0
+    asc_overpass_time: 17.85
+    des_overpass_time: 5.85
 
-    start_year: 2004
-    end_year: 2004
+    start_year: 2003
+    end_year: 2008
+
+  ts_ssmi17:
+    # mip: Eday for daily files, Amon for monthly
+    mip: Eday
+    raw: land surface temperature
+    raw_units: kelvin
+
+    # file_base for the start of the file, don't put the final - in the string
+    file_base: 'ESACCI-LST-L3C-LST'
+    
+    # These parameters build the file name
+    platform: 'SSMI17'
+    spatial_resolution: '0.125deg'
+    temporal_resolution: '1DAILY'
+    # MW datasets need ASC and DES
+    # IR datasets need DAY and NIGHT
+    ir_or_mw: 'mw'
+
+    asc_overpass_time: 18.58
+    des_overpass_time: 6.58
+
+    start_year: 2009
+    end_year: 2020
