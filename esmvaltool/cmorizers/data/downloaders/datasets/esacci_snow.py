@@ -10,8 +10,9 @@ from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -50,32 +51,36 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
     downloader.connect()
 
-    version = 'v2.0'
+    version = "v2.0"
 
     # download snow cover on ground (scfg)
     loop_date = start_date_scfg
-    rel_base_dir = f'scfg/AVHRR_MERGED/{version}'
+    rel_base_dir = f"scfg/AVHRR_MERGED/{version}"
     while loop_date <= end_date_scfg:
         downloader.set_cwd(rel_base_dir)
-        if downloader.exists(f'{loop_date.year}'):
-            downloader.set_cwd(f'{rel_base_dir}/{loop_date.year}')
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
             if downloader.exists(f"{loop_date.month:02}"):
-                downloader.download_folder(f'{loop_date.month:02}', 'scfg')
+                downloader.download_folder(f"{loop_date.month:02}", "scfg")
         else:
-            logger.info(f'{loop_date.year}/{loop_date.month:02}:'
-                        f' no data for scfg version {version}')
+            logger.info(
+                f"{loop_date.year}/{loop_date.month:02}:"
+                f" no data for scfg version {version}"
+            )
         loop_date += relativedelta.relativedelta(months=1)
 
     # download snow water equivalent (swe)
     loop_date = start_date_swe
-    rel_base_dir = f'swe/MERGED/{version}'
+    rel_base_dir = f"swe/MERGED/{version}"
     while loop_date <= end_date_swe:
         downloader.set_cwd(rel_base_dir)
-        if downloader.exists(f'{loop_date.year}'):
-            downloader.set_cwd(f'{rel_base_dir}/{loop_date.year}')
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
             if downloader.exists(f"{loop_date.month:02}"):
-                downloader.download_folder(f'{loop_date.month:02}', 'swe')
+                downloader.download_folder(f"{loop_date.month:02}", "swe")
         else:
-            logger.info(f'{loop_date.year}/{loop_date.month:02}:'
-                        f' no data for swe version {version}')
+            logger.info(
+                f"{loop_date.year}/{loop_date.month:02}:"
+                f" no data for swe version {version}"
+            )
         loop_date += relativedelta.relativedelta(months=1)
