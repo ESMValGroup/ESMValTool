@@ -30,7 +30,7 @@ variables:
 
     # file_base for the start of the file, don't put the final - in the string
     file_base: 'ESACCI-LST-L3C-LST'
-    
+
     # These parameters build the file name
     platform: 'AMSR_E'
     spatial_resolution: '0.125deg'
@@ -53,7 +53,7 @@ variables:
 
     # file_base for the start of the file, don't put the final - in the string
     file_base: 'ESACCI-LST-L3C-LST'
-    
+
     # These parameters build the file name
     platform: 'AMSR_2'
     spatial_resolution: '0.125deg'
@@ -76,7 +76,7 @@ variables:
 
     # file_base for the start of the file, don't put the final - in the string
     file_base: 'ESACCI-LST-L3C-LST'
-    
+
     # These parameters build the file name
     platform: 'SSMI13'
     spatial_resolution: '0.125deg'
@@ -99,7 +99,7 @@ variables:
 
     # file_base for the start of the file, don't put the final - in the string
     file_base: 'ESACCI-LST-L3C-LST'
-    
+
     # These parameters build the file name
     platform: 'SSMI17'
     spatial_resolution: '0.125deg'
