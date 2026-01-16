@@ -18,38 +18,22 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-# decimal hours
-# ECT taken from https://space.oscar.wmo.int/satellites
-# times with a comment are what is on the Oscar website (HHMM)
-# times without a comment are the 12 hour differences
-# moved entirely to yml for easier user changes
-
 # from CCI SNOW CMORISER
 def _create_nan_cube(cube, year, month, day):
     """Create cube containing only nan from existing cube."""
     nan_cube = cube.copy()
-    #nan_cube.data = np.ma.masked_greater(cube.core_data(), -1e20)
     nan_cube.data = np.full_like(nan_cube.data, np.nan, dtype=np.float32)
-
-    logger.info('##############################')
-    logger.info(f"{type(nan_cube.coord('time').points[0])}")
 
     # Read dataset time unit and calendar from file
     dataset_time_unit = str(nan_cube.coord('time').units)
     dataset_time_calender = nan_cube.coord('time').units.calendar
-
-    logger.info(f"{dataset_time_unit=}  {dataset_time_calender=}")
 
     # Convert datetime
     newtime = datetime.datetime(year=year, month=month, day=day)
     newtime = cf_units.date2num(newtime, dataset_time_unit,
                                 dataset_time_calender)
     
-    logger.info(f"{newtime=}")
     nan_cube.coord('time').points = np.float32(newtime)
-
-    logger.info(f"{type(nan_cube.coord('time').points[0])}")
-    logger.info(f"{nan_cube.coord('time').points[0]}")
       
     return nan_cube
 
@@ -65,7 +49,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # var is set up in the yml file
     for var, vals in cfg['variables'].items():
         glob_attrs['mip'] = vals['mip']
-        cmor_table = cfg["cmor_table"]
+        # cmor_table = cfg["cmor_table"]
 
         variable_name = var.split('_')[0]
 
@@ -78,7 +62,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             file1 = 'DAY'
             file2 = 'NIGHT'
 
-        this_month = 1
         for ir_mw in [file1, file2]:
             start_date = datetime.datetime(vals['start_year'], 1, 1)
             end_date = datetime.datetime(vals['end_year'], 12, 31)
@@ -91,7 +74,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 month_cube_list = iris.cube.CubeList([])
                 # put all cubes in here then concat
                 for day in range(1, calendar.monthrange(current_date.year, current_date.month)[1]+1):  
-                # for day in range(1, 2):
 
                     datestr = datetime.datetime.strftime(current_date,
                                                         "%Y%m%d")
@@ -109,7 +91,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                             vals['raw'],
                                             callback = load_callback)
                         except: # chek what the exception is
-                            logger.info(f"*************************{current_date=}  MISSING *****************************")
+                            logger.info(f"{current_date=}  MISSING")
                             if len(month_cube_list) > 0:
                                 cube = _create_nan_cube(month_cube_list[0], current_date.year,
                                                     current_date.month, current_date.day)
@@ -179,7 +161,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 old_version = glob_attrs["dataset_id"]
                 glob_attrs["dataset_id"] = glob_attrs["dataset_id"] + f"_{glob_attrs['platform']}" + f"_{ir_mw}"
-
 
                 all_cubes.attributes['overpass_time'] = overpass_time
 

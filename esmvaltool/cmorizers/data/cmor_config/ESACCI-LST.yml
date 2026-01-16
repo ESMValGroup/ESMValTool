@@ -17,6 +17,9 @@ attributes:
 
 # Variables to cmorize
 # These go into the vals dictionary in the python script
+# decimal hours for overpass times
+# ECT taken from https://space.oscar.wmo.int/satellites
+# times with a comment are what is on the Oscar website (HHMM)
 variables:
   # new variable format to match CCI Ozone approach
   ts_amsre:
