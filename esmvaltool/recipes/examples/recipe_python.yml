@@ -41,7 +41,7 @@ preprocessors:
 
   annual_mean_amsterdam:
     extract_location:
-      location: Amsterdam
+      location: London
       scheme: linear
     annual_statistics:
       operator: mean

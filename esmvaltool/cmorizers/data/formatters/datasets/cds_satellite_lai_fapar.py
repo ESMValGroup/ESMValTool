@@ -41,6 +41,8 @@ import os
 from copy import deepcopy
 from datetime import datetime
 from warnings import catch_warnings, filterwarnings
+import calendar
+import numpy as np
 
 import cf_units
 import iris
@@ -122,9 +124,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         
                 # Load orginal data in an indendent function
                 lai_cube = load_dataset(in_dir, var, cfg, year, month)
-
+                
                 # Regrdding
                 # uses nearest neighbour, skips if resolution = None
+                # This uses a huge amount of resource - be careful
                 resolution = cfg["Parameters"]["custom"]["regrid_resolution"]
                 if resolution == "None":
                     logger.info("No regridding")
@@ -140,10 +143,51 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 # cmorize
                 lai_cube = _cmorize_dataset(lai_cube, var, cfg)
+                logger.info(f"********{lai_cube=}")
+                
+                # make a daily version with Nan cubes for missing days
+                # This will work with 10-day CDS data and 5-day CCI data in updates at a later date
+                days_in_month = calendar.monthrange(year, month)[1]
+                time_coord = lai_cube.coord('time')
+                time_values = time_coord.points
+                dts = time_coord.units.num2date(time_values)
+                days = [item.day for item in dts]
 
+                output = iris.cube.CubeList([])
+                for day in range(1, days_in_month + 1):
+                    if day in days:
+                        logger.info(f"{day} is in CUBES")
+                        output.append(lai_cube[days.index(day)])
+                    else:
+                        logger.info(f"{day} NOT in CUBES")
+                        nan_cube = _create_nan_cube(lai_cube[0], year, month, day)
+                        output.append(nan_cube)
+
+                logger.info(f"{output=}")
+                print(0/0)
                 # save cube
                 logger.info(f"Saving CMORized cube for variable {lai_cube.var_name}")
                 # these should all be the same
                 attributes = cfg["attributes"]
                 attributes["mip"] = var["mip"]
                 utils.save_variable(lai_cube, lai_cube.var_name, out_dir, attributes)
+
+# from CCI SNOW CMORISER
+def _create_nan_cube(cube, year, month, day):
+    """Create cube containing only nan from existing cube."""
+    nan_cube = cube.copy()
+    nan_cube.data = np.full_like(nan_cube.data, np.nan, dtype=np.float32)
+
+    # Read dataset time unit and calendar from file
+    dataset_time_unit = str(nan_cube.coord("time").units)
+    dataset_time_calender = nan_cube.coord("time").units.calendar
+
+    # Convert datetime
+    newtime = datetime.datetime(year=year, month=month, day=day)
+    newtime = cf_units.date2num(
+        newtime, dataset_time_unit, dataset_time_calender
+    )
+
+    nan_cube.coord("time").points = np.float32(newtime)
+
+    return nan_cube

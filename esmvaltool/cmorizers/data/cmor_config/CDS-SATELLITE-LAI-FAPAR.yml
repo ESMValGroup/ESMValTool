@@ -17,7 +17,7 @@ attributes:
 # Variables to CMORize
 variables:
   lai:
-    mip: Lmon
+    mip: Eday #Lmon
     raw: LAI
     file: 'c3s_LAI_*_GLOBE_VGT_V3.0.1.nc'
 #  fapar:
