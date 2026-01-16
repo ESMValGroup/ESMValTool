@@ -43,6 +43,7 @@ from datetime import datetime
 from warnings import catch_warnings, filterwarnings
 import calendar
 import numpy as np
+import dask.array as da
 
 import cf_units
 import iris
@@ -160,17 +161,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                         output.append(lai_cube[days.index(day)])
                     else:
                         logger.info(f"{day} NOT in CUBES")
-                        nan_cube = _create_nan_cube(lai_cube[0], year, month, day)
+                        # nan_cube = _create_nan_cube(lai_cube[0], year, month, day)
+                        nan_cube = create_dask_cube(lai_cube[0], year, month, day)
                         output.append(nan_cube)
 
+                output = output.concatenate_cube()
                 logger.info(f"{output=}")
-                print(0/0)
+                
                 # save cube
-                logger.info(f"Saving CMORized cube for variable {lai_cube.var_name}")
+                logger.info(f"Saving CMORized cube for variable {output.var_name}")
                 # these should all be the same
                 attributes = cfg["attributes"]
                 attributes["mip"] = var["mip"]
-                utils.save_variable(lai_cube, lai_cube.var_name, out_dir, attributes)
+                utils.save_variable(output, lai_cube.var_name, out_dir, attributes, zlib=True)
+                print(0/0)
 
 # from CCI SNOW CMORISER
 def _create_nan_cube(cube, year, month, day):
@@ -191,3 +195,23 @@ def _create_nan_cube(cube, year, month, day):
     nan_cube.coord("time").points = np.float32(newtime)
 
     return nan_cube
+
+def create_dask_cube(cube, year, month, day):
+    nan_da = da.full(cube.shape, np.nan,
+                     chunks='auto', dtype=np.float32)
+    
+    new_cube = cube.copy()
+    new_cube.data = nan_da
+
+    dataset_time_unit = str(new_cube.coord("time").units)
+    dataset_time_calender = new_cube.coord("time").units.calendar
+
+    # Convert datetime
+    newtime = datetime(year=year, month=month, day=day)
+    newtime = cf_units.date2num(
+        newtime, dataset_time_unit, dataset_time_calender
+    )
+
+    new_cube.coord("time").points = np.float32(newtime)
+
+    return new_cube
