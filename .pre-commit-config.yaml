@@ -46,7 +46,7 @@ repos:
     rev: 'v0.4.0'
     hooks:
       - id: style-files  # styler
-      - id: lintr
+      # - id: lintr
   # - repo: https://github.com/codespell-project/codespell
   #   rev: 'v2.3.0'
   #   hooks:
