@@ -94,9 +94,6 @@ def _fix_coordinates(cube, definition):
 
 
 def _extract_variable(in_files, var, cfg, out_dir, year):
-    print("-----------------------------------------------------------")
-    print(in_files)
-    print("-----------------------------------------------------------")
     logger.info(
         "CMORizing variable '%s' from input files '%s'",
         var["short_name"],
