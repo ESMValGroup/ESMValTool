@@ -94,6 +94,9 @@ def _fix_coordinates(cube, definition):
 
 
 def _extract_variable(in_files, var, cfg, out_dir, year):
+    print("-----------------------------------------------------------")
+    print(in_files)
+    print("-----------------------------------------------------------")
     logger.info(
         "CMORizing variable '%s' from input files '%s'",
         var["short_name"],
@@ -264,9 +267,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             var["short_name"] = short_name
         loop_date = start_date
         while loop_date <= end_date:
-            in_files = Path(in_dir).glob(
-                var["file"].format(year=loop_date.year)
-            )
+            in_files = [
+                str(x.resolve())
+                for x in Path(in_dir).glob(
+                    var["file"].format(year=loop_date.year),
+                )
+            ]
             if not in_files:
                 logger.info(
                     "%d: no data not found for variable %s",
