@@ -119,6 +119,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for year in range(cfg["attributes"]["start_year"],
                          cfg["attributes"]["end_year"]):
 
+            output = iris.cube.CubeList([])
             for month in range(1,13):
 
                 logger.info(f"Working with year {year}, month {month}")
@@ -138,13 +139,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                         lai_cube, cfg["Parameters"]["custom"]["regrid_resolution"], "nearest"
                         )
 
-                # time bounds
-                # This sets time bounds without needing extra loops and checks
-                lai_cube.coord('time').guess_bounds()
-
-                # cmorize
-                lai_cube = _cmorize_dataset(lai_cube, var, cfg)
-                logger.info(f"********{lai_cube=}")
+                
                 
                 # make a daily version with Nan cubes for missing days
                 # This will work with 10-day CDS data and 5-day CCI data in updates at a later date
@@ -154,27 +149,41 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 dts = time_coord.units.num2date(time_values)
                 days = [item.day for item in dts]
 
-                output = iris.cube.CubeList([])
+                # lai cube 0 is the problem, need the zeroth time step form the cuble of 3 time! #####################
                 for day in range(1, days_in_month + 1):
                     if day in days:
                         logger.info(f"{day} is in CUBES")
-                        output.append(lai_cube[days.index(day)])
+                        #iris.util.new_axis(lai_cube, 'time')
+                        new_cube = iris.util.new_axis(lai_cube[days.index(day)], 'time')
+                        output.append(new_cube)
                     else:
                         logger.info(f"{day} NOT in CUBES")
                         # nan_cube = _create_nan_cube(lai_cube[0], year, month, day)
+                        logger.info(f"{lai_cube[0]=}")
                         nan_cube = create_dask_cube(lai_cube[0], year, month, day)
-                        output.append(nan_cube)
+                        new_cube = iris.util.new_axis(nan_cube, 'time')
+                        output.append(new_cube)
+
+                logger.info(f"{output=}")
 
                 output = output.concatenate_cube()
                 logger.info(f"{output=}")
                 
+                # time bounds
+                # This sets time bounds without needing extra loops and checks
+                output.coord('time').guess_bounds()
+
+                # cmorize
+                output = _cmorize_dataset(output, var, cfg)
+                #logger.info(f"********{lai_cube=}")
+                #print(0/0)
                 # save cube
                 logger.info(f"Saving CMORized cube for variable {output.var_name}")
                 # these should all be the same
                 attributes = cfg["attributes"]
                 attributes["mip"] = var["mip"]
                 utils.save_variable(output, lai_cube.var_name, out_dir, attributes, zlib=True)
-                print(0/0)
+                #print(0/0)
 
 # from CCI SNOW CMORISER
 def _create_nan_cube(cube, year, month, day):
@@ -192,7 +201,7 @@ def _create_nan_cube(cube, year, month, day):
         newtime, dataset_time_unit, dataset_time_calender
     )
 
-    nan_cube.coord("time").points = np.float32(newtime)
+    nan_cube.coord("time").points = np.float64(newtime)
 
     return nan_cube
 
@@ -212,6 +221,6 @@ def create_dask_cube(cube, year, month, day):
         newtime, dataset_time_unit, dataset_time_calender
     )
 
-    new_cube.coord("time").points = np.float32(newtime)
+    new_cube.coord("time").points = np.float64(newtime)
 
     return new_cube
