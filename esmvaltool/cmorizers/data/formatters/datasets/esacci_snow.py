@@ -24,6 +24,7 @@ import logging
 import os
 from copy import deepcopy
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import cf_units
 import iris
@@ -61,7 +62,9 @@ def _create_nan_cube(cube, year, month, day):
     # Convert datetime
     newtime = datetime(year=year, month=month, day=day)
     newtime = cf_units.date2num(
-        newtime, dataset_time_unit, dataset_time_calender
+        newtime,
+        dataset_time_unit,
+        dataset_time_calender,
     )
     nan_cube.coord("time").points = float(newtime)
 
@@ -140,14 +143,12 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
     # nan to fill gaps
 
     full_list = iris.cube.CubeList()
-    loop_date = datetime(year, 1, 1)
+    loop_date = datetime(year, 1, 1, tzinfo=ZoneInfo("UTC"))
     time_list = []
 
     for cube in cube_list:
         loncoord = cube.coord("longitude")
         latcoord = cube.coord("latitude")
-        #        loncoord.points = da.round(loncoord.core_points(), 3)
-        #        latcoord.points = da.round(latcoord.core_points(), 3)
         loncoord.points = np.round(loncoord.core_points(), 3)
         latcoord.points = np.round(latcoord.core_points(), 3)
 
@@ -170,7 +171,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
         if date_available:
             full_list.append(cube_list[_idx])
         else:
-            logger.debug(f"No data available for {loop_date}")
+            logger.debug("No data available for %s", str(loop_date))
             nan_cube = _create_nan_cube(
                 cube_list[0], loop_date.year, loop_date.month, loop_date.day
             )
@@ -201,7 +202,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
     nlon = len(cube.coord("longitude").points)
     cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
     cube.attributes.update(
-        {"geospatial_lon_min": "0", "geospatial_lon_max": "360"}
+        {"geospatial_lon_min": "0", "geospatial_lon_max": "360"},
     )
 
     # Fix coordinates
@@ -222,14 +223,18 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
             "geospatial_lon_resolution": "0.5",
             "geospatial_lat_resolution": "0.5",
             "spatial_resolution": "0.5",
-        }
+        },
     )
 
     # Save results
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     save_variable(
-        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        unlimited_dimensions=["time"],
     )
     logger.info("Finished CMORizing %s", ", ".join(in_files))
 
@@ -248,9 +253,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     logger.info("CMORizing ESACCI-SNOW version %s", glob_attrs["version"])
 
     if start_date is None:
-        start_date = datetime(1979, 1, 1)
+        start_date = datetime(1979, 1, 1, tzinfo=ZoneInfo("UTC"))
     if end_date is None:
-        end_date = datetime(2019, 12, 31)
+        end_date = datetime(2019, 12, 31, tzinfo=ZoneInfo("UTC"))
 
     for short_name, var in cfg["variables"].items():
         if "short_name" not in var:
@@ -258,13 +263,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         loop_date = start_date
         while loop_date <= end_date:
             filepattern = os.path.join(
-                in_dir, var["file"].format(year=loop_date.year)
+                in_dir,
+                var["file"].format(year=loop_date.year),
             )
             in_files = glob.glob(filepattern)
             if not in_files:
                 logger.info(
-                    f"{loop_date.year}: no data not found for "
-                    f"variable {short_name}"
+                    "%d: no data not found for variable %s",
+                    loop_date.year,
+                    short_name,
                 )
             else:
                 _extract_variable(in_files, var, cfg, out_dir, loop_date.year)
