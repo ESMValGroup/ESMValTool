@@ -19,11 +19,10 @@ Download and processing instructions
       (no subdirectories with years or months).
 """
 
-import glob
 import logging
-import os
 from copy import deepcopy
 from datetime import datetime
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import cf_units
@@ -60,7 +59,7 @@ def _create_nan_cube(cube, year, month, day):
     dataset_time_unit = str(nan_cube.coord("time").units)
     dataset_time_calender = nan_cube.coord("time").units.calendar
     # Convert datetime
-    newtime = datetime(year=year, month=month, day=day)
+    newtime = datetime(year=year, month=month, day=day, tzinfo=ZoneInfo("UTC"))
     newtime = cf_units.date2num(
         newtime,
         dataset_time_unit,
@@ -132,10 +131,10 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
     ]
     for cube in cube_list:
         for attr in drop_attrs:
-            if attr in cube.attributes.keys():
+            if attr in cube.attributes:
                 cube.attributes.pop(attr)
         for attr in drop_var_attrs:
-            if attr in cube.attributes.keys():
+            if attr in cube.attributes:
                 cube.attributes.pop(attr)
 
     # make sure there is one cube for every day of the year
@@ -162,7 +161,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
     # create cube list for every day of the year by adding
     # cubes containing only nan to fill possible gaps
 
-    while loop_date <= datetime(year, 12, 31):
+    while loop_date <= datetime(year, 12, 31, tzinfo=ZoneInfo("UTC")):
         date_available = False
         for _idx, cubetime in enumerate(time_list):
             if loop_date == cubetime:
@@ -173,7 +172,10 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
         else:
             logger.debug("No data available for %s", str(loop_date))
             nan_cube = _create_nan_cube(
-                cube_list[0], loop_date.year, loop_date.month, loop_date.day
+                cube_list[0],
+                loop_date.year,
+                loop_date.month,
+                loop_date.day,
             )
             full_list.append(nan_cube)
         loop_date += relativedelta.relativedelta(days=1)
@@ -262,11 +264,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             var["short_name"] = short_name
         loop_date = start_date
         while loop_date <= end_date:
-            filepattern = os.path.join(
-                in_dir,
-                var["file"].format(year=loop_date.year),
+            in_files = Path(in_dir).glob(
+                var["file"].format(year=loop_date.year)
             )
-            in_files = glob.glob(filepattern)
             if not in_files:
                 logger.info(
                     "%d: no data not found for variable %s",
