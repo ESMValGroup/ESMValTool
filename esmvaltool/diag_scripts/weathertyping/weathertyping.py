@@ -63,7 +63,6 @@ def process_models_automatic_slwt(
                 data_info["dataset"],
                 ensemble_var,
             )
-
             data_info["output_file_path"] = output_file_path
             data_info["preproc_path"] = preproc_path
 
@@ -81,6 +80,7 @@ def process_models_automatic_slwt(
                     f"{cfg.get('work_dir')}/{output_file_path}"
                     f"/{data_info['dataset']}"
                     f"{data_info['driver']}_"
+                    f"{data_info['ensemble']}_"
                     f"{data_info['timerange']}.nc"
                 )
 

@@ -148,14 +148,15 @@ def plot_seasonal_occurrence(
 
         plt.savefig(
             f"{output_path}/{driver}{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
-            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.png",
+            f"{wt_string}_seasonal_occurrence_{data_info.get('timerange')}.png",
         )
         plt.savefig(
             f"{output_path}/{driver}{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
-            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.pdf",
+            f"{wt_string}_seasonal_occurrence_{data_info.get('timerange')}.pdf",
         )
         plt.close()
-        # ancestors here are just the wt_cubes i guess
+
+        # ancestors here are just the wt_cubes
         ancestors = [
             f"{cube_path}",
         ]
@@ -166,12 +167,9 @@ def plot_seasonal_occurrence(
             ["seas"],
         )
 
-        local_path = f"{cfg.get('plot_dir')}/mean"
-
         log_provenance(
-            f"{local_path}/{wt_string}_{driver}_"
-            f"{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
-            f"_seasonal_occurrence_{data_info.get('timerange')}",
+            f"{output_path}/{driver}{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
+            f"{wt_string}_seasonal_occurrence_{data_info.get('timerange')}.png",
             cfg,
             provenance_record,
         )
@@ -472,7 +470,7 @@ def plot_corr_rmse_heatmaps(
         ["other"],
     )
 
-    local_path = f"{cfg.get('plot_dir')}/"
+    local_path = f"{cfg.get('plot_dir')}/heatmaps"
 
     log_provenance(
         f"{local_path}/rmse_matrix_{dataset}_{timerange}.png",
