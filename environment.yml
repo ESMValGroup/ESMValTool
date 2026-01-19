@@ -121,7 +121,3 @@ dependencies:
   - r-spei
   - r-udunits2
   - r-yaml
-  # R packages needed for development
-  - r-git2r  # dependency of lintr
-  - r-lintr
-  - r-styler
