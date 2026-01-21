@@ -42,11 +42,11 @@ repos:
   #       entry: nclcodestyle
   #       language: system
   #       files: '\.(ncl|NCL)$'
-  - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
-    rev: 'v0.4.0'
-    hooks:
-      - id: style-files  # styler
-      # - id: lintr
+  # - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
+  #   rev: 'v0.4.2'
+  #   hooks:
+  #     - id: style-files  # styler
+  #     - id: lintr
   # - repo: https://github.com/codespell-project/codespell
   #   rev: 'v2.3.0'
   #   hooks:
