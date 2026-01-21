@@ -274,12 +274,11 @@ R
 ~
 
 Best practices for R code are described in `The tidyverse style
-guide <https://style.tidyverse.org/>`__. We check adherence to this
-style guide by using
-`lintr <https://cran.r-project.org/web/packages/lintr/index.html>`__ on
-CircleCI. Please use `styler <https://styler.r-lib.org/>`__ to
-automatically format your code according to this style guide. In the
-future we would also like to make use of
+guide <https://style.tidyverse.org/>`__. We currently don't check adherence
+to this, but we strongly encourage any new R diagnostic to be checked against the
+style guide by using `lintr <https://cran.r-project.org/web/packages/lintr/index.html>`__.
+Please use `styler <https://styler.r-lib.org/>`__ to automatically format your code according
+to this style guide. In the future we would also like to make use of
 `goodpractice <https://cran.r-project.org/web/packages/goodpractice/index.html>`__
 to assess the quality of R code.
 
