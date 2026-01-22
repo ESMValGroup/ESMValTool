@@ -43,12 +43,12 @@ def download_dataset(
         overwrite=overwrite,
     )
 
-    cmor_original_data_dir = read_cmor_config(dataset)
+    cmor_config = read_cmor_config(dataset)
     raw_path = (
         "https://opendata.dwd.de/climate_environment/GPCC/"
         "full_data_2018/full_data_monthly_{version}.nc.gz"
     )
-    for version in cmor_original_data_dir["attributes"]["version"].values():
+    for version in cmor_config["attributes"]["version"].values():
         downloader.download_file(
             raw_path.format(version=version),
             wget_options=[],
