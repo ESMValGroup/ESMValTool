@@ -5,14 +5,16 @@ and reformat to the ESMValTool's data format a set of observations and
 reanalysis.
 """
 
+from __future__ import annotations
+
 import datetime
 import importlib
 import logging
 import os
 import shutil
 import subprocess
-import warnings
 from pathlib import Path
+from typing import TYPE_CHECKING, Literal
 
 import esmvalcore
 import yaml
@@ -21,11 +23,17 @@ from esmvalcore.config import CFG
 from esmvalcore.config._dask import get_distributed_client
 from esmvalcore.config._logging import configure_logging
 
-from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
+if TYPE_CHECKING:
+    from esmvalcore.config import Session
+
+    from esmvaltool.cmorizers.data.typing import DatasetInfo
+
 logger = logging.getLogger(__name__)
-datasets_file = os.path.join(os.path.dirname(__file__), "datasets.yml")
+
+
+DATASETS_FILE = Path(__file__).parent / "datasets.yml"
 
 
 class _Formatter:
@@ -38,25 +46,29 @@ class _Formatter:
         Datasets information
     """
 
-    def __init__(self, info):
-        self.datasets = []
+    def __init__(self, info: dict[str, dict[str, DatasetInfo]]) -> None:
+        self.datasets: list[str] = []
         self.datasets_info = info
-        self.config = ""
+        self.config: Session | None = None
 
-    def start(self, command, datasets, config_file, config_dir, options):
+    def start(
+        self,
+        command: str,
+        datasets: str | list[str],
+        config_dir: Path | None,
+        options: dict,
+    ) -> None:
         """Read configuration and set up formatter for data processing.
 
         Parameters
         ----------
-        command: str
+        command:
             Name of the command to execute.
-        datasets: str
+        datasets:
             List of datasets to process, comma separated.
-        config_file: str
-            Config file to use. Option will be removed in v2.14.0.
-        config_dir: str
+        config_dir:
             Config directory to use.
-        options: dict()
+        options:
             Extra options to overwrite configuration.
 
         """
@@ -65,9 +77,7 @@ class _Formatter:
         else:
             self.datasets = datasets
 
-        if config_file is not None:  # remove in v2.14.0
-            CFG.load_from_file(config_file)
-        elif config_dir is not None:
+        if config_dir is not None:
             config_dir = (
                 Path(os.path.expandvars(config_dir)).expanduser().absolute()
             )
@@ -129,20 +139,32 @@ class _Formatter:
         return self.config["log_level"]
 
     @staticmethod
-    def _dataset_to_module(dataset):
+    def _dataset_to_module(dataset: str) -> str:
         return dataset.lower().replace("-", "_")
 
-    def download(self, start_date, end_date, overwrite):
+    def download(
+        self,
+        start_date: datetime.datetime | None,
+        end_date: datetime.datetime | None,
+        *,
+        overwrite: bool,
+    ) -> bool:
         """Download all datasets.
 
         Parameters
         ----------
-        start_date: datetime
+        start_date:
             First date to download
-        end_date: datetime
+        end_date:
             Last date to download
-        overwrite: boolean
+        overwrite:
             If True, download again existing files
+
+        Returns
+        -------
+        :
+            :obj:`True` if all datasets were downloaded, :obj:`False` otherwise.
+
         """
         if not self.datasets:
             logger.error("Missing datasets to download")
@@ -160,18 +182,25 @@ class _Formatter:
             return False
         return True
 
-    def download_dataset(self, dataset, start_date, end_date, overwrite):
+    def download_dataset(
+        self,
+        dataset: str,
+        start_date: datetime.datetime | None,
+        end_date: datetime.datetime | None,
+        *,
+        overwrite: bool,
+    ) -> None:
         """Download a single dataset.
 
         Parameters
         ----------
-        dataset: str
+        dataset:
             Dataset name
-        start_date: datetime
+        start_date:
             First date to download
-        end_date: datetime
+        end_date:
             Last date to download
-        overwrite: boolean
+        overwrite:
             If True, download again existing files
         """
         if not self.has_downloader(dataset):
@@ -200,16 +229,22 @@ class _Formatter:
         )
         logger.info("%s downloaded", dataset)
 
-    def format(self, start, end, install):
+    def format(
+        self,
+        start: datetime.datetime | None,
+        end: datetime.datetime | None,
+        *,
+        install: bool,
+    ) -> None:
         """Format all available datasets.
 
         Parameters
         ----------
-        start: datetime
+        start:
             Start of the period to format
-        end: datetime
+        end:
             End of the period to format
-        install: bool
+        install:
             If True, automatically moves the data to the final location if
             there is no
         """
@@ -228,16 +263,17 @@ class _Formatter:
         with get_distributed_client():
             # loop through tier/datasets to be cmorized
             for dataset in datasets:
-                if not self.format_dataset(dataset, start, end, install):
+                if not self.format_dataset(
+                    dataset, start, end, install=install
+                ):
                     failed_datasets.append(dataset)
 
         if failed_datasets:
-            raise RuntimeError(
-                f"Format failed for datasets {' '.join(failed_datasets)}",
-            )
+            msg = f"Format failed for datasets {' '.join(failed_datasets)}"
+            raise RuntimeError(msg)
 
     @staticmethod
-    def has_downloader(dataset):
+    def has_downloader(dataset: str) -> bool:
         """Check if a given datasets has an automatic downloader.
 
         Parameters
@@ -255,11 +291,11 @@ class _Formatter:
                 f".{dataset.lower().replace('-', '_')}",
                 package="esmvaltool.cmorizers.data.downloaders.datasets",
             )
-            return True
         except ImportError:
             return False
+        return True
 
-    def _assemble_datasets(self):
+    def _assemble_datasets(self) -> list[str]:
         """Get my datasets as dictionary keyed on Tier."""
         # check for desired datasets only (if any)
         # if not, walk all over rawobs dir
@@ -272,27 +308,34 @@ class _Formatter:
             for tier in tiers
             if os.path.exists(os.path.join(self.rawobs, tier))
         ]
-        datasets = []
         if self.datasets:
             return self.datasets
+        datasets = []
         for tier in tiers:
             for dataset in os.listdir(os.path.join(self.rawobs, tier)):
                 datasets.append(dataset)
 
         return datasets
 
-    def format_dataset(self, dataset, start, end, install):
+    def format_dataset(
+        self,
+        dataset: str,
+        start: datetime.datetime | None,
+        end: datetime.datetime | None,
+        *,
+        install: bool,
+    ) -> bool:
         """Format a single dataset.
 
         Parameters
         ----------
-        dataset: str
+        dataset:
             Dataset name
-        start: datetime
+        start:
             Start of the period to format
-        end: datetime
+        end:
             End of the period to format
-        install: bool
+        install:
             If True, automatically moves the data to the final location if
             there is no data there.
         """
@@ -371,7 +414,7 @@ class _Formatter:
                 shutil.move(out_data_dir, target_dir)
         return True
 
-    def _get_dataset_tier(self, dataset):
+    def _get_dataset_tier(self, dataset: str) -> str | None:
         for tier in [2, 3]:
             if os.path.isdir(
                 os.path.join(self.rawobs, f"Tier{tier}", dataset),
@@ -414,7 +457,15 @@ class _Formatter:
         write_ncl_settings(settings, settings_filename)
         return settings_filename
 
-    def _run_ncl_script(self, in_dir, out_dir, dataset, script, start, end):
+    def _run_ncl_script(
+        self,
+        in_dir: str,
+        out_dir: str,
+        dataset: str,
+        script: str,
+        start: datetime.datetime | None,
+        end: datetime.datetime | None,
+    ) -> bool:
         """Run the NCL cmorization mechanism."""
         logger.info(
             "CMORizing dataset %s using NCL script %s",
@@ -461,7 +512,14 @@ class _Formatter:
             return False
         return True
 
-    def _run_pyt_script(self, in_dir, out_dir, dataset, start, end):
+    def _run_pyt_script(
+        self,
+        in_dir: str,
+        out_dir: str,
+        dataset: str,
+        start: datetime.datetime | None,
+        end: datetime.datetime | None,
+    ) -> Literal[True]:
         """Run the Python cmorization mechanism."""
         module_name = (
             "esmvaltool.cmorizers.data.formatters.datasets."
@@ -482,15 +540,14 @@ class _Formatter:
 class DataCommand:
     """Download and format data to use with ESMValTool."""
 
-    def __init__(self):
-        with open(datasets_file, encoding="utf8") as data:
-            self._info = yaml.safe_load(data)
+    def __init__(self) -> None:
+        self._info = yaml.safe_load(DATASETS_FILE.read_text(encoding="utf8"))
         self.formatter = _Formatter(self._info)
 
-    def _has_downloader(self, dataset):
+    def _has_downloader(self, dataset: str) -> Literal["Yes", "No"]:
         return "Yes" if self.formatter.has_downloader(dataset) else "No"
 
-    def list(self):
+    def list(self) -> None:
         """List all supported datasets."""
         print()
         print(f"| {'Dataset name':30} | Tier | Auto-download | Last access |")
@@ -507,12 +564,12 @@ class DataCommand:
             )
         print("-" * 71)
 
-    def info(self, dataset):
+    def info(self, dataset: str) -> None:
         """Show detailed info about a specific dataset.
 
         Parameters
         ----------
-        dataset : str
+        dataset:
             dataset to show
         """
         dataset_info = self._info["datasets"][dataset]
@@ -526,180 +583,132 @@ class DataCommand:
 
     def download(
         self,
-        datasets,
-        config_file=None,
-        start=None,
-        end=None,
-        overwrite=False,
-        config_dir=None,
+        datasets: str | list[str],
+        start: str | None = None,
+        end: str | None = None,
+        overwrite: bool = False,
+        config_dir: Path | None = None,
         **kwargs,
-    ):
+    ) -> None:
         """Download datasets.
 
         Parameters
         ----------
         datasets: list(str)
             List of datasets to format
-        config_file: str, optional
-            Path to ESMValTool's config user file, by default None.
-
-            .. deprecated:: 2.12.0
-                This option has been deprecated in ESMValTool version 2.12.0
-                and is scheduled for removal in version 2.14.0. Please use the
-                option `config_dir` instead.
-        start: str, optional
+        start:
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        end: str, optional
+        end:
             End of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        overwrite: bool, optional
+        overwrite:
             If true, download already present data again
-        config_dir: str, optional
+        config_dir:
             Path to additional ESMValTool configuration directory. See
-            :ref:`esmvalcore:config_yaml_files` for details.
+            https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#yaml-files
+            for details.
 
         """
-        if config_file is not None:
-            msg = (
-                "The option `config_file` has been deprecated in ESMValTool "
-                "version 2.12.0 and is scheduled for removal in version "
-                "2.14.0. Please use the option ``config_dir`` instead."
-            )
-            warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-
-        start = self._parse_date(start)
-        end = self._parse_date(end)
+        start_date = self._parse_date(start)
+        end_date = self._parse_date(end)
 
         self.formatter.start(
             "download",
             datasets,
-            config_file,
             config_dir,
             kwargs,
         )
-        self.formatter.download(start, end, overwrite)
+        self.formatter.download(start_date, end_date, overwrite=overwrite)
 
     def format(
         self,
-        datasets,
-        config_file=None,
-        start=None,
-        end=None,
-        install=False,
-        config_dir=None,
+        datasets: str | list[str],
+        start: str | None = None,
+        end: str | None = None,
+        install: bool = False,
+        config_dir: Path | None = None,
         **kwargs,
-    ):
+    ) -> None:
         """Format datasets.
 
         Parameters
         ----------
-        datasets : list(str)
+        datasets:
             List of datasets to format
-        config_file : str, optional
-            Path to ESMValTool's config user file, by default None
-
-            .. deprecated:: 2.12.0
-                This option has been deprecated in ESMValTool version 2.12.0
-                and is scheduled for removal in version 2.14.0. Please use the
-                option `config_dir` instead.
-        start : str, optional
+        start:
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        end : str, optional
+        end:
             End of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        install : bool, optional
+        install:
             If true, move processed data to the folder, by default False
-        config_dir: str, optional
+        config_dir:
             Path to additional ESMValTool configuration directory. See
-            :ref:`esmvalcore:config_yaml_files` for details.
+            https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#yaml-files
+            for details.
 
         """
-        if config_file is not None:
-            msg = (
-                "The option `config_file` has been deprecated in ESMValTool "
-                "version 2.12.0 and is scheduled for removal in version "
-                "2.14.0. Please use the option ``config_dir`` instead."
-            )
-            warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-
-        start = self._parse_date(start)
-        end = self._parse_date(end)
+        start_date = self._parse_date(start)
+        end_date = self._parse_date(end)
 
         self.formatter.start(
             "formatting",
             datasets,
-            config_file,
             config_dir,
             kwargs,
         )
-        self.formatter.format(start, end, install)
+        self.formatter.format(start_date, end_date, install=install)
 
     def prepare(
         self,
-        datasets,
-        config_file=None,
-        start=None,
-        end=None,
-        overwrite=False,
-        install=False,
-        config_dir=None,
+        datasets: str | list[str],
+        start: str | None = None,
+        end: str | None = None,
+        overwrite: bool = False,
+        install: bool = False,
+        config_dir: Path | None = None,
         **kwargs,
-    ):
+    ) -> None:
         """Download and format a set of datasets.
 
         Parameters
         ----------
-        datasets : list(str)
+        datasets:
             List of datasets to format
-        config_file : str, optional
-            Path to ESMValTool's config user file, by default None
-
-            .. deprecated:: 2.12.0
-                This option has been deprecated in ESMValTool version 2.12.0
-                and is scheduled for removal in version 2.14.0. Please use the
-                option `config_dir` instead.
-        start : str, optional
+        start:
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        end : str, optional
+        end:
             End of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        install : bool, optional
+        install:
             If true, move processed data to the folder, by default False
-        overwrite : bool, optional
+        overwrite:
             If true, download already present data again
-        config_dir: str, optional
+        config_dir:
             Path to additional ESMValTool configuration directory. See
-            :ref:`esmvalcore:config_yaml_files` for details.
+            https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#yaml-files
+            for details.
 
         """
-        if config_file is not None:
-            msg = (
-                "The option `config_file` has been deprecated in ESMValTool "
-                "version 2.12.0 and is scheduled for removal in version "
-                "2.14.0. Please use the option ``config_dir`` instead."
-            )
-            warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-
-        start = self._parse_date(start)
-        end = self._parse_date(end)
+        start_date = self._parse_date(start)
+        end_date = self._parse_date(end)
 
         self.formatter.start(
             "preparation",
             datasets,
-            config_file,
             config_dir,
             kwargs,
         )
-        if self.formatter.download(start, end, overwrite):
-            self.formatter.format(start, end, install)
+        if self.formatter.download(start_date, end_date, overwrite=overwrite):
+            self.formatter.format(start_date, end_date, install=install)
         else:
             logger.warning("Download failed, skipping format step")
 
     @staticmethod
-    def _parse_date(date):
+    def _parse_date(date: str | None) -> datetime.datetime | None:
         if date is None:
             return None
         date_string = str(date)
@@ -710,9 +719,10 @@ class DataCommand:
         }
         format_string = date_formats.get(len(date_string), None)
         if format_string is None:
-            raise ValueError(
+            msg = (
                 f"Unsupported date format for {date}. "
                 'Supported formats for "start" and "end" are: '
                 '"None", "YYYY", "YYYYMM", "YYYYMMDD"',
             )
+            raise ValueError(msg)
         return datetime.datetime.strptime(date_string, format_string)
