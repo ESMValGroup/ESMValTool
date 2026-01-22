@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - free_some_deps
   schedule:
     - cron: "0 0 * * *"
 
