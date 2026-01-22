@@ -96,7 +96,7 @@ dependencies:
 
   # R and dependencies
   - cdo
-  - r-base >=3.5
+  - r-base >=4.4
   - r-abind
   - r-akima
   - r-climdex.pcic
@@ -121,7 +121,3 @@ dependencies:
   - r-spei
   - r-udunits2
   - r-yaml
-  # R packages needed for development
-  - r-git2r  # dependency of lintr
-  - r-lintr ==3.1.2
-  - r-styler ==1.10.3
