@@ -396,9 +396,49 @@ class _Formatter:
             logger.error("Formatting failed for dataset %s", dataset)
             return False
         if install:
-            rootpath = self.config["rootpath"]
-            target_dir = rootpath.get("OBS", rootpath["default"])[0]
-            target_dir = os.path.join(target_dir, tier, dataset)
+            if "rootpath" in self.config:
+                rootpath = self.config["rootpath"]
+                target_dir = rootpath.get("OBS", rootpath["default"])[0]
+                target_dir = os.path.join(target_dir, tier, dataset)
+            else:
+                attributes = read_cmor_config(dataset)["attributes"]
+                for attr in ["dataset", "project"]:
+                    if attr not in attributes:
+                        attributes[attr] = attributes[f"{attr}_id"]
+                msg = "Unable determine install path, please move files manually."
+                try:
+                    import esmvalcore.io
+                    import esmvalcore.io.local
+                except ImportError:
+                    logger.warning(msg)
+                    return True
+                data_sources = esmvalcore.io.load_data_sources(
+                    self.config,
+                    project=attributes["project"],
+                )
+                for data_source in sorted(
+                    data_sources,
+                    key=lambda ds: ds.priority,
+                ):
+                    if isinstance(
+                        data_source,
+                        esmvalcore.io.local.LocalDataSource,
+                    ):
+                        try:
+                            target_dir = (
+                                data_source.rootpath
+                                / data_source.dirname_template.format(
+                                    **attributes
+                                )
+                            )
+                        except KeyError:
+                            pass
+                        else:
+                            break
+                else:
+                    logger.warning(msg)
+                    return True
+
             if os.path.isdir(target_dir):
                 logger.info(
                     "Automatic installation of dataset %s skipped: "
