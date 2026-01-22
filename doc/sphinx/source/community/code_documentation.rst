@@ -284,6 +284,7 @@ to this style guide. To run these tools, uncomment these lines:
     :language: yaml
     :start-at: # - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
     :end-at: - id: lintr
+    :caption: R configuration in ``.pre-commit-config.yaml``.
 
 and run the commands:
 
