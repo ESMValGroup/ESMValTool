@@ -260,6 +260,11 @@ However, a pull request where the CircleCI/pre-commit tests are failing cannot b
 NCL
 ~~~
 
+.. warning::
+
+  Writing new NCL code is not recommended because the
+  `NCL interpreter <https://github.com/NCAR/ncl>`__ is no longer maintained.
+
 Because there is no standard best practices document for NCL, we use
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ for NCL code as
 well, with some minor adjustments to accommodate for differences in the

@@ -1,12 +1,19 @@
 """Downloader for the Climate Data Store."""
 
+from __future__ import annotations
+
 import logging
 import os
 from collections.abc import Iterable
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import cdsapi
 
 from .downloader import BaseDownloader
+
+if TYPE_CHECKING:
+    from esmvaltool.cmorizers.data.typing import DatasetInfo
 
 logger = logging.getLogger(__name__)
 
@@ -16,35 +23,41 @@ class CDSDownloader(BaseDownloader):
 
     Parameters
     ----------
-    product_name : str
+    product_name:
         Name of the product in the CDS
-    config : dict
-        ESMValTool's user configuration
-    request_dictionary : dict
+    original_data_dir:
+        Directory where original data will be stored.
+    request_dictionary:
         Common CDS request parameters
-    dataset : str
+    dataset:
         Name of the dataset
-    dataset_info : dict
+    dataset_info:
         Dataset information from the datasets.yml file
-    overwrite : bool
+    overwrite:
         Overwrite already downloaded files
-    extra_name : str, optional
+    extra_name:
         Some products have a subfix appended to their name for certain
         variables. This parameter is to specify it, by default ''
     """
 
     def __init__(
         self,
-        product_name,
-        config,
-        request_dictionary,
-        dataset,
-        dataset_info,
-        overwrite,
-        extra_name="",
-        cds_url="https://cds.climate.copernicus.eu/api",
-    ):
-        super().__init__(config, dataset, dataset_info, overwrite)
+        original_data_dir: Path,
+        product_name: str,
+        request_dictionary: dict,
+        dataset: str,
+        dataset_info: DatasetInfo,
+        *,
+        overwrite: bool,
+        extra_name: str = "",
+        cds_url: str = "https://cds.climate.copernicus.eu/api",
+    ) -> None:
+        super().__init__(
+            original_data_dir=original_data_dir,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
         try:
             self._client = cdsapi.Client(url=cds_url)
         except Exception as ex:

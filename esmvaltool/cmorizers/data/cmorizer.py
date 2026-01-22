@@ -46,7 +46,10 @@ class _Formatter:
         Datasets information
     """
 
-    def __init__(self, info: dict[str, dict[str, DatasetInfo]]) -> None:
+    def __init__(
+        self,
+        info: dict[Literal["datasets"], dict[str, DatasetInfo]],
+    ) -> None:
         self.datasets: list[str] = []
         self.datasets_info = info
         self.config: Session | None = None
@@ -55,6 +58,7 @@ class _Formatter:
         self,
         command: str,
         datasets: str | list[str],
+        original_data_dir: Path | None,
         config_dir: Path | None,
         options: dict,
     ) -> None:
@@ -66,12 +70,17 @@ class _Formatter:
             Name of the command to execute.
         datasets:
             List of datasets to process, comma separated.
+        original_data_dir:
+            Directory containing the original data.
         config_dir:
             Config directory to use.
         options:
             Extra options to overwrite configuration.
 
         """
+        self.original_data_dir = (
+            Path.cwd() if original_data_dir is None else original_data_dir
+        )
         if isinstance(datasets, str):
             self.datasets = datasets.split(",")
         else:
@@ -82,16 +91,16 @@ class _Formatter:
                 Path(os.path.expandvars(config_dir)).expanduser().absolute()
             )
             if not config_dir.is_dir():
-                raise NotADirectoryError(
+                msg = (
                     f"Invalid --config_dir given: {config_dir} is not an "
                     f"existing directory",
                 )
+                raise NotADirectoryError(msg)
             CFG.update_from_dirs([config_dir])
         CFG.nested_update(options)
         self.config = CFG.start_session(f"data_{command}")
 
-        if not os.path.isdir(self.run_dir):
-            os.makedirs(self.run_dir)
+        self.run_dir.mkdir(parents=True, exist_ok=True)
 
         # configure logging
         log_files = configure_logging(
@@ -101,7 +110,7 @@ class _Formatter:
         logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
         # run
-        timestamp1 = datetime.datetime.utcnow()
+        timestamp1 = datetime.datetime.now(datetime.UTC)
         timestamp_format = "%Y-%m-%d %H:%M:%S"
 
         logger.info(
@@ -110,18 +119,17 @@ class _Formatter:
         )
 
         logger.info(70 * "-")
-        logger.info("input_dir  = %s", self.rawobs)
+        logger.info("input_dir  = %s", self.original_data_dir)
         # check if the inputdir actually exists
-        if not os.path.isdir(self.rawobs):
-            logger.error("Directory %s does not exist", self.rawobs)
-            raise ValueError
+        if not self.original_data_dir.is_dir():
+            msg = (
+                f"The path '{self.original_data_dir}' is not a directory. "
+                "Please specify the correct path to the input data using the "
+                "--original-data-dir flag."
+            )
+            raise NotADirectoryError(msg)
         logger.info("output_dir = %s", self.output_dir)
         logger.info(70 * "-")
-
-    @property
-    def rawobs(self):
-        """Raw obs folder path."""
-        return self.config["rootpath"]["RAWOBS"][0]
 
     @property
     def output_dir(self):
@@ -173,7 +181,12 @@ class _Formatter:
         failed_datasets = []
         for dataset in self.datasets:
             try:
-                self.download_dataset(dataset, start_date, end_date, overwrite)
+                self.download_dataset(
+                    dataset,
+                    start_date,
+                    end_date,
+                    overwrite=overwrite,
+                )
             except ValueError:
                 logger.exception("Failed to download %s", dataset)
                 failed_datasets.append(dataset)
@@ -204,9 +217,8 @@ class _Formatter:
             If True, download again existing files
         """
         if not self.has_downloader(dataset):
-            raise ValueError(
-                f"Dataset {dataset} does not have an automatic downloader",
-            )
+            msg = f"Dataset {dataset} does not have an automatic downloader"
+            raise ValueError(msg)
         dataset_module = self._dataset_to_module(dataset)
         logger.info("Downloading %s", dataset)
         logger.debug("Download module: %s", dataset_module)
@@ -220,12 +232,12 @@ class _Formatter:
             raise
 
         downloader.download_dataset(
-            self.config,
-            dataset,
-            self.datasets_info["datasets"][dataset],
-            start_date,
-            end_date,
-            overwrite,
+            original_data_dir=self.original_data_dir,
+            dataset=dataset,
+            dataset_info=self.datasets_info["datasets"][dataset],
+            start_date=start_date,
+            end_date=end_date,
+            overwrite=overwrite,
         )
         logger.info("%s downloaded", dataset)
 
@@ -255,7 +267,7 @@ class _Formatter:
             logger.warning(
                 "Check input: could not find required %s in %s",
                 self.datasets,
-                self.rawobs,
+                self.original_data_dir,
             )
         logger.info("Processing datasets %s", datasets)
 
@@ -296,26 +308,18 @@ class _Formatter:
         return True
 
     def _assemble_datasets(self) -> list[str]:
-        """Get my datasets as dictionary keyed on Tier."""
+        """Get the datasets to CMORize."""
         # check for desired datasets only (if any)
-        # if not, walk all over rawobs dir
-        # assume a RAWOBS/TierX/DATASET input structure
-
-        # get all available tiers in source dir
-        tiers = [f"Tier{i}" for i in [2, 3]]
-        tiers = [
-            tier
-            for tier in tiers
-            if os.path.exists(os.path.join(self.rawobs, tier))
-        ]
         if self.datasets:
             return self.datasets
-        datasets = []
-        for tier in tiers:
-            for dataset in os.listdir(os.path.join(self.rawobs, tier)):
-                datasets.append(dataset)
-
-        return datasets
+        # if not, look in configuration file and at the available data.
+        return [
+            dataset
+            for dataset, info in self.datasets_info["datasets"].items()
+            if (
+                self.original_data_dir / f"Tier{info['tier']}" / dataset
+            ).is_dir()
+        ]
 
     def format_dataset(
         self,
@@ -346,19 +350,16 @@ class _Formatter:
             self._dataset_to_module(dataset),
         )
         tier = self._get_dataset_tier(dataset)
-        if tier is None:
-            logger.error(
-                "Data for %s not found. Perhaps you are not"
-                " storing it in a RAWOBS/TierX/%s"
-                " (X=2 or 3) directory structure?",
-                dataset,
-                dataset,
-            )
-            return False
 
         # in-data dir; build out-dir tree
-        in_data_dir = os.path.join(self.rawobs, tier, dataset)
+        in_data_dir = os.path.join(self.original_data_dir, tier, dataset)
         logger.info("Input data from: %s", in_data_dir)
+        if not os.path.isdir(in_data_dir):
+            msg = (
+                f"Data for dataset '{dataset}' not found. "
+                f"Path to original data '{in_data_dir}' is not a directory'"
+            )
+            raise NotADirectoryError(msg)
         out_data_dir = os.path.join(self.output_dir, tier, dataset)
         logger.info("Output will be written to: %s", out_data_dir)
         if not os.path.isdir(out_data_dir):
@@ -414,13 +415,8 @@ class _Formatter:
                 shutil.move(out_data_dir, target_dir)
         return True
 
-    def _get_dataset_tier(self, dataset: str) -> str | None:
-        for tier in [2, 3]:
-            if os.path.isdir(
-                os.path.join(self.rawobs, f"Tier{tier}", dataset),
-            ):
-                return f"Tier{tier}"
-        return None
+    def _get_dataset_tier(self, dataset: str) -> str:
+        return f"Tier{self.datasets_info['datasets'][dataset]['tier']}"
 
     def _write_ncl_settings(
         self,
@@ -584,6 +580,7 @@ class DataCommand:
     def download(
         self,
         datasets: str | list[str],
+        original_data_dir: Path | None = None,
         start: str | None = None,
         end: str | None = None,
         overwrite: bool = False,
@@ -596,6 +593,8 @@ class DataCommand:
         ----------
         datasets: list(str)
             List of datasets to format
+        original_data_dir:
+            Directory where original data will be stored.
         start:
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
@@ -615,15 +614,17 @@ class DataCommand:
 
         self.formatter.start(
             "download",
-            datasets,
-            config_dir,
-            kwargs,
+            datasets=datasets,
+            original_data_dir=original_data_dir,
+            config_dir=config_dir,
+            options=kwargs,
         )
         self.formatter.download(start_date, end_date, overwrite=overwrite)
 
     def format(
         self,
         datasets: str | list[str],
+        original_data_dir: Path | None = None,
         start: str | None = None,
         end: str | None = None,
         install: bool = False,
@@ -636,6 +637,8 @@ class DataCommand:
         ----------
         datasets:
             List of datasets to format
+        original_data_dir:
+            Directory where original data is stored.
         start:
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
@@ -655,15 +658,17 @@ class DataCommand:
 
         self.formatter.start(
             "formatting",
-            datasets,
-            config_dir,
-            kwargs,
+            datasets=datasets,
+            original_data_dir=original_data_dir,
+            config_dir=config_dir,
+            options=kwargs,
         )
         self.formatter.format(start_date, end_date, install=install)
 
     def prepare(
         self,
         datasets: str | list[str],
+        original_data_dir: Path | None = None,
         start: str | None = None,
         end: str | None = None,
         overwrite: bool = False,
@@ -677,6 +682,8 @@ class DataCommand:
         ----------
         datasets:
             List of datasets to format
+        original_data_dir:
+            Directory where original data is stored or will be stored after download.
         start:
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
@@ -698,9 +705,10 @@ class DataCommand:
 
         self.formatter.start(
             "preparation",
-            datasets,
-            config_dir,
-            kwargs,
+            datasets=datasets,
+            original_data_dir=original_data_dir,
+            config_dir=config_dir,
+            options=kwargs,
         )
         if self.formatter.download(start_date, end_date, overwrite=overwrite):
             self.formatter.format(start_date, end_date, install=install)

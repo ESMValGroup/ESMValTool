@@ -5,16 +5,16 @@ import yamale
 import yaml
 
 import esmvaltool
-from esmvaltool.cmorizers.data.cmorizer import datasets_file
+from esmvaltool.cmorizers.data.cmorizer import DATASETS_FILE
 
-yaml_folder = os.path.abspath(os.path.dirname(datasets_file))
+yaml_folder = os.path.abspath(os.path.dirname(DATASETS_FILE))
 recipes_folder = os.path.abspath(
     os.path.join(os.path.dirname(esmvaltool.__file__), "recipes"),
 )
 
 
 def test_only_datasets_are_present():
-    recipe = yamale.make_data(datasets_file)
+    recipe = yamale.make_data(DATASETS_FILE)
     schema = yamale.make_schema(
         os.path.join(yaml_folder, "datasets_schema.yml"),
     )
@@ -22,7 +22,7 @@ def test_only_datasets_are_present():
 
 
 def test_latest_version_format():
-    with open(datasets_file) as file:
+    with open(DATASETS_FILE) as file:
         cfg = yaml.safe_load(file)
     for dataset_info in cfg["datasets"].values():
         datetime.datetime.strptime(
@@ -32,7 +32,7 @@ def test_latest_version_format():
 
 
 def test_datasets_are_added_to_test_recipe():
-    with open(datasets_file) as file:
+    with open(DATASETS_FILE) as file:
         cfg = yaml.safe_load(file)
 
     recipe_path = os.path.join(recipes_folder, "examples/recipe_check_obs.yml")

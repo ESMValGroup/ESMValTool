@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config,
+    original_data_dir,
     dataset,
     dataset_info,
     start_date,
@@ -23,8 +23,8 @@ def download_dataset(
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -45,20 +45,20 @@ def download_dataset(
     loop_date = start_date
 
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
 
     # check if daily data needs to be downloaded
-    cmor_config = read_cmor_config(dataset)
-    daily_data = cmor_config["daily_data"]
+    cmor_original_data_dir = read_cmor_config(dataset)
+    daily_data = cmor_original_data_dir["daily_data"]
     if not daily_data:
         logger.info(
             'If daily data needs to be downloaded change "daily_data" in the '
-            'cmor_config file to "True" '
-            "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)",
+            'cmor_original_data_dir file to "True" '
+            "(esmvaltool/cmorizers/data/cmor_original_data_dir/ESACCI-CLOUD.yml)",
         )
 
     # Base paths for L3U (daily data) and L3C (monthly data)
