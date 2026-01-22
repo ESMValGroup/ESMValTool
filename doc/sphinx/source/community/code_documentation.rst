@@ -278,7 +278,25 @@ guide <https://style.tidyverse.org/>`__. We currently don't check adherence
 to this, but we strongly encourage any new R diagnostic to be checked against the
 style guide by using `lintr <https://cran.r-project.org/web/packages/lintr/index.html>`__.
 Please use `styler <https://styler.r-lib.org/>`__ to automatically format your code according
-to this style guide. In the future we would also like to make use of
+to this style guide. To run these tools, uncomment these lines:
+
+.. literalinclude:: ../../../../.pre-commit-config.yaml
+    :language: yaml
+    :start-at: # - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
+    :end-at: - id: lintr
+
+and run the commands:
+
+.. code-block:: bash
+
+    pre-commit run style-files --files esmvaltool/diag_scripts/your_script.R
+    pre-commit run lintr --files esmvaltool/diag_scripts/your_script.R
+
+These pre-commit hooks have been disabled by default because over the past few
+years all diagnostics that have been contributed were written in Python.
+However, if R contributions pick up again, we would be happy to enable these
+pre-commit hooks again.
+In the future we would also like to make use of
 `goodpractice <https://cran.r-project.org/web/packages/goodpractice/index.html>`__
 to assess the quality of R code.
 

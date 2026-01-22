@@ -50,6 +50,8 @@ jobs:
         run: conda list
       - name: Check dependencies are compatible
         run: pip check
+      - name: Check code quality
+        run: pre-commit run -a
       - name: Check NCL
         run: ncl -V
       - name: Check code quality
