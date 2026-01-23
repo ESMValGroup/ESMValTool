@@ -1,11 +1,15 @@
 import datetime
 import os
+from pathlib import Path
 
+import pytest
 import yamale
 import yaml
 
 import esmvaltool
+import esmvaltool.cmorizers.data.formatters.datasets
 from esmvaltool.cmorizers.data.cmorizer import datasets_file
+from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 yaml_folder = os.path.abspath(os.path.dirname(datasets_file))
 recipes_folder = os.path.abspath(
@@ -29,6 +33,49 @@ def test_latest_version_format():
             str(dataset_info["last_access"]),
             "%Y-%m-%d",
         )
+
+
+FORMATTERS_DIR = Path(
+    esmvaltool.cmorizers.data.formatters.datasets.__file__,
+).parent
+
+
+@pytest.mark.parametrize(
+    "dataset",
+    [
+        dataset
+        for dataset in yaml.safe_load(
+            Path(datasets_file).read_text(encoding="utf-8")
+        )["datasets"]
+        # Only Python CMORizers use the configuration file.
+        if (
+            FORMATTERS_DIR / f"{dataset.lower().replace('-', '_')}.py"
+        ).is_file()
+    ],
+)
+def test_datasets_have_valid_config(dataset: str) -> None:
+    """Test that all datasets have a valid type."""
+    # This list should be synchronized with the valid values mentioned in
+    # doc/sphinx/source/input.rst are used.
+    valid_types = {
+        "sat",
+        "ground",
+        "clim",
+        "reanaly",
+        "campaign",
+    }
+    valid_projects = {
+        "OBS",
+        "OBS6",
+    }
+
+    cfg = read_cmor_config(dataset)
+    assert "attributes" in cfg
+    attributes = cfg["attributes"]
+    assert "type" in attributes
+    assert attributes["type"] in valid_types
+    assert "project_id" in attributes
+    assert attributes["project_id"] in valid_projects
 
 
 def test_datasets_are_added_to_test_recipe():

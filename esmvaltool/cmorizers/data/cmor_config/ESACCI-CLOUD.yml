@@ -14,7 +14,7 @@ attributes:
   tier: 2
   project_id: OBS6
   source: 'ESA CCI'
-  modeling_realm: sat
+  type: sat
   reference: 'esacci_cloud'
   comment: ''
 

@@ -10,7 +10,7 @@ attributes:
     r1: 0.1
     r2: 0.25
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'https://www.ecad.eu/download/ensembles/download.php'
   reference: 'e-obs'

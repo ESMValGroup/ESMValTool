@@ -10,7 +10,7 @@ attributes:
   dataset_id: NOAA-GML-SURFACE-FLASK-CH4
   version: '1.0'
   tier: 2
-  modeling_realm: atmos
+  type: ground
   project_id: OBS6
   source: 'https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/ch4_surface-flask_ccgg_text.tar.gz'
   reference: 'noaa-gml-surface-flask-ch4'
