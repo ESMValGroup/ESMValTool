@@ -6,7 +6,6 @@ import ftplib
 import logging
 import os
 import re
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from progressbar import (
@@ -21,6 +20,8 @@ from progressbar import (
 from .downloader import BaseDownloader
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from esmvaltool.cmorizers.data.typing import DatasetInfo
 
 

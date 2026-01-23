@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import os
 from collections.abc import Iterable
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import cdsapi
@@ -13,6 +12,8 @@ import cdsapi
 from .downloader import BaseDownloader
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from esmvaltool.cmorizers.data.typing import DatasetInfo
 
 logger = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ class CDSDownloader(BaseDownloader):
             self._client = cdsapi.Client(url=cds_url)
         except Exception as ex:
             if str(ex).endswith(".cdsapirc"):
-                logger.error(
+                logger.exception(
                     "Could not connect to the CDS due to issues with your "
                     '".cdsapirc" file. More info in '
                     "https://cds.climate.copernicus.eu/api-how-to.",
@@ -105,9 +106,8 @@ class CDSDownloader(BaseDownloader):
                 request_dict["day"] = f"{day:02d}"
 
         date_str = f"{year}{month:02d}"
-        if day:
-            if not isinstance(day, Iterable):
-                date_str += f"{day:02d}"
+        if day and not isinstance(day, Iterable):
+            date_str += f"{day:02d}"
 
         os.makedirs(self.local_folder, exist_ok=True)
         if file_pattern is None:
@@ -168,5 +168,5 @@ class CDSDownloader(BaseDownloader):
                 filename,
             )
         except Exception:
-            logger.error("Failed request: %s", request)
+            logger.exception("Failed request: %s", request)
             raise

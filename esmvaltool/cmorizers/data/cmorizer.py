@@ -271,14 +271,18 @@ class _Formatter:
             )
         logger.info("Processing datasets %s", datasets)
 
-        failed_datasets = []
         with get_distributed_client():
             # loop through tier/datasets to be cmorized
-            for dataset in datasets:
+            failed_datasets = [
+                dataset
+                for dataset in datasets
                 if not self.format_dataset(
-                    dataset, start, end, install=install
-                ):
-                    failed_datasets.append(dataset)
+                    dataset,
+                    start,
+                    end,
+                    install=install,
+                )
+            ]
 
         if failed_datasets:
             msg = f"Format failed for datasets {' '.join(failed_datasets)}"
@@ -343,8 +347,8 @@ class _Formatter:
             If True, automatically moves the data to the final location if
             there is no data there.
         """
-        reformat_script_root = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
+        reformat_script_root = Path(
+            Path(__file__).parent.resolve(),
             "formatters",
             "datasets",
             self._dataset_to_module(dataset),
@@ -352,25 +356,25 @@ class _Formatter:
         tier = self._get_dataset_tier(dataset)
 
         # in-data dir; build out-dir tree
-        in_data_dir = os.path.join(self.original_data_dir, tier, dataset)
+        in_data_dir = self.original_data_dir / tier / dataset
         logger.info("Input data from: %s", in_data_dir)
-        if not os.path.isdir(in_data_dir):
+        if not in_data_dir.is_dir():
             msg = (
                 f"Data for dataset '{dataset}' not found. "
                 f"Path to original data '{in_data_dir}' is not a directory'"
             )
             raise NotADirectoryError(msg)
-        out_data_dir = os.path.join(self.output_dir, tier, dataset)
+        out_data_dir = self.output_dir / tier / dataset
         logger.info("Output will be written to: %s", out_data_dir)
-        if not os.path.isdir(out_data_dir):
-            os.makedirs(out_data_dir)
+        if not out_data_dir.is_dir():
+            out_data_dir.mkdir(parents=True)
 
         # all operations are done in the working dir now
         os.chdir(out_data_dir)
         # figure out what language the script is in
         logger.info("Reformat script: %s", reformat_script_root)
-        if os.path.isfile(reformat_script_root + ".ncl"):
-            reformat_script = reformat_script_root + ".ncl"
+        if reformat_script_root.with_suffix(".ncl").is_file():
+            reformat_script = reformat_script_root.with_suffix(".ncl")
             success = self._run_ncl_script(
                 in_data_dir,
                 out_data_dir,
@@ -379,7 +383,7 @@ class _Formatter:
                 start,
                 end,
             )
-        elif os.path.isfile(reformat_script_root + ".py"):
+        elif reformat_script_root.with_suffix(".py").is_file():
             success = self._run_pyt_script(
                 in_data_dir,
                 out_data_dir,
@@ -396,50 +400,15 @@ class _Formatter:
             logger.error("Formatting failed for dataset %s", dataset)
             return False
         if install:
-            if "rootpath" in self.config:
-                rootpath = self.config["rootpath"]
-                target_dir = rootpath.get("OBS", rootpath["default"])[0]
-                target_dir = os.path.join(target_dir, tier, dataset)
-            else:
-                attributes = read_cmor_config(dataset)["attributes"]
-                for attr in ["dataset", "project"]:
-                    if attr not in attributes:
-                        attributes[attr] = attributes[f"{attr}_id"]
-                msg = "Unable determine install path, please move files manually."
-                try:
-                    import esmvalcore.io
-                    import esmvalcore.io.local
-                except ImportError:
-                    logger.warning(msg)
-                    return True
-                data_sources = esmvalcore.io.load_data_sources(
-                    self.config,
-                    project=attributes["project"],
+            target_dir = self._get_install_dir(dataset)
+            if target_dir is None:
+                logger.warning(
+                    "Unable determine install path for dataset '%s', please "
+                    "move files from %s to the desired location manually.",
+                    dataset,
+                    out_data_dir,
                 )
-                for data_source in sorted(
-                    data_sources,
-                    key=lambda ds: ds.priority,
-                ):
-                    if isinstance(
-                        data_source,
-                        esmvalcore.io.local.LocalDataSource,
-                    ):
-                        try:
-                            target_dir = (
-                                data_source.rootpath
-                                / data_source.dirname_template.format(
-                                    **attributes
-                                )
-                            )
-                        except KeyError:
-                            pass
-                        else:
-                            break
-                else:
-                    logger.warning(msg)
-                    return True
-
-            if os.path.isdir(target_dir):
+            elif target_dir.is_dir():
                 logger.info(
                     "Automatic installation of dataset %s skipped: "
                     "target folder %s already exists",
@@ -455,27 +424,90 @@ class _Formatter:
                 shutil.move(out_data_dir, target_dir)
         return True
 
+    def _get_install_dir(self, dataset) -> Path | None:
+        """Get the installation directory for a dataset.
+
+        Parameters
+        ----------
+        dataset:
+            Dataset name.
+
+        Returns
+        -------
+        :
+            Path to the installation directory, or None if it cannot be
+            determined.
+        """
+        tier = self._get_dataset_tier(dataset)
+        if "rootpath" in self.config:
+            # May not be available since ESMValCore v2.14, will be removed in
+            # ESMValCore v2.16.
+            rootpath = self.config["rootpath"]
+            target_dir = rootpath.get("OBS", rootpath["default"])[0]
+            return Path(target_dir, tier, dataset)
+
+        try:
+            # Only available since ESMValCore v2.14
+            import esmvalcore.io
+            import esmvalcore.io.local
+        except ImportError:
+            return None
+
+        target_dir = None
+        # Normalize the attributes so they can be used as facets in the
+        # directory name template of a LocalDataSource.
+        try:
+            attributes = read_cmor_config(dataset)["attributes"]
+        except FileNotFoundError:
+            # NCL scripts do not use a cmor config file.
+            return None
+        for attr in ["dataset", "project"]:
+            if attr not in attributes:
+                attributes[attr] = attributes[f"{attr}_id"]
+        # Load data sources from configuration.
+        data_sources = esmvalcore.io.load_data_sources(
+            self.config,
+            project=attributes["project"],
+        )
+        # Loop over potential target directories and try if the right attributes
+        # are available to format the directory name template. Use the first
+        # one that works.
+        for data_source in sorted(
+            data_sources,
+            key=lambda ds: ds.priority,
+        ):
+            if isinstance(
+                data_source,
+                esmvalcore.io.local.LocalDataSource,
+            ):
+                try:
+                    target_dir = (
+                        data_source.rootpath
+                        / data_source.dirname_template.format(
+                            **attributes,
+                        )
+                    )
+                except KeyError:
+                    pass
+                else:
+                    break
+        return target_dir
+
     def _get_dataset_tier(self, dataset: str) -> str:
         return f"Tier{self.datasets_info['datasets'][dataset]['tier']}"
 
     def _write_ncl_settings(
         self,
-        project_info,
-        dataset,
-        run_dir,
-        reformat_script,
-        start_year,
-        end_year,
-    ):
+        project_info: dict[str, dict[str, str]],
+        dataset: str,
+        run_dir: Path,
+        reformat_script: Path,
+        start: datetime.datetime | None,
+        end: datetime.datetime | None,
+    ) -> Path:
         """Write the information needed by the ncl reformat script."""
-        if start_year is None:
-            start_year = 0
-        else:
-            start_year = start_year.year
-        if end_year is None:
-            end_year = 0
-        else:
-            end_year = end_year.year
+        start_year = 0 if start is None else start.year
+        end_year = 0 if end is None else end.year
         settings = {
             "cmorization_script": reformat_script,
             "input_dir_path": project_info[dataset]["indir"],
@@ -486,19 +518,18 @@ class _Formatter:
             "start_year": start_year,
             "end_year": end_year,
         }
-        settings_filename = os.path.join(run_dir, dataset, "settings.ncl")
-        if not os.path.isdir(os.path.join(run_dir, dataset)):
-            os.makedirs(os.path.join(run_dir, dataset))
+        settings_filename = run_dir / dataset / "settings.ncl"
+        (run_dir / dataset).mkdir(parents=True, exist_ok=True)
         # write the settings file
         write_ncl_settings(settings, settings_filename)
         return settings_filename
 
     def _run_ncl_script(
         self,
-        in_dir: str,
-        out_dir: str,
+        in_dir: Path,
+        out_dir: Path,
         dataset: str,
-        script: str,
+        script: Path,
         start: datetime.datetime | None,
         end: datetime.datetime | None,
     ) -> bool:
@@ -510,29 +541,27 @@ class _Formatter:
         )
         project = {}
         project[dataset] = {}
-        project[dataset]["indir"] = in_dir
-        project[dataset]["outdir"] = out_dir
+        project[dataset]["indir"] = str(in_dir)
+        project[dataset]["outdir"] = str(out_dir)
         settings_file = self._write_ncl_settings(
-            project,
-            dataset,
-            self.run_dir,
-            script,
-            start,
-            end,
+            project_info=project,
+            dataset=dataset,
+            run_dir=self.run_dir,
+            reformat_script=script,
+            start=start,
+            end=end,
         )
 
         # put settings in environment
         env = dict(os.environ)
-        env["settings"] = settings_file
-        env["esmvaltool_root"] = os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.dirname(script))),
-        )
+        env["settings"] = str(settings_file)
+        env["esmvaltool_root"] = str(script.parents[3])
         env["cmor_tables"] = str(
             Path(esmvalcore.cmor.__file__).parent / "tables",
         )
         logger.info("Using CMOR tables at %s", env["cmor_tables"])
         # call NCL
-        ncl_call = ["ncl", script]
+        ncl_call = ["ncl", str(script)]
         logger.info("Executing cmd: %s", " ".join(ncl_call))
         with subprocess.Popen(
             ncl_call,
@@ -620,6 +649,7 @@ class DataCommand:
     def download(
         self,
         datasets: str | list[str],
+        *,
         original_data_dir: Path | None = None,
         start: str | None = None,
         end: str | None = None,
@@ -664,6 +694,7 @@ class DataCommand:
     def format(
         self,
         datasets: str | list[str],
+        *,
         original_data_dir: Path | None = None,
         start: str | None = None,
         end: str | None = None,
@@ -708,6 +739,7 @@ class DataCommand:
     def prepare(
         self,
         datasets: str | list[str],
+        *,
         original_data_dir: Path | None = None,
         start: str | None = None,
         end: str | None = None,
