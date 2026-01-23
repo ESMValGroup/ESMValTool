@@ -2485,7 +2485,7 @@ function cycle_plot(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20131206-frank_franziska: written.
+;    20131206-winterstein_franziska: written.
 ;
 local funcname, scriptname, wks_out, wks_in, data, source, res, atts, base, \
   varname

@@ -289,7 +289,7 @@ begin
     work_dir = output@work_dir
     opt = diag_script_info
     log_info(opt@wdiag)
-    plot_path = "missing"
+    plot_path = "n/a"
     plot_type = ""
 
     ; Iterate over all datasets

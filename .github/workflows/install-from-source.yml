@@ -7,46 +7,48 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.12", "3.13"]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: esmvaltool
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
-      - shell: bash -l {0}
-        run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
+      - run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
-        shell: bash -l {0}
         run: |
           mamba --version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - name: Install
-        shell: bash -l {0}
-        run: pip install -e .[develop] 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: pip install --no-deps -e .[develop] 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Verify installation
-        shell: bash -l {0}
         run: |
           esmvaltool --help
           esmvaltool version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: Source_Install_Linux_python_${{ matrix.python-version }}
           path: source_install_linux_artifacts_python_${{ matrix.python-version }}
@@ -56,35 +58,30 @@ jobs:
 #
 #  osx:
 #    runs-on: "macos-latest"
+#    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
 #    strategy:
 #      matrix:
-#        python-version: ["3.8", "3.9", "3.10"]
+#        python-version: ["3.11"]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:
 #      - uses: actions/checkout@v2
-#      - uses: conda-incubator/setup-miniconda@v2
+#      - uses: conda-incubator/setup-miniconda@v3
 #        with:
 #          activate-environment: esmvaltool
 #          environment-file: environment.yml
 #          python-version: ${{ matrix.python-version }}
 #          miniconda-version: "latest"
 #          channels: conda-forge
-#      - shell: bash -l {0}
-#        run: mkdir -p source_install_osx_artifacts_python_${{ matrix.python-version }}
-#      - shell: bash -l {0}
-#        run: conda --version 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
-#      - shell: bash -l {0}
-#        run: python -V 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
-#      - shell: bash -l {0}
-#        run: pip install -e .[develop] 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
-#      - shell: bash -l {0}
-#        run: esmvaltool --help
-#      - shell: bash -l {0}
-#        run: esmvaltool version 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
+#      - run: mkdir -p source_install_osx_artifacts_python_${{ matrix.python-version }}
+#      - run: conda --version 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+#      - run: python -V 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+#      - run: pip install --no-deps -e .[develop] 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+#      - run: esmvaltool --help
+#      - run: esmvaltool version 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
 #      - name: Upload artifacts
 #        if: ${{ always() }}  # upload artifacts even if fail
-#        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v6
 #        with:
 #          name: Source_Install_OSX_python_${{ matrix.python-version }}
 #          path: source_install_osx_artifacts_python_${{ matrix.python-version }}

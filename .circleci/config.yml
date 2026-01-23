@@ -5,7 +5,6 @@ orbs:
   coverage-reporter: codacy/coverage-reporter@13.13.0
 
 commands:
-
   check_changes:
     steps:
       - run:
@@ -27,6 +26,7 @@ commands:
           name: Log versions
           command: |
             . /opt/conda/etc/profile.d/conda.sh
+            conda env export --name base > /logs/base_environment.yml
             conda activate esmvaltool
             esmvaltool version
             dpkg -l > /logs/versions.txt
@@ -40,9 +40,11 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
+            pip check
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
+            esmvaltool develop compare -- --help
             ncl -V
             cdo --version
       - store_test_results:
@@ -73,7 +75,7 @@ commands:
       - run:
           name: Install git+ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - check_changes
@@ -84,14 +86,16 @@ commands:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install dependencies
+          no_output_timeout: 30m
           command: |
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create >> /logs/conda.txt 2>&1
+            mamba --version
+            conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
-            pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            mamba list >> /logs/conda.txt
+            pip install --no-deps << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
               rm -r esmvaltool
@@ -102,7 +106,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            flake8 -j 4
+            pre-commit run --all
       - test_and_report
       - save_cache:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
@@ -127,17 +131,17 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            set -x
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir /logs
-            pip install .[test] > /logs/install.txt 2>&1
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            pip install --no-deps .[test] > /logs/install.txt 2>&1
       - run:
           name: Check Python code style and mistakes
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            flake8 -j 4
+            pre-commit run --all
       - run:
           name: Remove source code to test the installed software
           command: rm -r esmvaltool
@@ -148,14 +152,14 @@ jobs:
             - /root/.cache/pip
             - .pytest_cache
       - coverage-reporter/send_report:
-          coverage-reports: 'test-reports/coverage.xml'
+          coverage-reports: "test-reports/coverage.xml"
           project-token: $CODACY_PROJECT_TOKEN
-          skip: true  # skip if project-token is not defined (i.e. on a fork)
+          skip: true # skip if project-token is not defined (i.e. on a fork)
 
   test_installation_from_source_test_mode:
     # Test installation from source
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -164,7 +168,7 @@ jobs:
   test_installation_from_source_develop_mode:
     # Test development installation
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -176,13 +180,13 @@ jobs:
     # purpose of this test to discover backward-incompatible changes early on in
     # the development cycle.
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - run:
           name: Install git and ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - run:
@@ -192,18 +196,21 @@ jobs:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install
+          no_output_timeout: 30m
           command: |
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create >> /logs/conda.txt 2>&1
+            # Temporarily install intake-esgf here until it is an ESMValCore dependency in v2.14.
+            echo "  - intake-esgf" >> environment.yml
+            conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
-            pip install --editable .[develop]
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            mamba list >> /logs/conda.txt
+            pip install --no-deps --editable .[develop]
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
-            pip install --editable $HOME/ESMValCore[develop]
+            pip install --no-deps --editable $HOME/ESMValCore[develop]
       - log_versions
       - test_and_report
       - run:
@@ -211,13 +218,9 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            mkdir -p ~/climate_data
-            esmvaltool config get_config_user
-            echo "offline: false" >> ~/.esmvaltool/config-user.yml
-            cat ~/.esmvaltool/config-user.yml
-            esmvaltool run examples/recipe_python.yml
+            esmvaltool config copy data-esmvalcore-esgf.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
-              esmvaltool run "$recipe"
+              esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
       - store_artifacts:
           path: /root/esmvaltool_output
@@ -231,8 +234,8 @@ jobs:
   build_documentation:
     # Test building documentation
     docker:
-      - image: condaforge/mambaforge:latest
-    resource_class: small
+      - image: condaforge/miniforge3:latest
+    resource_class: medium
     steps:
       - checkout
       - run:
@@ -240,9 +243,10 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
-            mamba env create
+            conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
-            pip install .[doc]
+            pip install --no-deps .[doc]
+            pip check
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -255,8 +259,8 @@ jobs:
   test_installation_from_conda:
     # Test conda package installation
     docker:
-      - image: condaforge/mambaforge:latest
-    resource_class: medium
+      - image: condaforge/miniforge3:latest
+    resource_class: large
     steps:
       - run:
           command: |
@@ -265,11 +269,9 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.10' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.12' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
-            # install the Julia dependencies
-            esmvaltool install Julia > /logs/install_Julia.txt 2>&1
             # Log versions
             mamba env export > /logs/environment.yml
             # Test installation

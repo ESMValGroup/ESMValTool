@@ -434,8 +434,6 @@ begin
     data(0, :) = data@_FillValue
   end if
 
-  nframe = 0
-
   do ii = 0, dim_MOD - 1
     if (ii .eq. refidx_x) then
       continue
@@ -485,7 +483,6 @@ begin
     res@tiMainString = names(ii)
 
     plots(ii) = gsn_csm_xy(wks, result_avg&bin, data, res)
-    nframe = nframe + 1
 
     if (ii .eq. mm_ind) then
       res_std = True
@@ -554,15 +551,9 @@ begin
   pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
                                               / tofloat((dim_MOD + 1) / 2)/))
   outfile = panelling(wks, plots(idx0), (n + 3) / 4, 4, pres)
-  nframe = nframe + 1
   delete(idx0)
 
   log_info("Wrote " + outfile)
-
-  suffix = get_file_suffix(outfile, 0)
-  if (suffix .eq. ".png") then
-    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-  end if
 
   ; ==========================================================================
 

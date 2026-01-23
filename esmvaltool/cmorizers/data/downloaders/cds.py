@@ -32,34 +32,41 @@ class CDSDownloader(BaseDownloader):
         Some products have a subfix appended to their name for certain
         variables. This parameter is to specify it, by default ''
     """
-    def __init__(self,
-                 product_name,
-                 config,
-                 request_dictionary,
-                 dataset,
-                 dataset_info,
-                 overwrite,
-                 extra_name=''):
+
+    def __init__(
+        self,
+        product_name,
+        config,
+        request_dictionary,
+        dataset,
+        dataset_info,
+        overwrite,
+        extra_name="",
+        cds_url="https://cds.climate.copernicus.eu/api",
+    ):
         super().__init__(config, dataset, dataset_info, overwrite)
         try:
-            self._client = cdsapi.Client()
+            self._client = cdsapi.Client(url=cds_url)
         except Exception as ex:
             if str(ex).endswith(".cdsapirc"):
                 logger.error(
-                    'Could not connect to the CDS due to issues with your '
+                    "Could not connect to the CDS due to issues with your "
                     '".cdsapirc" file. More info in '
-                    'https://cds.climate.copernicus.eu/api-how-to.')
+                    "https://cds.climate.copernicus.eu/api-how-to.",
+                )
             raise
         self._product_name = product_name
         self._request_dict = request_dictionary
         self.extra_name = extra_name
 
-    def download(self,
-                 year,
-                 month,
-                 day=None,
-                 file_pattern=None,
-                 file_format='tar'):
+    def download(
+        self,
+        year,
+        month,
+        day=None,
+        file_pattern=None,
+        file_format="tar",
+    ):
         """Download a specific month from the CDS.
 
         Parameters
@@ -76,13 +83,13 @@ class CDSDownloader(BaseDownloader):
             File format, by default tar
         """
         request_dict = self._request_dict.copy()
-        request_dict['year'] = f'{year}'
-        request_dict['month'] = f"{month:02d}"
+        request_dict["year"] = f"{year}"
+        request_dict["month"] = f"{month:02d}"
         if day:
             if isinstance(day, Iterable):
-                request_dict['day'] = day
+                request_dict["day"] = day
             else:
-                request_dict['day'] = f"{day:02d}"
+                request_dict["day"] = f"{day:02d}"
 
         date_str = f"{year}{month:02d}"
         if day:
@@ -93,6 +100,28 @@ class CDSDownloader(BaseDownloader):
         if file_pattern is None:
             file_pattern = f"{self._product_name}"
         file_path = f"{file_pattern}_{date_str}.{file_format}"
+        self.download_request(file_path, request_dict)
+
+    def download_year(self, year, file_pattern=None, file_format="zip"):
+        """Download a specific year from the CDS.
+
+        Parameters
+        ----------
+        year : int
+            Year to download
+        file_pattern : str, optional
+            Filename pattern, by default None
+        file_format : str, optional
+            File format, by default tar
+        """
+        request_dict = self._request_dict.copy()
+        request_dict["year"] = f"{year}"
+        request_dict["month"] = [f"{m:02d}" for m in range(1, 13)]
+
+        os.makedirs(self.local_folder, exist_ok=True)
+        if file_pattern is None:
+            file_pattern = f"{self._product_name}"
+        file_path = f"{file_pattern}_{year}.{file_format}"
         self.download_request(file_path, request_dict)
 
     def download_request(self, filename, request=None):
@@ -114,8 +143,10 @@ class CDSDownloader(BaseDownloader):
             if self.overwrite:
                 os.remove(filename)
             else:
-                logger.info('File %s already downloaded. Skipping...',
-                            filename)
+                logger.info(
+                    "File %s already downloaded. Skipping...",
+                    filename,
+                )
                 return
         try:
             self._client.retrieve(
@@ -124,5 +155,5 @@ class CDSDownloader(BaseDownloader):
                 filename,
             )
         except Exception:
-            logger.error('Failed request: %s', request)
+            logger.error("Failed request: %s", request)
             raise

@@ -49,7 +49,7 @@ and attach it in the release testing issue; to record the environment in a yaml 
 
 Modifications to configuration files need to be documented as well.
 To test recipes, it is recommended to only use the default options and DKRZ data directories, simply by uncommenting
-the DKRZ-Levante block of a newly generated ``config-user.yml`` file.
+the DKRZ-Levante block of a :ref:`newly generated configuration file <esmvalcore:config_yaml_files>`.
 
 Submit run scripts - test recipe runs
 -------------------------------------
@@ -61,7 +61,7 @@ You will have to set the name of your environment, your email address (if you wa
 More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
 <https://docs.dkrz.de/doc/levante/running-jobs/index.html>`_.
 
-You can also specify the path to your ``config-user.yml`` file where ``max_parallel_tasks`` can be set. The script was found to work well with ``max_parallel_tasks=8``. Some recipes need to be run with ``max_parallel_tasks=1`` (large memory requirements, CMIP3 data, diagnostic issues, ...). These recipes are listed in `ONE_TASK_RECIPES`.
+You can also specify the path to your configuration directory where ``max_parallel_tasks`` can be set in a YAML file. The script was found to work well with ``max_parallel_tasks=8``. Some recipes need to be run with ``max_parallel_tasks=1`` (large memory requirements, CMIP3 data, diagnostic issues, ...). These recipes are listed in `ONE_TASK_RECIPES`.
 
 Some recipes need other job requirements, you can add their headers in the `SPECIAL_RECIPES` dictionary. Otherwise the header will be written following the template that is written in the lines below. If you want to exclude recipes, you can do so by uncommenting the `exclude` lines.
 
@@ -136,11 +136,11 @@ Recipe output can be copied by doing from the VM:
 
 .. code-block:: bash
 
-  nohup rsync -rlt /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
-  
+  nohup rsync --exclude preproc/ -rlt /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
+
 By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
 becomes available online, see for `example
-<https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
+<https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/>`_.
 Before copying the recipe output to the VM, you may want to clean up your directory containing
 the results by removing any large ``preproc`` directories of failed runs and only keeping the last run for each recipe.
 This will help generating a clearer overview webpage.
@@ -151,13 +151,13 @@ Link the overview webpage to the release issue.
 This makes it much easier to ask for feedback from recipe developers and analyse failures.
 
 Results produced with the final ESMValCore release candidate should be put in a VM directory
-named after the version number, e.g. ``v2.x.x``. 
+named after the version number, e.g. ``v2.x.x``.
 Once the release process is over, test results produced with previous release candidates can be deleted to save space on the VM.
 
 .. note::
 
   If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
-  the data will be removed after two weeks, so you will have to quickly move the 
+  the data will be removed after two weeks, so you will have to quickly move the
   output data to the VM, using the ``nohup`` command above.
 
 Running the comparison
@@ -189,15 +189,15 @@ The steps to running the compare tool on the VM are the following:
 - prerequisite - install `imagehash`: `pip install imagehash`
 - reference run (v2.7.0; previous stable release): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
-- run the :ref:`comparison script<compare_recipe_runs>` with: 
+- run the :ref:`comparison script<compare_recipe_runs>` with:
 
 .. code-block:: bash
 
-  nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
+  nohup python ESMValTool/esmvaltool/utils/develop/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
 Copy the comparison txt file to the release issue.
-Some of the recipes will appear as having identical output to the one from previous release. 
-However, others will need human inspection. 
+Some of the recipes will appear as having identical output to the one from previous release.
+However, others will need human inspection.
 Ask the recipe maintainers (`@ESMValGroup/esmvaltool-recipe-maintainers`_) and ESMValTool Development Team (`@ESMValGroup/esmvaltool-developmentteam`_) to provide assistance in checking the results.
 Here are some guidelines on how to perform the human inspection:
 

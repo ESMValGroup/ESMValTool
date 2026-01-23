@@ -1,0 +1,18 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NOAA-MBL-CH4
+  version: '1.0'
+  tier: 2
+  modeling_realm: atmos
+  project_id: OBS6
+  source: 'https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv'
+  reference: 'noaa-mbl-ch4'
+
+# Variables to cmorize
+variables:
+  ch4s:
+    filename: ch4_mm_gl.csv
+    mip: Amon
+    raw_name: ch4
+    raw_units: 'nmol mol-1'

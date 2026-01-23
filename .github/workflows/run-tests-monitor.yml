@@ -10,55 +10,54 @@ on:
   #   branches:
   #   - main
   schedule:
-    - cron: '0 0 * * *'  # nightly
+    - cron: "0 0 * * *" # nightly
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: esmvaltool
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
-      - shell: bash -l {0}
-        run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
+      - run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
-        shell: bash -l {0}
         run: |
           mamba --version 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Inspect environment
+        run: conda list
       - name: Install pytest-monitor
-        shell: bash -l {0}
         run: pip install pytest-monitor
       - name: Install ESMValTool
-        shell: bash -l {0}
-        run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install Julia dependencies
-        shell: bash -l {0}
-        run: esmvaltool install Julia
+        run: pip install --no-deps -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
-        shell: bash -l {0}
         run: >
           pytest -n 2 -m "not installation" --db ../.pymon 2>&1
           | tee test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Parse monitor information
-        shell: bash -l {0}
         run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: Test_Linux_python_${{ matrix.python-version }}
           path: test_linux_artifacts_python_${{ matrix.python-version }}
@@ -67,49 +66,50 @@ jobs:
     runs-on: "macos-latest"
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.12", "3.13"]
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
+          architecture: ${{ matrix.architecture }}
           activate-environment: esmvaltool
           environment-file: environment_osx.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       # - name: Install libomp with homebrew
       #   run: brew install libomp
-      - shell: bash -l {0}
-        run: mkdir -p test_osx_artifacts_python_${{ matrix.python-version }}
+      - run: mkdir -p test_osx_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
-        shell: bash -l {0}
         run: |
           mamba --version 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Inspect environment
+        run: conda list
+      - name: Determine if git
+        run: |
+          which git
+          git --version
       - name: Install pytest-monitor
-        shell: bash -l {0}
         run: pip install pytest-monitor
       - name: Install ESMValTool
-        shell: bash -l {0}
         run: >
-          pip install -e .[develop] 2>&1
+          pip install --no-deps -e .[develop] 2>&1
           | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
-        shell: bash -l {0}
         run: >
           pytest -n 2 -m "not installation" --db ../.pymon 2>&1
           | tee test_osx_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Parse monitor information
-        shell: bash -l {0}
         run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: Test_OSX_python_${{ matrix.python-version }}
           path: test_osx_artifacts_python_${{ matrix.python-version }}

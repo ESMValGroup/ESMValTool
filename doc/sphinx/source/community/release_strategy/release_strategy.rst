@@ -54,32 +54,103 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.9.0 (Release Manager: TBA)
++------------+-----------------------+------------------+
+|  Date      | Release manager       | Version          |
++============+=======================+==================+
+| 2026 Q1    | DLR                   | 2.14.0           |
++------------+-----------------------+------------------+
+| 2026 Q2    | ACCESS-NRI            | 2.15.0           |
++------------+-----------------------+------------------+
+| 2026 Q4    | Met Office            | 2.16.0           |
++------------+-----------------------+------------------+
+| 2027 Q1    | NLeSC                 | 2.17.0           |
++------------+-----------------------+------------------+
+| 2027 Q2    | NERC (NCAS)           | 2.18.0           |
++------------+-----------------------+------------------+
+| 2027 Q4    | BSC                   | 2.19.0           |
++------------+-----------------------+------------------+
 
-+------------+--------------------------+
-| 2023-06-05 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2023-06-12 |ESMValCore release        |
-+------------+--------------------------+
-| 2023-06-19 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2023-06-26 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.10.0 (Release Manager: TBA)
-
-+------------+--------------------------+
-| 2023-10-02 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2023-10-09 |ESMValCore release        |
-+------------+--------------------------+
-| 2023-10-16 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2023-10-23 |ESMValTool release        |
-+------------+--------------------------+
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.13.0 (Release Manager: `Julien Lenhardt`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2025-08-18 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-08-29 | 2025-10-16 | ESMValCore Release 2.13.0              | :ref:`esmvalcore:changelog-v2-13-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-09-01 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-09-12 | 2025-10-20 | ESMValTool Release 2.13.0              |      :ref:`changelog-v2-13-0`       |
++------------+------------+----------------------------------------+-------------------------------------+
+
+- 2.12.0 (Release Manager: `Saskia Loosveldt Tomas`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2025-01-13 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-01-20 | 2025-02-27 | :esmvalcore-release:`v2.12.0` released | :ref:`esmvalcore:changelog-v2-12-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-01-27 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-02-03 | 2025-03-05 | :release:`v2.12.0` released            | :ref:`changelog-v2-12-0`            |
++------------+------------+----------------------------------------+-------------------------------------+
+
+- 2.11.0 (Release Manager: Met Office: `Emma Hogan`_, `Chris Billows`_, `Ed Gillett`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2024-04-22 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-03 | 2024-07-03 | :esmvalcore-release:`v2.11.0` released | :ref:`esmvalcore:changelog-v2-11-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-06 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-17 | 2024-07-04 | :release:`v2.11.0` released            | :ref:`changelog-v2-11-0`            |
++------------+------------+----------------------------------------+-------------------------------------+
+
+- 2.10.0 (Release Manager: `Klaus Zimmermann`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2023-10-02 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-10-09 | 2023-12-19 | :esmvalcore-release:`v2.10.0` released | :ref:`esmvalcore:changelog-v2-10-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-10-16 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-10-16 | 2023-12-20 | :release:`v2.10.0` released            | :ref:`changelog-v2-10-0`            |
++------------+------------+----------------------------------------+-------------------------------------+
+
+- 2.9.0 (Release Manager: `Bouwe Andela`_)
+
++------------+------------+---------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                      |             Changelog               |
++============+============+=======================================+=====================================+
+| 2023-06-05 |            | ESMValCore `Feature Freeze`_          |                                     |
++------------+------------+---------------------------------------+-------------------------------------+
+| 2023-06-12 | 2023-07-04 | :esmvalcore-release:`v2.9.0` released | :ref:`esmvalcore:changelog-v2-9-0`  |
++------------+------------+---------------------------------------+-------------------------------------+
+| 2023-06-19 |            | ESMValTool `Feature Freeze`_          |                                     |
++------------+------------+---------------------------------------+-------------------------------------+
+| 2023-06-26 | 2023-07-06 | :release:`v2.9.0` released            | :ref:`changelog-v2-9-0`             |
++------------+------------+---------------------------------------+-------------------------------------+
+
+- 2.8.1 (Bugfix, Release Manager: `Valeriu Predoi`_)
+
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|    Done    |                                            Event                                            |             Changelog              |
++============+=============================================================================================+====================================+
+| 2023-06-02 | `ESMValCore Release 2.8.1 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.8.1>`_ | :ref:`esmvalcore:changelog-v2-8-1` |
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.8.0 (Release Manager: `Rémi Kazeroni`_)
 
@@ -277,6 +348,8 @@ These are the detailed steps to take to make a release.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Update the :ref:`list of broken recipes <broken-recipe-list>` with new recipes that could not be run successfully during the testing.
      Open a separate GitHub issue for each failing recipe and assign the next milestone.
+     Open an overview issue, see :issue:`3484` for an example, and review past overview issues.
+     Take action to ensure that the broken recipe policy is followed.
 
 
 #. ESMValCore release
@@ -329,7 +402,7 @@ Glossary
 
 Feature freeze
 ~~~~~~~~~~~~~~
-The date on which no new features may be submitted for the upcoming release. 
+The date on which no new features may be submitted for the upcoming release.
 After this date, only critical bug fixes can still be included to the :ref:`release_branch`.
 Development work can continue in the main branch.
 If you are unsure whether new developments could interfere with the release, check with the :ref:`release_manager`.
@@ -401,7 +474,7 @@ All tests should pass before making a release (branch).
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The version number is automatically generated from the information provided by
-git using [setuptools-scm](https://pypi.org/project/setuptools-scm/), but a
+git using `setuptools-scm <https://pypi.org/project/setuptools-scm/>`__, but a
 static version number is stored in ``CITATION.cff``.
 Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
@@ -437,6 +510,9 @@ Make a pull request and get it merged into ``main``.
 4. Create a release branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Create a branch off the ``main`` branch and push it to GitHub.
+The name of the release branch should be of the form ``vX.Y.x``,
+where ``X.Y`` is the major and minor version number of the release, e.g.
+``v2.1.x`` for the releases ``v2.1.0``, ``v2.1.1``, etc.
 Ask someone with administrative permissions to set up branch protection rules
 for it so only you and the person helping you with the release can push to it.
 Announce the name of the branch in an issue and ask the members of the
@@ -454,16 +530,48 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-6. Create and upload the PyPI package
+6. Merge the release branch back into the main branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When the (pre-)release is tagged, it is time to merge the release branch back into `main`.
+We do this for two reasons, namely, one, to mark the point up to which commits in `main`
+have been considered for inclusion into the present release, and, two, to inform
+setuptools-scm about the version number so that it creates the correct version number in
+`main`.
+However, unlike in a normal merge, we do not want to integrate any of the changes from the
+release branch into main.
+This is because all changes that should be in both branches, i.e. bug fixes, originate from
+`main` anyway and the only other changes in the release branch relate to the release itself.
+To take this into account, we perform the merge in this case on the command line using `the
+ours merge strategy <https://git-scm.com/docs/merge-strategies#Documentation/merge-strategies.txt-ours-1>`__
+(``git merge -s ours``), not to be confused with the ``ours`` option to the ort merge strategy
+(``git merge -X ours``).
+For details about merge strategies, see the above-linked page.
+To execute the merge use following sequence of steps
+
+.. code-block:: bash
+
+   git fetch
+   git checkout main
+   git pull
+   git merge -s ours v2.1.x
+   git push
+
+Note that the release branch remains intact and you should continue any work on the release
+on that branch.
+
+7. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
 `PyPI <https://pypi.org/project/ESMValTool/>`__
-by a GitHub action.
-If has failed for some reason, build and upload the package manually by
-following the instructions below.
+by a GitHub action. Note that for security reasons, the upload needs to be
+approved by someone from the
+`ESMValGroup/technical-lead-development-team <https://github.com/orgs/ESMValGroup/teams/technical-lead-development-team>`__
+who is not the author of the release.
 
-Follow these steps to create a new Python package:
+If the automatic build and upload has failed for some reason, do it manually by
+following these instructions:
 
 -  Check out the tag corresponding to the release,
    e.g. ``git checkout tags/v2.1.0``
@@ -471,9 +579,9 @@ Follow these steps to create a new Python package:
    of ``git status`` and by running ``git clean -xdf`` to remove any files
    ignored by git.
 -  Install the required packages:
-   ``python3 -m pip install --upgrade pep517 twine``
+   ``python3 -m pip install --upgrade build twine``
 -  Build the package:
-   ``python3 -m pep517.build --source --binary --out-dir dist/ .``
+   ``python3 -m build``
    This command should generate two files in the ``dist`` directory, e.g.
    ``ESMValTool-2.1.0-py3-none-any.whl`` and ``ESMValTool-2.1.0.tar.gz``.
 -  Upload the package:
@@ -485,7 +593,7 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
-7. Create the Conda package
+8. Create the Conda package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``esmvaltool`` package is published on the `conda-forge conda channel
@@ -506,7 +614,7 @@ they will merge the pull request, which will in turn publish the package on
 conda-forge some time later.
 Contact the feedstock maintainers if you want to become a maintainer yourself.
 
-8. Check the Docker images
+9. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are three main Docker container images available for ESMValTool on
@@ -540,7 +648,7 @@ built correctly by
 1. checking that the version tag is available on `Dockerhub`_ and the ``stable``
    tag has been updated,
 2. running some recipes with the ``stable`` tag Docker container, for example one
-   recipe for Python, NCL, R, and Julia,
+   recipe for Python, NCL, and R,
 3. running a recipe with a Singularity container built from the ``stable`` tag.
 
 If there is a problem with the automatically built container image, you can fix
@@ -599,3 +707,7 @@ Changelog
 .. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc
 .. _Klaus Zimmermann: https://github.com/zklaus
+.. _Emma Hogan: https://github.com/ehogan
+.. _Chris Billows: https://github.com/chrisbillowsMO
+.. _Ed Gillett: https://github.com/mo-gill
+.. _Julien Lenhardt: https://github.com/jlenh

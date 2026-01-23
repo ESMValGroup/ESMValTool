@@ -1,6 +1,6 @@
 ; #############################################################################
 ; MAIN SCRIPT FOR PERFORMANCE METRICS
-; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; Authors: Mattia Righi (DLR, Germany) and Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 ;
@@ -92,7 +92,7 @@
 ;    20140905-righi_mattia: consistent regridding and missing values mask.
 ;    20140701-gottschaldt_klaus-dirk: Adapted for T1M.
 ;    20140630-gottschaldt_klaus-dirk: Adapted for T0Ms.
-;    20131203-frank_franziska: written.
+;    20131203-winterstein_franziska: written.
 ;
 ; #############################################################################
 
@@ -353,7 +353,8 @@ begin
 
         ; Provenance information
         statistics = (/"rmsd"/)
-        authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+        authors = (/"winterstein_franziska", "righi_mattia", \
+                    "eyring_veronika"/)
         references = (/"righi15gmd", "gleckler08jgr"/)
 
       elseif (diag_script_info@metric(met).eq."BIAS") then
@@ -379,7 +380,8 @@ begin
 
         ; Provenance information
         statistics = (/"diff"/)
-        authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+        authors = (/"winterstein_franziska", "righi_mattia", \
+                    "eyring_veronika"/)
         references = (/"righi15gmd", "gleckler08jgr"/)
 
       elseif (diag_script_info@metric(met).eq."taylor") then
@@ -392,7 +394,8 @@ begin
 
         ; Provenance information
         statistics = (/"rmsd", "corr"/)
-        authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+        authors = (/"winterstein_franziska", "righi_mattia", \
+                    "eyring_veronika"/)
         references = (/"righi15gmd", "gleckler08jgr"/)
 
       elseif (diag_script_info@metric(met).eq."SMPI") then

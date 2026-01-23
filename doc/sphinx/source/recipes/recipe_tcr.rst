@@ -51,8 +51,8 @@ User settings in recipe
      path can be given relative to this diagnostic script or as absolute path.
    * ``savefig_kwargs``, *dict*, optional: Keyword arguments for
      :func:`matplotlib.pyplot.savefig`.
-   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
-     (affects all plots).
+   * ``seaborn_settings``, *dict*, optional: Options for
+     :func:`seaborn.set_theme` (affects all plots).
 
 * Script climate_metrics/create_barplot.py
 

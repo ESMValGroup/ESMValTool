@@ -1,4 +1,5 @@
 """Script to download OceanSODA-ETHZ."""
+
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -6,8 +7,14 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
@@ -34,6 +41,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     downloader.download_file(
         "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/"
-        "OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc",
+        "OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc",
         wget_options=[],
     )
