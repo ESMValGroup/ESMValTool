@@ -100,8 +100,8 @@ def main(cfg):
     ensobs=''
     pool_int_var=True #Flag to pool internal variability estimates.
     if obs=='had5':
-        obs_file=auxiliary_data_dir+'/HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc'
-        ensobs=auxiliary_data_dir+'/HadCRUT.5.0.1.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
+        obs_file=auxiliary_data_dir+'/HadCRUT.5.0.2.0.anomalies.ensemble_mean.nc'
+        ensobs=auxiliary_data_dir+'/HadCRUT.5.0.2.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
     elif obs=='had4':
         obs_file=auxiliary_data_dir+'/HadCRUT.4.6.0.0.median.nc'  #Updated to end of 2019.
         ensobs=auxiliary_data_dir+'/HadCRUT.4.6.0.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
@@ -148,7 +148,9 @@ def main(cfg):
     nens_max=100
     mean_diag=numpy.zeros((ldiag,nexp,nmodel))
     mean_dec_warming=numpy.zeros((nexp,nmodel))
+    mean_ann_trend=numpy.zeros((nexp,nmodel))
     ci90_dec_warming=numpy.zeros((nexp,nmodel))
+    ci90_ann_trend=numpy.zeros((nexp,nmodel))
     anom=numpy.zeros((ldiag,anom_max))
     anom_mod=numpy.zeros((anom_max))
     anom_index=0
@@ -178,6 +180,7 @@ def main(cfg):
             ens_sizes[experiment,mm]=nens
             exp_diags=numpy.zeros((ldiag,nens))
             exp_dec_warming=numpy.zeros(nens)
+            exp_ann_trend=numpy.zeros(nens)
             exp_gmst_comp_warming=numpy.zeros((nyear,nens))
        
             for ee, ensemble in enumerate(grouped_exp_input_data):
@@ -189,13 +192,23 @@ def main(cfg):
                 logger.info("*************** Files for blend and mask %s", files)
                 dec_warming=[]
                 obs_dec_warming=[]
+                ann_warming=[]
                 gmst_comp_warming=[]
                 
                 #Calculate the diagnostic used for attribution from an individual simulation.
-                (exp_diags[:,ee],had4_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,0,gmst_comp_warming,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming,warming_years,sr15_flag,gmst_flag)
+                (exp_diags[:,ee],had4_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming,warming_years,sr15_flag,gmst_flag)
                 ensobs='' #Set to empty string so that ensemble obs diagnostics are only calculated on the first iteration.
                 exp_dec_warming[ee]=dec_warming[0]
                 exp_gmst_comp_warming[:,ee]=gmst_comp_warming[0]
+
+                tt=numpy.arange(0,warming_years[1]-warming_years[0]+1)
+                print ("Linear trend numbers",tt,gmst_comp_warming[0][warming_years[0]-1850:warming_years[1]-1850+1])
+#Changed to use gmst_comp for trend instead of GSAT.
+#                coef=numpy.polyfit(tt,ann_warming[0][warming_years[0]-1850:warming_years[1]-1850+1],1)
+                coef=numpy.polyfit(tt,gmst_comp_warming[0][warming_years[0]-1850:warming_years[1]-1850+1],1)
+                print ("Linear trend numbers",coef)
+                exp_ann_trend[ee]=coef[0]
+
             #Average diagnostic and warming in 2010-2019 vs 1850-1899 GSAT over ensemble members.
             if mm==1 and experiment ==1: #Select GISS nat simulations.
               plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
@@ -206,12 +219,14 @@ def main(cfg):
 
             mean_diag[:,experiment,mm]=numpy.mean(exp_diags,axis=1)
             mean_dec_warming[experiment,mm]=numpy.mean(exp_dec_warming)
+            mean_ann_trend[experiment,mm]=numpy.mean(exp_ann_trend)
             mean_gmst_comp_warming[:,experiment,mm]=numpy.mean(exp_gmst_comp_warming,axis=1)
             if nens==1:
                 ci90_dec_warming[experiment,mm]=ci90_dec_warming[numpy.nonzero(ci90_dec_warming*(ens_sizes**0.5))].mean() #use mean of CIs already calculated, corrected for ensemble size if ensemble size is 1.
             else:        
                 ci90_dec_warming[experiment,mm]=(numpy.std(exp_dec_warming,ddof=1)/((nens)**0.5))*t.ppf(0.95,nens-1)
                 ci90_gmst_comp_warming[:,experiment,mm]=(numpy.std(exp_gmst_comp_warming,axis=1,ddof=1)/((nens)**0.5))*t.ppf(0.95,nens-1)
+                ci90_ann_trend[experiment,mm]=(numpy.std(exp_ann_trend,ddof=1)/((nens)**0.5))*t.ppf(0.95,nens-1)
             if nens>1: anom[:,anom_index:anom_index+nens-1]=(exp_diags[:,0:nens-1]-mean_diag[:,experiment:experiment+1,mm])*((nens/(nens-1))**0.5) #Intra-ensemble anomalies for use as pseudo-control. Only use nens-1 ensemble members to ensure independence, and inflate variance by sqrt (nens / (nens-1)) to account for subtraction of ensemble mean.
             anom_mod[anom_index:anom_index+nens-1]=mm
             anom_index=anom_index+nens-1
@@ -401,6 +416,9 @@ def main(cfg):
     att_out3[dataset]=da.tls(xr[:,0:3],yr,cn1,ne=neff[[0,1,2]],cn2=cn2,flag_3S=1,RCT_flag=rcplot)
     multim_mean_dec_warming=numpy.mean(mean_dec_warming[:,model_indices],axis=1)
     multim_mean_gmst_comp_warming=numpy.mean(mean_gmst_comp_warming[:,:,model_indices],axis=2)
+    multim_mean_ann_trend=numpy.mean(mean_ann_trend[:,model_indices],axis=1)
+    print ('mean_ann_trend[0,:] (historical)', mean_ann_trend[0,:])
+    print ('mean_ann_trend[1,:] (hist-nat)', mean_ann_trend[1,:])
 #Compute uncertainty in attributable warming based on spread in ratio of GSAT to GMST warming across models.
     if diag_name[0:4]=='hemi':
       nlat=2
@@ -408,11 +426,15 @@ def main(cfg):
       mean_diag=numpy.mean(numpy.reshape(mean_diag,(nlat,nper,nexp,nmodel)),axis=0)
     mean_dec_warming_gmst=numpy.squeeze(numpy.mean(mean_diag[32:34,:,:],axis=0)-numpy.mean(mean_diag[0:10,:,:],axis=0)) #Assume 5-yr means, calculate 2010-2019-1850-1899 in GMST.
     multim_mean_dec_warming_gmst=numpy.mean(mean_dec_warming_gmst[:,model_indices],axis=1)
-    if not gmst_flag and warming_years==[2010,2019]:
-      #Define uncertainty in multi-model mean warming to 2010-2019 based on spread in ratio of GSAT to GMST increase across models, as in Gillett et al., 2021.
-      multim_ci90_dec_warming=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming,axis=1)
-    else:
-      multim_ci90_dec_warming=(numpy.mean(ci90_dec_warming**2,axis=1))**0.5 #RMS dec warming uncertainty across models.
+#Commented out here because this ratio can't be calculated for periods other than 2010-2019 easily, and want to have consistency across periods.
+#    if not gmst_flag and warming_years==[2010,2019]:
+#      #Define uncertainty in multi-model mean warming to 2010-2019 based on spread in ratio of GSAT to GMST increase across models, as in Gillett et al., 2021.
+#      multim_ci90_dec_warming=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming,axis=1)
+#    else:
+    multim_ci90_dec_warming=(numpy.mean(ci90_dec_warming**2,axis=1))**0.5 #RMS dec warming uncertainty across models.
+    multim_ci90_ann_trend=(numpy.mean(ci90_ann_trend**2,axis=1))**0.5 #RMS warming trend uncertainty across models.
+#    multim_ci90_ann_trend=numpy.std(mean_ann_trend/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming_gmst,axis=1)
+#    multim_ci90_ann_trend=[0,0] #Assume zero internal variability uncertainty for now.
     multim_ci90_gmst_comp_warming=numpy.zeros((nyear,nexp))
     for yy in range(nyear):
       multim_ci90_gmst_comp_warming[yy,:]= (numpy.mean(ci90_gmst_comp_warming[yy,:,:]**2,axis=1))**0.5 #RMS dec warming uncertainty across models.   
@@ -481,13 +503,23 @@ def main(cfg):
         plt.plot([mm_attrib+1.0,mm_attrib+1.0],att_out3[dataset]['betaCI'][1,:]*multim_mean_dec_warming[1],color=cols[1,:],linestyle='None',marker='_')    
         plt.plot([mm_attrib+1.2,mm_attrib+1.2],att_out3[dataset]['betaCI'][0,:]*(multim_mean_dec_warming[0]-multim_mean_dec_warming[1]-multim_mean_dec_warming[2]),color=cols[0,:],linestyle='None',marker='_')
 
+#Attributable warming ranges for 2010-2019 trends.
+      print ('Two-way attributable warming - trends')
+      print ('multim_mean_ann_trend',multim_mean_ann_trend)
+      print ('Trend terms',att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_ann_trend[0]-multim_mean_ann_trend[1],(multim_ci90_ann_trend[0]**2+multim_ci90_ann_trend[1]**2)**0.5,ci90_beta_obs2[0])
+      [att_warming,att_warming_range,dummy]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_ann_trend[0]-multim_mean_ann_trend[1],(multim_ci90_ann_trend[0]**2+multim_ci90_ann_trend[1]**2)**0.5,ci90_beta_obs2[0])
+      print ('ANT:',att_warming,att_warming_range)
+      [att_warming,att_warming_range,dummy]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_ann_trend[1],multim_ci90_ann_trend[1],ci90_beta_obs2[1])
+      print ('NAT:',att_warming,att_warming_range)
+
       
     nmodel_attrib=mm_attrib
       
-    obs_warming=obs_dec_warming[0]*numpy.mean(mean_dec_warming[0,:])/numpy.mean(mean_dec_warming_gmst[0,:])
+#    obs_warming=obs_dec_warming[0]*numpy.mean(mean_dec_warming[0,:])/numpy.mean(mean_dec_warming_gmst[0,:])
 
-    print ('Obs warming',obs_warming)
+#    print ('Obs warming',obs_warming)
     print ('Obs warming in GMST',obs_dec_warming[0])
+
     #Finish off plots.
     panel_labels=['a','b','c','d','e','f']
     panel_counter=0
@@ -528,7 +560,7 @@ def main(cfg):
       
     for ff in [bottomleft,bottomright]:
         plt.subplot(ff)
-        plt.plot([0,nmodel_attrib+2],[obs_warming,obs_warming],color='black',linewidth=1,label='Had4 GSAT')
+#        plt.plot([0,nmodel_attrib+2],[obs_warming,obs_warming],color='black',linewidth=1,label='Had4 GSAT')
         if ff == bottomleft: plt.ylabel('Attributable change 2010-2019 vs 1850-1900 ($^\circ$C)')#,size='x-small') 
         plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--')
         if pool_int_var:
