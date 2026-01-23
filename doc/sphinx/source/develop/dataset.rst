@@ -10,15 +10,14 @@ The following steps are necessary to prepare an observational
 data set for the use in ESMValTool.
 
 | `1. Check if your variable is CMOR standard`_
-| `2. Edit your configuration file`_
-| `3. Store your dataset in the right place`_
-| `3.1 Downloader script (optional)`_
-| `4. Create a cmorizer for the dataset`_
-| `4.1 Cmorizer script written in python`_
-| `4.2 Cmorizer script written in NCL`_
-| `5. Run the cmorizing script`_
-| `6. Naming convention of the observational data files`_
-| `7. Test the cmorized dataset`_
+| `2. Store your dataset in the right place`_
+| `2.1 Downloader script (optional)`_
+| `3. Create a cmorizer for the dataset`_
+| `3.1 Cmorizer script written in python`_
+| `3.2 Cmorizer script written in NCL`_
+| `4. Run the cmorizing script`_
+| `5. Naming convention of the observational data files`_
+| `6. Test the cmorized dataset`_
 
 .. note::
   **CMORization as a fix.** As of early 2020, we've started implementing cmorization as
@@ -80,7 +79,7 @@ The dataset entry should contain:
 - the ``info`` that explain how to download the data.
 
 Note that these fields should be identical to the content of the header
-of the cmorizing script (see Section `4. Create a cmorizer for the dataset`_).
+of the cmorizing script (see Section `3. Create a cmorizer for the dataset`_).
 
 2.1 Downloader script (optional)
 --------------------------------
@@ -267,10 +266,9 @@ does not support it (i.e. because it is provided as a single file). Valid format
 
 .. note::
 
-   The output path given in the configuration file is the path where
+   The ``output_dir`` path given in the :ref:`configuration file <esmvalcore:config>` is the path where
    your cmorized dataset will be stored. The ESMValTool will create a folder
-   with the correct tier information
-   (see Section `2. Edit your configuration file`_) if that tier folder is not
+   with the correct tier information if that tier folder is not
    already available, and then a folder named after the dataset.
    In this folder the cmorized data set will be stored as a NetCDF file.
    The cmorized dataset will be automatically moved to the correct tier
