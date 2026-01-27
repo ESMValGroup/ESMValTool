@@ -1,0 +1,73 @@
+# ESMValTool
+# recipe_mjo.yml
+---
+documentation:
+  title: MJO wavenumber-frequency spectra
+
+  description:
+     Computes the wavenumber-frequency spectra of variables for the equatorial region.
+     Data saved as netcdf files for future use and publication quality figures are plotted.
+
+     The scripts are expecting data to be periodic (cyclic) in the longitude direction.
+     The latitude extent must include latitudes about the equator. Further, the latitude
+     and longitude coordinate arrays must consist of one dimensional monotonically
+     {in/de}creasing values.
+
+  authors:
+    - xavier_prince
+
+  maintainer:
+    - xavier_prince
+
+  projects:
+    - ukesm
+
+datasets:
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: ACCESS1-3, 'institute': CSIRO-BOM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+
+preprocessors:
+  extract_region:
+    &extract_region
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -15.
+      end_latitude: 15.
+
+  pp_precip:
+    <<: *extract_region
+    convert_units:
+      units: mm day-1
+
+  pp_levels_winds:
+    <<: *extract_region
+    extract_levels:
+      levels: [85000., 20000.]
+      scheme: linear
+
+diagnostics:
+  eqw_spectra_pr:
+    description: equatorial waves spectra precip
+    variables:
+      pr:
+        mip: day
+        preprocessor: pp_precip
+    scripts:
+      &main
+      main:
+        script: mjo/mjo_diag.py
+        reference_datasets: [ "ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3" ]
+        regrid_dataset: ERA-Interim
+        mip_name: CMIP
+        base_range: [ 1981, 2000 ]
+        analysis_range: [ 1981, 2000 ]
+
+  eqw_spectra_winds:
+    description: equatorial waves spectra winds
+    variables:
+      ua:
+        mip: day
+        preprocessor: pp_levels_winds
+    scripts:
+      *main
