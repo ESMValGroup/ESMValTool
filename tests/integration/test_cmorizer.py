@@ -3,6 +3,7 @@
 import contextlib
 import os
 import sys
+from pathlib import Path
 
 import iris
 import iris.coord_systems
@@ -34,9 +35,6 @@ def write_config_file(dirname):
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
-        "rootpath": {
-            "RAWOBS": str(dirname / "raw_stuff"),
-        },
         "log_level": "debug",
     }
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
@@ -83,7 +81,7 @@ def _create_sample_cube(time_step):
     return cube
 
 
-def put_dummy_data(data_path):
+def put_dummy_data(data_path: Path) -> None:
     """Create a small dummy netCDF file to be cmorized."""
     data_info = [
         # dir_name, file_name_prefix, var_name
@@ -104,16 +102,6 @@ def put_dummy_data(data_path):
             file_path = os.path.join(file_dir, file_name)
             gen_cube.var_name = var_name
             iris.save(gen_cube, file_path)
-
-
-def check_log_file(log_file, no_data=False):
-    """Check the cmorization log file."""
-    with open(log_file) as log:
-        if no_data:
-            msg = "Data for WOA not found"
-        else:
-            msg = "Fixing data"
-        assert any(msg in line for line in log)
 
 
 def check_output_exists(output_path):
@@ -154,30 +142,34 @@ def arguments(*args):
     sys.argv = backup
 
 
-def test_cmorize_obs_woa_no_data(tmp_path):
+def test_cmorize_obs_woa_no_data(tmp_path: Path) -> None:
     """Test for example run of cmorize_obs command."""
     write_config_file(tmp_path)
-    os.makedirs(os.path.join(tmp_path, "raw_stuff", "Tier2"))
-    with keep_cwd(), pytest.raises(RuntimeError):
-        DataCommand().format("WOA", config_dir=str(tmp_path))
+    os.makedirs(os.path.join(tmp_path, "original_data", "Tier2"))
+    with (
+        keep_cwd(),
+        pytest.raises(
+            NotADirectoryError, match="Data for dataset 'WOA' not found"
+        ),
+    ):
+        DataCommand().format(
+            "WOA",
+            original_data_dir=tmp_path / "original_data",
+            config_dir=tmp_path,
+        )
 
-    log_dir = os.path.join(tmp_path, "output_dir")
-    log_file = os.path.join(
-        log_dir,
-        os.listdir(log_dir)[0],
-        "run",
-        "main_log.txt",
-    )
-    check_log_file(log_file, no_data=True)
 
-
-def test_cmorize_obs_woa_data(tmp_path):
+def test_cmorize_obs_woa_data(tmp_path: Path) -> None:
     """Test for example run of cmorize_obs command."""
     write_config_file(tmp_path)
-    data_path = os.path.join(tmp_path, "raw_stuff", "Tier2", "WOA")
+    data_path = os.path.join(tmp_path, "original_data", "Tier2", "WOA")
     put_dummy_data(data_path)
     with keep_cwd():
-        DataCommand().format("WOA", config_dir=str(tmp_path))
+        DataCommand().format(
+            "WOA",
+            original_data_dir=tmp_path / "original_data",
+            config_dir=tmp_path,
+        )
 
     log_dir = os.path.join(tmp_path, "output_dir")
     log_file = os.path.join(
@@ -186,7 +178,7 @@ def test_cmorize_obs_woa_data(tmp_path):
         "run",
         "main_log.txt",
     )
-    check_log_file(log_file, no_data=False)
+    assert "Fixing data" in Path(log_file).read_text(encoding="utf-8")
     output_path = os.path.join(log_dir, os.listdir(log_dir)[0], "Tier2", "WOA")
     check_output_exists(output_path)
     check_conversion(output_path)
