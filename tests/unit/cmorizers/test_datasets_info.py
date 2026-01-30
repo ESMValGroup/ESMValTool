@@ -1,5 +1,4 @@
 import datetime
-import os
 from pathlib import Path
 
 import pytest
@@ -8,26 +7,20 @@ import yaml
 
 import esmvaltool
 import esmvaltool.cmorizers.data.formatters.datasets
-from esmvaltool.cmorizers.data.cmorizer import datasets_file
+from esmvaltool.cmorizers.data.cmorizer import DATASETS_FILE
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
-
-yaml_folder = os.path.abspath(os.path.dirname(datasets_file))
-recipes_folder = os.path.abspath(
-    os.path.join(os.path.dirname(esmvaltool.__file__), "recipes"),
-)
 
 
 def test_only_datasets_are_present():
-    recipe = yamale.make_data(datasets_file)
+    recipe = yamale.make_data(DATASETS_FILE)
     schema = yamale.make_schema(
-        os.path.join(yaml_folder, "datasets_schema.yml"),
+        DATASETS_FILE.parent / "datasets_schema.yml",
     )
     yamale.validate(schema, recipe)
 
 
 def test_latest_version_format():
-    with open(datasets_file) as file:
-        cfg = yaml.safe_load(file)
+    cfg = yaml.safe_load(DATASETS_FILE.read_text(encoding="utf-8"))
     for dataset_info in cfg["datasets"].values():
         datetime.datetime.strptime(
             str(dataset_info["last_access"]),
@@ -45,7 +38,7 @@ FORMATTERS_DIR = Path(
     [
         dataset
         for dataset in yaml.safe_load(
-            Path(datasets_file).read_text(encoding="utf-8")
+            Path(DATASETS_FILE).read_text(encoding="utf-8"),
         )["datasets"]
         # Only Python CMORizers use the configuration file.
         if (
@@ -79,12 +72,12 @@ def test_datasets_have_valid_config(dataset: str) -> None:
 
 
 def test_datasets_are_added_to_test_recipe():
-    with open(datasets_file) as file:
+    with open(DATASETS_FILE) as file:
         cfg = yaml.safe_load(file)
 
-    recipe_path = os.path.join(recipes_folder, "examples/recipe_check_obs.yml")
-    with open(recipe_path) as file:
-        recipe = yaml.safe_load(file)
+    recipes_folder = Path(esmvaltool.__file__).parent / "recipes"
+    recipe_path = recipes_folder / "examples" / "recipe_check_obs.yml"
+    recipe = yaml.safe_load(recipe_path.read_text(encoding="utf-8"))
 
     tested_datasets = set()
     for diagnostic in recipe.get("diagnostics", {}).values():
