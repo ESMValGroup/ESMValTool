@@ -114,7 +114,7 @@ diagnostics:
         mip: Amon
         preprocessor: global_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
 
       ts_enso_events:
         short_name: ts

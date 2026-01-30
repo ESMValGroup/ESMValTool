@@ -7,7 +7,7 @@ attributes:
   dataset_id: CERES-EBAF
   version: 'Ed4.1'
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS
   source: 'https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAF4Selection.jsp'
   reference: 'ceres-ebaf'

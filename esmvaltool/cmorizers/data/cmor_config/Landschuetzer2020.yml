@@ -4,7 +4,7 @@ attributes:
   dataset_id: Landschuetzer2020
   version: '1.1'
   tier: 2
-  modeling_realm: clim
+  type: clim
   project_id: OBS6
   source: 'https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0209633/'
   reference: 'landschuetzer2020'

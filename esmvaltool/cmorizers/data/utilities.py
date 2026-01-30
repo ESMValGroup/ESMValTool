@@ -367,7 +367,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     name_elements = [
         attrs["project_id"],
         attrs["dataset_id"],
-        attrs["modeling_realm"],
+        attrs["type"],
         attrs["version"],
         attrs["mip"],
         var,
