@@ -204,8 +204,8 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
     # Define metrics to plot based on variable
     if var_name in ["pr"]:
         metrics_to_plot = ["bias", "relbias", "crps", "corr", "varratio"]
-        vmins = [-0.1, -0.4, 0., 0.6, 0.5]
-        vmaxs = [0.1, 0.4, 0.2, 1., 1.5]
+        vmins = [-0.1, -0.3, 0., 0.6, 0.5]
+        vmaxs = [0.1, 0.3, 0.1, 1., 1.5]
         titles = [
             f"Bias ({var_units})", 
             "Relative Bias (%)", 
@@ -218,8 +218,8 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
         show_pct = [False, True, False, False, True]
     else:
         metrics_to_plot = ["bias", "crps", "corr", "varratio"]
-        vmins = [-1, 0, 0.5, 0.5]
-        vmaxs = [1, 2, 1, 1.5]
+        vmins = [-0.5, 0, 0.8, 0.75]
+        vmaxs = [0.5, 0.5, 1, 1.25]
         titles = [
             f"Bias ({var_units})", 
             f"CRPS ({var_units})", 
@@ -237,7 +237,7 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
     # Create grid for subplots
     from matplotlib.gridspec import GridSpec
     gs = GridSpec(n_methods, len(metrics_to_plot), figure=fig, 
-                  hspace=0.25, wspace=0.15, 
+                  hspace=0.15, wspace=0.10, 
                   left=0.08, right=0.95, top=0.95, bottom=0.08)
     
     axes = []
@@ -341,7 +341,7 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
         cfg["plot_dir"],
         f"spatial_metrics_{var_name}.png"
     )
-    plt.savefig(plot_file, dpi=300, bbox_inches='tight')
+    plt.savefig(plot_file, dpi=200, bbox_inches='tight')
     plt.close()
     
     caption = f"Spatial metrics for {var_name} across different ML methods"
@@ -434,13 +434,79 @@ def plot_energy_spectrum(truth, preds_methods, method_names, var_name, cfg):
         cfg["plot_dir"],
         f"energy_spectrum_{var_name}.png"
     )
-    plt.savefig(plot_file, dpi=300, bbox_inches='tight')
+    plt.savefig(plot_file, dpi=200, bbox_inches='tight')
     plt.close()
     
     caption = f"Energy spectrum comparison for {var_name}"
     _get_provenance_record(cfg, plot_file, caption, ["line"],["spectrum"])
-    
+
     logger.info("Saved energy spectrum plot: %s", plot_file)
+
+
+def calculate_ralsd(truth, pred_ens, cfg):
+    """Calculate Relative Average Log Spectral Distance (RALSD).
+
+    RALSD measures the difference between power spectral densities in log space.
+    Following the formula from literature:
+    RALSD = sqrt(mean_i((10 * log10(PSD_truth[i] / PSD_pred[i]))^2))
+
+    Parameters
+    ----------
+    truth : numpy.ndarray
+        Ground truth data (time, lon, lat)
+    pred_ens : numpy.ndarray
+        Ensemble predictions (n_ens, time, lon, lat)
+    cfg : dict
+        Configuration dictionary
+
+    Returns
+    -------
+    float
+        RALSD value (lower is better, 0 means perfect match)
+    """
+    def radial_average(psd2d):
+        y, x = np.indices(psd2d.shape)
+        center = np.array([
+            (x.max() - x.min()) / 2.0,
+            (y.max() - y.min()) / 2.0
+        ])
+        r = np.sqrt((x - center[0])**2 + (y - center[1])**2).astype(int)
+        tbin = np.bincount(r.ravel(), psd2d.ravel())
+        nr = np.bincount(r.ravel())
+        return tbin / np.maximum(nr, 1)
+
+    def compute_spectrum(data):
+        spectra = []
+        for t in range(data.shape[0]):
+            field = data[t] - np.mean(data[t])
+            fft2 = np.fft.fft2(field)
+            psd2d = np.abs(fft2)**2
+            psd2d = np.fft.fftshift(psd2d)
+            spectra.append(radial_average(psd2d))
+        return np.mean(spectra, axis=0)
+
+    # Compute truth spectrum
+    truth_spectrum = compute_spectrum(truth)
+
+    # Compute prediction spectrum (average over ensemble)
+    ens_spectra = [compute_spectrum(pred_ens[i]) for i in range(pred_ens.shape[0])]
+    pred_spectrum = np.mean(ens_spectra, axis=0)
+
+    # Use same wavelength range as in plotting
+    n = truth.shape[1]
+    truth_spectrum = truth_spectrum[1:n//2]
+    pred_spectrum = pred_spectrum[1:n//2]
+
+    # Avoid division by zero and log of zero
+    epsilon = 1e-10
+    truth_spectrum = np.maximum(truth_spectrum, epsilon)
+    pred_spectrum = np.maximum(pred_spectrum, epsilon)
+
+    # Calculate RALSD: sqrt(mean((10 * log10(PSD_truth / PSD_pred))^2))
+    log_ratio = 10 * np.log10(truth_spectrum / pred_spectrum)
+    ralsd = np.sqrt(np.mean(log_ratio**2))
+
+    return ralsd
 
 
 def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
@@ -509,13 +575,93 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
         cfg["plot_dir"],
         f"log_pdf_{var_name}.png"
     )
-    plt.savefig(plot_file, dpi=300, bbox_inches='tight')
+    plt.savefig(plot_file, dpi=200, bbox_inches='tight')
     plt.close()
     
     caption = f"Log PDF comparison for {var_name}"
     _get_provenance_record(cfg, plot_file, caption, ["probability"], ["pdf"])
-    
+
     logger.info("Saved log PDF plot: %s", plot_file)
+
+
+def calculate_log_pdf_distance(truth, pred_ens, bins=200):
+    """Calculate log PDF distance between truth and predictions.
+
+    Computes the RMS distance between log-transformed probability density
+    functions, similar to RALSD but for histograms.
+
+    Formula: sqrt(mean((log10(PDF_truth) - log10(PDF_pred))^2))
+
+    Parameters
+    ----------
+    truth : numpy.ndarray
+        Ground truth data (time, lon, lat)
+    pred_ens : numpy.ndarray
+        Ensemble predictions (n_ens, time, lon, lat)
+    bins : int, optional
+        Number of histogram bins (default: 200)
+
+    Returns
+    -------
+    float
+        Log PDF distance (lower is better, 0 means perfect match)
+    """
+    epsilon = 1e-10
+
+    # Flatten and clean truth data
+    truth_flat = truth.flatten()
+    truth_flat = truth_flat[np.isfinite(truth_flat)]
+    hist_range = (np.min(truth_flat), np.max(truth_flat))
+
+    # Compute truth histogram
+    truth_hist, edges = np.histogram(truth_flat, bins=bins, range=hist_range, density=True)
+    truth_hist = np.maximum(truth_hist, epsilon)
+    log_truth = np.log10(truth_hist)
+
+    # Compute prediction histograms (average over ensemble)
+    ensemble_pdfs = []
+    for i in range(pred_ens.shape[0]):
+        pred_flat = pred_ens[i].flatten()
+        pred_flat = pred_flat[np.isfinite(pred_flat)]
+        pred_hist, _ = np.histogram(pred_flat, bins=edges, density=True)
+        ensemble_pdfs.append(pred_hist)
+
+    mean_pred_pdf = np.mean(ensemble_pdfs, axis=0)
+    mean_pred_pdf = np.maximum(mean_pred_pdf, epsilon)
+    log_pred = np.log10(mean_pred_pdf)
+
+    # Calculate RMS distance in log space
+    log_pdf_distance = np.sqrt(np.mean((log_truth - log_pred)**2))
+
+    return log_pdf_distance
+
+
+def calculate_average_quantile_mae(truth, pred_ens, quantiles=None):
+    """Calculate average MAE across all quantiles (area under the quantile MAE curve).
+
+    This provides a single summary metric for quantile-based evaluation.
+
+    Parameters
+    ----------
+    truth : numpy.ndarray
+        Ground truth data (time, lon, lat)
+    pred_ens : numpy.ndarray
+        Ensemble predictions (n_ens, time, lon, lat)
+    quantiles : numpy.ndarray, optional
+        Array of quantile values to compute. Default is np.linspace(0, 1, 101)
+
+    Returns
+    -------
+    float
+        Average MAE across all quantiles
+    """
+    q_vals, mae_vals = calculate_quantile_mae(truth, pred_ens, quantiles)
+
+    # Calculate area under the curve using trapezoidal rule, normalized by range
+    # This gives the average MAE across the quantile range
+    avg_mae = np.trapz(mae_vals, q_vals) / (q_vals[-1] - q_vals[0])
+
+    return avg_mae
 
 
 def create_metrics_table(metrics_all_methods, method_names, variables_list, cfg):
@@ -642,6 +788,144 @@ def create_temporal_structure_table(results, method_names, variables_list, cfg):
     logger.info("Saved temporal structure table: %s", table_file)
 
     return df
+
+
+def create_comprehensive_summary_table(all_results, method_names, cfg):
+    """Create comprehensive summary table with all metrics across analysis types.
+
+    This table aggregates metrics from:
+    - Spatial metrics (bias, CRPS, correlation, MAE, SSR)
+    - Energy spectrum (RALSD)
+    - Log PDF distance
+    - Temporal consistency (ACF error)
+    - Quantile MAE (average)
+
+    Parameters
+    ----------
+    all_results : dict
+        Dictionary containing all collected metrics organized by analysis type:
+        {
+            'spatial_metrics': {var_name: [metrics_dict per method]},
+            'energy_spectrum': {var_name: {method: ralsd_value}},
+            'log_density': {var_name: {method: log_pdf_distance}},
+            'temporal_structure': {var_name: {method: acf_error}},
+            'quantile_mae': {var_name: {method: avg_mae}}
+        }
+    method_names : list of str
+        List of method names
+    cfg : dict
+        Configuration dictionary
+
+    Returns
+    -------
+    pd.DataFrame
+        Summary dataframe with all metrics
+    """
+    rows = []
+
+    # Collect all variables across all analysis types
+    all_variables = set()
+    for analysis_type in all_results:
+        if all_results[analysis_type]:
+            all_variables.update(all_results[analysis_type].keys())
+
+    for var_name in sorted(all_variables):
+        # Spatial metrics
+        if 'spatial_metrics' in all_results and var_name in all_results['spatial_metrics']:
+            metrics_list = all_results['spatial_metrics'][var_name]
+            for metric_name in ['bias_mean', 'crps_mean', 'corr_mean', 'mae_mean', 'ssr']:
+                row = {'variable': var_name, 'metric': metric_name, 'analysis_type': 'spatial'}
+                for i, method in enumerate(method_names):
+                    if i < len(metrics_list) and metric_name in metrics_list[i]:
+                        val = metrics_list[i][metric_name]
+                        row[method] = f"{val:.4f}" if val is not None else "N/A"
+                    else:
+                        row[method] = "N/A"
+                rows.append(row)
+
+        # Energy spectrum (RALSD)
+        if 'energy_spectrum' in all_results and var_name in all_results['energy_spectrum']:
+            row = {'variable': var_name, 'metric': 'RALSD', 'analysis_type': 'spectrum'}
+            ralsd_dict = all_results['energy_spectrum'][var_name]
+            for method in method_names:
+                if method in ralsd_dict:
+                    row[method] = f"{ralsd_dict[method]:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+
+        # Log PDF distance
+        if 'log_density' in all_results and var_name in all_results['log_density']:
+            row = {'variable': var_name, 'metric': 'log_pdf_distance', 'analysis_type': 'distribution'}
+            lpd_dict = all_results['log_density'][var_name]
+            for method in method_names:
+                if method in lpd_dict:
+                    row[method] = f"{lpd_dict[method]:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+
+        # Temporal structure (ACF error)
+        if 'temporal_structure' in all_results and var_name in all_results['temporal_structure']:
+            row = {'variable': var_name, 'metric': 'acf_error', 'analysis_type': 'temporal'}
+            acf_dict = all_results['temporal_structure'][var_name]
+            for method in method_names:
+                if method in acf_dict:
+                    row[method] = f"{acf_dict[method]:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+
+        # Quantile MAE average
+        if 'quantile_mae' in all_results and var_name in all_results['quantile_mae']:
+            row = {'variable': var_name, 'metric': 'avg_quantile_mae', 'analysis_type': 'quantile'}
+            qmae_dict = all_results['quantile_mae'][var_name]
+            for method in method_names:
+                if method in qmae_dict:
+                    row[method] = f"{qmae_dict[method]:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+
+    if not rows:
+        logger.warning("No metrics collected for comprehensive summary table")
+        return None
+
+    df = pd.DataFrame(rows)
+
+    # Reorder columns
+    cols = ['variable', 'analysis_type', 'metric'] + method_names
+    df = df[[c for c in cols if c in df.columns]]
+
+    # Save as CSV
+    table_file = os.path.join(cfg["work_dir"], "comprehensive_metrics_summary.csv")
+    df.to_csv(table_file, index=False)
+
+    # Save as formatted text
+    txt_file = os.path.join(cfg["work_dir"], "comprehensive_metrics_summary.txt")
+    with open(txt_file, 'w') as f:
+        f.write("=" * 80 + "\n")
+        f.write("COMPREHENSIVE ML DOWNSCALING EVALUATION METRICS SUMMARY\n")
+        f.write("=" * 80 + "\n\n")
+        f.write(df.to_string(index=False))
+        f.write("\n\n")
+        f.write("-" * 80 + "\n")
+        f.write("Metric descriptions:\n")
+        f.write("-" * 80 + "\n")
+        f.write("  bias_mean      : Mean absolute bias (lower is better)\n")
+        f.write("  crps_mean      : Continuous Ranked Probability Score (lower is better)\n")
+        f.write("  corr_mean      : Mean temporal correlation (higher is better)\n")
+        f.write("  mae_mean       : Mean Absolute Error (lower is better)\n")
+        f.write("  ssr            : Spread-Skill Ratio (closer to 1 is better)\n")
+        f.write("  RALSD          : Relative Avg Log Spectral Distance (lower is better)\n")
+        f.write("  log_pdf_dist   : Log PDF Distance (lower is better)\n")
+        f.write("  acf_error      : Lag-1 ACF Error (closer to 0 is better)\n")
+        f.write("  avg_quant_mae  : Average Quantile MAE (lower is better)\n")
+
+    logger.info("Saved comprehensive metrics summary: %s", table_file)
+
+    return df
+
 
 def create_animation(truth, truth_dates, preds_methods, method_names, var_name, extent, cfg):
     """Create animation comparing reference and downscaled fields over time.
@@ -956,7 +1240,7 @@ def plot_quantile_mae(truth_data, preds_methods, method_names, var_name, cfg, ra
         cfg["plot_dir"],
         f"quantile_mae_{var_name}.png"
     )
-    plt.savefig(plot_file, dpi=300, bbox_inches='tight')
+    plt.savefig(plot_file, dpi=200, bbox_inches='tight')
     plt.close()
     
     caption = f"Quantile MAE comparison for {var_display_name}"
@@ -980,6 +1264,15 @@ def main(cfg):
     # Group input data
     input_data = cfg["input_data"].values()
     grouped_data = group_metadata(input_data, "short_name", sort="dataset")
+
+    # Initialize storage for all metrics (for comprehensive summary table)
+    all_results = {
+        'spatial_metrics': {},
+        'energy_spectrum': {},
+        'log_density': {},
+        'temporal_structure': {},
+        'quantile_mae': {}
+    }
     temporal_structure_results = {}
     all_metrics = {}
     # Process each variable
@@ -1087,28 +1380,40 @@ def main(cfg):
                 metrics = calculate_spatial_metrics(truth, pred_ens, var_name)
                 metrics_list.append(metrics)
             all_metrics[var_name] = metrics_list
+            all_results['spatial_metrics'][var_name] = metrics_list
             # Plot spatial metrics
             plot_panel_metrics(metrics_list, var_name, method_names_loaded, extent, cfg)
-            
-            # # Create summary table (store for later aggregation)
-            # if not hasattr(cfg, '_metrics_storage'):
-            #     cfg['_metrics_storage'] = {}
-            # cfg['_metrics_storage'][var_name] = (metrics_list, method_names_loaded)
-        
+
         elif analysis_type == "energy_spectrum":
+            # Plot energy spectrum
             plot_energy_spectrum(
                 truth, preds_methods, method_names_loaded, var_name, cfg
             )
-        
+            # Calculate RALSD for each method
+            ralsd_dict = {}
+            for method, pred_ens in zip(method_names_loaded, preds_methods):
+                ralsd = calculate_ralsd(truth, pred_ens, cfg)
+                ralsd_dict[method] = ralsd
+                logger.info("RALSD for %s (%s): %.4f", method, var_name, ralsd)
+            all_results['energy_spectrum'][var_name] = ralsd_dict
+
         elif analysis_type == "log_density":
+            # Plot log PDF
             plot_log_pdf(
                 truth, preds_methods, method_names_loaded, var_name, cfg
             )
-                # Perform analysis based on type
+            # Calculate log PDF distance for each method
+            lpd_dict = {}
+            for method, pred_ens in zip(method_names_loaded, preds_methods):
+                lpd = calculate_log_pdf_distance(truth, pred_ens)
+                lpd_dict[method] = lpd
+                logger.info("Log PDF distance for %s (%s): %.4f", method, var_name, lpd)
+            all_results['log_density'][var_name] = lpd_dict
         elif analysis_type == "temporal_structure":
             temporal_structure_results[var_name] = run_temporal_structure_analysis(
                 truth, preds_methods, method_names_loaded, var_name, cfg
-            )        
+            )
+            all_results['temporal_structure'][var_name] = temporal_structure_results[var_name]        
         elif analysis_type == "create_animation":
             # Create animation
             create_animation(
@@ -1182,10 +1487,17 @@ def main(cfg):
             
             # Set units for WBGT
             UNITS["wbgt"] = "°C"
-            
-            # Plot quantile MAE
+
+            # Plot quantile MAE and calculate average
             if preds_wbgt:
                 plot_quantile_mae(truth_wbgt, preds_wbgt, method_names_loaded, "wbgt", cfg)
+                # Calculate average quantile MAE for each method
+                qmae_dict = {}
+                for method, pred_ens in zip(method_names_loaded, preds_wbgt):
+                    avg_qmae = calculate_average_quantile_mae(truth_wbgt, pred_ens)
+                    qmae_dict[method] = avg_qmae
+                    logger.info("Avg Quantile MAE for %s (wbgt): %.4f", method, avg_qmae)
+                all_results['quantile_mae']['wbgt'] = qmae_dict
 
         if compute_wind and all(v in grouped_data for v in ["uas", "vas"]):
             logger.info("Computing wind speed for reference and all methods")
@@ -1236,10 +1548,17 @@ def main(cfg):
             
             # Set units for wind speed
             UNITS["sfcWind"] = "m s-1"
-            
-            # Plot quantile MAE
+
+            # Plot quantile MAE and calculate average
             if preds_wind:
                 plot_quantile_mae(truth_wind, preds_wind, method_names_loaded, "sfcWind", cfg)
+                # Calculate average quantile MAE for each method
+                qmae_dict = {}
+                for method, pred_ens in zip(method_names_loaded, preds_wind):
+                    avg_qmae = calculate_average_quantile_mae(truth_wind, pred_ens)
+                    qmae_dict[method] = avg_qmae
+                    logger.info("Avg Quantile MAE for %s (sfcWind): %.4f", method, avg_qmae)
+                all_results['quantile_mae']['sfcWind'] = qmae_dict
         
         # Process regular variables (e.g., precipitation)
         if compute_pr and all(v in grouped_data for v in ["pr"]):
@@ -1275,6 +1594,14 @@ def main(cfg):
             
             if preds_methods:
                 plot_quantile_mae(truth_data, preds_methods, method_names_loaded, var_name, cfg, range = [0.8,1.0])
+                # Calculate average quantile MAE for each method (using same range)
+                qmae_dict = {}
+                quantiles = np.linspace(0.8, 1.0, 101)
+                for method, pred_ens in zip(method_names_loaded, preds_methods):
+                    avg_qmae = calculate_average_quantile_mae(truth_data, pred_ens, quantiles)
+                    qmae_dict[method] = avg_qmae
+                    logger.info("Avg Quantile MAE for %s (pr): %.4f", method, avg_qmae)
+                all_results['quantile_mae']['pr'] = qmae_dict
 
     # Create summary table if spatial_metrics was run
     if analysis_type == "spatial_metrics":
@@ -1293,6 +1620,60 @@ def main(cfg):
             list(temporal_structure_results.keys()),
             cfg
         )
+
+    # Create energy spectrum summary table with RALSD
+    if analysis_type == "energy_spectrum" and all_results['energy_spectrum']:
+        rows = []
+        for var_name, ralsd_dict in all_results['energy_spectrum'].items():
+            row = {'variable': var_name, 'metric': 'RALSD'}
+            for method in ml_methods:
+                if method in ralsd_dict:
+                    row[method] = f"{ralsd_dict[method]:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+        df = pd.DataFrame(rows)
+        table_file = os.path.join(cfg["work_dir"], "energy_spectrum_ralsd_table.csv")
+        df.to_csv(table_file, index=False)
+        logger.info("Saved energy spectrum RALSD table: %s", table_file)
+
+    # Create log density summary table
+    if analysis_type == "log_density" and all_results['log_density']:
+        rows = []
+        for var_name, lpd_dict in all_results['log_density'].items():
+            row = {'variable': var_name, 'metric': 'log_pdf_distance'}
+            for method in ml_methods:
+                if method in lpd_dict:
+                    row[method] = f"{lpd_dict[method]:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+        df = pd.DataFrame(rows)
+        table_file = os.path.join(cfg["work_dir"], "log_density_distance_table.csv")
+        df.to_csv(table_file, index=False)
+        logger.info("Saved log density distance table: %s", table_file)
+
+    # Create quantile MAE summary table
+    if analysis_type == "quantile_MAE" and all_results['quantile_mae']:
+        rows = []
+        for var_name, qmae_dict in all_results['quantile_mae'].items():
+            row = {'variable': var_name, 'metric': 'avg_quantile_mae'}
+            for method in ml_methods:
+                if method in qmae_dict:
+                    row[method] = f"{qmae_dict[method]:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+        df = pd.DataFrame(rows)
+        table_file = os.path.join(cfg["work_dir"], "quantile_mae_table.csv")
+        df.to_csv(table_file, index=False)
+        logger.info("Saved quantile MAE table: %s", table_file)
+
+    # Create comprehensive summary table if any metrics were collected
+    has_any_results = any(all_results[key] for key in all_results)
+    if has_any_results:
+        create_comprehensive_summary_table(all_results, ml_methods, cfg)
+
 
 if __name__ == "__main__":
     with run_diagnostic() as config:
