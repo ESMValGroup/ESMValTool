@@ -30,13 +30,15 @@ def keep_cwd():
         os.chdir(curr_path)
 
 
-def write_config_file(dirname):
+def write_config_file(dirname: Path, *, add_rootpath: bool = False) -> str:
     """Replace configuration values for testing."""
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
         "log_level": "debug",
     }
+    if add_rootpath:
+        cfg["rootpath"] = {"RAWOBS": str(dirname / "original_data")}
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
     return str(config_file)
 
@@ -159,15 +161,47 @@ def test_cmorize_obs_woa_no_data(tmp_path: Path) -> None:
         )
 
 
-def test_cmorize_obs_woa_data(tmp_path: Path) -> None:
+@pytest.mark.parametrize("original_data_dir_type", ["str", "Path"])
+def test_cmorize_obs_woa_data(
+    tmp_path: Path,
+    original_data_dir_type: str,
+) -> None:
     """Test for example run of cmorize_obs command."""
+    if original_data_dir_type == "str":
+        original_data_dir = str(tmp_path / "original_data")
+    else:
+        original_data_dir = tmp_path / "original_data"
     write_config_file(tmp_path)
     data_path = os.path.join(tmp_path, "original_data", "Tier2", "WOA")
     put_dummy_data(data_path)
     with keep_cwd():
         DataCommand().format(
             "WOA",
-            original_data_dir=tmp_path / "original_data",
+            original_data_dir=original_data_dir,
+            config_dir=tmp_path,
+        )
+
+    log_dir = os.path.join(tmp_path, "output_dir")
+    log_file = os.path.join(
+        log_dir,
+        os.listdir(log_dir)[0],
+        "run",
+        "main_log.txt",
+    )
+    assert "Fixing data" in Path(log_file).read_text(encoding="utf-8")
+    output_path = os.path.join(log_dir, os.listdir(log_dir)[0], "Tier2", "WOA")
+    check_output_exists(output_path)
+    check_conversion(output_path)
+
+
+def test_cmorize_obs_woa_data_no_original_data_dir(tmp_path: Path) -> None:
+    """Test for example run of cmorize_obs command."""
+    write_config_file(tmp_path, add_rootpath=True)
+    data_path = os.path.join(tmp_path, "original_data", "Tier2", "WOA")
+    put_dummy_data(data_path)
+    with keep_cwd():
+        DataCommand().format(
+            "WOA",
             config_dir=tmp_path,
         )
 
