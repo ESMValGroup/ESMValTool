@@ -96,18 +96,6 @@ class _Formatter:
             CFG.update_from_dirs([config_dir])
         CFG.nested_update(options)
         self.config = CFG.start_session(f"data_{command}")
-
-        if original_data_dir is None:
-            original_data_dir = Path.cwd()
-            # TODO: remove the lines below in ESMValTool v2.16.0.
-            rawobs = self.config.get("rootpath", {}).get("RAWOBS", None)
-            if rawobs is not None:
-                original_data_dir = Path(rawobs[0])
-
-        self.original_data_dir = Path(
-            os.path.expandvars(original_data_dir),
-        ).expanduser()
-
         self.run_dir.mkdir(parents=True, exist_ok=True)
 
         # configure logging
@@ -116,6 +104,26 @@ class _Formatter:
             console_log_level=self.log_level,
         )
         logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+
+        # Locate the input data.
+        if original_data_dir is None:
+            original_data_dir = Path.cwd()
+            # TODO: remove the lines below in ESMValTool v2.16.0.
+            rawobs = self.config.get("rootpath", {}).get("RAWOBS", None)
+            if rawobs is not None:
+                logger.warning(
+                    (
+                        "Using the 'rootpath: RAWOBS' setting to specify the "
+                        "input data directory is deprecated and this will stop "
+                        "working in ESMValTool v2.16.0. Please use the "
+                        "'--original-data-dir' argument instead."
+                    ),
+                )
+                original_data_dir = Path(rawobs[0])
+
+        self.original_data_dir = Path(
+            os.path.expandvars(original_data_dir),
+        ).expanduser()
 
         # run
         timestamp1 = datetime.datetime.now(datetime.UTC)
