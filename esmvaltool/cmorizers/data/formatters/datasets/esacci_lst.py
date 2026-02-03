@@ -11,7 +11,7 @@ Source
 
 Download and processing instructions
    Put all files under a single directory (no subdirectories with years)
-   in ${RAWOBS}/Tier2/ESACCI-LST
+   in Tier2/ESACCI-LST
    BOTH DAY and NIGHT files are needed for each month
 
 Currently set to work with only the MODIS AQUA L3 monthly data
