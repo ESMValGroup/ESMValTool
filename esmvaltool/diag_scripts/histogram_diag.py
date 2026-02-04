@@ -90,7 +90,7 @@ def _compute_histograms(
 
     # Compute the data for the plots
     hist, edges = da.histogram(
-        data, bins=bins, range=(cfg["bin_range"][0], cfg["bin_range"][1])
+        data, bins=bins, range=(cfg["bin_range"][0], cfg["bin_range"][1]),
     )
     hist, edges = da.compute(hist, edges)
 
@@ -111,8 +111,7 @@ def plot_hist(
     label_x: str,
     labels: Sequence[str] | None = None,
     colors: Sequence[str] | None = None,
-    log_y: bool = False,
-    **kwargs,
+    log_y: bool,
 ) -> None:
     """Plot 1D histograms from the given datasets."""
     # normalize shapes and extract arrays
@@ -124,7 +123,7 @@ def plot_hist(
             edges_ref = np.asarray(edges)
         else:
             if not np.allclose(edges_ref, np.asarray(edges)):
-                raise ValueError("All datasets must share identical edges")
+                raise ValueError(f"All datasets must share identical edges")
 
     centers = 0.5 * (edges_ref[:-1] + edges_ref[1:])
     widths = np.diff(edges_ref)
@@ -174,7 +173,7 @@ def data_to_cube(
                 var_name=f"histogram_{group_name}_{datasets[i]}",
                 data=hist,
                 dim_coords_and_dims=[(hist_coord, 0)],
-            )
+            ),
         )
 
     return cube_list.merge()
@@ -213,7 +212,7 @@ def main(cfg: dict[str, Any]) -> None:
             all_data,
             label_x=f"{cube.var_name} [{cube.units}]",
             labels=all_datasets,
-            log_y=True,
+            cfg['log_y'],
         )
 
         # Save results
