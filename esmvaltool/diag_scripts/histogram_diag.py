@@ -112,19 +112,14 @@ def plot_hist(
     labels: Sequence[str] | None = None,
     colors: Sequence[str] | None = None,
     log_y: bool = False,
-    suptitle: str | None = None,
     **kwargs,
 ) -> None:
     """Plot 1D histograms from the given datasets."""
-
     # normalize shapes and extract arrays
     hlist = []
     edges_ref = None
     for hist, edges in datasets:
-        hist = np.asarray(hist)
-        if hist.ndim > 1:
-            hist = hist[0]
-        hlist.append(hist)
+        hlist.append(np.asarray(hist))
         if edges_ref is None:
             edges_ref = np.asarray(edges)
         else:
