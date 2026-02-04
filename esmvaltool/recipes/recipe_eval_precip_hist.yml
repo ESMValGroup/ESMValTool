@@ -1,0 +1,75 @@
+# ESMValTool
+# recipe_eval_precip_hist.yml
+---
+documentation:
+  title: Histogram of precipitation.
+
+  description: >
+    Creates a 1D histogram for precipiation.
+
+  authors:
+    - bock_lisa
+
+  maintainer:
+    - bock_lisa
+
+
+timerange: &timerange
+  timerange: 19790101/19801231
+
+
+datasets:
+  - {dataset: ICON, project: ICON, 
+     exp: ag_atm_amip_r2b5_cvtfall_entrmid_05_cov15_based_on_12962670_20yrs_240927_hf}
+  - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
+     tier: 3, alias: ERA5}
+
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+  - {short_name: areacello, skip: true}
+  - {short_name: sftlf, skip: true}
+  - {short_name: sftof, skip: true}
+
+REGRIDDING_SETTINGS: &regridding
+  regrid:
+    target_grid: 2x2
+    scheme:
+      reference: esmf_regrid.schemes:ESMFAreaWeighted
+
+
+preprocessors:
+      
+  tropics:
+    custom_order: true
+    <<: *regridding
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30  
+    resample_hours:
+      interval: 3
+      interpolate: linear
+    convert_units:
+      units: mm hour-1 
+  
+
+diagnostics:
+
+  plot_precipitation_histograms_tropics:
+    description: Plot precipitation histogram (Tropics).
+    variables:
+      pr:
+        mip: 3hr
+        preprocessor: tropics
+        <<: *timerange
+        supplementary_variables: *supplementary_variables
+    scripts: 
+      plot:
+        script: histogram_diag.py
+        suptitle: Simulated Precipitation (Tropics 30S-30N)
+        plot_filename: precipitation_histogram
+        bins: 150
+        bin_range: [0., 15.]
+        log_y: true
