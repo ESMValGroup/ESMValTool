@@ -83,7 +83,7 @@ def plot_hist(
 
     fig, ax = plt.subplots()
     for i, hist in enumerate(hlist):
-        h = np.where(hist > 0, hist, 0.0) if cfg['log_y'] else hist
+        h = np.where(hist > 0, hist, 0.0) if cfg["log_y"] else hist
         ax.bar(
             centers_ref,
             h,
@@ -94,7 +94,9 @@ def plot_hist(
         )
 
     ax.set_xlabel(xlabel)
-    ax.set_xlim(centers_ref[0]-0.5*widths[0], centers_ref[-1]+0.5*widths[-1])
+    ax.set_xlim(
+        centers_ref[0] - 0.5 * widths[0], centers_ref[-1] + 0.5 * widths[-1]
+    )
     ax.set_ylabel("Density")
     if labels is not None:
         ax.legend()
@@ -153,7 +155,7 @@ def main(cfg: dict[str, Any]) -> None:
 
             # Compute the histograms
             hist = da.compute(cube.data)[0]
-            centers = cube.coord('lwe_precipitation_rate').points
+            centers = cube.coord("lwe_precipitation_rate").points
             data = (hist, centers)
 
             all_data.append(data)

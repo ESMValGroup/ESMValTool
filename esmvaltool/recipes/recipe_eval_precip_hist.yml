@@ -53,7 +53,7 @@ preprocessors:
       interpolate: linear
     convert_units:
       units: mm hour-1
-    histogram:  
+    histogram:
       bins: 150
       bin_range: [0., 15.]
       normalization: integral
