@@ -53,6 +53,10 @@ preprocessors:
       interpolate: linear
     convert_units:
       units: mm hour-1
+    histogram:  
+      bins: 150
+      bin_range: [0., 15.]
+      normalization: integral
 
 
 diagnostics:
@@ -67,9 +71,7 @@ diagnostics:
         supplementary_variables: *supplementary_variables
     scripts:
       plot:
-        script: histogram_diag.py
+        script: plot_histogram.py
         suptitle: Simulated Precipitation (Tropics 30S-30N)
-        plot_filename: precipitation_histogram
-        bins: 150
-        bin_range: [0., 15.]
         log_y: true
+        xlabel: Precipitation rate (mm hour-1)

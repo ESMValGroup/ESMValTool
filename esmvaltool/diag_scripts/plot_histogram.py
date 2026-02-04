@@ -66,7 +66,7 @@ def set_defaults(cfg):
 def plot_hist(
     cfg: dict[str, Any],
     datasets: Sequence[tuple[np.ndarray, np.ndarray]],
-    label_x: str,
+    xlabel: str,
     labels: Sequence[str] | None = None,
     colors: Sequence[str] | None = None,
 ) -> None:
@@ -93,7 +93,7 @@ def plot_hist(
             label=(None if labels is None else labels[i]),
         )
 
-    ax.set_xlabel(label_x)
+    ax.set_xlabel(xlabel)
     ax.set_xlim(centers_ref[0]-0.5*widths[0], centers_ref[-1]+0.5*widths[-1])
     ax.set_ylabel("Density")
     if labels is not None:
@@ -161,7 +161,11 @@ def main(cfg: dict[str, Any]) -> None:
             all_filenames.append(input_file)
 
         # Create the figure
-        plot_hist(cfg, all_data, label_x=f"{cube.var_name} [{cube.units}]", labels=all_datasets)
+        if cfg["xlabel"] is not None:
+            xlabel = cfg["xlabel"]
+        else:
+            xlabel = f"{cube.var_name} [{cube.units}]"
+        plot_hist(cfg, all_data, xlabel=xlabel, labels=all_datasets)
 
         # Save results
         basename = cfg["plot_filename"] + f"_{group_name}"
