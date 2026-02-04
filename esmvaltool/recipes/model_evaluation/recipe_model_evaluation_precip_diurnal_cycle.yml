@@ -1,0 +1,38 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on precipitation.
+  description: >
+    Plot diurnal cycles of precipitation.
+  authors:
+    - schlund_manuel
+  maintainer:
+    - schlund_manuel
+
+
+# Note: the following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+
+preprocessors:
+
+  local_solar_time:
+    local_solar_time:
+    convert_units:
+      units: mm day-1
+
+
+diagnostics:
+
+  plot_hour_of_maximum_precipitation:
+    description: Plot maps showing hour of maximum precipitation.
+    variables:
+      pr:
+        timerange: 20000101/20000201
+        mip: 3hr
+        preprocessor: local_solar_time
+    scripts:
+      plot:
+        script: hydrology/hour_of_max_precipitation.py
