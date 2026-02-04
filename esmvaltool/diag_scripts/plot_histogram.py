@@ -95,7 +95,7 @@ def plot_hist(
 
     ax.set_xlabel(xlabel)
     ax.set_xlim(
-        centers_ref[0] - 0.5 * widths[0], centers_ref[-1] + 0.5 * widths[-1]
+        centers_ref[0] - 0.5 * widths[0], centers_ref[-1] + 0.5 * widths[-1],
     )
     ax.set_ylabel("Density")
     if labels is not None:
