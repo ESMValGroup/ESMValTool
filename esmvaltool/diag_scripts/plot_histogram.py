@@ -78,6 +78,9 @@ def plot_hist(
         hlist.append(np.asarray(hist))
         if centers_ref is None:
             centers_ref = np.asarray(centers)
+        else:
+            if not np.allclose(centers_ref, np.asarray(centers)):
+                raise ValueError(f"All datasets must share identical centers of the bins")
 
     widths = np.diff(centers_ref, prepend=centers_ref[0])
 
