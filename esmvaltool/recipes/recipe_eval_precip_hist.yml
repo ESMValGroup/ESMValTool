@@ -19,7 +19,7 @@ timerange: &timerange
 
 
 datasets:
-  - {dataset: ICON, project: ICON, 
+  - {dataset: ICON, project: ICON,
      exp: ag_atm_amip_r2b5_cvtfall_entrmid_05_cov15_based_on_12962670_20yrs_240927_hf}
   - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
      tier: 3, alias: ERA5}
@@ -39,7 +39,7 @@ REGRIDDING_SETTINGS: &regridding
 
 
 preprocessors:
-      
+
   tropics:
     custom_order: true
     <<: *regridding
@@ -47,13 +47,13 @@ preprocessors:
       start_longitude: 0
       end_longitude: 360
       start_latitude: -30
-      end_latitude: 30  
+      end_latitude: 30
     resample_hours:
       interval: 3
       interpolate: linear
     convert_units:
-      units: mm hour-1 
-  
+      units: mm hour-1
+
 
 diagnostics:
 
@@ -65,7 +65,7 @@ diagnostics:
         preprocessor: tropics
         <<: *timerange
         supplementary_variables: *supplementary_variables
-    scripts: 
+    scripts:
       plot:
         script: histogram_diag.py
         suptitle: Simulated Precipitation (Tropics 30S-30N)
