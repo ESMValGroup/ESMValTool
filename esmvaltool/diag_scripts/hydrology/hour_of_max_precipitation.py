@@ -71,6 +71,7 @@ from pathlib import Path
 from typing import Any
 
 import cartopy.crs as ccrs
+import dask.array as da
 import iris
 import iris.plot
 import matplotlib.pyplot as plt
@@ -93,21 +94,42 @@ def _calculate_hour_of_max_precipitation(
     cube: Cube, cfg: dict[str, Any]
 ) -> Cube:
     """Calculate hour of maximum daily precipitation."""
-    diurnal_cycle = climate_statistics(cube, operator="mean", period="hourly")
-    time_dim = diurnal_cycle.coord_dims("hour")[0]
+    # Mask values where amplitude is below threshold
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
             category=IrisVagueMetadataWarning,
             module="iris",
         )
-        hour_of_max_precipitation = diurnal_cycle.collapsed(
-            "hour", iris.analysis.MAX
+        max_pr = cube.collapsed("time", iris.analysis.MAX)
+        min_pr = cube.collapsed("time", iris.analysis.MIN)
+        std_daily_pr = climate_statistics(
+            cube, operator="std_dev", period="daily"
         )
-    hour_of_max_precipitation.data = diurnal_cycle.coord("hour").points[
-        np.argmax(diurnal_cycle.core_data(), axis=time_dim)
-    ]
-    return hour_of_max_precipitation
+        max_std_daily_pr = std_daily_pr.collapsed(
+            "day_of_year", iris.analysis.MAX
+        )
+    n_days = std_daily_pr.coord("day_of_year").shape[0]
+    print(n_days)
+    mask_factor = cfg["threshold_factor"] / np.sqrt(n_days / 4.0 - 1.0)
+    print(mask_factor)
+    mask = (
+        max_pr.core_data() - min_pr.core_data()
+        <= mask_factor * max_std_daily_pr.core_data()
+    )
+
+    # Calculate hour of maximum precipitation
+    diurnal_cycle = climate_statistics(cube, operator="mean", period="hourly")
+    time_dim = diurnal_cycle.coord_dims("hour")[0]
+    hour_of_max_precipitation_data = da.ma.masked_array(
+        diurnal_cycle.coord("hour").points[
+            np.argmax(diurnal_cycle.core_data(), axis=time_dim)
+        ],
+        mask=mask,
+    )
+
+    return max_pr.copy(hour_of_max_precipitation_data)
+    # return max_pr.copy(max_pr.core_data() - min_pr.core_data())
 
 
 def _calculate_tcre(
@@ -169,10 +191,12 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault(
         "cbar_kwargs",
         {"orientation": "horizontal", "ticks": [0, 3, 6, 9, 12, 15, 18, 21]},
+        # {"orientation": "horizontal"},
     )
     cfg.setdefault("figure_kwargs", {"constrained_layout": True})
     cfg.setdefault("matplotlib_rc_params", {})
     cfg.setdefault("plot_kwargs", {"cmap": "twilight"})
+    # cfg.setdefault("plot_kwargs", {})
     cfg.setdefault("projection", "Robinson")
     cfg.setdefault("projection_kwargs", {"central_longitude": 10})
     cfg.setdefault("pyplot_kwargs", {})
@@ -185,7 +209,7 @@ def _get_default_cfg(cfg: dict) -> dict:
         },
     )
     cfg.setdefault("seaborn_settings", {"style": "ticks"})
-    cfg.setdefault("threshold_factor", 2.0)
+    cfg.setdefault("threshold_factor", 17.5)
 
     return cfg
 

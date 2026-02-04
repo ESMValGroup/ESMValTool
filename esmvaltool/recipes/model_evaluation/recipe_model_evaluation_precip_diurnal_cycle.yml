@@ -11,17 +11,22 @@ documentation:
 
 
 # Note: the following models are just examples
-datasets:
-  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+# datasets:
+#   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
 
 preprocessors:
 
   local_solar_time:
+    custom_order: true
     local_solar_time:
     convert_units:
       units: mm day-1
+    # climate_statistics:
+    #   period: hourly
+    # mask_below_threshold:
+    #   threshold: 0.5
 
 
 diagnostics:
@@ -30,9 +35,11 @@ diagnostics:
     description: Plot maps showing hour of maximum precipitation.
     variables:
       pr:
-        timerange: 20000101/20000201
+        timerange: 20000101/20000401
         mip: 3hr
         preprocessor: local_solar_time
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, frequency: 1hr, tier: 3}
     scripts:
       plot:
         script: hydrology/hour_of_max_precipitation.py
