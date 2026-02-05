@@ -101,7 +101,7 @@ Example plots
 
    Diurnal cycle of Southeast Pacific total cloud cover.
 
-.. figure:: /recipes/figures/model_evaluation/precipitation_histogram.jpg
+.. figure:: /recipes/figures/model_evaluation/precipitation_histogram.png
    :align: center
    :width: 50%
 
