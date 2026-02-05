@@ -53,7 +53,7 @@ def _fix_data(cube, var, version):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
 
-    if version == "2018":
+    if version in ["2018", "2023"]:
         with constant_metadata(cube):
             if var in ["o2", "po4", "si", "no3"]:
                 cube /= 1000.0  # Convert from umol/kg to mol/m^3
@@ -76,12 +76,15 @@ def collect_files(in_dir, var, cfg):
     file_list = []
     var_dict = cfg["variables"][var]
     in_dir = os.path.join(in_dir, var_dict["name"])
-
+    #/g/data/av17/access-nri/OM3/woa23 root, remove Tier2, woa, replace with woa23
+    #not storing it in a RAWOBS/TierX/WOA (X=2 or 3) directory structure?
+    
+    # for m in range(0,13): 01-12 merge months? f%02d
     fname = (
         cfg["attributes"]["short_name"].lower()
         + "_"
         + var_dict["file"]
-        + "00_01.nc"
+        + "00_04.nc" #04 quarter resolution, 01 degree
     )
     in_file = os.path.join(in_dir, fname)
     file_list.append(in_file)
