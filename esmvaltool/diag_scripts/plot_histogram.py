@@ -80,7 +80,9 @@ def plot_hist(
             centers_ref = np.asarray(centers)
         else:
             if not np.allclose(centers_ref, np.asarray(centers)):
-                raise ValueError("All datasets must share identical centers of the bins")
+                raise ValueError(
+                    "All datasets must share identical centers of the bins"
+                )
 
     widths = np.diff(centers_ref, prepend=centers_ref[0])
 
@@ -98,7 +100,8 @@ def plot_hist(
 
     ax.set_xlabel(xlabel)
     ax.set_xlim(
-        centers_ref[0] - 0.5 * widths[0], centers_ref[-1] + 0.5 * widths[-1],
+        centers_ref[0] - 0.5 * widths[0],
+        centers_ref[-1] + 0.5 * widths[-1],
     )
     ax.set_ylabel("Density")
     if labels is not None:
