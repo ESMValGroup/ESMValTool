@@ -339,6 +339,20 @@ datasets:
       Download the ensemble mean files for:
         TG TN TX RR PP
 
+  EN4:
+    tier: 2
+    source: "https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html"
+    last_access: 2025-06-13
+    info: |
+      EN4: quality controlled subsurface ocean temperature and salinity objective analyses.
+      Script tested using analyses with Gouretski and Reseghetti (2010) XBT corrections
+      and Gouretski and Cheng (2020) MBT corrections applied.
+      To download data:
+        - Edit the text file for your chosen years, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
+        - Save .txt file in directory for data to be downloaded to.
+        - Run 'wget -i EN.4.2.2.profiles.g10.download-list.txt' in same directory.
+        - Unzip files prior to running the cmorizer script.
+
   Eppley-VGPM-MODIS:
     tier: 2
     source: http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf
