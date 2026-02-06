@@ -152,7 +152,7 @@ diagnostics:
         mip: Amon
         preprocessor: full_climatology
         additional_datasets:
-          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat, version: CDR2-L3S-05deg_fv3.1, tier: 3, timerange: '2003/2017', reference_for_monitor_diags: true}
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, timerange: '2003/2017', reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -168,7 +168,7 @@ diagnostics:
         mip: Amon
         preprocessor: full_climatology_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+          - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2,
              timerange: '2003/2017', reference_for_monitor_diags: true}
     scripts:
       plot:
@@ -190,7 +190,7 @@ diagnostics:
       plot:
         <<: *plot_multi_dataset_default
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true
 
   plot_cli_profiles:
@@ -206,7 +206,7 @@ diagnostics:
       plot:
         <<: *plot_multi_dataset_default
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true
 
   plot_cl_profiles:
@@ -222,5 +222,5 @@ diagnostics:
       plot:
         <<: *plot_multi_dataset_default
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true

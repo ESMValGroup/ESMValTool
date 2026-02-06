@@ -67,6 +67,11 @@
       "name": "Adeniyi, Kemisola"
     },
     {
+      "affiliation": "University of Bremen, Germany",
+      "name": "Castellani, Giulia",
+      "orcid": "0000-0001-6151-015X"
+    },
+    {
       "affiliation": "ISAC-CNR, Italy",
       "name": "Arnone, Enrico",
       "orcid": "0000-0001-6740-5051"
@@ -82,12 +87,21 @@
       "orcid": "0000-0002-1469-2568"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Billows, Chris"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Blockley, Ed",
+      "orcid": "0000-0002-0489-4238"
+    },
+    {
       "affiliation": "DLR, Germany",
       "name": "Bock, Lisa",
       "orcid": "0000-0001-7058-5938"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Bodas-Salcedo, Alejandro",
       "orcid": "0000-0002-7890-2536"
     },
@@ -142,7 +156,7 @@
       "name": "Docquier, David"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Dreyer, Laura"
     },
     {
@@ -150,12 +164,20 @@
       "name": "Ehbrecht, Carsten"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Earnshaw, Paul"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Geddes, Theo"
     },
     {
       "affiliation": "University of Bremen, Germany",
       "name": "Gier, Bettina"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Gillett, Ed"
     },
     {
       "affiliation": "BSC, Spain",
@@ -172,6 +194,15 @@
       "orcid": "0000-0001-5444-2945"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Hall, Sophie"
+    },
+    {
+      "affiliation": "University of Canterbury, New Zealand",
+      "name": "Hardacre, Catherine",
+      "orcid": "0000-0001-9093-4656"
+    },
+    {
       "affiliation": "ISAC-CNR, Italy",
       "name": "von Hardenberg, Jost",
       "orcid": "0000-0002-5312-8070"
@@ -185,6 +216,10 @@
       "affiliation": "DLR, Germany",
       "name": "Heuer, Helge",
       "orcid": "0000-0003-2411-7150"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Hogan, Emma"
     },
     {
       "affiliation": "BSC, Spain",
@@ -222,7 +257,7 @@
       "orcid": "0000-0001-6085-5914"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Little, Bill"
     },
     {
@@ -244,6 +279,11 @@
       "name": "Lucarini, Valerio"
     },
     {
+      "affiliation": "ECCC, Canada",
+      "name": "Malinina, Elizaveta",
+      "orcid": "0000-0002-4102-2877"
+    },
+    {
       "affiliation": "UCLouvain, Belgium",
       "name": "Massonnet, François"
     },
@@ -257,6 +297,10 @@
       "name": "Amarjiit, Pandde"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Parsons, Naomi"
+    },
+    {
       "affiliation": "BSC, Spain",
       "name": "Pérez-Zanón, Núria"
     },
@@ -264,6 +308,11 @@
       "affiliation": "NCAR, USA",
       "name": "Phillips, Adam",
       "orcid": "0000-0003-4859-8585"
+    },
+    {
+      "affiliation": "ACCESS-NRI, Australia",
+      "name": "Proft, Max",
+      "orcid": "0009-0003-1611-9516"
     },
     {
       "affiliation": "University of Arizona, USA",
@@ -274,7 +323,7 @@
       "name": "Sandstad, Marit"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Sellar, Alistair"
     },
     {
@@ -296,9 +345,18 @@
       "orcid": "0000-0003-4637-5337"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Storkey, Dave",
+      "orcid": "0000-0001-8000-5335"
+    },
+    {
       "affiliation": "URead, UK",
       "name": "Swaminathan, Ranjini",
       "orcid": "0000-0001-5853-2673"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Tomkins, Katherine"
     },
     {
       "affiliation": "BSC, Spain",
@@ -312,6 +370,10 @@
     {
       "affiliation": "DLR, Germany",
       "name": "Sarauer, Ellen"
+    },
+    {
+      "affiliation": "University of Bremen, Germany",
+      "name": "Schulze, Kirsten"
     },
     {
       "affiliation": "University of Reading, UK",
@@ -380,47 +442,60 @@
       "affiliation": "DLR, Germany",
       "name": "Bonnet, Pauline",
       "orcid": "0000-0003-3780-0784"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Munday, Gregory",
+      "orcid": "0000-0003-4750-9923"
+    },
+    {
+      "affiliation": "ACCESS-NRI, Australia",
+      "name": "Chun, Felicity",
+      "orcid": "0009-0007-0845-0953"
     }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
   "license": {
     "id": "Apache-2.0"
   },
-  "publication_date": "2023-07-06",
+  "publication_date": "2025-03-05",
   "title": "ESMValTool",
-  "version": "v2.9.0",
-  "communities": [ 
-      { 
-          "identifier": "is-enes3" 
-      }, 
-      { 
-          "identifier": "dlr_de" 
-      }, 
-      { 
-          "identifier": "ecfunded" 
-      }, 
-      { 
-          "identifier": "nlesc" 
-      } 
-  ], 
-  "grants": [ 
-      { 
-          "id": "10.13039/501100000780::282672" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::641727" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::641816" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::727862" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::776613" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::824084" 
-      } 
-  ] 
+  "version": "v2.12.0",
+  "communities": [
+    {
+      "identifier": "enes-ri"
+    },
+    {
+      "identifier": "is-enes3"
+    },
+    {
+      "identifier": "dlr_de"
+    },
+    {
+      "identifier": "ecfunded"
+    },
+    {
+      "identifier": "nlesc"
+    }
+  ],
+  "grants": [
+    {
+      "id": "10.13039/501100000780::282672"
+    },
+    {
+      "id": "10.13039/501100000780::641727"
+    },
+    {
+      "id": "10.13039/501100000780::641816"
+    },
+    {
+      "id": "10.13039/501100000780::727862"
+    },
+    {
+      "id": "10.13039/501100000780::776613"
+    },
+    {
+      "id": "10.13039/501100000780::824084"
+    }
+  ]
 }

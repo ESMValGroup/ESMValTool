@@ -1,0 +1,71 @@
+{% extends '!layout.html' %}
+
+{%- block extrahead %}
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setCookieDomain", "*.esmvaltool.org"]);
+  _paq.push(["setDoNotTrack", true]);
+  _paq.push(["disableCookies"]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//matomo.research.software/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '10']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="//matomo.research.software/matomo.php?idsite=10&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+{% endblock %}
+
+{% block footer %}
+<head>
+   <script type="text/javascript">
+     function mail(user,domain,mailbody)
+        {
+                if (!domain) {
+                        domain="dlr.de";
+                }
+		if (!mailbody){
+			mailbody=""
+		}
+                url="mail"+"to:"+user+"@"+domain+"?body="+mailbody;
+                window.location.href=url;
+        }
+    </script>
+</head>
+
+<style>
+table, th, td {
+  /* padding: 5px; */
+  padding-left: 30px;
+  padding-right: 30px;
+}
+table {
+  border-spacing: 5px;
+}
+</style>
+
+ <table>
+  <tr>
+    <th>Contact</th>
+    <th>Impressum</th>
+<!--    <th>Privacy</th>-->
+    <th>Terms of use</th>
+    <th>Acknowledgements</th>
+  </tr>
+  <tr>
+     <td><p style="font-size:95%;"><a href="javascript:mail('birgit.hassler','dlr.de')">Birgit Hassler (Project Co-PI)</a><br>
+        <a href="javascript:mail('axel.lauer','dlr.de')">Axel Lauer (Core Developer)</a><br></p></td>
+    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/legal_notice/">Legal Notice</a></p></td>
+<!--    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/privacy/">Privacy Notice</a></p></td>-->
+    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/terms_of_use/">Terms of use</a></p></td>
+    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/acknowledgements/">ESMValTool Funding</a></p></td>
+  </tr>
+</table>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 """Script to download Kadow2020 from its webpage."""
+
 import logging
 import os
 
@@ -7,14 +8,20 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -27,7 +34,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -38,4 +45,5 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         "http://users.met.fu-berlin.de/~ChristopherKadow/"
         "HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-"
         "infilled.ensemble_mean_185001-202012.nc",
-        wget_options=[])
+        wget_options=[],
+    )

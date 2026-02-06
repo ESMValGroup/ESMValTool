@@ -7,14 +7,20 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -33,7 +39,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     loop_date = start_date
 
     downloader = CCIDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -43,9 +49,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     while loop_date <= end_date:
         year = loop_date.year
         if year < 2003:
-            downloader.set_cwd('ATSR2_SU/L3/v4.21/MONTHLY')
+            downloader.set_cwd("ATSR2_SU/L3/v4.21/MONTHLY")
         else:
-            downloader.set_cwd('AATSR_SU/L3/v4.21/MONTHLY')
+            downloader.set_cwd("AATSR_SU/L3/v4.21/MONTHLY")
 
         downloader.download_year(loop_date.year)
         loop_date += relativedelta.relativedelta(years=1)
