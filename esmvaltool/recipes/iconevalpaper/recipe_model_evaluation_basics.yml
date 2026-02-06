@@ -30,9 +30,6 @@ datasets:
   start_year: 1995
   end_year: 2014
   component: atm
-#  grid: R2B5
-#  ensemble: r1v1i1p1l1f1
-#  version: icon-2.6.1
 
 
 # Note: for some observational datasets, we use preset time ranges due to
@@ -105,13 +102,28 @@ diagnostics:
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
-      plot: &plot_multi_dataset_default
+      plot:
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         script: monitor/multi_datasets.py
         plots:
           map:
             common_cbar: true
+            fontsize: 7
+            plot_kwargs:
+              default:
+                levels: [240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310]
+                extend: 'both'
+                aspect: 30
+            cbar_kwargs:
+              orientation: horizontal
+            cbar_kwargs_bias:
+              ticks: [-5, -4, -3, -2, -1, -0.5, 0.5, 1, 2, 3, 4, 5]
+            plot_kwargs_bias:
+              cmap: bwr
+              levels: [-5, -4, -3, -2, -1, -0.5, 0.5, 1, 2, 3, 4, 5]
+              extend: 'both'
+              aspect: 30
 
   plot_maps_with_references_pr:
     description: Plot climatology maps including reference datasets for pr.
@@ -125,18 +137,30 @@ diagnostics:
           - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
     scripts:
       plot:
-        <<: *plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         script: monitor/multi_datasets.py
         plots:
           map:
             common_cbar: true
+            fontsize: 7
             plot_kwargs:
               default:
+                levels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                 cmap: Blues
+                extend: 'max'
+                aspect: 30
+            cbar_kwargs:
+              orientation: horizontal
+            plot_kwargs_bias:
+              cmap: bwr
+              levels: [-4, -3, -2, -1, -0.5, 0.5, 1, 2, 3, 4]
+              extend: 'both'
+              aspect: 30
 
   # Climatologies (zonal means)
 
-  plot_zonal_mean_profiles_with_references_ta:
+ plot_zonal_mean_profiles_with_references_ta:
     description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       ta:
@@ -148,11 +172,21 @@ diagnostics:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
       plot:
-        <<: *plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         script: monitor/multi_datasets.py
         plots:
           zonal_mean_profile:
             common_cbar: true
+            plot_kwargs:
+              default:
+                extend: 'both'
+                aspect: 30
+            plot_kwargs_bias:
+              cmap: bwr
+              levels: [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+              extend: 'both'
+              aspect: 30
 
   plot_zonal_mean_profiles_with_references_ua:
     description: Plot 2D zonal mean profiles including reference datasets.
@@ -166,7 +200,8 @@ diagnostics:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
       plot:
-        <<: *plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         script: monitor/multi_datasets.py
         plots:
           zonal_mean_profile:
@@ -221,14 +256,14 @@ diagnostics:
         mip: Amon
         preprocessor: timeseries_regular
         additional_datasets:
-          - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true, start_year: 2001, end_year_ 2020}
+          - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true, start_year: 2001, end_year: 2020}
       rlut:
         <<: *time_period
         var_type: atm_2d_ml
         mip: Amon
         preprocessor: timeseries_regular
         additional_datasets:
-          - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true, start_year: 2001, end_year_ 2020}
+          - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true, start_year: 2001, end_year: 2020}
       rtnt:
         derive: true
         force_derivation: true
