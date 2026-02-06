@@ -599,6 +599,19 @@ datasets:
         v02.31/30days/
       Put all files under a single directory (no subdirectories with years).
 
+  ESACCI-SNOW:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow/data
+    last_access: 2024-02-14
+    info: |
+      Download the data from:
+        scfg/AVHRR-MERGED/v2.0/
+        swe/MERGED/v2.0/
+      Put all scfg files in a single directory called 'scfg'
+      (no subdirectories with years or months).
+      Put all swe files in a single directory called 'swe'
+      (no subdirectories with years or months).
+
   ESACCI-SST:
     tier: 2
     source: dap.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
