@@ -17,11 +17,11 @@ Configuration options in recipe
 caption: str, optional
     Figure caption used for provenance tracking. By default, uses "Global map
     of the hour of the daily maximum precipitation for {dataset}.".
-cbar_label: str, optional (default: 'Hour of maximum precipitation')
+cbar_label: str, optional (default: "Hour of maximum precipitation")
     Colorbar label.
 cbar_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``{orientation: 'horizontal'}``.
+    default, uses ``{orientation: "horizontal"}``.
 figure_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
     default, uses ``constrained_layout: true, ticks: [0, 3, 6, 9, 12, 15, 18,
@@ -30,6 +30,13 @@ matplotlib_rc_params: dict, optional
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
     for all plots produced with this diagnostic.
+method: str, optional (default: `"harmonics"`)
+    Method to determine the hour of maximum precipitation. Possible options:
+
+    - If `"harmonics"`, fit a 12h- and 24-harmonic to the input data and use
+    the maximum of the sum of both (see Dai, 2024;
+      https://doi.org/10.1007/s00382-024-07182-6).
+    - If `"max"`, simply use the maximum in the input data.
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.pcolormesh`. By default,
     uses ``cmap: twilight``.
@@ -52,15 +59,8 @@ savefig_kwargs: dict, optional
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
-threshold_factor: float, optional (default: 2.0)
-    Threshold factor to mask grid points with low precipitation. Only points
-    are shown, where
-    max(pr) - min(pr) > threshold_factor / sqrt(N_days / 4 - 1) * max(std(pr))
-    (Mooers et al., 2021, https://doi.org/10.1029/2020MS002385).
-    At a given grid cell, max(pr)/min(pr) are the maximum/minimum precipitation
-    across the entire time range, N_days the number of total days and
-    max(std(pr)) the maximum of the standard deviation of precipitation across
-    a single day.
+threshold: float, optional (default: 0.5)
+    Mask grid points where precipitation is lower than the given threshold.
 
 """
 
@@ -71,15 +71,14 @@ from pathlib import Path
 from typing import Any
 
 import cartopy.crs as ccrs
-import dask.array as da
 import iris
 import iris.plot
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from esmvalcore.preprocessor import climate_statistics
 from iris.cube import Cube
 from iris.warnings import IrisVagueMetadataWarning
+from scipy.optimize import curve_fit
 
 from esmvaltool.diag_scripts.shared import io, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import (
@@ -90,46 +89,78 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(Path(__file__).stem)
 
 
+def _harmonic_function(
+    x_val: float,
+    constant: float,
+    amplitude_24: float,
+    phase_24: float,
+    amplitude_12: float,
+    phase_12: float,
+) -> float:
+    """Harmonic function which can be fitted to diurnal cycle."""
+    diurnal_component = amplitude_24 * np.sin(
+        2 * np.pi * x_val / 24.0 - phase_24
+    )
+    semidiurnal_component = amplitude_12 * np.sin(
+        2 * np.pi * x_val / 12.0 - phase_12
+    )
+    return constant + diurnal_component + semidiurnal_component
+
+
+def _harmonic_fit(
+    x_data: np.ma.MaskedArray,
+    y_data: np.ma.MaskedArray,
+) -> np.ma.MaskedArray:
+    """Fit harmonic function to 1D data."""
+    # curve_fit cannot handle masked data
+    if np.ma.is_masked(y_data):
+        return np.ma.masked_all_like(y_data)
+    params = curve_fit(_harmonic_function, x_data, y_data, nan_policy="omit")[
+        0
+    ]
+    return _harmonic_function(x_data, *params)
+
+
+vectorized_harmonic_fit = np.vectorize(_harmonic_fit, signature="(t),(t)->(t)")
+
+
 def _calculate_hour_of_max_precipitation(
-    cube: Cube, cfg: dict[str, Any]
+    cube: Cube,
+    cfg: dict[str, Any],
 ) -> Cube:
     """Calculate hour of maximum daily precipitation."""
-    # Mask values where amplitude is below threshold
+    hour_dim = cube.coord_dims("hour")[0]
+
+    # Mask values mean diurnal cycle is smaller than threshold
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
             category=IrisVagueMetadataWarning,
             module="iris",
         )
-        max_pr = cube.collapsed("time", iris.analysis.MAX)
-        min_pr = cube.collapsed("time", iris.analysis.MIN)
-        std_daily_pr = climate_statistics(
-            cube, operator="std_dev", period="daily"
-        )
-        max_std_daily_pr = std_daily_pr.collapsed(
-            "day_of_year", iris.analysis.MAX
-        )
-    n_days = std_daily_pr.coord("day_of_year").shape[0]
-    print(n_days)
-    mask_factor = cfg["threshold_factor"] / np.sqrt(n_days / 4.0 - 1.0)
-    print(mask_factor)
-    mask = (
-        max_pr.core_data() - min_pr.core_data()
-        <= mask_factor * max_std_daily_pr.core_data()
+        mean_diurnal_cycle = cube.collapsed("hour", iris.analysis.MEAN)
+    mask = mean_diurnal_cycle.data < cfg["threshold"]
+    broadcasted_mask = np.broadcast_to(
+        np.expand_dims(mask, axis=hour_dim), cube.shape
     )
+    cube = cube.copy(np.ma.masked_array(cube.data, mask=broadcasted_mask))
 
     # Calculate hour of maximum precipitation
-    diurnal_cycle = climate_statistics(cube, operator="mean", period="hourly")
-    time_dim = diurnal_cycle.coord_dims("hour")[0]
-    hour_of_max_precipitation_data = da.ma.masked_array(
-        diurnal_cycle.coord("hour").points[
-            np.argmax(diurnal_cycle.core_data(), axis=time_dim)
-        ],
+    if cfg["method"] == "harmonics":
+        new_order = [d for d in range(cube.ndim) if d != hour_dim] + [hour_dim]
+        fitted_data = vectorized_harmonic_fit(
+            cube.coord("hour").points,
+            cube.data.transpose(new_order),
+        )
+        cube = cube.copy(fitted_data.transpose(np.argsort(new_order)))
+
+    # Apply mask again (method "max" has removed it)
+    hour_of_max_precipitation_data = np.ma.masked_array(
+        cube.coord("hour").points[np.argmax(cube.data, axis=hour_dim)],
         mask=mask,
     )
 
-    return max_pr.copy(hour_of_max_precipitation_data)
-    # return max_pr.copy(max_pr.core_data() - min_pr.core_data())
+    return mean_diurnal_cycle.copy(hour_of_max_precipitation_data)
 
 
 def _calculate_tcre(
@@ -191,12 +222,11 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault(
         "cbar_kwargs",
         {"orientation": "horizontal", "ticks": [0, 3, 6, 9, 12, 15, 18, 21]},
-        # {"orientation": "horizontal"},
     )
     cfg.setdefault("figure_kwargs", {"constrained_layout": True})
     cfg.setdefault("matplotlib_rc_params", {})
+    cfg.setdefault("method", "harmonics")
     cfg.setdefault("plot_kwargs", {"cmap": "twilight"})
-    # cfg.setdefault("plot_kwargs", {})
     cfg.setdefault("projection", "Robinson")
     cfg.setdefault("projection_kwargs", {"central_longitude": 10})
     cfg.setdefault("pyplot_kwargs", {})
@@ -209,7 +239,16 @@ def _get_default_cfg(cfg: dict) -> dict:
         },
     )
     cfg.setdefault("seaborn_settings", {"style": "ticks"})
-    cfg.setdefault("threshold_factor", 17.5)
+    cfg.setdefault("threshold", 1.0)
+
+    supported_methods = (
+        "harmonics",
+        "max",
+    )
+
+    if cfg["method"] not in supported_methods:
+        msg = f"Expected one of {supported_methods} for 'method', got '{cfg['method']}'"
+        raise ValueError(msg)
 
     return cfg
 

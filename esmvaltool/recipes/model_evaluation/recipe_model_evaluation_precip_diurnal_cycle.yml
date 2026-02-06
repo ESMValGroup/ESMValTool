@@ -20,13 +20,13 @@ preprocessors:
 
   local_solar_time:
     custom_order: true
+    extract_season:
+      season: JJA
     local_solar_time:
+    climate_statistics:
+      period: hourly
     convert_units:
       units: mm day-1
-    # climate_statistics:
-    #   period: hourly
-    # mask_below_threshold:
-    #   threshold: 0.5
 
 
 diagnostics:
@@ -35,7 +35,7 @@ diagnostics:
     description: Plot maps showing hour of maximum precipitation.
     variables:
       pr:
-        timerange: 20000101/20000401
+        timerange: 20000101/20010101
         mip: 3hr
         preprocessor: local_solar_time
         additional_datasets:
