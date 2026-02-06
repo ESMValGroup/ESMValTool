@@ -5,7 +5,7 @@ documentation:
   title: Histogram of precipitation.
 
   description: >
-    Creates a 1D histogram for precipiation.
+    Creates a 1D histogram for precipitation.
 
   authors:
     - bock_lisa
