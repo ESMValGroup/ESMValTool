@@ -4,7 +4,7 @@ attributes:
   dataset_id: GPCP-SG
   version: '2.3'
   tier: 2
-  modeling_realm: atmos
+  type: sat
   project_id: OBS
   source: 'https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc'
   reference: 'gpcp-sg'

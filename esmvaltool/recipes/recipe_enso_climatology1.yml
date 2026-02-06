@@ -104,13 +104,13 @@ diagnostics:
         preprocessor: ITCZ_bias
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
       eq_pr_bias:
         short_name: pr
         preprocessor: eq_bias
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
       eq_sst_bias:
         short_name: tos
         preprocessor: eq_bias
@@ -128,13 +128,13 @@ diagnostics:
         preprocessor: ITCZ_sea_cycle
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
       eq_pr_seacycle:
         short_name: pr
         preprocessor: eq_sea_cycle
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
       eq_sst_seacycle:
         short_name: tos
         preprocessor: eq_sea_cycle
