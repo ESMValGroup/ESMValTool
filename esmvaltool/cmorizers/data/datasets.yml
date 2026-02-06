@@ -200,10 +200,10 @@ datasets:
 
   CERES-EBAF:
     tier: 2
-    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA42Selection.jsp
-    last_access: 2023-09-21
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
+    last_access: 2026-02-06
     info: |
-      Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+      Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly Mean", "Regional" (0-360, -90-90)
       Enter "Email Address" and click on "Get Data"
       Wait for the processing to be finished and click on "Download"
 

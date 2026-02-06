@@ -4,13 +4,13 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA42Selection.jsp
+    https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
 
 Last access
-    20240306
+    20260206
 
 Download and processing instructions
-    - Select: "TOA Fluxes" (all), "Solar Flux", "Monthly", "Regional" (0-360,
+    - Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly", "Regional" (0-360,
       -90-90)
     - Enter "Email Address" and click on "Get Data"
     - Wait for the processing to be finished and click on "Download"
