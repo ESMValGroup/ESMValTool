@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - python3.14
   schedule:
     - cron: "0 0 * * *"
 
@@ -21,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.12", "3.13", "3.14"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v6
@@ -67,7 +68,7 @@ jobs:
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.12", "3.13", "3.14"]
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
