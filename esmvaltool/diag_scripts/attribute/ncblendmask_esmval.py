@@ -68,8 +68,10 @@ def ncblendmask_esmval(
     # f = fix ice
     # (use x for none)
 
-    ensobs_diag = []
-    ensobs_dec_warming = []
+    if ensobs_diag is None:
+        ensobs_diag = []
+    if ensobs_dec_warming is None:
+        ensobs_dec_warming = []
     if warming_years is None:
         warming_years = [2010, 2019]
 
