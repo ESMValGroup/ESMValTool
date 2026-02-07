@@ -3,9 +3,9 @@
 ---
 documentation:
   title:
-    Update to Gillett20 for Forster et al. 2023.
+    Update to Gillett20 for Forster et al. 2025.
   description: |
-    Produces estimates of attributable warming for Forster et al. (2023), Indicators of Global Climate Change 2022, updated from Gillett et al. (2021)
+    Produces estimates of attributable warming for Forster et al. (2025), Indicators of Global Climate Change 2024, updated from Gillett et al. (2021)
 
   authors:
     - kirchmeier-young_megan
@@ -33,7 +33,7 @@ diagnostics:
   # **********************************************************************
 
   gillett20_figs:
-    description: Preprocess data needed for Gillett et al. (2021) update for Forster et al. (2023).
+    description: Preprocess data needed for Gillett et al. (2021) update for Forster et al. (2025).
     variables:
       tas:
         preprocessor: regrid_5_5
@@ -203,7 +203,7 @@ diagnostics:
           - 2010
           - 2019
 
-      fig2_2013-22:
+      fig2_2015-24:
         script: attribute/attrib_blended.py
         obs: had5
         exp_flag: GHG
@@ -213,8 +213,8 @@ diagnostics:
         gmst_flag: true
         sr15_flag: false
         warming_years:
-          - 2013
-          - 2022
+          - 2015
+          - 2024
 
       fig2_2017:
         script: attribute/attrib_blended.py
@@ -229,7 +229,7 @@ diagnostics:
           - 2017
           - 2017
 
-      fig2_2022:
+      fig2_2024:
         script: attribute/attrib_blended.py
         obs: had5
         exp_flag: GHG
@@ -239,8 +239,8 @@ diagnostics:
         gmst_flag: true
         sr15_flag: false
         warming_years:
-          - 2022
-          - 2022
+          - 2024
+          - 2024
 
 #As above, but using SR1.5 15-yr trend endpoint approach.
       fig2_2017_sr15:
@@ -256,7 +256,7 @@ diagnostics:
           - 2003
           - 2017
 
-      fig2_2022_sr15:
+      fig2_2024_sr15:
         script: attribute/attrib_blended.py
         obs: had5
         exp_flag: GHG
@@ -266,5 +266,5 @@ diagnostics:
         gmst_flag: true
         sr15_flag: true
         warming_years:
-          - 2008
-          - 2022
+          - 2010
+          - 2024
