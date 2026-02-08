@@ -1,0 +1,77 @@
+.. _recipes_ocean_south:
+
+Simple southern ocean diagnostics
+=====
+
+Overview
+--------
+
+A few simple recipes recreated in ESMValTool for running on bulk datasets e.g. CMIP6, from the COSIMA cookbook.
+
+
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/
+
+* recipe_<mynewrecipe>.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/<mynewdiag>/
+
+* <mynewdiag.py/.ncl/.r>: one line scription
+
+
+User settings in recipe
+-----------------------
+
+#. Script <mynewdiag.py/.ncl/.r>
+
+   *Required settings for script*
+
+   * xxx: zzz
+
+   *Optional settings for script*
+
+   *Required settings for variables*
+
+   *Optional settings for variables*
+
+   *Required settings for preprocessor*
+
+   *Optional settings for preprocessor*
+
+   *Color tables*
+
+   * list required color tables (if any) here
+
+
+Variables
+---------
+
+* var1 (realm, frequency, dimensions), e.g. pr (atmos, monthly mean, longitude latitude time)
+
+
+Observations and reformat scripts
+---------------------------------
+
+*Note: (1) obs4MIPs data can be used directly without any preprocessing;
+(2) see headers of reformat scripts for non-obs4MIPs data for download
+instructions.*
+
+* xxx
+
+  *Reformat script:* <myreformatscript.py>
+
+References
+----------
+
+* xxx
+
+Example plots
+-------------
+
+.. _fig_mynewdiag_1:
+.. figure::  /recipes/figures/<mynewdiagnostic>/awesome1.png
+   :align:   center
+
+   Add figure caption here.
