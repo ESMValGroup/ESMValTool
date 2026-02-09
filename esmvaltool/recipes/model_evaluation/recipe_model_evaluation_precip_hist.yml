@@ -19,8 +19,7 @@ timerange: &timerange
 
 
 datasets:
-  - {dataset: ICON, project: ICON,
-     exp: ag_atm_amip_r2b5_cvtfall_entrmid_05_cov15_based_on_12962670_20yrs_240927_hf}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
      tier: 3, alias: ERA5}
 
