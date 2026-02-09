@@ -160,7 +160,7 @@ diagnostics:
 
   # Climatologies (zonal means)
 
- plot_zonal_mean_profiles_with_references_ta:
+  plot_zonal_mean_profiles_with_references_ta:
     description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       ta:
@@ -222,7 +222,8 @@ diagnostics:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
       plot:
-        <<: *plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         script: monitor/multi_datasets.py
         plots:
           zonal_mean_profile:
@@ -281,7 +282,8 @@ diagnostics:
           - {project: OBS6, dataset: ESACCI-WATERVAPOUR, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, timerange: '2003/2007', reference_for_monitor_diags: true}
     scripts:
       plot:
-        <<: *plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         group_variables_by: variable_group
         script: monitor/multi_datasets.py
         plots:
@@ -310,7 +312,8 @@ diagnostics:
           - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
     scripts:
       plot:
-        <<: *plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         script: monitor/multi_datasets.py
         plots:
           timeseries:
