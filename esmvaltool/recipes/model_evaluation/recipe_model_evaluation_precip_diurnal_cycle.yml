@@ -11,17 +11,20 @@ documentation:
 
 
 # Note: the following models are just examples
-# datasets:
-#   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
 
 preprocessors:
 
   local_solar_time:
     custom_order: true
-    extract_season:
-      season: JJA
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
     local_solar_time:
     climate_statistics:
       period: hourly
@@ -35,7 +38,7 @@ diagnostics:
     description: Plot maps showing hour of maximum precipitation.
     variables:
       pr:
-        timerange: 20000101/20010101
+        timerange: 20000601/20090901
         mip: 3hr
         preprocessor: local_solar_time
         additional_datasets:

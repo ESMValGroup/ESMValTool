@@ -59,7 +59,7 @@ savefig_kwargs: dict, optional
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
-threshold: float, optional (default: 0.5)
+threshold: float, optional (default: 0.0)
     Mask grid points where precipitation is lower than the given threshold.
 
 """
@@ -78,13 +78,11 @@ import numpy as np
 import seaborn as sns
 from iris.cube import Cube
 from iris.warnings import IrisVagueMetadataWarning
+from matplotlib.figure import Figure
 from scipy.optimize import curve_fit
 
-from esmvaltool.diag_scripts.shared import io, run_diagnostic
-from esmvaltool.diag_scripts.shared._base import (
-    get_diagnostic_filename,
-    get_plot_filename,
-)
+from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import save_data, save_figure
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -163,53 +161,6 @@ def _calculate_hour_of_max_precipitation(
     return mean_diurnal_cycle.copy(hour_of_max_precipitation_data)
 
 
-def _calculate_tcre(
-    cfg: dict,
-    grouped_anomaly_data: dict[str, tuple[Cube, Cube]],
-) -> str:
-    """Calculate TCRE."""
-    # Get center index at interval for emissions calculations
-    # Note: For the default flat10 experiment, emissions reach 1000 Pg at the
-    # END of year 99 (starting with year 0). For the default calculation period
-    # for TCRE, we use 10 years before and after that, which gives us the
-    # default [90, 110]. The following formula basically calculates the center
-    # (by default: 99) for the calculation period (by default: [90, 110]).
-    idx_start = cfg["calc_tcre_period"][0]
-    idx_end = cfg["calc_tcre_period"][1]
-    idx_center = int((idx_start + idx_end) / 2.0) - 1
-
-    tcre = {}
-    target_units = "K/Eg"
-    for group, (cube_e, cube_t) in grouped_anomaly_data.items():
-        emissions = cube_e[idx_center].data
-        temperature = cube_t[idx_start:idx_end].data.mean()
-        tcre_cube = Cube(
-            np.array(temperature / emissions, dtype=cube_t.dtype),
-            units=cube_t.units / cube_e.units,
-        )
-        tcre_cube.convert_units(target_units)
-        tcre[group] = tcre_cube.data
-        logger.info("TCRE of %s: %.2f %s", group, tcre_cube.data, target_units)
-
-    netcdf_path = get_diagnostic_filename("tcre", cfg)
-    var_attrs = {
-        "short_name": "tcre",
-        "long_name": (
-            "Transient Climate Response to Cumulative CO2 Emissions (TCRE)"
-        ),
-        "units": target_units,
-    }
-    attrs = {
-        "comment": (
-            "Expressed relative to mass of carbon (not CO2), i.e., units are "
-            "K/EgC.",
-        ),
-    }
-    io.save_scalar_data(tcre, netcdf_path, var_attrs, attributes=attrs)
-
-    return netcdf_path
-
-
 def _get_default_cfg(cfg: dict) -> dict:
     """Get default options for configuration dictionary."""
     cfg = deepcopy(cfg)
@@ -239,7 +190,7 @@ def _get_default_cfg(cfg: dict) -> dict:
         },
     )
     cfg.setdefault("seaborn_settings", {"style": "ticks"})
-    cfg.setdefault("threshold", 1.0)
+    cfg.setdefault("threshold", 0.0)
 
     supported_methods = (
         "harmonics",
@@ -265,20 +216,30 @@ def _get_projection(cfg: dict[str, Any]) -> Any:
     return getattr(ccrs, projection)(**projection_kwargs)
 
 
-def _plot(cube: Cube, cfg: dict[str, Any], plot_path: Path) -> Cube:
+def _get_provenance_record(ancestors: list[str], caption: str) -> dict[str, Any]:
+    """Get provenance record."""
+    return {
+        "ancestors": ancestors,
+        "authors": ["schlund_manuel"],
+        "caption": caption,
+        "plot_types": ["map"],
+        "realms": ["atmos"],
+        "references": ["dai24climdyn"],
+        "themes": ["phys"],
+    }
+
+
+def _create_plot(cube: Cube, cfg: dict[str, Any]) -> Figure:
     """Plot map."""
     fig = plt.figure(**cfg["figure_kwargs"])
     axes = fig.add_subplot(projection=_get_projection(cfg))
     plot_kwargs = cfg["plot_kwargs"]
     plot_kwargs["axes"] = axes
     map_plot = iris.plot.pcolormesh(cube, **plot_kwargs)
-
     _process_pyplot_kwargs(**cfg["pyplot_kwargs"])
     cbar = plt.colorbar(map_plot, ax=axes, **cfg["cbar_kwargs"])
     cbar.set_label(cfg["cbar_label"])
-
-    fig.savefig(plot_path, **cfg["savefig_kwargs"])
-    return plot_path
+    return fig
 
 
 def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
@@ -299,49 +260,20 @@ def main(cfg: dict) -> None:
 
     for dataset in cfg["input_data"].values():
         filename = dataset["filename"]
+        basename = Path(filename).stem
+        caption = cfg["caption"].format(**dataset)
+        provenance_record = _get_provenance_record([filename], caption)
+
+        # Calculation
         logger.info("Loading %s", filename)
         cube = iris.load_cube(filename)
         cube = _calculate_hour_of_max_precipitation(cube, cfg)
+        save_data(basename, provenance_record, cfg, cube)
 
+        # Plot
         logger.info("Plotting map for %s", dataset["alias"])
-        plot_path = Path(get_plot_filename(Path(filename).stem, cfg))
-        _plot(cube, cfg, plot_path)
-        logger.info("Created %s", plot_path)
-
-    # Load and group data
-    # input_data = _load_and_preprocess_data(cfg)
-    # grouped_anomaly_data = _get_grouped_anomaly_data(cfg, input_data)
-
-    # # Plot data
-    # with mpl.rc_context(cfg["matplotlib_rc_params"]):
-    #     plot_path = _plot(cfg, grouped_anomaly_data)
-    # provenance_record = {
-    #     "authors": ["schlund_manuel"],
-    #     "ancestors": [d["filename"] for d in input_data],
-    #     "plot_types": ["line"],
-    #     "references": ["sanderson24gmd"],
-    #     "realms": ["atmos"],
-    #     "themes": ["carbon", "bgphys"],
-    # }
-    # provenance_record["caption"] = cfg["caption"]
-    # with ProvenanceLogger(cfg) as provenance_logger:
-    #     provenance_logger.log(plot_path, provenance_record)
-
-    # # Calculate TCRE
-    # netcdf_path = _calculate_tcre(cfg, grouped_anomaly_data)
-    # provenance_record = {
-    #     "authors": ["schlund_manuel"],
-    #     "ancestors": [d["filename"] for d in input_data],
-    #     "caption": (
-    #         "Transient Climate Response to Cumulative CO2 Emissions (TCRE) "
-    #         "for multiple datasets."
-    #     ),
-    #     "references": ["sanderson24gmd"],
-    #     "realms": ["atmos"],
-    #     "themes": ["carbon", "bgphys"],
-    # }
-    # with ProvenanceLogger(cfg) as provenance_logger:
-    #     provenance_logger.log(netcdf_path, provenance_record)
+        figure = _create_plot(cube, cfg)
+        save_figure(basename, provenance_record, cfg, figure=figure, **cfg["savefig_kwargs"])
 
 
 if __name__ == "__main__":
