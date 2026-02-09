@@ -61,7 +61,6 @@ diagnostics:
         mip: 3hr
         preprocessor: tropics
         <<: *timerange
-        supplementary_variables: *supplementary_variables
     scripts:
       plot:
         script: plot_histogram.py
