@@ -105,5 +105,5 @@ Example plots
    :align: center
    :width: 50%
 
-   Hisotgram of precipitation rates from ICON and ERA5 reanalysis 3-hourly
+   Hisotgram of precipitation rates from MPI-ESM1-2-HR and ERA5 reanalysis 3-hourly
    data over the Tropics (30°S-30°N) for the years 1979-1980.
