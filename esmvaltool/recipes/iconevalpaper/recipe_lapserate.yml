@@ -12,7 +12,7 @@ documentation:
 datasets:
   # one year is enough data
   - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '2010/2010', alias: 'ERA5'}
-  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 2010, end_year: 2010, component: atm, var_type: atm_3d_ml}
+  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 2010, end_year: 2010, component: atm, var_type: atm_3d_ml, alias: 'ICON-XPP'}
 
 
 preprocessors:
