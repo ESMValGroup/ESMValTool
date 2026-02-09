@@ -58,7 +58,7 @@ class _Formatter:
         self,
         command: str,
         datasets: str | list[str],
-        original_data_dir: Path | None,
+        original_data_dir: Path | str | None,
         config_dir: Path | None,
         options: dict,
     ) -> None:
@@ -78,9 +78,6 @@ class _Formatter:
             Extra options to overwrite configuration.
 
         """
-        self.original_data_dir = (
-            Path.cwd() if original_data_dir is None else original_data_dir
-        )
         if isinstance(datasets, str):
             self.datasets = datasets.split(",")
         else:
@@ -99,7 +96,6 @@ class _Formatter:
             CFG.update_from_dirs([config_dir])
         CFG.nested_update(options)
         self.config = CFG.start_session(f"data_{command}")
-
         self.run_dir.mkdir(parents=True, exist_ok=True)
 
         # configure logging
@@ -108,6 +104,26 @@ class _Formatter:
             console_log_level=self.log_level,
         )
         logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+
+        # Locate the input data.
+        if original_data_dir is None:
+            original_data_dir = Path.cwd()
+            # TODO: remove the lines below in ESMValTool v2.16.0.
+            rawobs = self.config.get("rootpath", {}).get("RAWOBS", None)
+            if rawobs is not None:
+                logger.warning(
+                    (
+                        "Using the 'rootpath: RAWOBS' setting to specify the "
+                        "input data directory is deprecated and this will stop "
+                        "working in ESMValTool v2.16.0. Please use the "
+                        "'--original-data-dir' argument instead."
+                    ),
+                )
+                original_data_dir = Path(rawobs[0])
+
+        self.original_data_dir = Path(
+            os.path.expandvars(original_data_dir),
+        ).expanduser()
 
         # run
         timestamp1 = datetime.datetime.now(datetime.UTC)
@@ -650,7 +666,7 @@ class DataCommand:
         self,
         datasets: str | list[str],
         *,
-        original_data_dir: Path | None = None,
+        original_data_dir: Path | str | None = None,
         start: str | None = None,
         end: str | None = None,
         overwrite: bool = False,
@@ -695,7 +711,7 @@ class DataCommand:
         self,
         datasets: str | list[str],
         *,
-        original_data_dir: Path | None = None,
+        original_data_dir: Path | str | None = None,
         start: str | None = None,
         end: str | None = None,
         install: bool = False,
@@ -740,7 +756,7 @@ class DataCommand:
         self,
         datasets: str | list[str],
         *,
-        original_data_dir: Path | None = None,
+        original_data_dir: Path | str | None = None,
         start: str | None = None,
         end: str | None = None,
         overwrite: bool = False,

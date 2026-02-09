@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 3
   version: 'V1'
-  modeling_realm: sat
+  type: sat
   source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo'
   reference: 'cds-satellite-albedo'
   comment: |
