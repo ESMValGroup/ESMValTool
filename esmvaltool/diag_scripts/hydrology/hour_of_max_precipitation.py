@@ -99,10 +99,10 @@ def _harmonic_function(
 ) -> float:
     """Harmonic function which can be fitted to diurnal cycle."""
     diurnal_component = amplitude_24 * np.sin(
-        2 * np.pi * x_val / 24.0 - phase_24
+        2 * np.pi * x_val / 24.0 - phase_24,
     )
     semidiurnal_component = amplitude_12 * np.sin(
-        2 * np.pi * x_val / 12.0 - phase_12
+        2 * np.pi * x_val / 12.0 - phase_12,
     )
     return constant + diurnal_component + semidiurnal_component
 
@@ -141,7 +141,7 @@ def _calculate_hour_of_max_precipitation(
         mean_diurnal_cycle = cube.collapsed("hour", iris.analysis.MEAN)
     mask = mean_diurnal_cycle.data < cfg["threshold"]
     broadcasted_mask = np.broadcast_to(
-        np.expand_dims(mask, axis=hour_dim), cube.shape
+        np.expand_dims(mask, axis=hour_dim), cube.shape,
     )
     cube = cube.copy(np.ma.masked_array(cube.data, mask=broadcasted_mask))
 
