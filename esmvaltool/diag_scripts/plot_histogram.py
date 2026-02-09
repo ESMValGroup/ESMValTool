@@ -16,6 +16,7 @@ Configuration parameters through recipe
 - suptitle: String for the figure's title (default: None).
 - dpi: Integer for the resolution of the saved figure (default: 300).
 - xlabel: String for the x-axis label (default: None, which uses the variable name and units from the cube).
+- ylabel: String for the y-axis label (default: None).
 - plot_filename: String for the base name of the saved plot and data files (default: "histogram_diag").
 
 """
