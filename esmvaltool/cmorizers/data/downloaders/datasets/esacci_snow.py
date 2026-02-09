@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config,
+    original_data_dir,
     dataset,
     dataset_info,
     start_date,
