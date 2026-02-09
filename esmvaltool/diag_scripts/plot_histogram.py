@@ -44,7 +44,7 @@ def get_provenance_record(
     ancestor_files: Sequence[str],
 ) -> dict[str, str | Sequence[str]]:
     """Create a provenance record describing the diagnostic data and plot."""
-    record = {
+    return {
         "caption": caption,
         "plot_types": ["histogram"],
         "authors": [
@@ -52,7 +52,6 @@ def get_provenance_record(
         ],
         "ancestors": ancestor_files,
     }
-    return record
 
 
 def set_defaults(cfg):
@@ -78,11 +77,9 @@ def plot_hist(
         hlist.append(np.asarray(hist))
         if centers_ref is None:
             centers_ref = np.asarray(centers)
-        else:
-            if not np.allclose(centers_ref, np.asarray(centers)):
-                raise ValueError(
-                    "All datasets must share identical centers of the bins"
-                )
+        elif not np.allclose(centers_ref, np.asarray(centers)):
+            msg = "All datasets must share identical centers of the bins"
+            raise ValueError(msg)
 
     widths = np.diff(centers_ref, prepend=centers_ref[0])
 
