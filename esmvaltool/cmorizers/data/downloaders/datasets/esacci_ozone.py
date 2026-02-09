@@ -4,7 +4,6 @@ import gzip
 import logging
 import shutil
 import zipfile
-from pathlib import Path
 
 import cdsapi
 
@@ -12,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config,
+    original_data_dir,
     dataset,
     dataset_info,
     start_date,
@@ -25,7 +24,7 @@ def download_dataset(
       https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1.
     - The file named .cdspirc containing the key associated to
       the ECMWF account needs to be saved in user's ${HOME} directory.
-    - All the files will be saved in ${RAWOBS}/Tier2/ESACCI-OZONE.
+    - All the files will be saved in Tier2/ESACCI-OZONE.
     """
     cds_url = "https://cds.climate.copernicus.eu/api"
 
@@ -52,8 +51,9 @@ def download_dataset(
         }
 
         client = cdsapi.Client(cds_url)
-        raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
-        output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
+        output_folder = (
+            original_data_dir / f"Tier{dataset_info['tier']}" / dataset
+        )
         output_folder.mkdir(parents=True, exist_ok=True)
 
         for var_name, request in requests.items():

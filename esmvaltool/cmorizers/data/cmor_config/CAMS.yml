@@ -9,7 +9,7 @@ attributes:
   dataset_id: CAMS
   version: 'v23r1'
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion"
   reference: 'cams'

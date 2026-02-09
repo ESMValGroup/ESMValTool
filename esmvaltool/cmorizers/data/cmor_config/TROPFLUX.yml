@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 2
   version: "v1"
-  modeling_realm: reanaly
+  type: reanaly
   source: 'https://incois.gov.in/tropflux/'
   reference: 'tropflux'
   comment: |
