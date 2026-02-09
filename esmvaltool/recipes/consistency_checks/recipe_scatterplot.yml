@@ -1,0 +1,129 @@
+# ESMValTool
+---
+documentation:
+  title: Water vapor checks.
+  description: >
+    Plot Water vapor consistency diagnostics.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+regridding: &regridding
+  regrid:
+    target_grid: 2x2
+    scheme: nearest
+
+
+datasets:
+#  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '1979/2020'}
+  - {dataset: ICON-XPP, exp: tvp1826_003, project: ICON, var_type: atm_2d_ml, timerange: '1979/2020'}
+
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+  - {short_name: areacello, skip: true}
+  - {short_name: sftlf, skip: true}
+  - {short_name: sftof, skip: true}
+
+
+preprocessors:
+  common_grid_tas:
+    <<: *regridding
+    mask_outside_range:
+      minimum: 240.
+      maximum: 315.
+
+  common_grid_tas_a:
+    <<: *regridding
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+
+  common_grid_prw:
+    custom_order: true
+    <<: *regridding
+    mask_outside_range:
+      minimum: 0
+      maximum: 70
+
+  common_grid_prw_a:
+    custom_order: true
+    <<: *regridding
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      relative: true
+
+
+diagnostics:
+
+  plot_scatter_prw_tas:
+    description: Scatterplot anomalies tas vs anomalies prw.
+    variables:
+      prw:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_prw_a
+      tas:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_tas_a
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: regplot
+        reset_index: true
+        write_netcdf: true
+        seaborn_kwargs:
+          x: tas
+          y: prw
+        plot_object_methods:
+          set:
+            xlabel: 'Delta 2-m temperature [K]'
+            ylabel: 'Delta water vapor [%]'
+        seaborn_settings:
+          style: ticks
+        suptitle: 'Temperature - water vapor mass'
+
+  plot_joint_prw_tas:
+    description: Scatterplot tas vs prw.
+    variables:
+      prw:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_prw
+      tas:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_tas
+    scripts:
+      plot:
+        script: seaborn_jointplot_histogram.py
+        x: tas
+        y: prw
+        bins: 20
+        joint_kws:
+          vmax: 0.015
+          cmap: YlGnBu
+        cbar: true
+        cbar_kws:
+          extend: 'max'
+        marginal_kws:
+          color: darkturquoise
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: '2-m temperature - water vapor mass'
+        plot_filename: 'jointplot_tas_prw'
