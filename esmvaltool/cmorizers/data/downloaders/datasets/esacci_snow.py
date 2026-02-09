@@ -50,7 +50,7 @@ def download_dataset(
         end_date_swe = end_date
 
     downloader = CCIDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
