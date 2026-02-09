@@ -1,0 +1,92 @@
+# ESMValTool
+---
+documentation:
+  title: Lapse rates checks.
+  description: >
+    Plot PDF of lapse rates.
+  authors:
+    - lauer_axel
+    - bock_lisa
+
+
+datasets:
+  # one year is enough data
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '2010/2010', alias: 'ERA5'}
+  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 2010, end_year: 2010, component: atm, var_type: atm_3d_ml}
+
+
+preprocessors:
+  pp_3d:
+    custom_order: true
+    extract_levels:
+      levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 20000., 15000.]
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_shape:
+      shapefile: shapefiles/clim_regs.shp
+      crop: true
+      decomposed: true
+      ids:
+        clim_regs:
+          - tropics
+          - nh_midlat
+          - sh_midlat
+
+
+diagnostics:
+
+  lapse_rate_pdf:
+    description: Plot PDF of lapse rates.
+    variables:
+      lapserate:
+        preprocessor: pp_3d
+        mip: Amon
+        derive: true
+        force_derivation: true
+        supplementary_variables:
+          - short_name: areacella
+            skip: true
+          - short_name: areacello
+            skip: true
+          - short_name: sftlf
+            skip: true
+          - short_name: sftof
+            skip: true
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: displot
+        reset_index: true
+        write_netcdf: true
+        seaborn_kwargs:
+          kind: hist
+          stat: density
+          binwidth: 0.25
+          x: lapserate
+          hue: alias
+          facet_kws:
+            sharey: false
+          col: shape_id
+          col_order:
+            - tropics
+            - nh_midlat
+            - sh_midlat
+          col_wrap: 3
+        add_aux_coords: true
+        dropna_kwargs:
+          axis: 0
+          how: any
+        legend_title: Dataset
+        plot_object_methods:
+          set:
+            xlabel: 'lapse rate [K/km]'
+            xlim: [-5, 11]
+          set_titles: '{col_name}'
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: 'PDF of lapse rates (surface to 150 hPa)'
