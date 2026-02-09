@@ -9,7 +9,7 @@ Authors
 -------
 - Lisa Bock (DLR)
 
-Cofiguration parameters through recipe
+Configuration parameters through recipe
 ---------------------------------------
 - log_y: Boolean to set y-axis to logarithmic scale (default: False).
 - ylim: List of two floats to set y-axis limits (default: None).
