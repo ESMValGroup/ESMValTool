@@ -24,12 +24,6 @@ datasets:
      tier: 3, alias: ERA5}
 
 
-supplementary_variables: &supplementary_variables
-  - {short_name: areacella, skip: true}
-  - {short_name: areacello, skip: true}
-  - {short_name: sftlf, skip: true}
-  - {short_name: sftof, skip: true}
-
 REGRIDDING_SETTINGS: &regridding
   regrid:
     target_grid: 2x2
