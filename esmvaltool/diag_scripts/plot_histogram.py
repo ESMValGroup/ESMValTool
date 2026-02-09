@@ -13,7 +13,10 @@ Configuration parameters through recipe
 ---------------------------------------
 - log_y: Boolean to set y-axis to logarithmic scale (default: False).
 - ylim: List of two floats to set y-axis limits (default: None).
-- suptitle: String for the figure's super title (default: None).
+- suptitle: String for the figure's title (default: None).
+- dpi: Integer for the resolution of the saved figure (default: 300).
+- xlabel: String for the x-axis label (default: None, which uses the variable name and units from the cube).
+- plot_filename: String for the base name of the saved plot and data files (default: "histogram_diag").
 
 """
 
@@ -60,6 +63,8 @@ def set_defaults(cfg):
     cfg.setdefault("ylim", None)
     cfg.setdefault("suptitle", None)
     cfg.setdefault("plot_filename", "histogram_diag")
+    cfg.setdefault("xlabel", None)
+    cfg.setdefault("ylabel", None)
 
 
 def plot_hist(
@@ -100,7 +105,8 @@ def plot_hist(
         centers_ref[0] - 0.5 * widths[0],
         centers_ref[-1] + 0.5 * widths[-1],
     )
-    ax.set_ylabel("Density")
+    if cfg["ylabel"] is not None:
+        ax.set_ylabel(cfg["ylabel"])
     if labels is not None:
         ax.legend()
     if cfg["log_y"]:
@@ -158,7 +164,7 @@ def main(cfg: dict[str, Any]) -> None:
 
             # Compute the histograms
             hist = da.compute(cube.data)[0]
-            centers = cube.coord("lwe_precipitation_rate").points
+            centers = cube.coords(dim_coords=True)[0].points
             data = (hist, centers)
 
             all_data.append(data)

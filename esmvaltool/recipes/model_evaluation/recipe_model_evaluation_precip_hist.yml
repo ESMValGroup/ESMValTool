@@ -74,3 +74,4 @@ diagnostics:
         suptitle: Simulated Precipitation (Tropics 30S-30N)
         log_y: true
         xlabel: Precipitation rate (mm hour-1)
+        ylabel: Density
