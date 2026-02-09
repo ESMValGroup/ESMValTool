@@ -4,7 +4,7 @@ attributes:
   dataset_id: ESACCI-SNOW
   version: 'v2.0'
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow'
   reference: "esacci-snow"
