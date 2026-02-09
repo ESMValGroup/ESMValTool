@@ -9,7 +9,7 @@ attributes:
   # version: TS4.02
   version: 'TS4.07'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   # project_id: OBS  # v4.02
   project_id: OBS6
   # source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/'

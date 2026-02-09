@@ -564,7 +564,7 @@ diagnostics:
     variables:
       pr:
     additional_datasets:
-      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
+      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: sat,
          version: 2.3, start_year: 1979, end_year: 2022}
     scripts: null
 
@@ -885,7 +885,7 @@ diagnostics:
     variables:
       ch4s:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
          start_year: 1983}
     scripts: null
 
@@ -894,7 +894,7 @@ diagnostics:
     variables:
       co2s:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
          start_year: 1968}
     scripts: null
 
@@ -903,7 +903,7 @@ diagnostics:
     variables:
       n2os:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+      - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
          start_year: 1997}
     scripts: null
 
@@ -912,7 +912,7 @@ diagnostics:
     variables:
       ch4s:
     additional_datasets:
-      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
+      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: ground, version: 1.0, tier: 2,
          start_year: 1983, end_year: 2023}
     scripts: null
 
@@ -1145,7 +1145,7 @@ diagnostics:
     variables:
       od440aer:
     additional_datasets:
-      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20250823}
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: ground, version: 20250823}
     scripts: null
 
   ANUClimate:
@@ -1856,7 +1856,7 @@ diagnostics:
       wetlandFrac:
     additional_datasets:
       - {dataset: GLWD, project: OBS6, mip: Emon, tier: 2,
-         type: land, version: '2.0', start_year: 2002, end_year: 2002}
+         type: sat, version: '2.0', start_year: 2002, end_year: 2002}
     scripts: null
 
 
