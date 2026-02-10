@@ -23,8 +23,8 @@ def download_dataset(
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
