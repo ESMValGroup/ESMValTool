@@ -368,23 +368,24 @@ def main(cfg):
                 )
                 # Changed to use gmst_comp for trend instead of GSAT.
                 #                coef=numpy.polyfit(tt,ann_warming[0][warming_years[0]-1850:warming_years[1]-1850+1],1)
-                coef = numpy.polyfit(
-                    tt,
-                    gmst_comp_warming[0][
-                        warming_years[0] - 1850 : warming_years[1] - 1850 + 1
-                    ],
-                    1,
-                )
-                print("Linear trend numbers", coef)
-                exp_ann_trend[ee] = coef[0]
+                if (
+                    warming_years[1] > warming_years[0]
+                ):  # Only evaluate trend if warming years not a single year.
+                    coef = numpy.polyfit(
+                        tt,
+                        gmst_comp_warming[0][
+                            warming_years[0] - 1850 : warming_years[1]
+                            - 1850
+                            + 1
+                        ],
+                        1,
+                    )
+                    print("Linear trend numbers", coef)
+                    exp_ann_trend[ee] = coef[0]
+                else:
+                    exp_ann_trend[ee] = 0.0  # Set to zero if a single year.
 
-            # Average diagnostic and warming in 2010-2019 vs 1850-1899 GSAT over ensemble members.
-            if mm == 1 and experiment == 1:  # Select GISS nat simulations.
-                plt.figure(2, figsize=[180 * mm_conv, 60 * mm_conv])
-                for ee in range(nens):
-                    plt.plot(years, exp_diags[:, ee], color="black")
-                plt.savefig(plot_dir + "/giss_nat.pdf")
-                plt.close()
+            # Average diagnostic and warming in 2010-2019 vs 1850-1899 GSAT over ensemble members
 
             mean_diag[:, experiment, mm] = numpy.mean(exp_diags, axis=1)
             mean_dec_warming[experiment, mm] = numpy.mean(exp_dec_warming)
@@ -1028,6 +1029,8 @@ def main(cfg):
         )
         plt.plot(mm_attrib + 0.9, att_warming, color=colors[1, :], marker="+")
         print("ANT:", att_warming, att_warming_range)
+        ant_att_warming = att_warming
+        ant_att_warming_range = att_warming_range
         [att_warming, att_warming_range, dummy] = attrib_warming(
             att_out[dataset]["beta"][1],
             att_out[dataset]["betaCI"][1, :],
@@ -1044,6 +1047,8 @@ def main(cfg):
         )
         plt.plot(mm_attrib + 1.1, att_warming, color=colors[4, :], marker="+")
         print("NAT:", att_warming, att_warming_range)
+        nat_att_warming = att_warming
+        nat_att_warming_range = att_warming_range
         if simple_uncert:
             plt.plot(
                 [mm_attrib + 0.9, mm_attrib + 0.9],
@@ -1130,6 +1135,8 @@ def main(cfg):
         )
         plt.plot(mm_attrib + 0.8, att_warming, color=cols[2, :], marker="+")
         print(exp_flag, att_warming, att_warming_range)
+        exp_att_warming = att_warming
+        exp_att_warming_range = att_warming_range
         [att_warming, att_warming_range, dummy] = attrib_warming(
             att_out3[dataset]["beta"][1],
             att_out3[dataset]["betaCI"][1, :],
@@ -1167,6 +1174,8 @@ def main(cfg):
         )
         plt.plot(mm_attrib + 1.2, att_warming, color=cols[0, :], marker="+")
         print("OTH:", att_warming, att_warming_range)
+        oth_att_warming = att_warming
+        oth_att_warming_range = att_warming_range
         if simple_uncert:
             plt.plot(
                 [mm_attrib + 0.8, mm_attrib + 0.8],
@@ -1216,6 +1225,8 @@ def main(cfg):
             ci90_beta_obs2[0],
         )
         print("ANT:", att_warming, att_warming_range)
+        trend_ant_att_warming = att_warming
+        trend_ant_att_warming_range = att_warming_range
         [att_warming, att_warming_range, dummy] = attrib_warming(
             att_out[dataset]["beta"][1],
             att_out[dataset]["betaCI"][1, :],
@@ -1486,6 +1497,45 @@ def main(cfg):
                     float(oth_warming),
                 ]
             )
+        data_writer.writerow(["Results of main attribution analysis"])
+
+        data_writer.writerow(
+            [
+                str(warming_years[0]) + "-" + str(warming_years[1]),
+                float(ant_att_warming_range[0]),
+                " ",
+                " ",
+                float(ant_att_warming_range[1]),
+                float(ant_att_warming),
+                float(nat_att_warming_range[0]),
+                " ",
+                " ",
+                float(nat_att_warming_range[1]),
+                float(nat_att_warming),
+                float(exp_att_warming_range[0]),
+                " ",
+                " ",
+                float(exp_att_warming_range[1]),
+                float(exp_att_warming),
+                float(oth_att_warming_range[0]),
+                " ",
+                " ",
+                float(oth_att_warming_range[1]),
+                float(oth_att_warming),
+            ]
+        )
+        data_writer.writerow(["Attributable ANT trend"])
+
+        data_writer.writerow(
+            [
+                str(warming_years[0]) + "-" + str(warming_years[1]),
+                float(trend_ant_att_warming_range[0]),
+                " ",
+                " ",
+                float(trend_ant_att_warming_range[1]),
+                float(trend_ant_att_warming),
+            ]
+        )
 
 
 if __name__ == "__main__":
