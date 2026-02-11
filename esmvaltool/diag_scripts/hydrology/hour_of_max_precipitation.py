@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Calculate and plot hour of maximum precipitation.
 
 Description
@@ -110,7 +109,7 @@ def _harmonic_function(
 
 
 def _get_max_of_24hr_harmonic(
-    x_data: np.ma.MaskedArray, y_data: np.ma.MaskedArray
+    x_data: np.ma.MaskedArray, y_data: np.ma.MaskedArray,
 ) -> float:
     """Get maximum of 24hr-harmonic fit."""
     # curve_fit cannot handle masked data
@@ -179,7 +178,7 @@ def _calculate_hour_of_max_precipitation(
             cube.data.transpose(new_order),
         )
         hour_of_max_precipitation_data = np.ma.masked_invalid(
-            hour_of_max_precipitation_data
+            hour_of_max_precipitation_data,
         )
     elif cfg["method"] == "max":
         hour_of_max_precipitation_data = np.ma.masked_array(
@@ -255,7 +254,7 @@ def _get_projection(cfg: dict[str, Any]) -> Any:
 
 
 def _get_provenance_record(
-    ancestors: list[str], caption: str
+    ancestors: list[str], caption: str,
 ) -> dict[str, Any]:
     """Get provenance record."""
     return {
