@@ -38,7 +38,7 @@ diagnostics:
     description: Plot maps showing hour of maximum precipitation.
     variables:
       pr:
-        timerange: 20000601/20090901
+        timerange: 20000601/20000901
         mip: 3hr
         preprocessor: local_solar_time
         additional_datasets:

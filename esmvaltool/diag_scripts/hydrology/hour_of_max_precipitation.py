@@ -30,12 +30,16 @@ matplotlib_rc_params: dict, optional
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
     for all plots produced with this diagnostic.
-method: str, optional (default: `"harmonics"`)
+method: str, optional (default: `"dft"`)
     Method to determine the hour of maximum precipitation. Possible options:
 
-    - If `"harmonics"`, fit a 12h- and 24-harmonic to the input data and use
-    the maximum of the sum of both (see Dai, 2024;
-      https://doi.org/10.1007/s00382-024-07182-6).
+    - If `"dft"`, apply a discrete Fourier transform (DFT) to the data and use
+      the peak of the first component (see
+      https://mdtf-diagnostics.readthedocs.io/en/latest/sphinx_pods/precip_diurnal_cycle.html).
+    - If `"harmonic_fit"`, fit a 12hr- plus 24hr-harmonic to the input data and
+      use the peak of the 24hr-harmonic (see Dai, 2024;
+      https://doi.org/10.1007/s00382-024-07182-6). This should give
+      identical/very similar results to `"dft"`, but is much slower.
     - If `"max"`, simply use the maximum in the input data.
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.pcolormesh`. By default,
@@ -97,29 +101,40 @@ def _harmonic_function(
 ) -> float:
     """Harmonic function which can be fitted to diurnal cycle."""
     diurnal_component = amplitude_24 * np.sin(
-        2 * np.pi * x_val / 24.0 - phase_24,
+        2 * np.pi * (x_val - phase_24) / 24.0,
     )
     semidiurnal_component = amplitude_12 * np.sin(
-        2 * np.pi * x_val / 12.0 - phase_12,
+        2 * np.pi * (x_val - phase_12) / 12.0,
     )
     return constant + diurnal_component + semidiurnal_component
 
 
-def _harmonic_fit(
-    x_data: np.ma.MaskedArray,
-    y_data: np.ma.MaskedArray,
-) -> np.ma.MaskedArray:
-    """Fit harmonic function to 1D data."""
+def _get_max_of_24hr_harmonic(
+    x_data: np.ma.MaskedArray, y_data: np.ma.MaskedArray
+) -> float:
+    """Get maximum of 24hr-harmonic fit."""
     # curve_fit cannot handle masked data
     if np.ma.is_masked(y_data):
-        return np.ma.masked_all_like(y_data)
+        return np.nan
     params = curve_fit(_harmonic_function, x_data, y_data, nan_policy="omit")[
         0
     ]
-    return _harmonic_function(x_data, *params)
+    amplitude_24hr = params[1]
+    phase_24hr = params[2]
+
+    # Since we are using sin() as fit function here, the maximum of the fit
+    # function is located 1/4 of a periodic length (i.e., π/2; here: 6hrs) to
+    # the right/left (depending on the sign of the amplitude) of the phase (=
+    # first zero of sin()). Since the phase can be outside [0, 24] due to the
+    # periodicity of sin(), make sure to return the maximum within [0, 24].
+    maximum = phase_24hr + 6.0 if amplitude_24hr > 0 else phase_24hr - 6.0
+    return maximum % 24.0
 
 
-vectorized_harmonic_fit = np.vectorize(_harmonic_fit, signature="(t),(t)->(t)")
+_v_get_max_of_24hr_harmonic = np.vectorize(
+    _get_max_of_24hr_harmonic,
+    signature="(t),(t)->()",
+)
 
 
 def _calculate_hour_of_max_precipitation(
@@ -139,24 +154,46 @@ def _calculate_hour_of_max_precipitation(
         mean_diurnal_cycle = cube.collapsed("hour", iris.analysis.MEAN)
     mask = mean_diurnal_cycle.data < cfg["threshold"]
     broadcasted_mask = np.broadcast_to(
-        np.expand_dims(mask, axis=hour_dim), cube.shape,
+        np.expand_dims(mask, axis=hour_dim),
+        cube.shape,
     )
     cube = cube.copy(np.ma.masked_array(cube.data, mask=broadcasted_mask))
 
     # Calculate hour of maximum precipitation
-    if cfg["method"] == "harmonics":
+    if cfg["method"] == "dft":
+        dft = np.fft.rfft(cube.data, axis=hour_dim)
+
+        # The phase here is the phase of a cosine, so this is identical to the
+        # maximum.
+        max_component_1 = np.atan2(-dft[1].imag, dft[1].real)
+
+        # Transform from radians to hours and make sure we end up in [0, 24]
+        max_24hrs = (max_component_1 * 24.0 / 2.0 / np.pi) % 24.0
+        hour_of_max_precipitation_data = np.ma.array(max_24hrs, mask=mask)
+    elif cfg["method"] == "harmonic_fit":
+        # np.vectorized assumes that the core dimension is the rightmost
+        # dimension
         new_order = [d for d in range(cube.ndim) if d != hour_dim] + [hour_dim]
-        fitted_data = vectorized_harmonic_fit(
+        hour_of_max_precipitation_data = _v_get_max_of_24hr_harmonic(
             cube.coord("hour").points,
             cube.data.transpose(new_order),
         )
-        cube = cube.copy(fitted_data.transpose(np.argsort(new_order)))
-
-    # Apply mask again (method "max" has removed it)
-    hour_of_max_precipitation_data = np.ma.masked_array(
-        cube.coord("hour").points[np.argmax(cube.data, axis=hour_dim)],
-        mask=mask,
-    )
+        hour_of_max_precipitation_data = np.ma.masked_invalid(
+            hour_of_max_precipitation_data
+        )
+    elif cfg["method"] == "max":
+        hour_of_max_precipitation_data = np.ma.masked_array(
+            cube.coord("hour").points[np.argmax(cube.data, axis=hour_dim)],
+            mask=mask,
+        )
+    else:
+        supported_methods = (
+            "dft",
+            "harmonic_fit",
+            "max",
+        )
+        msg = f"Expected one of {supported_methods} for 'method', got '{cfg['method']}'"
+        raise ValueError(msg)
 
     return mean_diurnal_cycle.copy(hour_of_max_precipitation_data)
 
@@ -176,7 +213,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     )
     cfg.setdefault("figure_kwargs", {"constrained_layout": True})
     cfg.setdefault("matplotlib_rc_params", {})
-    cfg.setdefault("method", "harmonics")
+    cfg.setdefault("method", "harmonic_fit")
     cfg.setdefault("plot_kwargs", {"cmap": "twilight"})
     cfg.setdefault("projection", "Robinson")
     cfg.setdefault("projection_kwargs", {"central_longitude": 10})
@@ -193,7 +230,8 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("threshold", 0.0)
 
     supported_methods = (
-        "harmonics",
+        "dft",
+        "harmonic_fit",
         "max",
     )
 
@@ -216,7 +254,9 @@ def _get_projection(cfg: dict[str, Any]) -> Any:
     return getattr(ccrs, projection)(**projection_kwargs)
 
 
-def _get_provenance_record(ancestors: list[str], caption: str) -> dict[str, Any]:
+def _get_provenance_record(
+    ancestors: list[str], caption: str
+) -> dict[str, Any]:
     """Get provenance record."""
     return {
         "ancestors": ancestors,
@@ -273,7 +313,13 @@ def main(cfg: dict) -> None:
         # Plot
         logger.info("Plotting map for %s", dataset["alias"])
         figure = _create_plot(cube, cfg)
-        save_figure(basename, provenance_record, cfg, figure=figure, **cfg["savefig_kwargs"])
+        save_figure(
+            basename,
+            provenance_record,
+            cfg,
+            figure=figure,
+            **cfg["savefig_kwargs"],
+        )
 
 
 if __name__ == "__main__":
