@@ -202,6 +202,26 @@ diagnostics:
     scripts: null
 
 
+  ESACCI-BIOMASS:
+    description: ESACCI-BIOMASS check
+    variables:
+      agb_2007:
+        start_year: 2007
+        end_year: 2007
+        short_name: agb
+      agb_2010:
+        start_year: 2010
+        end_year: 2010
+        short_name: agb
+      agb_2015-2022:
+        start_year: 2015
+        end_year: 2022
+        short_name: agb
+    additional_datasets:
+      - {dataset: ESACCI-BIOMASS, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v6.0, frequency: yr}
+    scripts: null
+
+
   ESACCI-CLOUD:
     description: ESACCI-CLOUD check
     variables:
@@ -368,6 +388,18 @@ diagnostics:
          type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
     scripts: null
 
+  ESACCI-SNOW:
+    description: ESACCI-SNOW check
+    variables:
+      snc:
+        start_year: 1982
+        end_year: 2018
+      snw:
+        start_year: 1979
+        end_year: 2019
+    additional_datasets:
+      - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    scripts: null
 
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check
@@ -536,7 +568,7 @@ diagnostics:
     variables:
       pr:
     additional_datasets:
-      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
+      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: sat,
          version: 2.3, start_year: 1979, end_year: 2022}
     scripts: null
 
@@ -638,13 +670,19 @@ diagnostics:
   JRA-25:
     description: JRA-25 check
     variables:
+      cl:
       clt:
+      clwvi:
       hus:
       prw:
       rlut:
       rlutcs:
       rsut:
       rsutcs:
+      ta:
+      tas:
+      tcw:
+      wap:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 1, start_year: 1979, end_year: 2007}
@@ -851,7 +889,7 @@ diagnostics:
     variables:
       ch4s:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
          start_year: 1983}
     scripts: null
 
@@ -860,8 +898,17 @@ diagnostics:
     variables:
       co2s:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
          start_year: 1968}
+    scripts: null
+
+  NOAA-GML-SURFACE-FLASK-N2O:
+    description: NOAA Global Monitoring Lab Surface flask N2O data check
+    variables:
+      n2os:
+    additional_datasets:
+      - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
+         start_year: 1997}
     scripts: null
 
   NOAA-MBL-CH4:
@@ -869,7 +916,7 @@ diagnostics:
     variables:
       ch4s:
     additional_datasets:
-      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
+      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: ground, version: 1.0, tier: 2,
          start_year: 1983, end_year: 2023}
     scripts: null
 
@@ -1081,6 +1128,19 @@ diagnostics:
          type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
     scripts: null
 
+  Yang2020:
+    description: Yang2020 check
+    variables:
+      areacella:
+        mip: fx
+      dpn2o:
+        mip: Omon
+      n2oflux:
+        mip: Omon
+    additional_datasets:
+      - {project: OBS6, dataset: Yang2020, tier: 2, type: reanaly, version: 1}
+    scripts: null
+
 
   ### TIER 3 ##################################################################
 
@@ -1089,7 +1149,7 @@ diagnostics:
     variables:
       od440aer:
     additional_datasets:
-      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20250726}
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: ground, version: 20250823}
     scripts: null
 
   ANUClimate:
@@ -1156,6 +1216,17 @@ diagnostics:
          mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
     scripts: null
 
+  CAMS:
+    description: CAMS check
+    variables:
+      fgco2:
+        mip: Omon
+      nbp:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: CAMS, project: OBS6, tier: 3,
+         type: reanaly, version: v23r1, start_year: 1979, end_year: 2023}
+    scripts: null
 
   CDS-SATELLITE-ALBEDO:
     description: CDS-SATELLITE-ALBEDO check
@@ -1789,7 +1860,7 @@ diagnostics:
       wetlandFrac:
     additional_datasets:
       - {dataset: GLWD, project: OBS6, mip: Emon, tier: 2,
-         type: land, version: '2.0', start_year: 2002, end_year: 2002}
+         type: sat, version: '2.0', start_year: 2002, end_year: 2002}
     scripts: null
 
 

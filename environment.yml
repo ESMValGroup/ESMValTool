@@ -10,6 +10,7 @@ channels:
 
 dependencies:
   - aiohttp
+  - arviz
   - cartopy
   - cdo >=2.3.0
   - cdsapi
@@ -23,12 +24,12 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.12.*
+  - esmvalcore 2.13.*
   - fiona
   - fire
   - fsspec
   - gdal >=3.9.0
-  - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
+  - ipython
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
@@ -48,14 +49,13 @@ dependencies:
   - progressbar2
   - prov
   - pyproj >=2.1
-  - pys2index  # only from conda-forge
-  - python >=3.11,<3.14
+  - pys2index # only from conda-forge
+  - python >=3.12,<3.14
   - python-cdo
   - python-dateutil
   - pyyaml
   - rasterio >=1.3.10
   - requests
-  - ruamel.yaml
   - scikit-image
   - scikit-learn >=1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
   - scipy
@@ -79,15 +79,13 @@ dependencies:
   - pytest-xdist
   # Python packages needed for building docs
   - autodocsumm >=0.2.2
-  - nbsphinx
-  - sphinx >=6.1.3
+  - myst-nb
+  - sphinx >=6.1.3,<9  # github.com/ESMValGroup/ESMValTool/issues/4316
   - pydata-sphinx-theme
   # Python packages needed for development
   - codespell ==2.3.0
-  - docformatter ==1.7.5
   - imagehash
-  - prospector >=1.12  # earliest support for Python 3.12
-  - pyroma
+  - ruff == 0.14.5 # keep in sync with .pre-commit-config.yaml
   # - vprof not on conda-forge
   - yamllint ==1.35.1
 
@@ -99,7 +97,7 @@ dependencies:
 
   # R and dependencies
   - cdo
-  - r-base >=3.5
+  - r-base >=4.4
   - r-abind
   - r-akima
   - r-climdex.pcic
@@ -124,7 +122,3 @@ dependencies:
   - r-spei
   - r-udunits2
   - r-yaml
-  # R packages needed for development
-  - r-git2r  # dependency of lintr
-  - r-lintr ==3.1.2
-  - r-styler ==1.10.3

@@ -67,6 +67,11 @@
       "name": "Adeniyi, Kemisola"
     },
     {
+      "affiliation": "University of Bremen, Germany",
+      "name": "Castellani, Giulia",
+      "orcid": "0000-0001-6151-015X"
+    },
+    {
       "affiliation": "ISAC-CNR, Italy",
       "name": "Arnone, Enrico",
       "orcid": "0000-0001-6740-5051"
@@ -367,6 +372,10 @@
       "name": "Sarauer, Ellen"
     },
     {
+      "affiliation": "University of Bremen, Germany",
+      "name": "Schulze, Kirsten"
+    },
+    {
       "affiliation": "University of Reading, UK",
       "name": "Roberts, Charles",
       "orcid": "0000-0002-1147-8961"
@@ -454,36 +463,39 @@
   "version": "v2.12.0",
   "communities": [
     {
-        "identifier": "is-enes3"
+      "identifier": "enes-ri"
     },
     {
-        "identifier": "dlr_de"
+      "identifier": "is-enes3"
     },
     {
-        "identifier": "ecfunded"
+      "identifier": "dlr_de"
     },
     {
-        "identifier": "nlesc"
+      "identifier": "ecfunded"
+    },
+    {
+      "identifier": "nlesc"
     }
-],
-"grants": [
+  ],
+  "grants": [
     {
-        "id": "10.13039/501100000780::282672"
+      "id": "10.13039/501100000780::282672"
     },
     {
-        "id": "10.13039/501100000780::641727"
+      "id": "10.13039/501100000780::641727"
     },
     {
-        "id": "10.13039/501100000780::641816"
+      "id": "10.13039/501100000780::641816"
     },
     {
-        "id": "10.13039/501100000780::727862"
+      "id": "10.13039/501100000780::727862"
     },
     {
-        "id": "10.13039/501100000780::776613"
+      "id": "10.13039/501100000780::776613"
     },
     {
-        "id": "10.13039/501100000780::824084"
+      "id": "10.13039/501100000780::824084"
     }
-]
+  ]
 }

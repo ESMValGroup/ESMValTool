@@ -1,0 +1,42 @@
+name: Check Links for Documentation
+
+on:
+  # push:
+  #   branches:
+  #     - link-checker
+  repository_dispatch:
+  workflow_dispatch:
+  schedule:
+    - cron: "00 00 1 * *" # monthly
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # Required for peter-evans/create-issue-from-file
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+
+        with:
+          #  This token is included to avoid github.com requests rate limiting
+          token: ${{ secrets.TOKEN_GITHUB }}
+          fail: false
+          args: >
+            ./doc/sphinx/**/*.rst
+            --max-concurrency 1 --no-progress
+            --accept "200..=204, 302, 429"
+
+      - name: Set current date
+        run: echo "REPORT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Create Issue From File
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v6
+        with:
+          title: "🔗 Link Checker Report - ${{ env.REPORT_DATE }}"
+          content-filepath: ./lychee/out.md
+          labels: documentation, github_actions

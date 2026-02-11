@@ -1,0 +1,89 @@
+# ESMValTool
+---
+documentation:
+  description: ENSO CLIVAR metrics - background climatology diagnostic level 2 and 3
+  title: Reproducing ENSO CLIVAR metrics - background climatology dive down
+  authors:
+    - chun_felicity
+    - planton_yann
+    - beucher_romain
+  maintainer:
+    - chun_felicity
+
+datasets:
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+
+preprocessors:
+
+  map_bias_level2: &map_bias
+    custom_order: true
+    # mask_landsea:
+    #   mask_out: land
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &ext
+      start_longitude: 150.
+      end_longitude: 270.
+      start_latitude: -15.
+      end_latitude: 15.
+
+  map_sea_cyclel2:
+    <<: *map_bias
+    climate_statistics:
+      operator: mean
+      period: monthly
+
+
+diagnostics:
+  diagnostic_metrics:
+    description: run preprocessors on variables for background climatology diagnostic level 2
+    variables:
+      pr_bias:
+        short_name: pr
+        preprocessor: map_bias_level2
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+      pr_seacycle:
+        short_name: pr
+        preprocessor: map_sea_cyclel2
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+      sst_bias:
+        short_name: tos
+        preprocessor: map_bias_level2
+        mip: Omon
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+      sst_seacycle:
+        short_name: tos
+        preprocessor: map_sea_cyclel2
+        mip: Omon
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+      tauu_bias:
+        short_name: tauu
+        preprocessor: map_bias_level2
+        mip: Amon
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+      tauu_seacycle:
+        short_name: tauu
+        preprocessor: map_sea_cyclel2
+        mip: Amon
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+
+    scripts:
+      plot_script:
+        script: enso_metrics/climatology_diagnosticlevel2.py
+      plotlevel3_script:
+        script: enso_metrics/climatology_diagnosticlevel3.py
+        # vargroups: [pr_seacycle, sst_seacycle, tauu_seacycle] # meridional and zonal for pr

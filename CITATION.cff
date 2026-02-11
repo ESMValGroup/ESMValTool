@@ -175,6 +175,10 @@ authors:
     family-names: Gier
     given-names: Bettina
   -
+    affiliation: "University of Bremen, Germany"
+    family-names: Castellani
+    given-names: Giulia
+  -
     affiliation: "Met Office, UK"
     family-names: Gillett
     given-names: Ed
@@ -359,6 +363,10 @@ authors:
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
   -
+    affiliation: "University of Bremen, Germany"
+    family-names: Schulze
+    given-names: Kirsten
+  -
     affiliation: "DLR, Germany"
     family-names: Sarauer
     given-names: Ellen
@@ -442,11 +450,11 @@ authors:
     orcid: "https://orcid.org/0009-0007-0845-0953"
 
 cff-version: 1.2.0
-date-released: 2025-03-05
+date-released: 2025-10-20
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.12.0"
+version: "v2.13.0"
 ...

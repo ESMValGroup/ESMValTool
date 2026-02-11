@@ -62,21 +62,27 @@ class OSICmorizer:
                 raw_info = {
                     "name": vals["raw"],
                     "file": os.path.join(
-                        self.in_dir, str(year), "??", file_pattern
+                        self.in_dir,
+                        str(year),
+                        "??",
+                        file_pattern,
                     ),
                 }
                 self._extract_variable(var_info, raw_info, year, vals["mip"])
                 if first_run:
                     sample_file = glob.glob(
                         os.path.join(
-                            self.in_dir, str(year), "01", file_pattern
-                        )
+                            self.in_dir,
+                            str(year),
+                            "01",
+                            file_pattern,
+                        ),
                     )[0]
                     cube = iris.load_cube(
                         sample_file,
                         iris.Constraint(
                             # pylint: disable=cell-var-from-loop
-                            cube_func=lambda c: c.var_name == raw_info["name"]  # noqa: B023
+                            cube_func=lambda c: c.var_name == raw_info["name"],  # noqa: B023
                         ),
                     )
                     self._create_areacello(cube)
@@ -89,7 +95,7 @@ class OSICmorizer:
         cubes = iris.load_raw(
             raw_info["file"],
             iris.Constraint(
-                cube_func=lambda c: c.var_name == raw_info["name"]
+                cube_func=lambda c: c.var_name == raw_info["name"],
             ),
         )
         tracking_ids = self._unify_attributes(cubes)
@@ -142,12 +148,12 @@ class OSICmorizer:
         for month in range(1, 13):
             month_constraint = iris.Constraint(
                 # pylint: disable=cell-var-from-loop
-                time=lambda cell: cell.point.month == month  # noqa: B023
+                time=lambda cell: cell.point.month == month,  # noqa: B023
             )
             if cubes.extract(month_constraint):
                 continue
             cubes.append(
-                OSICmorizer._create_nan_cube(model_cube, month, month=True)
+                OSICmorizer._create_nan_cube(model_cube, month, month=True),
             )
         cube = cubes.merge_cube()
         return cube
@@ -178,7 +184,9 @@ class OSICmorizer:
             if cubes.extract(day_constraint):
                 continue
             nan_cube = OSICmorizer._create_nan_cube(
-                model_cube, day_of_year, month=False
+                model_cube,
+                day_of_year,
+                month=False,
             )
             add_day_of_year(nan_cube, "time")
             cubes.append(nan_cube)
@@ -188,7 +196,7 @@ class OSICmorizer:
     @staticmethod
     def _create_nan_cube(model_cube, num, month):
         nan_cube = model_cube.copy(
-            np.ma.masked_all(model_cube.shape, dtype=model_cube.dtype)
+            np.ma.masked_all(model_cube.shape, dtype=model_cube.dtype),
         )
         time_coord = nan_cube.coord("time")
         nan_cube.remove_coord(time_coord)
@@ -220,7 +228,7 @@ class OSICmorizer:
                 units=time_coord.units,
                 attributes=time_coord.attributes,
                 bounds=[bounds],
-            )
+            ),
         )
         return nan_cube
 

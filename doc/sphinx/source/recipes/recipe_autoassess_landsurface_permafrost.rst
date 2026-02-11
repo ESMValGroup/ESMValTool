@@ -112,7 +112,7 @@ None
 References
 ----------
 
-* Observed permafrost extent is from http://nsidc.org/data/ggd318.html: Brown, J.,
+* Observed permafrost extent is from https://nsidc.org/data/ggd318/versions/2: Brown, J.,
   O. Ferrians, J. A. Heginbottom, and E. Melnikov. 2002. Circum-Arctic Map of
   Permafrost and Ground-Ice Conditions, Version 2. Boulder, Colorado USA. NSIDC:
   National Snow and Ice Data Center.  When calculating the global area of

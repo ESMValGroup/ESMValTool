@@ -18,7 +18,6 @@ datasets:
       across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
       Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
       such as central Australia.
-
       Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
       Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
       for Australia. Bureau of Meteorology Research Report. No. 41.
@@ -33,7 +32,6 @@ datasets:
     last_access: 2023-11-21
     info: |
       Data from NCI project requiring an NCI account and access to GADI
-
       ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
       from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial
       models have been developed at the Fenner School of Environment and Society of the Australian National University.
@@ -110,6 +108,15 @@ datasets:
       6) Follow download instructions in email from EarthData and put all
          files in the same directory
 
+  CAMS:
+    tier: 3
+    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-greenhouse-gas-inversion?tab=overview
+    last_access: 2024-10-28
+    info: |
+      You will need to make an account with the ADS data store and accept their licenses to download the data.
+      Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
+      as well as the version and years you require to download.
+
   CDS-SATELLITE-ALBEDO:
     tier: 3
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
@@ -144,7 +151,7 @@ datasets:
         - Tick all available months
         - Tick Nominal day 20
       - Click 'submit form'
-      - According to ESMValTool practice, put them in the right rawobsdir folder
+      - According to ESMValTool practice, put them in the Tier3/CDS-SATELLITE-LAI-FAPAR folder
       - Request might need to be split into chunks to not exceed download limit
       - Fails setting standard name for variable FAPAR
 
@@ -309,8 +316,7 @@ datasets:
     source: https://www.esrl.noaa.gov/gmd/ccgg/carbontracker/index.php
     last_access: 2020-03-23
     info: |
-      Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-      ``$RAWOBSPATH`` is given by your configuration) where the raw
+      Create a new empty directory ``Tier2/CT2019`` where the original
       data will be stored. The download of the data is automatically handled by
       this script. If data is already present in this directory, the download is
       skipped (to force a new download delete your old files).
@@ -339,7 +345,7 @@ datasets:
     last_access: 2019-05-15
     info: |
       Download and unpack all the *.tar files under a single directory
-      (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
+      (no subdirectories with years) in Tier2/Eppley-VGPM-MODIS
 
   ERA-Interim-Land:
     tier: 3
@@ -451,6 +457,19 @@ datasets:
       Other years are not considered since they are not complete.
       Put all files in input_dir_path (no subdirectories with years).
 
+  ESACCI-BIOMASS:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v6.0/netcdf
+    last_access: 2025-07-16
+    info: |
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-BIOMASS
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
+      and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
+      under a single directory as follow: Tier2/ESACCI-BIOMASS
+
   ESACCI-CLOUD:
     tier: 2
     source: https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/
@@ -485,13 +504,13 @@ datasets:
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
     last_access: 2024-07-11
     info: |
-        Download and processing instructions:
-        Use the following CLI to download all the files:
-        esmvaltool data download ESACCI-LANDCOVER
-        The underlying downloader is located here:
-        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
-        and it will download all the files currently available on CEDA (1992-2020)
-        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-LANDCOVER
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+      and it will download all the files currently available on CEDA (1992-2020)
+      under a single directory as follow: Tier2/ESACCI-LANDCOVER
 
   ESACCI-LST:
     tier: 2
@@ -502,7 +521,7 @@ datasets:
         https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
       Download and processing instructions:
         Put all files under a single directory (no subdirectories with years)
-        in ${RAWOBS}/Tier2/ESACCI-LST
+        in Tier2/ESACCI-LST
         BOTH DAY and NIGHT files are needed for each month
 
       Caveats
@@ -517,7 +536,7 @@ datasets:
         OceanColour webpage https://esa-oceancolour-cci.org/
       Username and password are provided on this website
       Put all files under a single directory (no subdirectories with years)
-      in ${RAWOBS}/Tier2/ESACCI-OC
+      in Tier2/ESACCI-OC
 
   ESACCI-OZONE:
     tier: 2
@@ -600,6 +619,19 @@ datasets:
         v01.8/30days/
         v02.31/30days/
       Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-SNOW:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow/data
+    last_access: 2024-02-14
+    info: |
+      Download the data from:
+        scfg/AVHRR-MERGED/v2.0/
+        swe/MERGED/v2.0/
+      Put all scfg files in a single directory called 'scfg'
+      (no subdirectories with years or months).
+      Put all swe files in a single directory called 'swe'
+      (no subdirectories with years or months).
 
   ESACCI-SST:
     tier: 2
@@ -766,7 +798,7 @@ datasets:
           - GRCTellus.JPL.200204_202004.GLO.RL06M.MSCNv02CRI.nc
           - LAND_MASK.CRI.nc
       - Download the grace months table  which holds important information
-        on data coverage. Save it in the RAWOBSDIR.
+        on data coverage. Save it in the Tier3/GRACE directory.
             https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
       - Manually inspect and check the months table
 
@@ -895,17 +927,13 @@ datasets:
 
   JRA-25:
     tier: 2
-    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/
-    last_access: 2022-11-17
+    source: https://data.rda.ucar.edu/ds625.1
+    last_access: 2023-06-14
     info: |
       Download the following files:
-        mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+        fcst_phy2m/fcst_phy2m.yyyymm.nc
+        anl_chipsi/fcst_phy2m.yyyymm.nc
+        anl_p/anl_p.yyyymm.nc
 
   JRA-55:
     tier: 2
@@ -987,7 +1015,9 @@ datasets:
 
   MERRA2:
     tier: 3
-    source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+    source: |
+      https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+      https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
     last_access: 2022-09-13
     info: |
       Use automatic download. That will download monthly data but with
@@ -1001,8 +1031,7 @@ datasets:
     info: |
       Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
       "Instructions for downloading". All *.he5 files need to be saved in the
-      $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-      directory defined in the configuration. Apply this procedure to both
+      Tier3/MLS-AURA directory. Apply this procedure to both
       links provided above. The temperature fields are necessary for quality
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
@@ -1071,7 +1100,6 @@ datasets:
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface
         pr_wtr.eatm.mon.mean.nc
-
 
   NCEP-NCAR-R1:
     tier: 2
@@ -1225,6 +1253,14 @@ datasets:
     info: |
       Download the following file:
       https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+
+  NOAA-GML-SURFACE-FLASK-N2O:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      n2o_surface-flask_ccgg_text.tar.gz
 
   NSIDC-0116-sh:
     tier: 3
@@ -1412,3 +1448,14 @@ datasets:
         silicate/netcdf/all/1.00/woa18_all_i00_01.nc
       (To get WOA13, replace filenames prefix woa18 with woa13 and source with
       https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2)
+
+  Yang2020:
+    tier: 2
+    source: |
+      https://doi.org/10.26008/1912/bco-dmo.810032.1
+    last_access: 2025-06-10
+    info: |
+      Use automatic download feature to get the data. This will download the
+      files:
+        dn2o-mapped-Yang2020.nc
+        n2oFlux-Yang2020.nc

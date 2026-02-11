@@ -45,7 +45,7 @@ Download and processing instructions
     Version = "v0005"
 
     Put all files under a single directory (no subdirectories with years).
-    in ${RAWOBS}/Tier2/ESACCI-OZONE
+    in Tier2/ESACCI-OZONE
 
     ---------------------------------------------------------------------------
 
