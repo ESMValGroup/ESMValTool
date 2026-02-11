@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Calculate time of maximum precipitation.
+"""Calculate and plot hour of maximum precipitation.
 
 Description
 -----------
-This diagnostics calculates the time of maximum precipitation and plots it. The
-input data needs to be subdaily and of shape (time, latitude, longitude). The
-time dimension should be in local solar time (see
+This diagnostics calculates the hour of maximum precipitation and plots it. The
+input data needs to be subdaily and of shape (hour, latitude, longitude). The
+hour dimension should be in local solar time (see
 :func:`~esmvalcore.preprocessor.local_solar_time`).
 
 Author
