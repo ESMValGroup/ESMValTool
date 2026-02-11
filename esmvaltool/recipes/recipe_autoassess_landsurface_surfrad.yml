@@ -42,7 +42,7 @@ diagnostics:
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  start_year: 2001,  end_year: 2012, tier: 1}
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, start_year: 2001, end_year: 2012, tier: 1}
       sftlf:
         mip: fx
       rlns: # Surf LW net all sky
@@ -50,9 +50,7 @@ diagnostics:
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  start_year: 2001,  end_year: 2012, tier: 1}
-      sftlf:
-        mip: fx
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, start_year: 2001, end_year: 2012, tier: 1}
     scripts:
       autoassess_landsurf_surfrad: &autoassess_landsurf_surfrad_settings
         script: autoassess/autoassess_area_base.py
@@ -60,7 +58,7 @@ diagnostics:
         area: land_surface_surfrad
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
-        obs_models: [CERES-EBAF]
+        obs_models: [CERES-EBAF_Surface]
         obs_type: obs4MIPs
         start: 1993/12/01
         end: 2002/12/01
@@ -72,7 +70,7 @@ diagnostics:
         <<: *autoassess_landsurf_surfrad_settings
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
-        obs_models: [CERES-EBAF]
+        obs_models: [CERES-EBAF_Surface]
         script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_landsurf_surfrad']
         title: "Plot Land-Surface Metrics Surfrad"
