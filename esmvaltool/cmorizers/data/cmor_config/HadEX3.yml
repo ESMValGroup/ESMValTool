@@ -6,7 +6,7 @@ attributes:
   dataset_id: HadEX3
   version: v3.0.4
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS6
   source: https://www.metoffice.gov.uk/hadobs/hadex3/download.html
   reference: 'hadex3'
