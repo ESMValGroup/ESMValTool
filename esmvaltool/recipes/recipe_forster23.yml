@@ -189,6 +189,48 @@ diagnostics:
           - 2010
           - 2019
 
+      fig2_2015-24_gsat:
+        script: attribute/attrib_blended.py
+        obs: had5
+        exp_flag: GHG
+        diag_name: gmst05
+        rcplot: true
+        simple_uncert: false
+        gmst_flag: false
+        sr15_flag: false
+        warming_years:
+          - 2015
+          - 2024
+
+
+#As above, but using SR1.5 15-yr trend endpoint approach.
+      fig2_2017_sr15_gsat:
+        script: attribute/attrib_blended.py
+        obs: had5
+        exp_flag: GHG
+        diag_name: gmst05
+        rcplot: true
+        simple_uncert: false
+        gmst_flag: false
+        sr15_flag: true
+        warming_years:
+          - 2003
+          - 2017
+
+      fig2_2024_sr15_gsat:
+        script: attribute/attrib_blended.py
+        obs: had5
+        exp_flag: GHG
+        diag_name: gmst05
+        rcplot: true
+        simple_uncert: false
+        gmst_flag: false
+        sr15_flag: true
+        warming_years:
+          - 2010
+          - 2024
+
+
 #As above, but using GMST.
       fig2_2010-19:
         script: attribute/attrib_blended.py
@@ -216,31 +258,6 @@ diagnostics:
           - 2015
           - 2024
 
-      fig2_2017:
-        script: attribute/attrib_blended.py
-        obs: had5
-        exp_flag: GHG
-        diag_name: gmst05
-        rcplot: true
-        simple_uncert: false
-        gmst_flag: true
-        sr15_flag: false
-        warming_years:
-          - 2017
-          - 2017
-
-      fig2_2024:
-        script: attribute/attrib_blended.py
-        obs: had5
-        exp_flag: GHG
-        diag_name: gmst05
-        rcplot: true
-        simple_uncert: false
-        gmst_flag: true
-        sr15_flag: false
-        warming_years:
-          - 2024
-          - 2024
 
 #As above, but using SR1.5 15-yr trend endpoint approach.
       fig2_2017_sr15:
