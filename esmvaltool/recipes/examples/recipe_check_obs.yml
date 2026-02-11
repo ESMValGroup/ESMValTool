@@ -384,6 +384,18 @@ diagnostics:
          type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
     scripts: null
 
+  ESACCI-SNOW:
+    description: ESACCI-SNOW check
+    variables:
+      snc:
+        start_year: 1982
+        end_year: 2018
+      snw:
+        start_year: 1979
+        end_year: 2019
+    additional_datasets:
+      - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    scripts: null
 
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check
