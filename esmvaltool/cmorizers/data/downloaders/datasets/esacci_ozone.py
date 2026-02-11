@@ -5,7 +5,6 @@ import logging
 import os
 import shutil
 import zipfile
-
 from datetime import datetime
 
 import cdsapi
@@ -34,7 +33,9 @@ def download_dataset(
     if dataset == "ESACCI-OZONE":
         # old implementation
         # raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
-        output_folder = original_data_dir / f"Tier{dataset_info['tier']}" / dataset
+        output_folder = (
+            original_data_dir / f"Tier{dataset_info['tier']}" / dataset
+        )
         output_folder.mkdir(parents=True, exist_ok=True)
 
         cds_url = "https://cds.climate.copernicus.eu/api"
