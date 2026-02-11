@@ -696,7 +696,7 @@ diagnostics:
       rlus:
         short_name: rlus
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -819,8 +819,7 @@ diagnostics:
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
       # OBS
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
       grading:
         <<: *grading_settings
@@ -836,7 +835,7 @@ diagnostics:
       rlds:
         short_name: rlds
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -960,8 +959,7 @@ diagnostics:
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
       # OBS
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
       grading:
         <<: *grading_settings
@@ -977,7 +975,7 @@ diagnostics:
       rsus:
         short_name: rsus
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1100,8 +1098,7 @@ diagnostics:
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
       # OBS
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
       grading:
         <<: *grading_settings
@@ -1117,7 +1114,7 @@ diagnostics:
       rsds:
         short_name: rsds
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1241,8 +1238,7 @@ diagnostics:
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
       # OBS
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
       grading:
         <<: *grading_settings
@@ -1522,7 +1518,7 @@ diagnostics:
         short_name: tos
         preprocessor: ppNOLEV2
         reference_dataset: HadISST
-        alternative_dataset: ATSR
+        alternative_dataset: ARC-SST-1-1
         mip: Omon
         project: CMIP5
         exp: historical
@@ -1651,8 +1647,7 @@ diagnostics:
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
       # OBS
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
-      - {dataset: ATSR, project: obs4MIPs, level: L3,
-         version: ARC-v1.1.1, tier: 1, start_year: 1997, end_year: 2011}
+      - {dataset: ARC-SST-1-1, project: obs4MIPs, tier: 1, start_year: 1997, end_year: 2011}
     scripts:
       grading:
         <<: *grading_settings

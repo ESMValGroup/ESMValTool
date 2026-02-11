@@ -4,7 +4,7 @@ attributes:
   dataset_id: ESACCI-SEAICE
   version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_ice_'
   reference: 'esacci-seaice'

@@ -272,7 +272,7 @@ diagnostics:
         <<: *var_settings
         preprocessor: rmse_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+          - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2,
              reference_for_metric: true}
       psl:
         <<: *var_settings
@@ -344,7 +344,7 @@ diagnostics:
         <<: *var_settings
         preprocessor: pearsonr_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+          - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2,
              reference_for_metric: true}
       psl:
         <<: *var_settings
@@ -416,7 +416,7 @@ diagnostics:
         <<: *var_settings
         preprocessor: emd_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+          - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2,
              reference_for_metric: true}
       psl:
         <<: *var_settings
