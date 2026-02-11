@@ -213,7 +213,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     )
     cfg.setdefault("figure_kwargs", {"constrained_layout": True})
     cfg.setdefault("matplotlib_rc_params", {})
-    cfg.setdefault("method", "harmonic_fit")
+    cfg.setdefault("method", "dft")
     cfg.setdefault("plot_kwargs", {"cmap": "twilight"})
     cfg.setdefault("projection", "Robinson")
     cfg.setdefault("projection_kwargs", {"central_longitude": 10})
