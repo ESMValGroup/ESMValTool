@@ -11,15 +11,19 @@ documentation:
 
 datasets:
   # one year is enough data
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '2010/2010', alias: 'ERA5'}
-  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 2010, end_year: 2010, component: atm, var_type: atm_3d_ml, alias: 'ICON-XPP'}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '2005/2014', alias: 'ERA5'}
+  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 2005, end_year: 2014, component: atm, var_type: atm_3d_ml, alias: 'ICON-XPP'}
 
 
 preprocessors:
   pp_3d:
     custom_order: true
     extract_levels:
-      levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 20000., 15000.]
+#      levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 20000., 15000.]
+#      levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000.]
+      levels: [85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000.]
+#      levels: [70000., 65000., 60000., 55000., 50000.]
+#      levels: [70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000.]
       coordinate: air_pressure
       scheme: linear
     regrid:
@@ -89,4 +93,7 @@ diagnostics:
           style: ticks
           rc:
             axes.titlepad: 15.0
-        suptitle: 'PDF of lapse rates (surface to 150 hPa)'
+#        suptitle: 'PDF of lapse rates (surface to 150 hPa)'
+#        suptitle: 'PDF of lapse rates (surface to 700 hPa)'
+        suptitle: 'PDF of lapse rates (850 hPa to 250 hPa)'
+#        suptitle: 'PDF of lapse rates (700 hPa to 250 hPa)'

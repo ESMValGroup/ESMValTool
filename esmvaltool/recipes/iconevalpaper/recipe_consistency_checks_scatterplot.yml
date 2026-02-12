@@ -1,0 +1,156 @@
+# ESMValTool
+#TAGS sanity-consistency-checks
+#TAGS scatterplots
+---
+documentation:
+  title: Consistency checks (Scatter plots).
+  description: 2D histograms for different consistency checks.
+  authors:
+    - bock_lisa
+    - lauer_axel
+
+
+# YAML anchors for later use
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+  - {short_name: areacello, skip: true}
+  - {short_name: sftlf, skip: true}
+  - {short_name: sftof, skip: true}
+
+
+datasets:
+#  - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2, type: reanaly, version: 1, start_year: 1993, end_year: 2021}
+#  - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, start_year: 1993, end_year: 2021}
+#  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '1993/2021', alias: 'ERA5'}
+  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 1993, end_year: 2014, component: atm, var_type: atm_2d_ml, alias: 'ICON-XPP'}
+
+
+preprocessors:
+  common_grid_tas:
+    custom_order: true
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_outside_range:
+      minimum: 240.0
+      maximum: 315.0
+
+  global_annual_mean_tas_anomaly:
+    custom_order: true
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+#    extract_region:
+#      start_longitude: 0
+#      end_longitude: 360
+#      start_latitude: 15
+#      end_latitude: 55
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+
+  common_grid_prw:
+    custom_order: true
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_outside_range:
+      minimum: 0.0
+      maximum: 70.0
+
+  global_annual_mean_prw_anomaly:
+    custom_order: true
+    regrid:
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+      target_grid: 1x1
+#    extract_region:
+#      start_longitude: 0
+#      end_longitude: 360
+#      start_latitude: 15
+#      end_latitude: 55
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      relative: true
+
+
+diagnostics:
+
+  prw_anom_vs_tas_anom:
+    description: Scatter plot of tas anomalies vs. prw anomalies.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      prw:
+        mip: Amon
+        preprocessor: global_annual_mean_prw_anomaly
+        supplementary_variables: *supplementary_variables
+      tas:
+        mip: Amon
+        preprocessor: global_annual_mean_tas_anomaly
+        supplementary_variables: *supplementary_variables
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: regplot
+        reset_index: true
+        write_netcdf: true
+        seaborn_kwargs:
+          x: tas
+          y: prw
+        plot_object_methods:
+          set:
+            xlabel: Delta 2m temperature [K]
+            ylabel: Delta water vapor [%]
+        seaborn_settings:
+          style: ticks
+        suptitle: Temperature - water vapor mass
+
+  prw_vs_tas:
+    description: Scatter plot of prw vs. tas.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      prw:
+        mip: Amon
+        preprocessor: common_grid_prw
+        supplementary_variables: *supplementary_variables
+      tas:
+        mip: Amon
+        preprocessor: common_grid_tas
+        supplementary_variables: *supplementary_variables
+    scripts:
+      plot:
+        script: seaborn_jointplot_histogram.py
+        x: tas
+        y: prw
+        bins: 20
+        joint_kws:
+          vmax: 0.015
+          cmap: YlGnBu
+        cbar: true
+        cbar_kws:
+          extend: max
+        marginal_kws:
+          color: darkturquoise
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: 2m temperature - water vapor mass
+        plot_filename: jointplot_tas_prw
