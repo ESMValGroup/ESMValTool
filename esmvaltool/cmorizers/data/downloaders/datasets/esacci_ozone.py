@@ -8,8 +8,8 @@ import zipfile
 from datetime import datetime
 
 import cdsapi
-import webdav.client as wc
 from dateutil import relativedelta
+from webdav3.client import Client
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +31,6 @@ def download_dataset(
     - All the files will be saved in Tier2/ESACCI-OZONE.
     """
     if dataset == "ESACCI-OZONE":
-        # old implementation
-        # raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
         output_folder = (
             original_data_dir / f"Tier{dataset_info['tier']}" / dataset
         )
@@ -51,7 +49,7 @@ def download_dataset(
         if end_date is None:
             gto_year2 = 2024
             omps_year2 = 2023
-            megridop_year2 = 2025
+            megridop_year2 = 2023
         else:
             gto_year2 = end_date.year
             omps_year2 = end_date.year
@@ -61,8 +59,8 @@ def download_dataset(
             "toz_gto_ecv": {
                 "processing_level": "level_3",
                 "variable": "atmosphere_mole_content_of_ozone",
-                "vertical_aggregation": "total_column",
-                "sensor": ["merged_uv"],
+                "vertical_aggregation": "total_columns_uv",
+                "sensor": ["gto_ecv"],
                 "year": [str(y) for y in range(gto_year1, gto_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v2000"],
@@ -71,7 +69,7 @@ def download_dataset(
                 "processing_level": "level_3",
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
-                "sensor": ["cmzm"],
+                "sensor": ["sage_cci_omps_conc"],
                 "year": [str(y) for y in range(omps_year1, omps_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v0008"],
@@ -80,12 +78,12 @@ def download_dataset(
                 "processing_level": "level_3",
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
-                "sensor": ["cllg"],
+                "sensor": ["megridop_conc"],
                 "year": [
                     str(y) for y in range(megridop_year1, megridop_year2)
                 ],
                 "month": [f"{m:02d}" for m in range(1, 13)],
-                "version": ["v0005"],
+                "version": ["v0004"],
             },
         }
 
@@ -142,7 +140,7 @@ def download_dataset(
             "webdav_password": "",
         }
 
-        wd_client = wc.Client(options)
+        wd_client = Client(options)
 
         basepath = "/guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/"
 

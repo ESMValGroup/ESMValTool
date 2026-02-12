@@ -29,7 +29,7 @@ variables:
     mip: AERmon
     output: o3
     raw: merged_ozone_concentration
-    filename: "{year}{month}-C3S-L3_OZONE-O3_PRODUCTS-CONC_LLG-MERGED-ALG-MONTHLY-v0005.nc"
+    filename: "{year}{month}-C3S-L3_OZONE-O3_PRODUCTS-CONC_LLG-MERGED-ALG-MONTHLY-v0004.nc"
   o3_iasi:
     version: L3-IASI
     mip: AERmon

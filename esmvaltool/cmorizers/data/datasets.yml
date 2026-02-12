@@ -541,7 +541,7 @@ datasets:
   ESACCI-OZONE:
     tier: 2
     source: https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
-    last_access: 2025-05-15
+    last_access: 2026-02-12
     info: |
       Download the data from:
             GTO-ECV total column (variable toz)
@@ -551,8 +551,8 @@ datasets:
 
             Processing Level = "Level 3"
             Variable = "Atm. mole content of ozone"
-            Vertical aggregation = "Total column"
-            Sensor = "MERGED-UV"
+            Vertical aggregation = "Total columns UV"
+            Sensor = "GTO-ECV"
             Year = select all (1995-2023)
             Month = select all (1-12)
             Version = "v2000"
@@ -565,8 +565,7 @@ datasets:
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
             Vertical aggregation = "Vertical profiles from limb sensors"
-            Sensor = " CMZM (Monthly zonal mean merged concentration product from limb
-            sensors ACE, GOMOS, MIPAS, OMPS, OSIRIS, SAGE-2 and SCIAMACHY)"
+            Sensor = "SAGE-CCI-OMPS_CONC"
             Year = select all (1984-2022)
             Month = select all (1-12)
             Version = "v0008"
@@ -579,10 +578,10 @@ datasets:
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
             Vertical aggregation = "Vertical profiles from limb sensors"
-            Sensor = "CLLG (Latitude-longitude gridded merged concentration product from limb sensors GOMOS, MIPAS, OSIRIS and SCIAMACHY)"
-            Year = select all (2001-2024)
+            Sensor = "MEGRIDOP_CONC"
+            Year = select all (2001-2022)
             Month = select all (1-12)
-            Version = "v0005"
+            Version = "v0004"
 
             IASI (variables o3, toz)
             Download from BIRA WebDAV server: https://webdav.aeronomie.be
