@@ -299,8 +299,8 @@ v1.0). The file name will be automatically correctly created if a cmorizing
 script has been used to create the netCDF file.
 
 The correct structure of an observational data set is defined in
-`config-developer.yml
-<https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/config-developer.yml>`_,
+`data-local-esmvaltool.yml
+<https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/config/configurations/data-local-esmvaltool.yml>`_,
 and looks like the following:
 
 .. code-block:: console
@@ -337,7 +337,8 @@ The different parts of the name are explained in more detail here:
 .. note::
    There is a different naming convention for ``obs4MIPs`` data (see the exact
    specifications for the obs4MIPs data file naming convention in the
-   ``config-developer.yml`` file).
+   `data-local.yml <https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/config/configurations/data-local.yml>`
+   file).
 
 6. Test the cmorized dataset
 ============================
