@@ -165,7 +165,7 @@ def _calculate_hour_of_max_precipitation(
 
         # The phase here is the phase of a cosine, so this is identical to the
         # maximum.
-        max_component_1 = np.atan2(-dft[1].imag, dft[1].real)
+        max_component_1 = np.arctan2(-dft[1].imag, dft[1].real)
 
         # Transform from radians to hours and make sure we end up in [0, 24]
         max_24hrs = (max_component_1 * 24.0 / 2.0 / np.pi) % 24.0
