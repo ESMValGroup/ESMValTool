@@ -87,8 +87,8 @@ def main(cfg):
         len(experiments) - 4
     )  # Subtract three to account for repetition of hist-GHG, hist-nat, hist-aer.
     diag_name = "gmst01"  # Annual mean GMST.
-    ldiag = 175  # length of diagnostic,hard-coded.
-    years = list(range(1850, 2025, 1))  # Used for plotting.
+    ldiag = 180  # length of diagnostic,hard-coded.
+    years = list(range(1850, 2030, 1))  # Used for plotting.
     # anom_max = 500  # arbitrary max size for number of anomalies.
     mean_diag = numpy.zeros((ldiag, nexp, nmodel))
     mean_gmst_comp_warming = numpy.zeros((ldiag, nexp, nmodel))

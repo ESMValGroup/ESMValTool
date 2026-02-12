@@ -178,10 +178,10 @@ def main(cfg):
     if obs == "had5":
         obs_file = (
             auxiliary_data_dir
-            + "/old/HadCRUT.5.0.2.0.anomalies.ensemble_mean.nc"
+            + "/HadCRUT.5.1.0.0.noninfilled.anomalies.ensemble_mean.nc"
         )
         ensobs = (
-            auxiliary_data_dir + "/old/HadCRUT.5.0.2.0.anomalies."
+            auxiliary_data_dir + "/HadCRUT.5.1.0.0.noninfilled.anomalies."
         )  # If set apply multi-model analysis using ensemble obs data.
     elif obs == "had4":
         obs_file = (
@@ -264,10 +264,10 @@ def main(cfg):
         diag_name[4:6]
     )  # Last two digits of diag_name are averaging period in yrs.
     years = list(
-        numpy.arange(1850 + av_yr / 2, 2025 + av_yr / 2, av_yr)
+        numpy.arange(1850 + av_yr / 2, 2030 + av_yr / 2, av_yr)
     )  # Used for plotting.
-    # Added 5 years here.
-    nyear = 175  # Number of years, hard-coded.
+    # Added 10 years here.
+    nyear = 180  # Number of years, hard-coded.
     ldiag = int(nyear / av_yr)  # length of diagnostic.
     if diag_name[0:4] == "hemi":
         ldiag = ldiag * 2

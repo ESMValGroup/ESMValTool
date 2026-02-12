@@ -3,9 +3,9 @@
 ---
 documentation:
   title:
-    Update to Gillett20 for Forster et al. 2025.
+    Update to Gillett20 for Forster et al. 2026.
   description: |
-    Produces estimates of attributable warming for Forster et al. (2025), Indicators of Global Climate Change 2024, updated from Gillett et al. (2021)
+    Produces estimates of attributable warming for Forster et al. (202), Indicators of Global Climate Change 2025, updated from Gillett et al. (2021)
 
   authors:
     - kirchmeier-young_megan
@@ -44,7 +44,7 @@ diagnostics:
         exp: [historical,ssp245]
         grid: gr
         start_year: 1850
-        end_year: 2024
+        end_year: 2029
         additional_datasets:
           - {dataset: CanESM5, ensemble: "r(1:25)i1p1f1", grid: gn}
           - {dataset: CanESM5, ensemble: "r(1:25)i1p2f1", grid: gn}
@@ -84,7 +84,7 @@ diagnostics:
         exp: [historical,ssp245]
         grid: gn
         start_year: 1850
-        end_year: 2024
+        end_year: 2029
         additional_datasets:  &damip_simulations
           - {dataset: CanESM5, ensemble: "r(1:25)i1p1f1", grid: gn}
           - {dataset: CanESM5, ensemble: "r(1:25)i1p2f1", grid: gn}
@@ -125,7 +125,7 @@ diagnostics:
         exp: [historical,ssp245]
         grid: gn
         start_year: 1850
-        end_year: 2024
+        end_year: 2029
         additional_datasets:
           - {dataset: CanESM5, ensemble: "r(1:25)i1p1f1", grid: gn}
           - {dataset: CanESM5, ensemble: "r(1:25)i1p2f1", grid: gn}
@@ -162,7 +162,7 @@ diagnostics:
 #        exp: [historical,ssp245]
 #        grid: gn
 #        start_year: 1850
-#        end_year: 2024
+#        end_year: 2029
 #        additional_datasets:
 #          - {dataset: GISS-E2-1-G, ensemble: "r(1:10)i1p1f2", grid: gn}
 #          - {dataset: GISS-E2-1-G, ensemble: "r(1:5)i1p1f2", grid: gn, exp: [hist-nat,ssp245-nat]}
@@ -189,7 +189,7 @@ diagnostics:
           - 2010
           - 2019
 
-      fig2_2015-24_gsat:
+      fig2_2016-25_gsat:
         script: attribute/attrib_blended.py
         obs: had5
         exp_flag: GHG
@@ -199,8 +199,8 @@ diagnostics:
         gmst_flag: false
         sr15_flag: false
         warming_years:
-          - 2015
-          - 2024
+          - 2016
+          - 2025
 
 
 #As above, but using SR1.5 15-yr trend endpoint approach.
@@ -217,7 +217,7 @@ diagnostics:
           - 2003
           - 2017
 
-      fig2_2024_sr15_gsat:
+      fig2_2025_sr15_gsat:
         script: attribute/attrib_blended.py
         obs: had5
         exp_flag: GHG
@@ -227,8 +227,8 @@ diagnostics:
         gmst_flag: false
         sr15_flag: true
         warming_years:
-          - 2010
-          - 2024
+          - 2011
+          - 2025
 
 
 #As above, but using GMST.
@@ -245,7 +245,7 @@ diagnostics:
           - 2010
           - 2019
 
-      fig2_2015-24:
+      fig2_2016-25:
         script: attribute/attrib_blended.py
         obs: had5
         exp_flag: GHG
@@ -255,8 +255,8 @@ diagnostics:
         gmst_flag: true
         sr15_flag: false
         warming_years:
-          - 2015
-          - 2024
+          - 2016
+          - 2025
 
 
 #As above, but using SR1.5 15-yr trend endpoint approach.
@@ -273,7 +273,7 @@ diagnostics:
           - 2003
           - 2017
 
-      fig2_2024_sr15:
+      fig2_2025_sr15:
         script: attribute/attrib_blended.py
         obs: had5
         exp_flag: GHG
@@ -283,5 +283,5 @@ diagnostics:
         gmst_flag: true
         sr15_flag: true
         warming_years:
-          - 2010
-          - 2024
+          - 2011
+          - 2025
