@@ -122,7 +122,7 @@ References
 Example plots
 -------------
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-45a.png
    :align: center
 
    Scatterplot of springtime snow-albedo effect values in climate

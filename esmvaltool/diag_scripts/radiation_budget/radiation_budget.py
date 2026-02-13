@@ -10,13 +10,13 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+from iris import NameConstraint
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
     save_figure,
 )
-from esmvalcore.iris_helpers import var_name_constraint
 
 CWD = os.path.abspath(os.path.dirname(__file__))
 STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.yml"
@@ -50,17 +50,17 @@ def derive_additional_variables(cubes):
     :class:`iris.cube.CubeList`
         The input ``cubes`` with the additional cubes.
     """
-    rss = cubes.extract_cube(var_name_constraint("rss"))
-    rsdt = cubes.extract_cube(var_name_constraint("rsdt"))
-    rsut = cubes.extract_cube(var_name_constraint("rsut"))
-    rsutcs = cubes.extract_cube(var_name_constraint("rsutcs"))
-    rsds = cubes.extract_cube(var_name_constraint("rsds"))
-    rls = cubes.extract_cube(var_name_constraint("rls"))
-    rlut = cubes.extract_cube(var_name_constraint("rlut"))
-    rlutcs = cubes.extract_cube(var_name_constraint("rlutcs"))
-    rlds = cubes.extract_cube(var_name_constraint("rlds"))
-    hfss = cubes.extract_cube(var_name_constraint("hfss"))
-    hfls = cubes.extract_cube(var_name_constraint("hfls"))
+    rss = cubes.extract_cube(NameConstraint(var_name="rss"))
+    rsdt = cubes.extract_cube(NameConstraint(var_name="rsdt"))
+    rsut = cubes.extract_cube(NameConstraint(var_name="rsut"))
+    rsutcs = cubes.extract_cube(NameConstraint(var_name="rsutcs"))
+    rsds = cubes.extract_cube(NameConstraint(var_name="rsds"))
+    rls = cubes.extract_cube(NameConstraint(var_name="rls"))
+    rlut = cubes.extract_cube(NameConstraint(var_name="rlut"))
+    rlutcs = cubes.extract_cube(NameConstraint(var_name="rlutcs"))
+    rlds = cubes.extract_cube(NameConstraint(var_name="rlds"))
+    hfss = cubes.extract_cube(NameConstraint(var_name="hfss"))
+    hfls = cubes.extract_cube(NameConstraint(var_name="hfls"))
 
     # Derivations for the following two cloud_forcing variables are
     # performed this way so that they match with the observational data
@@ -175,7 +175,8 @@ def validate_variable_data(variable_data, name, unit):
     if variable["unit"] != unit:
         raise ValueError(
             f"Unit {unit} does not match the unit {variable['unit']} "
-            f"in {variable} for {name}.")
+            f"in {variable} for {name}.",
+        )
 
     return variable
 
@@ -212,8 +213,11 @@ def order_data(cubes, obs_names, obs_unit):
 
     ordered_model_data = []
     for obs_name in obs_names:
-        validated_variable = validate_variable_data(variable_data, obs_name,
-                                                    obs_unit)
+        validated_variable = validate_variable_data(
+            variable_data,
+            obs_name,
+            obs_unit,
+        )
         ordered_model_data.append(validated_variable["data"])
 
     return ordered_model_data
@@ -234,7 +238,7 @@ def read_yaml_file(filepath):
         to a line in the file and the key of the dictionary is the name
         of the column.
     """
-    with open(filepath, "r") as stream:
+    with open(filepath) as stream:
         contents = yaml.safe_load(stream)
     return contents
 
@@ -362,8 +366,10 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="orange",
-        label=(f"{model_dataset} ({model_period}) - {ceres_dataset} "
-               f"({ceres_period})"),
+        label=(
+            f"{model_dataset} ({model_period}) - {ceres_dataset} "
+            f"({ceres_period})"
+        ),
     )
     axes.bar(
         x_ticks + 0.2 + bar_width * 2,
@@ -398,7 +404,7 @@ def get_provenance_record(filenames):
         The provenance record describing the plot.
     """
     record = {
-        'ancestors': filenames,
+        "ancestors": filenames,
     }
     return record
 
@@ -430,8 +436,9 @@ def main(config):
     ceres_filenames = [item["filename"] for item in ceres_group]
     raw_ceres_data = iris.load(ceres_filenames)
     ceres_data = order_data(raw_ceres_data, obs_names, obs_unit)
-    ceres_period = (f"{ceres_group[0]['start_year']} - "
-                    f"{ceres_group[0]['end_year']}")
+    ceres_period = (
+        f"{ceres_group[0]['start_year']} - {ceres_group[0]['end_year']}"
+    )
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
@@ -456,11 +463,13 @@ def main(config):
             ceres_period,
         )
         provenance_record = get_provenance_record(filenames)
-        save_figure(model_dataset,
-                    provenance_record,
-                    config,
-                    figure,
-                    close=True)
+        save_figure(
+            model_dataset,
+            provenance_record,
+            config,
+            figure,
+            close=True,
+        )
 
 
 if __name__ == "__main__":

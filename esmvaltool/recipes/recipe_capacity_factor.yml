@@ -17,6 +17,9 @@ documentation:
     - gonzalez-reviriego_nube
     - perez-zanon_nuria
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 

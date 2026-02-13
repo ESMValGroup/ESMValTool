@@ -13,6 +13,9 @@ documentation:
     - schlund_manuel
     - righi_mattia
 
+  maintainer:
+    - gier_bettina
+
   references:
     - anav13jclim
 
@@ -377,7 +380,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: LAI3g
     additional_datasets: &lai_datasets
-      - {dataset: LAI3g, project: OBS, type: reanaly, version: 1_regridded, tier: 3}
+      - {dataset: LAI3g, project: OBS, type: reanaly, version: 1-regridded, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
@@ -545,7 +548,8 @@ diagnostics:
         reference_dataset: HWSD
         plot_units: PgC
         additional_datasets:
-          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000}
+          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000,
+             supplementary_variables: [{short_name: sftlf, mip: fx}]}
     additional_datasets:
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
@@ -608,8 +612,8 @@ diagnostics:
           - {dataset: IPSL-CM5A-LR}
           - {dataset: IPSL-CM5A-MR}
           - {dataset: IPSL-CM5B-LR}
-          - {dataset: MIROC-ESM}
-          - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
+          - {dataset: MIROC-ESM-CHEM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
@@ -852,12 +856,40 @@ diagnostics:
         cm_reverse: true
         cm_interval: [2, 63]
         sort: true
+        diag_order: [
+          'diag_grading_gpp-global',
+          'diag_grading_nbp-global',
+          'diag_grading_lai-global',
+          'diag_grading_tas-global',
+          'diag_grading_pr-global',
+        ]
       collect_nh:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_nh']
+        diag_order: [
+          'diag_grading_gpp-nh',
+          'diag_grading_nbp-nh',
+          'diag_grading_lai-nh',
+          'diag_grading_tas-nh',
+          'diag_grading_pr-nh',
+        ]
       collect_sh:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_sh']
+        diag_order: [
+          'diag_grading_gpp-sh',
+          'diag_grading_nbp-sh',
+          'diag_grading_lai-sh',
+          'diag_grading_tas-sh',
+          'diag_grading_pr-sh',
+        ]
       collect_trop:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_trop']
+        diag_order: [
+          'diag_grading_gpp-trop',
+          'diag_grading_nbp-trop',
+          'diag_grading_lai-trop',
+          'diag_grading_tas-trop',
+          'diag_grading_pr-trop',
+        ]

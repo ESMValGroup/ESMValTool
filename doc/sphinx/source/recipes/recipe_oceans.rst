@@ -187,9 +187,9 @@ recipe_ocean_quadmap.yml
 
 The recipe_ocean_quadmap.yml_ is an example recipe showing the
 diagnostic_maps_quad.py_ diagnostic.
-This diagnostic produces an image showing four maps. Each of these four maps
+This diagnostic produces figures showing four maps. Each of these four maps
 show latitude vs longitude and the cube value is used as the colour scale.
-The four plots are:
+The four plots within each figure are:
 
 =================   ====================
 model1              model 1 minus model2
@@ -199,16 +199,25 @@ model2 minus obs    model1 minus obs
 
 These figures are also known as Model vs Model vs Obs plots.
 
+The figures produced by this recipe are intended to replicate Marine Assess plots.
+Plots produced are:
 
-The figure produced by this recipe compares two versions of the HadGEM2 model
-against ATSR sea surface temperature:
+* Sea Surface Temperature
+* Sea Surface Salinity
+* Sea Water Temperature (at various depths)
+* Sea Water Salinity (at various depths)
 
-.. centered:: |pic_quad_plot|
+The figures produced by this recipe compare a HadGEM3 model, UKESM1 model
+and a WOA observational dataset:
 
-.. |pic_quad_plot| image:: /recipes/figures/ocean/ocean_quad_plot1.png
+.. centered:: |pic_ocean_quad_1| |pic_ocean_quad_2| |pic_ocean_quad_3| |pic_ocean_quad_4|
+.. |pic_ocean_quad_1| image:: /recipes/figures/ocean/ocean_quad_plot1.png
+.. |pic_ocean_quad_2| image:: /recipes/figures/ocean/ocean_quad_plot2.png
+.. |pic_ocean_quad_3| image:: /recipes/figures/ocean/ocean_quad_plot3.png
+.. |pic_ocean_quad_4| image:: /recipes/figures/ocean/ocean_quad_plot4.png
 
-This kind of figure can be very useful when developing a model, as it
-allows model developers to quickly see the impact of recent changes
+These kind of figures can be very useful when developing a model, as they
+allow model developers to quickly see the impact of any recent changes
 to the model.
 
 
@@ -412,26 +421,38 @@ An appropriate preprocessor for a 2D field would be:
         climate_statistics:
             operator: mean
 
+An appropriate preprocessor for a 3D field would be:
+
+  .. code-block:: yaml
+
+	prep_quad_map_depth:
+          climate_statistics:
+            operator: mean
+          extract_levels:
+            levels: [100., 200., 300., 400., 500., 1000]
+            scheme: linear
+
 and an example of an appropriate diagnostic section of the recipe would be:
 
   .. code-block:: yaml
 
-	diag_map_1:
-	  variables:
-	    tos: # Temperature ocean surface
-	      preprocessor: prep_quad_map
-	      field: TO2Ms
-	      mip: Omon
-	  additional_datasets:
-	#        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
-	#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
-	    - {dataset: ATSR,  project: obs4MIPs,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
-	  scripts:
-	    Global_Ocean_map:
-	      script: ocean/diagnostic_maps_quad.py
-	      control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-	      exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-	      observational_dataset: {dataset: ATSR, project: obs4MIPs,}
+    sea_surface_temperature:
+        description: Global surface quad plots tos
+        variables:
+          tos:  # Temperature ocean surface
+            preprocessor: prep_quad_map
+            mip: Omon
+        additional_datasets:
+          - {dataset: WOA, project: obs4MIPs, level: L3,
+             start_year: 2000, end_year: 2000, tier: 2}
+        scripts:
+          Global_Ocean_map:  &Global_Ocean_map
+            script: ocean/diagnostic_maps_quad.py
+            control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
+                            exp: historical, ensemble: r1i1p1f3}
+            exper_model: {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon,
+                          exp: historical, ensemble: r1i1p1f2}
+            observational_dataset: {dataset: WOA, project: obs4MIPs}
 
 Note that the details about the control model, the experiment models
 and the observational dataset are all provided in the script section of the
@@ -458,7 +479,7 @@ and a latitude and longitude coordinates.
 
 This diagnostic also includes the optional arguments, `maps_range` and
 `diff_range` to manually define plot ranges. Both arguments are a list of two floats
-to set plot range minimun and maximum values respectively for Model and Observations
+to set plot range minimum and maximum values respectively for Model and Observations
 maps (Top panels) and for the Model minus Observations panel (bottom left).
 Note that if input data have negative values the Model over Observations map
 (bottom right) is not produced.
@@ -491,14 +512,14 @@ diagnostic_maps_multimodel.py
 The diagnostic_maps_multimodel.py_ diagnostic makes model(s) vs observations maps
 and if data are not provided it draws only model field.
 
-It is always nessary to define the overall layout trough the argument `layout_rowcol`,
+It is always necessary to define the overall layout through the argument `layout_rowcol`,
 which is a list of two integers indicating respectively the number of rows and columns
 to organize the plot. Observations has not be accounted in here as they are automatically
 added at the top of the figure.
 
 This diagnostic also includes the optional arguments, `maps_range` and
 `diff_range` to manually define plot ranges. Both arguments are a list of two floats
-to set plot range minimun and maximum values respectively for variable data and
+to set plot range minimum and maximum values respectively for variable data and
 the Model minus Observations range.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
@@ -748,7 +769,7 @@ These tools are:
 - bgc_units: converts to sensible units where appropriate (ie Celsius, mmol/m3)
 - timecoord_to_float: Converts time series to decimal time ie: Midnight on January 1st 1970 is 1970.0
 - add_legend_outside_right: a plotting tool, which adds a legend outside the axes.
-- get_image_format: loads the image format, as defined in the global user config.yml.
+- get_image_format: loads the image format, as defined in the global configuration.
 - get_image_path: creates a path for an image output.
 - make_cube_layer_dict: makes a dictionary for several layers of a cube.
 
@@ -762,8 +783,8 @@ A note on the auxiliary data directory
 Some of these diagnostic scripts may not function on machines with no access
 to the internet, as cartopy may try to download the shape files. The solution
 to this issue is the put the relevant cartopy shapefiles in a directory which
-is visible to esmvaltool, then link that path to ESMValTool via
-the `auxiliary_data_dir` variable in your config-user.yml file.
+is visible to esmvaltool, then link that path to ESMValTool via the
+:ref:`configuration option <esmvalcore:config_options>` ``auxiliary_data_dir``.
 
 The cartopy masking files can be downloaded from:
 https://www.naturalearthdata.com/downloads/
@@ -806,8 +827,8 @@ These files need to be reformatted using the `esmvaltool data format WOA` comman
 Landschuetzer 2016
 ------------------
 These data can be downloaded from:
-ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
-(last access 02/28/2019)
+https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/spco2_1982-2015_MPI_SOM-FFN_v2016.nc
+(last access 09/20/2022)
 
 The following variables are used by the ocean diagnostics:
  - fgco2, Surface Downward Flux of Total CO2

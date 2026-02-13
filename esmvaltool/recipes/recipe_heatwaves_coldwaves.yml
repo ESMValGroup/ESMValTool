@@ -15,6 +15,9 @@ documentation:
     - manubens_nicolau
     - caron_louis-philippe
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 
@@ -24,7 +27,7 @@ datasets:
   # - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5, exp: rcp85,
   #    ensemble: r1i1p1, start_year: 2020, end_year: 2040}
   - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: historical,
-     ensemble: r1i1p1, start_year: 1971, end_year: 2000}
+     ensemble: r1i1p1, start_year: 1971, end_year: 2000, version: v1}
   - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: rcp85,
      ensemble: r1i1p1, start_year: 2060, end_year: 2080}
 

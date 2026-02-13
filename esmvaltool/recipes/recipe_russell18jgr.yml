@@ -625,7 +625,7 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}  # , ensemble: r3i1p1}
       - {dataset: MRI-ESM1}
     scripts:
       fgco2-polar:
@@ -681,7 +681,7 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}  # , ensemble: r3i1p1}
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_line:
@@ -710,6 +710,8 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
+        additional_datasets:
+          - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}  # , ensemble: r3i1p1}
       areacello:
         mip: fx
         project: CMIP5
@@ -717,6 +719,8 @@ diagnostics:
         ensemble: r0i0p0
         start_year: 1986
         end_year: 2005
+        additional_datasets:
+          - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
     additional_datasets:
       - {dataset: bcc-csm1-1}
       # - {dataset: BNU-ESM}
@@ -729,7 +733,6 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_cumulative_line:

@@ -13,55 +13,54 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: esmvaltool
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
-      - shell: bash -l {0}
-        run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
+      - run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
-        shell: bash -l {0}
         run: |
           mamba --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - name: Install ESMValTool
-        shell: bash -l {0}
-        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install R dependencies
-        shell: bash -l {0}
-        run: esmvaltool install R
-      - name: Install Julia dependencies
-        shell: bash -l {0}
-        run: esmvaltool install Julia
+        run: pip install --no-deps -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Install development version of ESMValCore
-        shell: bash -l {0}
         run: |
           cd ..
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
-          pip install -e .[develop]
+          pip install --no-deps -e .[develop]
+      - name: Check code quality
+        run: pre-commit run -a
       - name: Run tests
-        shell: bash -l {0}
         run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: Develop_Test_Linux_python_${{ matrix.python-version }}
           path: develop_test_linux_artifacts_python_${{ matrix.python-version }}

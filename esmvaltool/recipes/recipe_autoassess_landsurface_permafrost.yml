@@ -5,10 +5,7 @@ documentation:
   description: |
     Recipe that runs the Autoassess Land-surface assessment area diagnostic.
     Land surface area and ice masks are time independent.
-    Climatological files are stored externally to avoid overloading the
-    ESMValTool source. See /gws/nopw/j04/esmeval/autoassess_specific_files
-    (on JASMIN).
-    
+
   authors:
     - predoi_valeriu
     - sellar_alistair
@@ -55,7 +52,6 @@ diagnostics:
         obs_models: []
         start: 1993/12/01
         end: 2002/12/01
-        climfiles_root: '/gws/nopw/j04/esmeval/autoassess_specific_files/files'  # on JASMIN
 
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics

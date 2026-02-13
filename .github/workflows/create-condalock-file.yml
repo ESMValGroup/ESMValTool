@@ -3,70 +3,77 @@ name: Conda lock file creation
 on:
   # Trigger on push on main or other branch for testing
   # NOTE that push: main will create the file very often
-  # and hence lots of automated PRs 
+  # and hence lots of automated PRs
   # push:
   #   branches:
-  #     - condalock-update
+  #     - main
   schedule:
     - cron: '0 4 */10 * *'
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
   create-lock-file:
     name: Create conda lock file for latest Python
     runs-on: 'ubuntu-latest'
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
-      - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           activate-environment: esmvaltool-fromlock
-          python-version: "3.10"
-          miniconda-version: "latest"
-          channels: conda-forge
+          python-version: "3.13"
+          miniforge-version: "latest"
+          use-mamba: true
       - name: Show conda config
-        shell: bash -l {0}
         run: |
-          conda info
-          conda list
-          conda config --show-sources
-          conda config --show
+          conda update -n base -c conda-forge conda
+          conda --version
+          mamba --version
       - name: Python info
-        shell: bash -l {0}
         run: |
           which python
           python --version
       - name: Install conda-lock
-        shell: bash -l {0}
-        run: conda install -y conda-lock
+        run: mamba install -y -c conda-forge conda-lock
+      - name: Check version of conda-lock
+        run: conda-lock --version
       - name: Create conda lock file for linux-64
-        shell: bash -l {0}
         run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit
-      - shell: bash -l {0}
+      - name: Show conda version again
         run: conda --version
-      - shell: bash -l {0}
-        run: which python
-      - shell: bash -l {0}
-        run: python -V
-      - shell: bash -l {0}
+      - name: Show Python exec and version again
+        run: |
+          which python
+          python -V
+      - name: Create conda-lock environment
         run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
-      - shell: bash -l {0}
-        run: conda install -y -c conda-forge pip
-      - shell: bash -l {0}
-        run: which python
-      - shell: bash -l {0}
-        run: pip --version
-      - shell: bash -l {0}
-        run: pip install -e .[develop]
-      - shell: bash -l {0}
+      - name: Install pip
+        run: mamba install -y pip
+      - name: Check Python and pip versions post pip-install
+        run: |
+          which python
+          pip --version
+      - name: Install ESMValTool
+        run: pip install --no-deps -e .[develop]
+      - name: Check ESMValTool version
         run: esmvaltool --help
-      - shell: bash -l {0}
+      - name: Check ESMValTool help
         run: esmvaltool version
-      - shell: bash -l {0}
+      - name: Check code quality
+        run: pre-commit run -a
+      - name: Run tests
         run: pytest -n 2 -m "not installation"
       # Automated PR
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Automated PR if conda lock file has changed
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Updating Linux condalock file
@@ -84,7 +91,4 @@ jobs:
             automatedPR
           assignees: valeriupredoi
           reviewers: valeriupredoi
-          team-reviewers: |
-            owners
-            maintainers
           draft: false

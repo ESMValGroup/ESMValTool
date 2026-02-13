@@ -1,0 +1,237 @@
+# ESMValTool
+# recipe_lauer22jclim_fig5_lifrac.yml
+---
+documentation:
+  title: Cloud diagnostics v2 (liquid/ice fraction)
+
+  description: |
+    Diagnostics of 3-d cloud parameters.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer22jclim
+
+  projects:
+    - cmug
+
+
+preprocessors:
+
+  pp27_all_lev:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset]
+
+
+diagnostics:
+
+  lifrac_scatter_cmip6:
+    description: ice / liquid fraction vs. temperature
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clw:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        project: CMIP6
+        start_year: 1995
+        end_year: 2014
+        exp: historical
+        reference_dataset: CLOUDSAT-L2
+        additional_datasets:
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
+             start_year: 2007, end_year: 2015}
+      cli:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        project: CMIP6
+        start_year: 1995
+        end_year: 2014
+        exp: historical
+        reference_dataset: CALIPSO-ICECLOUD
+        additional_datasets:
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
+             version: 1-00, mip: Amon, tier: 3,
+             start_year: 2007, end_year: 2015}
+      ta:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        project: CMIP6
+        start_year: 1995
+        end_year: 2014
+        exp: historical
+        reference_dataset: ERA5
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, start_year: 2007, end_year: 2015}
+    additional_datasets:
+      # concatenation error - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS,
+      #                        ensemble: r1i1p1f1, grid: gn}
+      # concatenation error - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1,
+      #                        grid: gn}
+      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM-FV2, ensemble: r1i1p1f1, grid: gn}
+      # error - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+      # error - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
+      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+      # ERROR_ps_missing - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+      # ERROR_coordinates_screwed - {dataset: IPSL-CM6A-LR, ensemble: r4i1p1f1,
+      #                              grid: gr}
+      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      lifrac_scatter:
+        script: clouds/clouds_lifrac_scatter.ncl
+        filename_add: cmip6
+        min_mass: 1.0e-6
+        panel_labels: true
+
+  lifrac_scatter_cmip5:
+    description: ice / liquid fraction vs. temperature
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clw:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        project: CMIP5
+        start_year: 1986
+        end_year: 2005
+        exp: historical
+        reference_dataset: CLOUDSAT-L2
+        additional_datasets:
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
+             start_year: 2007, end_year: 2015}
+      cli:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        project: CMIP5
+        start_year: 1986
+        end_year: 2005
+        exp: historical
+        reference_dataset: CALIPSO-ICECLOUD
+        additional_datasets:
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
+             mip: Amon, tier: 3,
+             start_year: 2007, end_year: 2015}
+      ta:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        project: CMIP5
+        start_year: 1986
+        end_year: 2005
+        exp: historical
+        reference_dataset: ERA5
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, start_year: 2007, end_year: 2015}
+    additional_datasets:
+      # concatenation error - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      # concatenation error - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: CanESM2, ensemble: r1i1p1}
+      - {dataset: CCSM4, ensemble: r1i1p1}
+      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+      # data look wrong - {dataset: CMCC-CESM, ensemble: r1i1p1}
+      # data look wrong - {dataset: CMCC-CM, ensemble: r1i1p1}
+      # - {dataset: CMCC-CMS, ensemble: r1i1p1} #data look wrong
+      # - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      # - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      - {dataset: FIO-ESM, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+      - {dataset: inmcm4, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+      # - {dataset: MIROC4h, ensemble: r1i1p1}
+      # concatenation error - {dataset: MIROC5, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
+    scripts:
+      lifrac_scatter:
+        script: clouds/clouds_lifrac_scatter.ncl
+        filename_add: cmip5
+        min_mass: 1.0e-6
+        panel_labels: true
+
+  postproc:
+    description: |
+      Post-processing: CMIP5/CMIP6 comparison and additional statistics
+    scripts:
+      cmip5cmip6:
+        script: clouds/clouds_lifrac_scatter_postproc.ncl
+        ancestors: ['lifrac_scatter_cmip*/lifrac_scatter']
+        models: [["bcc-csm1-1", "BCC-CSM2-MR"],
+                 ["CESM1-WACCM", "CESM2-WACCM"],
+                 ["GFDL-CM3", "GFDL-CM4"],
+                 ["GISS-E2-H", "GISS-E2-1-H"],
+                 ["HadGEM2-CC", "HadGEM3-GC31-LL"],
+                 ["MIROC-ESM", "MIROC-ES2L"],
+                 ["MPI-ESM-LR", "MPI-ESM1-2-LR"],
+                 ["MRI-ESM1", "MRI-ESM2-0"],
+                 ["NorESM1-M", "NorESM2-LM"]]
+        refname: "CLOUDSAT-L2-CALIPSO-ICECLOUD-ERA5"

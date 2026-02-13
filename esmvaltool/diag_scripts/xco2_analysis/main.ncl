@@ -438,7 +438,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_ts_panels, \
+                 outfile_ts_panels + "." + file_type, \
                  "Timeseries, growth rate and seasonal cycle of " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
@@ -550,7 +550,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_grbp, \
+                 outfile_grbp + "." + file_type, \
                  "Growth Rate histogram of " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
@@ -584,6 +584,15 @@ begin
   sa_Rates@diag_script = (/DIAG_SCRIPT/)
   ncdf_outfile = ncdf_write(sa_Rates, outfile_netcdf_grbp)
 
+    ; Sort by size
+  sort_by = sa_Rates(:, 0)
+  qsort(sort_by)
+  perm_idx = new(dimsizes(sort_by), integer)
+  do idim = 0, dimsizes(sort_by) - 1
+    perm_idx(idim) = ind(sort_by(idim).eq.sa_Rates(:, 0))
+  end do
+  sa_Rates_sort = sa_Rates(perm_idx, :)
+
   res = True
   res@gsnDraw = False
   res@gsnFrame = False
@@ -591,7 +600,7 @@ begin
   res@gsnXYBarChart = True
   res@tmXBMode = "Explicit"
   res@tmXBValues = ispan(0, dimsizes(amp_series&model) - 1, 1)
-  res@tmXBLabels = amp_series&model
+  res@tmXBLabels = labels_ini(perm_idx)  ; amp_series&model
   res@tmXBLabelAngleF = 60.
   res@tmXBLabelJust = "CenterRight"
   res@tmXBLabelFontHeightF = 0.014
@@ -600,17 +609,14 @@ begin
   res@trYMaxF = max(sa_Rates(:, 0) + sa_Rates(:, 1)) + 0.15
   res@trXMinF = -1.
   res@trXMaxF = dimsizes(amp_series&model)
-  res@tiMainString = "Mean Seasonal Cycle Amplitude from " + \
-                     tostring(start_year) + " - " + tostring(end_year) + \
-                     ", " + region
   res@tiYAxisString = "Seasonal Cycle Amplitude [" + sa_Rates@units + "]"
   res@tiYAxisFontHeightF = 0.02
   res@gsnXYBarChartBarWidth = 0.75
-  res@gsnXYBarChartColors = bp_colors
+  res@gsnXYBarChartColors = bp_colors(perm_idx)
 
   x = ispan(0, dimsizes(amp_series&model)-1, 1)
 
-  plot_sabp = gsn_csm_xy(wks, x, sa_Rates(:, 0), res)
+  plot_sabp = gsn_csm_xy(wks, x, sa_Rates_sort(:, 0), res)
 
   ; Add errorbars
 
@@ -622,16 +628,19 @@ begin
   do imod = 0, dimsizes(amp_series&model) - 1
     plot_sabp@$unique_string("errbar")$ = \
       gsn_add_polyline(wks, plot_sabp, (/imod, imod/), \
-                       (/sa_Rates(imod, 0) + sa_Rates(imod, 1),  \
-                        sa_Rates(imod, 0) - sa_Rates(imod, 1)/), lres)
+                       (/sa_Rates_sort(imod, 0) + sa_Rates_sort(imod, 1),  \
+                        sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1)/), \
+                       lres)
     plot_sabp@$unique_string("errbar")$ = \
       gsn_add_polyline(wks, plot_sabp, (/imod + err_wdth, imod - err_wdth/), \
-                       (/sa_Rates(imod, 0) + sa_Rates(imod, 1), \
-                        sa_Rates(imod, 0) + sa_Rates(imod, 1)/), lres)
+                       (/sa_Rates_sort(imod, 0) + sa_Rates_sort(imod, 1), \
+                        sa_Rates_sort(imod, 0) + sa_Rates_sort(imod, 1)/), \
+                       lres)
     plot_sabp@$unique_string("errbar")$ = \
       gsn_add_polyline(wks, plot_sabp, (/imod + err_wdth, imod - err_wdth/), \
-                       (/sa_Rates(imod, 0) - sa_Rates(imod, 1), \
-                        sa_Rates(imod, 0) - sa_Rates(imod, 1)/), lres)
+                       (/sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1), \
+                        sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1)/), \
+                       lres)
   end do
 
   draw(plot_sabp)
@@ -644,7 +653,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_sabp, \
+                 outfile_sabp + "." + file_type, \
                  "Seasonal Cycle Amplitude histogram of " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask, \

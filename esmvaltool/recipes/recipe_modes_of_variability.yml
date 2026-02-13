@@ -21,6 +21,9 @@ documentation:
     - perez-zanon_nuria
     - manubens_nicolau
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 

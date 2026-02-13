@@ -1,6 +1,6 @@
 ; #############################################################################
 ; WRAPPER SCRIPT FOR COLLECTING AND PLOTTING PRECALCULATED METRICS
-; Author: Franziska Frank (DLR, Germany)
+; Author: Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 ; Description
@@ -29,6 +29,8 @@
 ; Caveats
 ;
 ; Modification history
+;    20220609-bock_lisa: added gaps between project blocks and improved style
+;    20211014-bock_lisa: added sorting by project
 ;    20190315-hassler_birgit: added SMPI case
 ;    20180508-righi_mattia: renamed and generalized
 ;    20151027-lauer_axel: moved call to 'write_references' to the beginning
@@ -40,7 +42,7 @@
 ;    20140620-gottschaldt_klaus-dirk: modified output file naming (variable
 ;                                     plotpath) and added option for explicit
 ;                                     plot title.
-;    20140204-frank_franziska: written.
+;    20140204-winterstein_franziska: written.
 ;
 ; #############################################################################
 
@@ -332,9 +334,16 @@ begin
       data_temp = data_all
       n_proj = dimsizes(diag_script_info@project_order)
       id1 = ind(projectnames.eq.diag_script_info@project_order(0))
+      id1_mm = (/ind(data_all&models(id1) .eq. \
+                diag_script_info@project_order(0) + "_mean"), \
+                ind(data_all&models(id1) .eq. \
+                diag_script_info@project_order(0) + "_median") /)
+      if(any(ismissing(id1_mm))) then
+        id1_mm = -1
+      end if
+      pid1 = sort_alphabetically(data_all&models(id1), id1_mm, "begin")
       n1 = dimsizes(id1)
       breakpoints = n1
-      pid1 = sort_alphabetically(data_all&models(id1), -1, "begin")
       if (dimsizes(dimsizes(data_all)).eq.3) then
         data_all(:, 0:(n1-1), :) = data_temp(:, id1(pid1), :)
       else
@@ -342,7 +351,14 @@ begin
       end if
       if (n_proj .gt. 1) then
         id2 = ind(projectnames.eq.diag_script_info@project_order(1))
-        pid2 = sort_alphabetically(data_temp&models(id2), -1, "begin")
+        id2_mm = (/ind(data_temp&models(id2) .eq. \
+                  diag_script_info@project_order(1) + "_mean"), \
+                  ind(data_temp&models(id2) .eq. \
+                  diag_script_info@project_order(1) + "_median") /)
+        if (any(ismissing(id2_mm))) then
+          id2_mm = -1
+        end if
+        pid2 = sort_alphabetically(data_temp&models(id2), id2_mm, "begin")
         n2 = dimsizes(id2)
         breakpoints = n1
         if (dimsizes(dimsizes(data_all)).eq.3) then
@@ -352,7 +368,14 @@ begin
         end if
         if (n_proj .gt. 2) then
           id3 = ind(projectnames.eq.diag_script_info@project_order(2))
-          pid3 = sort_alphabetically(data_temp&models(id3), -1, "begin")
+          id3_mm = (/ind(data_temp&models(id3) .eq. \
+                    diag_script_info@project_order(2) + "_mean"), \
+                    ind(data_temp&models(id3) .eq. \
+                    diag_script_info@project_order(2) + "_median") /)
+          if (any(ismissing(id3_mm))) then
+            id3_mm = -1
+          end if
+          pid3 = sort_alphabetically(data_temp&models(id3), id3_mm, "begin")
           n3 = dimsizes(id3)
           breakpoints := array_append_record(breakpoints, n1+n2, 0)
           if (dimsizes(dimsizes(data_all)).eq.3) then
@@ -372,7 +395,7 @@ begin
     ; Sort diagnostics in the order specified in the settings
     if (isatt(diag_script_info, "diag_order")) then
       l_ok = True
-      if (dimsizes(data_all&diagnostics).ne. \
+      if (dimsizes(data_all&diagnostics).lt. \
           dimsizes(diag_script_info@diag_order)) then
         error_msg("w", DIAG_SCRIPT, "", "specified order of diagnostics " + \
                   "cannot be applied, number of diagnostics does not match")
@@ -450,19 +473,19 @@ begin
   if (diag_script_info@metric.eq."RMSD") then
     caption = "RMSD performance metric"
     statistics = (/"rmsd"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."BIAS") then
     caption = "Bias performance metric"
     statistics = (/"diff"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."taylor") then
     caption = "Taylor diagram"
     statistics = (/"rmsd", "corr"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "taylor"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."SMPI") then
@@ -479,8 +502,9 @@ begin
   domains = (/"global"/)
 
   ; Call provenance logger
-  log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, data_files)
+  log_provenance(ncdf_outfile, plotpath + "." + file_type, caption, \
+                 statistics, domains, plottype, authors, references, \
+                 data_files)
 
   leave_msg(DIAG_SCRIPT, "")
 

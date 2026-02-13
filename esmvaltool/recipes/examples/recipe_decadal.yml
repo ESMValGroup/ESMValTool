@@ -8,7 +8,7 @@ documentation:
     Reproduces the examples given in deliverable D9.4 of ISENES-3.
   authors:
     - loosveldt-tomas_saskia
-  maintainers:
+  maintainer:
     - loosveldt-tomas_saskia
   projects:
     - isenes3

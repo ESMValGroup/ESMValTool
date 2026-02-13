@@ -1,3 +1,5 @@
+.. _recipe_wenzel14jgr:
+
 Emergent constraints on carbon cycle feedbacks
 ==============================================
 
@@ -23,6 +25,11 @@ Diagnostics are stored in diag_scripts/
 
 User settings
 -------------
+
+.. note::
+
+   Make sure to run this recipe with the :ref:`configuration option
+   <esmvalcore:config_options>` ``max_parallel_tasks: 1``.
 
 User setting files (cfg files) are stored in nml/cfg_carbon/
 
@@ -100,7 +107,7 @@ Observations and reformat scripts
 ---------------------------------
 
 * GCP2018: Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
-* NCEP: National Centers for Environmental Prediction reanalysis data for near surface temperature
+* NCEP-NCAR-R1: National Centers for Environmental Prediction reanalysis data for near surface temperature
 
 
 References

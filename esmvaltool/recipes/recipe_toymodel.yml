@@ -13,6 +13,9 @@ documentation:
   authors:
     - bellprat_omar
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 

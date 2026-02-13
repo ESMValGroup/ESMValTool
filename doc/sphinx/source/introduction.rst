@@ -59,7 +59,7 @@ Support for ESMValTool can be found in `ESMValTool Discussions page
 <https://github.com/ESMValGroup/ESMValTool/discussions>`__
 where users can open an issue and a member of the `User Engagement Team
 <mailto:esmvaltool_user_engagement_team@listserv.dfn.de>`_ of ESMValTool
-will reply as soon as possible. 
+will reply as soon as possible.
 This is open for all general and technical questions on the ESMValTool:
 installation, application, development, or any other question or comment
 you may have.
@@ -85,8 +85,7 @@ or
 
 The mailing list also has a `public archive <https://www.listserv.dfn.de/sympa/arc/esmvaltool>`_ online.
 
-
-
+.. _monthly-meetings:
 
 Monthly meetings
 ----------------
@@ -94,29 +93,18 @@ Monthly meetings
 We have monthly online meetings using `zoom <https://zoom.us/>`__, anyone with
 an interest in the ESMValTool is welcome to join these meetings to connect with
 the community.
-These meetings are always announced in an issue
-on the `ESMValTool <https://github.com/ESMValGroup/ESMValTool/issues>`_
+These meetings are always announced in a discussion
+on the `ESMValTool Community <https://github.com/ESMValGroup/Community/discussions>`_
 repository and on the mailing-list_.
 
 .. _core-team:
 
-Core development team
----------------------
+Development team
+----------------
 
--  Deutsches Zentrum für Luft- und Raumfahrt (DLR), Institut für Physik
-   der Atmosphäre, Germany (Co-PI)
-
-   - ESMValTool Core Co-PI and Developer: contact for requests to use the ESMValTool and for collaboration with the development team, access to the PRIVATE GitHub repository.
-
--  Met Office, United Kingdom (Co-PI)
--  Alfred Wegener institute (AWI) Bremerhaven, Germany
--  Barcelona Supercomputing Center (BSC), Spain
--  Netherlands eScience Center (NLeSC), The Netherlands
--  Ludwig Maximilian University of Munich, Germany
--  Plymouth Marine Laboratory (PML), United Kingdom
--  Swedish Meteorological and Hydrological Institute (SMHI), Sweden
--  University of Bremen, Germany
--  University of Reading, United Kingdom
+ESMValTool is developed by a community of scientists and research software
+engineers from multiple institutes. An overview of the team is available
+on the `development team page <https://esmvaltool.org/team/>`__.
 
 Recipes and diagnostics
 -----------------------

@@ -3,12 +3,15 @@
 ---
 documentation:
   title: Emergent constraints on climate-carbon cycle feedbacks
-  
+
   description: |
     This recipe reproduces most of the figures of Wenzel et al. (2014).
 
   authors:
     - wenzel_sabrina
+
+  maintainer:
+    - unmaintained
 
   references:
     - wenzel14jgr
@@ -23,14 +26,14 @@ preprocessors:
       area_type: land
       exclude: [
         'GCP2018',
-        ]
+      ]
 
   sea_fraction_weighting:
     weighting_landsea_fraction:
       area_type: sea
       exclude: [
         'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
-        ]
+      ]
     regrid:
       target_grid: CanESM2
       scheme: area_weighted
@@ -40,34 +43,32 @@ preprocessors:
       area_type: land
       exclude: [
         'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
-        ]
+      ]
     area_statistics:
-          operator: sum
+      operator: sum
 
   tropical_land:
     weighting_landsea_fraction:
       area_type: land
       exclude: [
         'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
-        ]
+      ]
     extract_region:
       start_longitude: 0.
       end_longitude: 360.
       start_latitude: -30.
       end_latitude: 30.
     area_statistics:
-          operator: sum
+      operator: sum
 
   global_ocean:
     weighting_landsea_fraction:
       area_type: sea
       exclude: [
         'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
-        ]
+      ]
     area_statistics:
       operator: sum
-      fx_variables:
-        areacello:
 
   tropical:
     extract_region:
@@ -76,7 +77,7 @@ preprocessors:
       start_latitude: -30.
       end_latitude: 30.
     area_statistics:
-          operator: mean
+      operator: mean
 
 
 diagnostics:
@@ -564,9 +565,9 @@ diagnostics:
         start_year: 1960
         end_year: 2005
         plot_units: K
-        reference_dataset: NCEP
+        reference_dataset: NCEP-NCAR-R1
         additional_datasets:
-          - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
           - {dataset: CanESM2, start_year: 1960 ,end_year: 2005}
           - {dataset: CESM1-BGC, start_year: 1960 ,end_year: 2005}
           - {dataset: GFDL-ESM2M, start_year: 1960 ,end_year: 2005}
@@ -584,13 +585,13 @@ diagnostics:
         plot_units_y: GtC y-1
         ec_anom : True
         ec_volc : True      #(optional)
-        scatter_log : False # set logaritmic axes in scatterplot.ncl
+        scatter_log : False # set logarithmic axes in scatterplot.ncl
         styleset: CMIP5     # Plot style
 
   ### Wenzel et al. 2014, Fig. 05: Diagnose GAMMA_LT and create Emergent Constraint #############
 
   diag_gammaLT_5:
-    description: Fig 5 correlates gamma hist vs gammaLT and calculates PDF
+    description: Fig 5 correlates gamma historical vs gammaLT and calculates PDF
     variables:
       nbp_1pct:
         short_name: nbp

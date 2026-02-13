@@ -12,6 +12,9 @@ documentation:
   authors:
     - schlund_manuel
 
+  maintainer:
+    - schlund_manuel
+
   references:
     - gregory04grl
 
@@ -24,8 +27,6 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
 
 CMIP5_RTNT: &cmip5_rtnt

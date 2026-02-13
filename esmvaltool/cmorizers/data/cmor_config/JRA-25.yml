@@ -1,0 +1,80 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: JRA-25
+  version: '1'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://data.rda.ucar.edu/ds625.1'
+  reference: 'jra_25'
+  comment: |
+    ''
+
+# Variables to cmorize
+variables:
+  cl:
+    short_name: cl
+    mip: Amon
+    raw: TCDC_HBL
+    file: 'fcst_phy3m.{year}*.nc'
+  clt:
+    short_name: clt
+    mip: Amon
+    raw: TCDC_COL
+    file: 'fcst_phy2m.{year}*.nc'
+  clwvi:
+    short_name: clwvi
+    mip: Amon
+    raw: CWAT_COL
+    file: 'fcst_phy2m.{year}*.nc'
+  hus:
+    short_name: hus
+    mip: Amon
+    raw: SPFH_PRS
+    file: 'anl_p.{year}*.nc'
+  prw:
+    short_name: prw
+    mip: Amon
+    raw: PWAT_COL
+    file: 'fcst_phy2m.{year}*.nc'
+  rlut:
+    short_name: rlut
+    mip: Amon
+    raw: ULWRF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  rlutcs:
+    short_name: rlutcs
+    mip: Amon
+    raw: CSULF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  rsut:
+    short_name: rsut
+    mip: Amon
+    raw: USWRF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  rsutcs:
+    short_name: rsutcs
+    mip: Amon
+    raw: CSUSF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  ta:
+    short_name: ta
+    mip: Amon
+    raw: TMP_PRS
+    file: 'anl_p.{year}*.nc'
+  tas:
+    short_name: tas
+    mip: Amon
+    raw: TMP_SFC
+    file: 'anl_p.{year}*.nc'
+  tcw:
+    short_name: tcw
+    mip: Amon
+    raw: CWAT_PRS
+    file: 'anl_p.{year}*.nc'
+  wap:
+    short_name: wap
+    mip: Amon
+    raw: VVEL_PRS
+    file: 'anl_chipsi.{year}*.nc'

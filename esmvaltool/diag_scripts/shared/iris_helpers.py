@@ -1,9 +1,12 @@
 """Convenience functions for :mod:`iris` objects."""
+
 import logging
 from pprint import pformat
 
 import iris
 import numpy as np
+from cf_units import Unit
+from iris.exceptions import CoordinateNotFoundError
 
 from ._base import group_metadata
 
@@ -17,11 +20,13 @@ def _transform_coord_to_ref(cubes, ref_coord):
         ref_coord = iris.coords.DimCoord.from_coord(ref_coord)
     except ValueError:
         pass
-    if not np.array_equal(np.unique(ref_coord.points), np.sort(
-            ref_coord.points)):
+    if not np.array_equal(
+        np.unique(ref_coord.points),
+        np.sort(ref_coord.points),
+    ):
         raise ValueError(
-            f"Expected unique coordinate '{ref_coord.name()}', got "
-            f"{ref_coord}")
+            f"Expected unique coordinate '{ref_coord.name()}', got {ref_coord}",
+        )
     coord_name = ref_coord.name()
     new_cubes = iris.cube.CubeList()
     for cube in cubes:
@@ -29,9 +34,10 @@ def _transform_coord_to_ref(cubes, ref_coord):
         if not np.all(np.isin(coord.points, ref_coord.points)):
             raise ValueError(
                 f"Coordinate {coord} of cube\n{cube}\nis not subset of "
-                f"reference coordinate {ref_coord}")
+                f"reference coordinate {ref_coord}",
+            )
         new_data = np.full(ref_coord.shape, np.nan)
-        indices = np.where(np.in1d(ref_coord.points, coord.points))
+        indices = np.where(np.isin(ref_coord.points, coord.points))
         new_data[indices] = np.ma.filled(cube.data, np.nan)
         new_cube = iris.cube.Cube(np.ma.masked_invalid(new_data))
         if isinstance(ref_coord, iris.coords.DimCoord):
@@ -39,13 +45,16 @@ def _transform_coord_to_ref(cubes, ref_coord):
         else:
             new_cube.add_aux_coord(ref_coord, 0)
         for aux_coord in cube.coords(dim_coords=False):
-            if aux_coord.shape in ((), (1, )):
+            if aux_coord.shape in ((), (1,)):
                 new_cube.add_aux_coord(aux_coord, [])
         new_cube.metadata = cube.metadata
         new_cubes.append(new_cube)
     check_coordinate(new_cubes, coord_name)
-    logger.debug("Successfully unified coordinate '%s' to %s", coord_name,
-                 ref_coord)
+    logger.debug(
+        "Successfully unified coordinate '%s' to %s",
+        coord_name,
+        ref_coord,
+    )
     logger.debug("of cubes")
     logger.debug(pformat(cubes))
     return new_cubes
@@ -78,16 +87,17 @@ def check_coordinate(cubes, coord_name):
     for cube in cubes:
         try:
             new_coord = cube.coord(coord_name)
-        except iris.exceptions.CoordinateNotFoundError:
-            raise iris.exceptions.CoordinateNotFoundError(
-                f"'{coord_name}' is not a coordinate of cube\n{cube}")
+        except CoordinateNotFoundError as exc:
+            raise CoordinateNotFoundError(
+                f"'{coord_name}' is not a coordinate of cube\n{cube}",
+            ) from exc
         if coord is None:
             coord = new_coord
-        else:
-            if new_coord != coord:
-                raise ValueError(
-                    f"Expected cubes with identical coordinates "
-                    f"'{coord_name}', got {new_coord} and {coord}")
+        elif new_coord != coord:
+            raise ValueError(
+                f"Expected cubes with identical coordinates "
+                f"'{coord_name}', got {new_coord} and {coord}",
+            )
     logger.debug("Successfully checked coordinate '%s' of cubes", coord_name)
     logger.debug(pformat(cubes))
     return coord.points
@@ -113,13 +123,14 @@ def convert_to_iris(dict_):
 
     """
     dict_ = dict(dict_)
-    if 'short_name' in dict_:
-        if 'var_name' in dict_:
+    if "short_name" in dict_:
+        if "var_name" in dict_:
             raise KeyError(
                 f"Cannot replace 'short_name' by 'var_name', dictionary "
                 f"already contains 'var_name' (short_name = "
-                f"'{dict_['short_name']}', var_name = '{dict_['var_name']}')")
-        dict_['var_name'] = dict_.pop('short_name')
+                f"'{dict_['short_name']}', var_name = '{dict_['var_name']}')",
+            )
+        dict_["var_name"] = dict_.pop("short_name")
     return dict_
 
 
@@ -139,14 +150,14 @@ def get_mean_cube(datasets):
     """
     cubes = iris.cube.CubeList()
     for dataset in datasets:
-        path = dataset['filename']
+        path = dataset["filename"]
         cube = iris.load_cube(path)
         prepare_cube_for_merging(cube, path)
         cubes.append(cube)
     mean_cube = cubes.merge_cube()
     if len(cubes) > 1:
-        mean_cube = mean_cube.collapsed(['cube_label'], iris.analysis.MEAN)
-    mean_cube.remove_coord('cube_label')
+        mean_cube = mean_cube.collapsed(["cube_label"], iris.analysis.MEAN)
+    mean_cube.remove_coord("cube_label")
     return mean_cube
 
 
@@ -172,9 +183,9 @@ def iris_project_constraint(projects, input_data, negate=False):
 
     """
     datasets = []
-    grouped_data = group_metadata(input_data, 'project')
+    grouped_data = group_metadata(input_data, "project")
     for project in projects:
-        datasets.extend([d['dataset'] for d in grouped_data.get(project, [])])
+        datasets.extend([d["dataset"] for d in grouped_data.get(project, [])])
 
     def project_constraint(cell):
         """Constraint function."""
@@ -215,14 +226,16 @@ def intersect_dataset_coordinates(cubes):
     # Get common elements
     for cube in cubes:
         try:
-            coord_points = cube.coord('dataset').points
-        except iris.exceptions.CoordinateNotFoundError:
-            raise iris.exceptions.CoordinateNotFoundError(
-                f"'dataset' is not a coordinate of cube\n{cube}")
+            coord_points = cube.coord("dataset").points
+        except CoordinateNotFoundError as exc:
+            raise CoordinateNotFoundError(
+                f"'dataset' is not a coordinate of cube\n{cube}",
+            ) from exc
         if len(set(coord_points)) != len(coord_points):
             raise ValueError(
                 f"Coordinate 'dataset' of cube\n{cube}\n contains duplicate "
-                f"elements")
+                f"elements",
+            )
         if common_elements is None:
             common_elements = set(coord_points)
         else:
@@ -235,11 +248,13 @@ def intersect_dataset_coordinates(cubes):
         cube = cube.extract(iris.Constraint(dataset=common_elements))
         if cube is None:
             raise ValueError(f"Cubes {cubes} do not share common elements")
-        sorted_idx = np.argsort(cube.coord('dataset').points)
+        sorted_idx = np.argsort(cube.coord("dataset").points)
         new_cubes.append(cube[sorted_idx])
-    check_coordinate(new_cubes, 'dataset')
-    logger.debug("Successfully matched 'dataset' coordinate to %s",
-                 sorted(common_elements))
+    check_coordinate(new_cubes, "dataset")
+    logger.debug(
+        "Successfully matched 'dataset' coordinate to %s",
+        sorted(common_elements),
+    )
     logger.debug("of cubes")
     logger.debug(pformat(cubes))
     return new_cubes
@@ -262,9 +277,11 @@ def prepare_cube_for_merging(cube, cube_label):
         coord.attributes = {}
     for coord in cube.coords(dim_coords=False):
         cube.remove_coord(coord)
-    cube_label_coord = iris.coords.AuxCoord(cube_label,
-                                            var_name='cube_label',
-                                            long_name='cube_label')
+    cube_label_coord = iris.coords.AuxCoord(
+        cube_label,
+        var_name="cube_label",
+        long_name="cube_label",
+    )
     cube.add_aux_coord(cube_label_coord, [])
 
 
@@ -301,38 +318,73 @@ def unify_1d_cubes(cubes, coord_name):
             raise ValueError(f"Dimension of cube\n{cube}\nis not 1")
         try:
             new_coord = cube.coord(coord_name)
-        except iris.exceptions.CoordinateNotFoundError:
-            raise iris.exceptions.CoordinateNotFoundError(
-                f"'{coord_name}' is not a coordinate of cube\n{cube}")
-        if not np.array_equal(np.unique(new_coord.points),
-                              np.sort(new_coord.points)):
+        except CoordinateNotFoundError as exc:
+            raise CoordinateNotFoundError(
+                f"'{coord_name}' is not a coordinate of cube\n{cube}",
+            ) from exc
+        if not np.array_equal(
+            np.unique(new_coord.points),
+            np.sort(new_coord.points),
+        ):
             raise ValueError(
                 f"Coordinate '{coord_name}' of cube\n{cube}\n is not unique, "
-                f"unifying not possible")
+                f"unifying not possible",
+            )
         if ref_coord is None:
             ref_coord = new_coord
         else:
             new_points = np.union1d(ref_coord.points, new_coord.points)
             ref_coord = ref_coord.copy(new_points)
-    if coord_name == 'time':
+    if coord_name == "time":
         iris.util.unify_time_units(cubes)
 
     # Transform all cubes
     return _transform_coord_to_ref(cubes, ref_coord)
 
 
-def var_name_constraint(var_name):
-    """:class:`iris.Constraint` using ``var_name`` of an :mod:`iris.cube.Cube`.
+def unify_time_coord(cube, target_units="days since 1850-01-01 00:00:00"):
+    """Unify time coordinate of cube in-place.
 
     Parameters
     ----------
-    var_name : str
-        Short name (``var_name`` in :mod:`iris`) for the constraint.
+    cube: iris.cube.Cube
+        Cube whose time coordinate is transformed in-place.
+    target_units: str or cf_units.Unit, optional
+        Target time units.
 
-    Returns
-    -------
-    iris.Constraint
-        Constraint to select only cubes with correct ``var_name``.
+    Raises
+    ------
+    iris.exceptions.CoordinateNotFoundError
+        Cube does not contain coordinate ``time``.
 
     """
-    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
+    if not cube.coords("time"):
+        raise CoordinateNotFoundError(
+            f"Coordinate 'time' not found in cube {cube.summary(shorten=True)}",
+        )
+
+    # Convert points and (if possible) bounds to new units
+    target_units = Unit(target_units)  # works if target_units already is Unit
+    time_coord = cube.coord("time")
+    new_points = target_units.date2num(
+        time_coord.units.num2date(time_coord.points),
+    )
+    if time_coord.bounds is None:
+        new_bounds = None
+    else:
+        new_bounds = target_units.date2num(
+            time_coord.units.num2date(time_coord.bounds),
+        )
+
+    # Create new coordinate and add it to the cube
+    new_time_coord = iris.coords.DimCoord(
+        new_points,
+        bounds=new_bounds,
+        var_name="time",
+        standard_name="time",
+        long_name="time",
+        units=target_units,
+    )
+    coord_dims = cube.coord_dims("time")
+    cube.remove_coord("time")
+    cube.add_dim_coord(new_time_coord, coord_dims)

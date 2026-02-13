@@ -1,0 +1,365 @@
+# ESMValTool
+# recipe_flato13ipcc_figures_938_941_cmip6.yml
+---
+documentation:
+  title: IPCC AR5, chap. 9 diagnostics to reproduce regional figures 9.38-9.41
+         unsing CMIP6 data
+  description: |
+    Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
+    9.38, 9.39, 9.40, 9.41.
+    Differences to the IPCC version:
+    - CMIP6 instead of CMIP3 data
+    - CRU data version 4.02 instead of 3.10
+    - Not exactly the same CMIP5 models and version.
+
+  authors:
+    - cionni_irene
+
+  maintainer:
+    - weigel_katja
+
+  references:
+    - flato13ipcc
+    - seneviratne12ipcc
+
+  projects:
+    - crescendo
+
+datasets:
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical}
+  - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: BCC-CSM2-MR, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-ESM1, project: CMIP6,        exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CAMS-CSM1-0, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5, project: CMIP6,         exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2, project: CMIP6,           exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2-WACCM, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn, institute: NCAR}
+  - {dataset: CNRM-CM6-1, project: CMIP6,      exp: historical,   ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, project: CMIP6,     exp: historical,   ensemble: r1i1p1f2, grid: gr}
+  - {dataset: E3SM-1-0, project: CMIP6,        exp: historical,   ensemble: r1i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, project: CMIP6,   exp: historical,   ensemble: r1i1p1f1, grid: gr}
+  - {dataset: GFDL-CM4, project: CMIP6,        exp: historical,   ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GFDL-ESM4, project: CMIP6,       exp: historical,   ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GISS-E2-1-G, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GISS-E2-1-H, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical,   ensemble: r1i1p1f3, grid: gn}
+  - {dataset: IPSL-CM6A-LR, project: CMIP6,    exp: historical,   ensemble: r1i1p1f1, grid: gr}
+  - {dataset: MIROC6, project: CMIP6,          exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MIROC-ES2L, project: CMIP6,      exp: historical,   ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6,   exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0, project: CMIP6,      exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: NESM3, project: CMIP6,           exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: SAM0-UNICON, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+
+
+preprocessors:
+  annual_cycle:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: month
+    mask_landsea:
+      mask_out: sea
+    mask_fillvalues:
+      threshold_fraction: 0.95
+  annual_cycle_pr:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: month
+    mask_landsea:
+      mask_out: sea
+    mask_fillvalues:
+      threshold_fraction: 0.66
+
+  clima_nomask:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: month
+    mask_fillvalues:
+      threshold_fraction: 0.95
+  clima_nomask_pr:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: month
+    mask_fillvalues:
+      threshold_fraction: 0.66
+  regr:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+
+diagnostics:
+
+  # ==========================================================================
+  # Chapter 9  - Figure938
+  # ==========================================================================
+  regional_downscaling_Fig938tas:
+    description: Creates annual cycle regional plots for individual models
+                 and mumltimodel over the selected project&experiemnt&mip
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: annual_cycle
+        reference_dataset: ERA-Interim
+        mip: Amon
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+    scripts:
+      clim: &Fig938_settings
+        script: regional_downscaling/Figure9.38.ncl
+        styleset: CMIP356
+        fig938_region_label: ["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF",
+                              "CAF", "SAF", "NAS", "CAS", "EAS", "SAS", "SEA",
+                              "AUS"]
+        fig938_project_MMM: ["CMIP5", "CMIP6"]
+        fig938_experiment_MMM: ["historical", "historical"]
+        fig938_mip_MMM: ["Amon", "Amon"]
+        fig938_colors_MMM: ["red", "blue"]
+        fig938_refModel: ERA-Interim
+        fig938_MMM: true
+        fig938_diff: false
+
+
+  regional_downscaling_Fig938pr:
+    description: Creates annual cycle regional plots for individual models
+                 and mumltimodel over the selected project&experiemnt&mip
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: annual_cycle_pr
+        reference_dataset: ERA-Interim
+        mip: Amon
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+    scripts:
+      clim:
+        <<: *Fig938_settings
+
+  # ==========================================================================
+  # Chapter 9  - Figure939
+  # ==========================================================================
+  regional_downscaling_Fig939tas:
+    description: Creates seasonal or annual bias box plots at selected
+                 regions over the selected project&experiemnt&mip over
+                 the selected project&experiemnt&mip
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: annual_cycle
+        reference_dataset: CRU
+        mip: Amon
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 2005
+    additional_datasets:
+      - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+
+    scripts:
+      clim: &Fig939_settings
+        script: regional_downscaling/Figure9.39.ncl
+        styleset: CMIP356
+        fig939_season: ["DJF", "JJA", "ANN"]
+        fig939_region_label: ["ALAs", "CGIs", "WNAs", "CNAs", "ENAs", "CAMs",
+                              "AMZs", "NEBs", "WSAs", "SSAs", "NEUs", "CEUs",
+                              "MEDs", "SAHs", "WAFs", "EAFs", "SAFs", "NASs",
+                              "WASs", "CASs", "TIBs", "EASs", "SASs", "SEAs",
+                              "NAUs", "SAUs"]
+        fig939_project_MMM:  ["CMIP5", "CMIP6"]
+        fig939_experiment_MMM: ["historical", "historical"]
+        fig939_mip_MMM: ["Amon", "Amon"]
+        fig939_MMM: true
+        fig939_YMin: -11
+        fig939_YMax: 8
+
+  regional_downscaling_Fig939pr:
+    description: Creates seasonal or annual bias box plots at selected
+                 regions over the selected project&experiemnt&mip over
+                 the selected project&experiemnt&mip
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: annual_cycle_pr
+        reference_dataset: CRU
+        mip: Amon
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 2005
+    additional_datasets:
+      - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+
+    scripts:
+      clim:
+        script: regional_downscaling/Figure9.39.ncl
+        styleset: CMIP356
+        fig939_season: ["ONDJFM", "AMJJAS", "ANN"]
+        fig939_region_label: ["ALAs", "CGIs", "WNAs", "CNAs", "ENAs", "CAMs",
+                              "AMZs", "NEBs", "WSAs", "SSAs", "NEUs", "CEUs",
+                              "MEDs", "SAHs", "WAFs", "EAFs", "SAFs", "NASs",
+                              "WASs", "CASs", "TIBs", "EASs", "SASs", "SEAs",
+                              "NAUs", "SAUs"]
+        fig939_project_MMM:  ["CMIP5", "CMIP6"]
+        fig939_experiment_MMM: ["historical", "historical"]
+        fig939_mip_MMM: ["Amon", "Amon"]
+        fig939_MMM: true
+        fig939_mode: true
+        fig939_YMin: -100
+        fig939_YMax: 300
+
+  # ==========================================================================
+  # Chapter 9  - Figure940
+  # ==========================================================================
+  regional_downscaling_Fig940tas:
+    description: Creates annual cycle regional plots for individual models
+                 and mumltimodel over the selected project&experiemnt&mip.
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: clima_nomask
+        reference_dataset: ERA-Interim
+        mip: Amon
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    scripts:
+      clim: &Fig940_settings
+        script: regional_downscaling/Figure9.40.ncl
+        styleset: CMIP356
+        fig940_season: ["DJF", "JJA", "ANN"]
+        fig940_region_label: ["Arctic_land", "Arctic_sea", "Antarctic_land",
+                              "Antarctic_sea", "Caribbean",
+                              "WesternIndianOcean",
+                              "NorthernIndianOcean", "NorthernTropicalPacific",
+                              "EquatorialTropicalPacific",
+                              "SouthernTropicalPacific", "World_land",
+                              "World_sea", "World"]
+        fig940_project_MMM:  ["CMIP5", "CMIP6"]
+        fig940_experiment_MMM: ["historical", "historical"]
+        fig940_mip_MMM: ["Amon", "Amon"]
+        fig940_MMM: true
+        fig940_YMin: -12
+        fig940_YMax: 6
+
+  regional_downscaling_Fig940pr:
+    description: Creates annual cycle regional plots for individual models
+                 and mumltimodel over the selected project&experiemnt&mip.
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: clima_nomask_pr
+        reference_dataset: GPCP-V2.2
+        mip: Amon
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 2005
+    additional_datasets:
+      - {dataset: GPCP-V2.2, project: obs4MIPs, tier: 1}
+      # - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+    scripts:
+      clim:
+        <<: *Fig940_settings
+        fig940_mode: true
+        fig940_season: ["ONDJFM", "AMJJAS", "ANN"]
+        fig940_YMin: -100
+        fig940_YMax: 150
+
+
+  # ==========================================================================
+  # Chapter 9  - Figure941
+  # ==========================================================================
+  regional_downscaling_Fig941:
+    description:
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: regr
+        reference_dataset: CRU
+        mip: Amon
+        ensemble: r1i1p1
+        start_year: 1961
+        end_year: 2000
+    additional_datasets:
+      - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+    scripts:
+      clim: &Fig941_settings
+        script: regional_downscaling/Figure9.41.ncl
+        fig941_region_label: ["MEDs"]
+        styleset: CMIP356

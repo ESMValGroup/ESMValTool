@@ -74,9 +74,9 @@ The folder ``RAWOBS`` needs the subdirectories ``Tier1``, ``Tier2`` and
 ``Tier3``. The different tiers describe the different levels of restrictions
 for downloading (e.g. providing contact information, licence agreements)
 and using the observations. The unformatted (raw) observations
-should then be stored then in the appropriate of these three folders.
+should then be stored in the appropriate of these three folders.
 
-For each additional dataset, an entry needs to be made to the file 
+For each additional dataset, an entry needs to be made to the file
 `datasets.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml>`_.
 The dataset entry should contain:
@@ -92,12 +92,12 @@ of the cmorizing script (see Section `4. Create a cmorizer for the dataset`_).
 3.1 Downloader script (optional)
 --------------------------------
 
-A Python script can be written to download raw observations 
+A Python script can be written to download raw observations
 from source and store the data in the appropriate tier subdirectory of the
 folder ``RAWOBS`` automatically.
-There are many downloading scripts available in 
+There are many downloading scripts available in
 `/esmvaltool/cmorizers/data/downloaders/datasets/
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/data/downloaders/datasets/>`_
+<https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/cmorizers/data/downloaders/datasets>`_
 where several data download mechanisms are provided:
 
 - A `wget` get based downloader for http(s) downloads, with a specific derivation for NASA datasets.
@@ -108,26 +108,27 @@ Note that the name of this downloading script has to be identical to the
 name of the dataset.
 
 Depending on the source server, the downloading script needs to contain paths to
-raw observations, filename patterns and various necessary fields to retrieve 
+raw observations, filename patterns and various necessary fields to retrieve
 the data.
-Default ``start_date`` and ``end_date`` can be provided in cases where raw data 
+Default ``start_date`` and ``end_date`` can be provided in cases where raw data
 are stored in daily, monthly, and yearly files.
 
 The downloading script for the given dataset can be run with:
 
 .. code-block:: console
 
- esmvaltool data download --config_file <config-user.yml>  <dataset-name>
+ esmvaltool data download --config_dir </path/to/config/dir/>  <dataset-name>
 
-.. note::
-  The options ``--start`` and ``--end`` can be added to the command above to 
-  restrict the download of raw data to a time range. They will be ignored is a specific dataset
-  does not support it (i.e. because it is provided as a single file).
+The options ``--start`` and ``--end`` can be added to the command above to
+restrict the download of raw data to a time range. They will be ignored if a specific dataset
+does not support it (i.e. because it is provided as a single file). Valid formats are
+``YYYY``, ``YYYYMM`` and ``YYYYMMDD``. By default, already downloaded data are not overwritten
+unless the option ``--overwrite=True`` is used.
 
 4. Create a cmorizer for the dataset
 ====================================
 
-There are many cmorizing scripts available in 
+There are many cmorizing scripts available in
 `/esmvaltool/cmorizers/data/formatters/datasets/
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/datasets/>`_
 where solutions to many kinds of format issues with observational data are
@@ -157,7 +158,7 @@ configuration file: `MTE.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/cmor_config/MTE.yml>`_
 in the directory ``ESMValTool/esmvaltool/cmorizers/data/cmor_config/``. Note
 that both the name of this configuration file and the cmorizing script have to be
-identical to the name of your dataset. 
+identical to the name of your dataset.
 It is recommended that you set ``project`` to ``OBS6`` in the
 configuration file. That way, the variables defined in the CMIP6 CMOR table,
 augmented with the custom variables described above, are available to your script.
@@ -187,11 +188,15 @@ The main body of the CMORizer script must contain a function called
 with this exact call signature. Here, ``in_dir`` corresponds to the input
 directory of the raw files, ``out_dir`` to the output directory of final
 reformatted data set, ``cfg`` to the dataset-specific configuration file,
-``cfg_user`` to the user configuration file, ``start_date`` to the start
+``cfg_user`` to the configuration object (which behaves basically like a
+dictionary), ``start_date`` to the start
 of the period to format, and ``end_date`` to the end of the period to format.
 If not needed, the last three arguments can be ignored using underscores.
-The return value of this function is ignored. All
-the work, i.e. loading of the raw files, processing them and saving the final
+The return value of this function is ignored.
+Note that this function will trigger a Codacy style issue because it has more
+than 5 arguments; you can ignore that issue in line with the :ref:`code_quality` guidance.
+
+All the work, i.e. loading of the raw files, processing them and saving the final
 output, has to be performed inside its body. To simplify this process, ESMValTool
 provides a set of predefined utilities.py_, which can be imported into your CMORizer
 by
@@ -255,19 +260,23 @@ The cmorizing script for the given dataset can be run with:
 
 .. code-block:: console
 
- esmvaltool data format --config_file <config-user.yml> <dataset-name>
+ esmvaltool data format --config_dir </path/to/config/dir/> <dataset-name>
 
+The options ``--start`` and ``--end`` can be added to the command above to
+restrict the formatting of raw data to a time range. They will be ignored if a specific dataset
+does not support it (i.e. because it is provided as a single file). Valid formats are
+``YYYY``, ``YYYYMM`` and ``YYYYMMDD``.
 
 .. note::
 
    The output path given in the configuration file is the path where
    your cmorized dataset will be stored. The ESMValTool will create a folder
-   with the correct tier information 
+   with the correct tier information
    (see Section `2. Edit your configuration file`_) if that tier folder is not
-   already available, and then a folder named after the dataset. 
+   already available, and then a folder named after the dataset.
    In this folder the cmorized data set will be stored as a NetCDF file.
    The cmorized dataset will be automatically moved to the correct tier
-   subfolder of your OBS or OBS6 directory if the option 
+   subfolder of your OBS or OBS6 directory if the option
    ``--install=True`` is used in the command above and no such directory
    was already created.
 
@@ -279,7 +288,10 @@ the cmorizing scripts can be run in a single command with:
 
 .. code-block:: console
 
- esmvaltool data prepare --config_file <config-user.yml> <dataset-name>
+ esmvaltool data prepare --config_dir </path/to/config/dir/> <dataset-name>
+
+Note that options from the ```esmvaltool data download`` and
+``esmvaltool data format`` commands can be passed to the above command.
 
 6. Naming convention of the observational data files
 ====================================================

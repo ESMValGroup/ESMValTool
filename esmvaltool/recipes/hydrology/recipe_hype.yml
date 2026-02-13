@@ -11,6 +11,9 @@ documentation:
     - pelupessy_inti
     - kalverla_peter
 
+  maintainer:
+    - unmaintained
+
   projects:
     - ewatercycle
 

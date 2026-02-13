@@ -1,20 +1,17 @@
 # To build this container, go to ESMValTool root folder and execute:
 # docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
-FROM esmvalgroup/esmvalcore:latest
+FROM condaforge/miniforge3
+RUN apt update && apt install -y git && apt clean
 
-COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
-RUN conda update -n base -y conda && conda install -y -c conda-forge mamba && mamba env create --name esmvaltool --file environment.yml && conda clean --all -y
+COPY environment.yml .
+RUN    mamba update -y conda mamba pip \
+    && mamba env create --name esmvaltool --file environment.yml \
+    && conda clean --all -y
 
-# Make RUN commands use the new environment:
 SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
 
-COPY . /src/ESMValTool
-RUN pip install -e .[develop]
-RUN mamba install -y -c conda-forge r-base
-RUN esmvaltool install R
-RUN mamba install -y -c conda-forge julia
-RUN esmvaltool install Julia
-RUN pip install ../ESMValCore && pip cache purge
+COPY . .
+RUN pip install --no-cache git+https://github.com/ESMValGroup/ESMValCore.git#egg=ESMValCore .
 
 ENTRYPOINT ["conda", "run", "--name", "esmvaltool", "esmvaltool"]

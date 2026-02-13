@@ -37,7 +37,7 @@ begin
 
   ; Period
   YEAR1 = get_year(start_year, 1870)
-  YEAR2 = get_year(end_year, 2017)
+  YEAR2 = get_year(end_year, 2021)
 
   ; Selected variable (standard name)
   VAR = (/"ts", "tos", "sic"/)

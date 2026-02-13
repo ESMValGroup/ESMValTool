@@ -1,0 +1,540 @@
+# 1d_profile
+- input_data: [tas_amon_1d_plev_0.nc]
+  expected_pngs: [1d_profile_tas_tas_amon_1d_plev_0_Amon.png]
+  settings:
+    plots:
+      1d_profile:
+- input_data: [tas_amon_1d_alt16_0.nc, tas_amon_1d_alt16_1.nc]
+  expected_pngs: [1d_profile_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      1d_profile:
+
+# annual_cycle
+- input_data: [tas_amon_1d_month_number_0.nc]
+  expected_pngs: [annual_cycle_tas_tas_amon_1d_month_number_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
+    plots:
+      annual_cycle:
+        aspect_ratio: 0.5
+        gridline_kwargs:
+          color: blue
+        hlines:
+          - y: 0.5
+            color: red
+        legend_kwargs:
+          loc: center
+        log_x: true
+        log_y: true
+        plot_kwargs:
+          tas_amon_1d_month_number_0:
+            color: C1
+        pyplot_kwargs:
+          suptitle: Suptitle
+          xlabel: X Label
+          xlim: [1, 100]
+        show_y_minor_ticklabels: true
+- input_data: [tas_amon_1d_month_number_1.nc]
+  expected_pngs: [annual_cycle_tas_tas_amon_1d_month_number_1_Amon.png]
+  settings:
+    plots:
+      annual_cycle:
+        log_x: true
+        log_y: true
+        pyplot_kwargs:
+          xlim: [1, 100]
+          ylim: [1, 100]
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
+- input_data: [tas_amon_1d_month_number_2.nc]
+  expected_pngs: [annual_cycle_tas_tas_amon_1d_month_number_2_Amon.png]
+  settings:
+    matplotlib_rc_params:
+      xtick.labelsize: 4
+    plots:
+      annual_cycle:
+        x_major_formatter: "%d"
+        x_minor_formatter: "%.1f"
+        y_major_formatter: "%.2f"
+        y_minor_formatter: "%.3f"
+- input_data: [tas_amon_1d_month_number_0.nc, tas_amon_1d_month_number_1.nc]
+  expected_pngs: [annual_cycle_tas_ambiguous_dataset_Amon.png]
+  settings:
+    seaborn_settings:
+      style: white
+    plots:
+      annual_cycle:
+        gridline_kwargs: false
+        plot_kwargs:
+          tas_amon_1d_month_number_0:
+            color: C0
+          tas_amon_1d_month_number_1:
+            color: C3
+        transpose_axes: true
+
+# benchmarking_annual_cycle
+- input_data: [
+    tas_amon_1d_month_number_0.nc,
+    tas_amon_1d_month_number_1.nc,
+    tas_amon_1d_month_number_2.nc,
+  ]
+  expected_pngs: [benchmarking_annual_cycle_tas_ambiguous_dataset_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
+    plots:
+      benchmarking_annual_cycle:
+        aspect_ratio: 0.5
+        gridline_kwargs:
+          color: blue
+        hlines:
+          - y: 0.5
+            color: red
+        legend_kwargs:
+          loc: center
+        log_x: true
+        plot_kwargs:
+          tas_amon_1d_month_number_0:
+            color: C1
+        pyplot_kwargs:
+          suptitle: Suptitle
+          xlabel: X Label
+          xlim: [1, 100]
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
+- input_data: [
+    emd_tas_amon_1d_month_number_0.nc,
+    emd_tas_amon_1d_month_number_1.nc,
+  ]
+  expected_pngs: [benchmarking_annual_cycle_emd_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_annual_cycle:
+        envelope_kwargs:
+          facecolor: red
+          alpha: 0.4
+        log_y: true
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
+
+# benchmarking_boxplot
+- input_data: [
+    pr_amon_0d_0.nc,
+    pr_amon_0d_1.nc,
+    pr_amon_0d_2.nc,
+    tas_amon_0d_0.nc,
+    tas_amon_0d_1.nc,
+    tas_amon_0d_2.nc,
+  ]
+  expected_pngs: [benchmarking_boxplot_tas_pr_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_boxplot:
+        fontsize: 8
+        plot_kwargs:
+          color: green
+        pyplot_kwargs:
+          suptitle: Suptitle
+          xlabel: X Label {short_name}
+        scatter_kwargs:
+          marker: o
+          s: 100
+          color: white
+          zorder: 4
+        var_order: [tas, pr]
+- input_data: [
+    pr_amon_0d_0.nc,
+    pr_amon_0d_1.nc,
+    pr_amon_0d_2.nc,
+    tas_amon_0d_0.nc,
+    tas_amon_0d_1.nc,
+    tas_amon_0d_2.nc,
+  ]
+  expected_pngs: [benchmarking_boxplot_pr_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_boxplot:
+
+# benchmarking_diurnal_cycle
+- input_data: [
+    tas_amon_1d_hour_0.nc,
+    tas_amon_1d_hour_1.nc,
+    tas_amon_1d_hour_2.nc,
+  ]
+  expected_pngs: [benchmarking_diurnal_cycle_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_diurnal_cycle:
+
+# benchmarking_map
+- input_data: [
+    tas_amon_2d_lat_lon_0.nc,
+    tas_amon_2d_lat_lon_1.nc,
+    tas_amon_2d_lat_lon_2.nc,
+  ]
+  expected_pngs: [benchmarking_map_tas_tas_amon_2d_lat_lon_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    plots:
+      benchmarking_map:
+        gridline_kwargs:
+          draw_labels: true
+          dms: true
+          x_inline: false
+          y_inline: false
+        projection: PlateCarree
+        projection_kwargs:
+          central_longitude: 30.0
+
+# benchmarking_timeseries
+- input_data: [
+    tas_amon_1d_time_0.nc,
+    tas_amon_1d_time_1.nc,
+    tas_amon_1d_time_2.nc,
+  ]
+  expected_pngs: [benchmarking_timeseries_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_timeseries:
+        time_format: "%j"
+
+# benchmarking_zonal
+- input_data: [
+    tas_amon_2d_alt16_lat_0.nc,
+    tas_amon_2d_alt16_lat_1.nc,
+    tas_amon_2d_alt16_lat_2.nc,
+  ]
+  expected_pngs: [benchmarking_zonal_tas_tas_amon_2d_alt16_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    plots:
+      benchmarking_zonal:
+        aspect_ratio: 1.5
+        cbar_label: Var
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        common_cbar: true
+        fontsize: 8
+        gridline_kwargs:
+          color: blue
+        log_x: true
+        log_y: false
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        pyplot_kwargs:
+          suptitle: Suptitle
+          xlabel: X Label
+          ylabel: Y Label
+          xlim: [0, 100]
+        rasterize: false
+        transpose_axes: true
+        x_major_formatter: "%d"
+        x_minor_formatter: "%d"
+        y_major_formatter: "%.3f"
+        y_minor_formatter: "%.4f"
+- input_data: [
+    tas_amon_2d_plev_lat_0.nc,
+    tas_amon_2d_plev_lat_1.nc,
+    tas_amon_2d_plev_lat_2.nc,
+  ]
+  expected_pngs: [benchmarking_zonal_tas_tas_amon_2d_plev_lat_0_Amon.png]
+  settings:
+    plots:
+      benchmarking_zonal:
+
+# diurnal_cycle
+- input_data: [tas_amon_1d_hour_0.nc]
+  expected_pngs: [diurnal_cycle_tas_tas_amon_1d_hour_0_Amon.png]
+  settings:
+    plots:
+      diurnal_cycle:
+        show_y_minor_ticks: true
+        transpose_axes: true
+- input_data: [tas_amon_1d_hour_0.nc, tas_amon_1d_hour_1.nc]
+  expected_pngs: [diurnal_cycle_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      diurnal_cycle:
+        show_x_minor_ticks: true
+
+# hovmoeller_anncyc_vs_lat_or_lon
+- input_data: [
+    tas_amon_2d_month_number_lat_0.nc,
+    tas_amon_2d_month_number_lat_1.nc,
+  ]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+        common_cbar: true
+        time_on: x-axis
+- input_data: [
+    tas_amon_2d_month_number_lon_0.nc,
+    tas_amon_2d_month_number_lon_1.nc,
+  ]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lon_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+        time_on: y-axis
+- input_data: [tas_amon_2d_month_number_lat_2.nc]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lat_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+        plot_func: pcolormesh
+- input_data: [tas_amon_2d_month_number_lon_2.nc]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lon_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+        plot_func: pcolormesh
+        transpose_axes: true
+
+# hovmoeller_time_vs_lat_or_lon
+- input_data: [tas_amon_2d_time_lat_0.nc, tas_amon_2d_time_lat_1.nc]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+        common_cbar: true
+        time_format: "%j"
+        time_on: x-axis
+- input_data: [tas_amon_2d_time_lon_0.nc, tas_amon_2d_time_lon_1.nc]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lon_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+        time_on: y-axis
+- input_data: [tas_amon_2d_time_lat_2.nc]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lat_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+        plot_func: pcolormesh
+- input_data: [tas_amon_2d_time_lon_2.nc]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lon_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+        plot_func: pcolormesh
+        time_format: "%j"
+        transpose_axes: true
+
+# hovmoeller_z_vs_time
+- input_data: [tas_amon_2d_time_plev_0.nc, tas_amon_2d_time_plev_1.nc]
+  expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_plev_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_z_vs_time:
+        common_cbar: true
+        time_format: "%j"
+- input_data: [tas_amon_2d_time_alt16_0.nc, tas_amon_2d_time_alt16_1.nc]
+  expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_alt16_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_z_vs_time:
+        log_y: false
+        time_format: "%j"
+        transpose_axes: true
+- input_data: [tas_amon_2d_time_plev_2.nc]
+  expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_plev_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_z_vs_time:
+        plot_func: pcolormesh
+- input_data: [tas_amon_2d_time_alt16_2.nc]
+  expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_alt16_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_z_vs_time:
+        plot_func: pcolormesh
+        transpose_axes: true
+
+# map
+- input_data: [tas_amon_2d_lat_lon_0.nc, tas_amon_2d_lat_lon_1.nc]
+  expected_pngs: [map_tas_tas_amon_2d_lat_lon_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
+    plots:
+      map:
+        cbar_label: Var
+        cbar_label_bias: dVar
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        cbar_kwargs_bias:
+          ticks: [-5, -2]
+        common_cbar: true
+        fontsize: 8
+        gridline_kwargs:
+          color: green
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        plot_kwargs_bias:
+          cmap: seismic
+          norm: centered
+        projection: PlateCarree
+        projection_kwargs:
+          central_longitude: 30.0
+        pyplot_kwargs:
+          suptitle: Suptitle
+          title: "{dataset}"
+        rasterize: true
+        x_pos_stats_avg: -0.2
+        x_pos_stats_bias: 1.2
+- input_data: [tas_amon_2d_lat_lon_2.nc]
+  expected_pngs: [map_tas_tas_amon_2d_lat_lon_2_Amon.png]
+  settings:
+    plots:
+      map:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -12
+            vmax: 1
+        show_stats: false
+
+# timeseries
+- input_data: [tas_amon_1d_time_0.nc]
+  expected_pngs: [timeseries_tas_tas_amon_1d_time_0_Amon.png]
+  settings:
+    plots:
+      timeseries:
+        time_format: "%j"
+- input_data: [tas_amon_1d_time_2.nc]
+  expected_pngs: [timeseries_tas_tas_amon_1d_time_2_Amon.png]
+  settings:
+    plots:
+      timeseries:
+        time_format: "%j"
+        transpose_axes: true
+- input_data: [tas_amon_1d_time_0.nc, tas_amon_1d_time_1.nc]
+  expected_pngs: [timeseries_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      timeseries:
+
+# variable_vs_lat
+- input_data: [tas_amon_1d_lat_0.nc]
+  expected_pngs: [variable_vs_lat_tas_tas_amon_1d_lat_0_Amon.png]
+  settings:
+    plots:
+      variable_vs_lat:
+- input_data: [tas_amon_1d_lat_0.nc, tas_amon_1d_lat_1.nc]
+  expected_pngs: [variable_vs_lat_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      variable_vs_lat:
+
+# zonal_mean_profile
+- input_data: [tas_amon_2d_plev_lat_0.nc, tas_amon_2d_plev_lat_1.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_plev_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
+    plots:
+      zonal_mean_profile:
+        aspect_ratio: 1.5
+        cbar_label: Var
+        cbar_label_bias: dVar
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        cbar_kwargs_bias:
+          ticks: [-5, -2]
+        common_cbar: true
+        fontsize: 4
+        gridline_kwargs:
+          color: blue
+        log_x: true
+        log_y: false
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        plot_kwargs_bias:
+          cmap: seismic
+          norm: centered
+        pyplot_kwargs:
+          suptitle: Suptitle
+          xlabel: X Label
+          ylabel: Y Label
+          xlim: [0, 100]
+        rasterize: false
+        x_major_formatter: "%d"
+        x_minor_formatter: "%d"
+        x_pos_stats_avg: 0.1
+        x_pos_stats_bias: 1.2
+        y_major_formatter: "%.3f"
+        y_minor_formatter: "%.4f"
+- input_data: [tas_amon_2d_alt16_lat_0.nc, tas_amon_2d_alt16_lat_1.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_alt16_lat_0_Amon.png]
+  settings:
+    plots:
+      zonal_mean_profile:
+- input_data: [tas_amon_2d_plev_lat_2.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_plev_lat_2_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
+    plots:
+      zonal_mean_profile:
+        aspect_ratio: 1.5
+        cbar_label: Var
+        cbar_kwargs:
+          ticks: [10, 12, 14]
+        common_cbar: true
+        fontsize: 6
+        gridline_kwargs:
+          color: blue
+        log_x: true
+        log_y: false
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        pyplot_kwargs:
+          suptitle: Suptitle
+          xlabel: X Label
+          ylabel: Y Label
+          xlim: [0, 100]
+        rasterize: false
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
+        x_major_formatter: "%d"
+        x_pos_stats_avg: 0.1
+        y_major_formatter: "%.3f"
+- input_data: [tas_amon_2d_alt16_lat_2.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_alt16_lat_2_Amon.png]
+  settings:
+    plots:
+      zonal_mean_profile:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -21
+            vmax: -1
+        show_stats: false
+        transpose_axes: true

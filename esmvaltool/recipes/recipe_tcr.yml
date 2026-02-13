@@ -11,6 +11,9 @@ documentation:
   authors:
     - schlund_manuel
 
+  maintainer:
+    - schlund_manuel
+
   references:
     - gregory08jgr
 
@@ -23,8 +26,6 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
 
 TCR: &tcr_script

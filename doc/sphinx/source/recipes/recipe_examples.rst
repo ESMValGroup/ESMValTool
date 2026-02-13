@@ -8,49 +8,39 @@ Overview
 
 These are example recipes calling example diagnostic scripts.
 
-The recipe examples/recipe_python.yml produces time series plots of global mean
+The recipe ``examples/recipe_python.yml`` produces time series plots of global mean
 temperature and for the temperature in Amsterdam.
 It also produces a map of global temperature in January 2020.
 
-The recipe examples/recipe_extract_shape.yml produces a map of the mean
+The recipe ``examples/recipe_easy_ipcc.yml`` reproduces part of figure 9.3a from
+`IPCC AR6 - Climate Change 2021: The Physical Science Basis <https://www.ipcc.ch/report/sixth-assessment-report-working-group-i/>`__.
+It demonstrates how ESMValTool can be used to conveniently analyze
+many models on their native grid and is described in detail in the blog post
+`Analysis-ready climate data with ESMValCore <https://blog.esciencecenter.nl/easy-ipcc-powered-by-esmvalcore-19a0b6366ea7>`__.
+
+The recipe ``examples/recipe_extract_shape.yml`` produces a map of the mean
 temperature in the Elbe catchment over the years 2000 to 2002.
 Some example shapefiles for use with this recipe are available
 `here <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts/shapeselect/testdata>`__,
 make sure to download all files with the same name but different extensions.
 
-The recipe examples/recipe_julia.yml produces a map plot with the mean temperature
-over the year 1997 plus a number that is configurable from the recipe.
-
-The recipe examples/recipe_decadal.yml showcases how the ``timerange`` tag 
+The recipe ``examples/recipe_decadal.yml`` showcases how the ``timerange`` tag
 can be used to load datasets belonging to the DCPP activity. Produces timeseries
 plots comparing the global mean temperature of a DCPP dataset with an observational
 dataset.
 
-For detailed instructions on obtaining input data, please refer to
-:ref:`inputdata`. However, in case you just quickly want to run through the
-example, you can use the following links to obtain the data from ESGF:
-
-  * `BCC-ESM1 <http://esgf3.dkrz.de/thredds/fileServer/cmip6/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc>`_
-  * `CanESM2 <http://esgf2.dkrz.de/thredds/fileServer/lta_dataroot/cmip5/output1/CCCma/CanESM2/historical/mon/atmos/Amon/r1i1p1/v20120718/tas/tas_Amon_CanESM2_historical_r1i1p1_185001-200512.nc>`_
-
-Please refer to the terms of use for `CMIP5
-<https://pcmdi.llnl.gov/mips/cmip5/terms-of-use.html>`_ and `CMIP6
-<https://pcmdi.llnl.gov/CMIP6/TermsOfUse/TermsOfUse6-1.html>`_ data.
-
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
-
+Recipes are stored in `esmvaltool/recipes/ <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/recipes>`__:
     * examples/recipe_python.yml
+    * examples/recipe_easy_ipcc.yml
     * examples/recipe_extract_shape.yml
-    * examples/recipe_julia.yml
     * examples/recipe_decadal.yml
 
-Diagnostics are stored in esmvaltool/diag_scripts/
-
+Diagnostics are stored in `esmvaltool/diag_scripts/ <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts>`__:
     * examples/diagnostic.py: visualize results and store provenance information
-    * examples/diagnostic.jl: visualize results and store provenance information
+    * examples/make_plot.py: Create a timeseries plot with likely ranges
     * examples/decadal_example.py: visualize results and store provenance information
 
 User settings in recipe
@@ -64,21 +54,11 @@ User settings in recipe
      Arguments that are accepted by these functions can also be specified here, e.g. ``cmap``.
      Preprocessors need to be configured such that the resulting data matches the plot type, e.g. a timeseries or a map.
 
-   *Optional settings for script*
-
-   * ``write_netcdf``: ``true`` (default) or ``false``.
-     This can be used to disable writing the results to netcdf files.
-
-#. Script ``examples/diagnostic.jl``
-
-   *Required settings for script*
-
-   * ``parameter1``: example parameter, this number will be added to the mean (over time) value of the input data.
-
 Variables
 ---------
 
 * tas (atmos, monthly, longitude, latitude, time)
+* tos (ocean, monthly, longitude, latitude, time)
 
 Example plots
 -------------
@@ -95,6 +75,12 @@ Example plots
 
    Amsterdam air temperature (multimodel mean of CMIP5 CanESM2 and CMIP6 BCC-ESM1).
 
+.. _easy_ipcc:
+.. figure:: /recipes/figures/examples/IPCC_AR6_figure_9.3a_1850-2100.png
+   :align:   center
+
+   Mean sea surface temperature anomaly (part of figure 9.3a from IPCC AR6).
+
 .. _elbe:
 .. figure::  /recipes/figures/examples/elbe.png
    :align:   center
@@ -106,4 +92,3 @@ Example plots
    :align:   center
 
    Global mean temperature of CMIP6 dcppA-hindcast EC-Earth3 and OBS ERA-Interim.
-   

@@ -14,6 +14,9 @@ documentation:
     - hunter_alasdair
     - perez-zanon_nuria
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 

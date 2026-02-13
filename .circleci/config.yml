@@ -2,197 +2,283 @@
 version: 2.1
 
 orbs:
-  coverage-reporter: codacy/coverage-reporter@11.9.2
+  coverage-reporter: codacy/coverage-reporter@13.13.0
 
 commands:
   check_changes:
     steps:
-      - run: |
-          if (test "$CIRCLE_BRANCH" = main ||
-            git --no-pager diff --name-only origin/main... |
-            grep -q -E -f .circleci/install_triggers)
-          then
-            echo Running installation tests
-          else
-            echo Skipping installation tests
-            circleci step halt
-          fi
+      - run:
+          name: Check whether or not installation tests are needed
+          command: |
+            if (test "$CIRCLE_BRANCH" = main ||
+              git --no-pager diff --name-only origin/main... |
+              grep -q -E -f .circleci/install_triggers)
+            then
+              echo Running installation tests
+            else
+              echo Skipping installation tests
+              circleci step halt
+            fi
+
+  log_versions:
+    steps:
+      - run:
+          name: Log versions
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda env export --name base > /logs/base_environment.yml
+            conda activate esmvaltool
+            esmvaltool version
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+
+  test_and_report:
+    steps:
+      - run:
+          name: Run tests
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
+            pip check
+            pytest -n 4 --junitxml=test-reports/report.xml
+            esmvaltool version
+            esmvaltool -- --help
+            esmvaltool develop compare -- --help
+            ncl -V
+            cdo --version
+      - store_test_results:
+          path: test-reports/report.xml
+      - store_artifacts:
+          path: /logs
+      - run:
+          name: Compress pytest artifacts
+          command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
+          when: always
+      - store_artifacts:
+          path: pytest.tar.gz
+      - run:
+          name: Compress test-report artifacts
+          command: tar -cvzf test-reports.tar.gz test-reports/
+          when: always
+      - store_artifacts:
+          path: test-reports.tar.gz
+
+  test_installation_from_source:
+    parameters:
+      extra:
+        type: string
+      flags:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Install git+ssh
+          environment:
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
+          command: apt update && apt install -y git ssh
+      - checkout
+      - check_changes
+      - run:
+          name: Generate cache key
+          command: date '+%Y-%V' | tee cache_key.txt
+      - restore_cache:
+          key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+      - run:
+          name: Install dependencies
+          no_output_timeout: 30m
+          command: |
+            # Install
+            . /opt/conda/etc/profile.d/conda.sh
+            mkdir /logs
+            mamba --version
+            conda env create -n esmvaltool -f environment.yml --verbose
+            conda activate esmvaltool
+            mamba list >> /logs/conda.txt
+            pip install --no-deps << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
+            if [[ "<<parameters.flags>>" != *'--editable'* ]]
+            then
+              rm -r esmvaltool
+            fi
+      - log_versions
+      - run:
+          name: Lint source code
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
+            pre-commit run --all
+      - test_and_report
+      - save_cache:
+          key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          paths:
+            - /opt/conda/pkgs
+            - /root/.cache/pip
+            - .pytest_cache
 
 jobs:
   run_tests:
-    # Run Python 3 tests
-    working_directory: /test
+    # Run tests
     docker:
       - image: esmvalgroup/esmvaltool:development
+    resource_class: large
     steps:
       - checkout
       - run:
-          # Update environment if needed and run tests
+          name: Generate cache key
+          command: date '+%Y-%V' | tee cache_key.txt
+      - restore_cache:
+          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+      - run:
+          name: Install dependencies
+          command: |
+            set -x
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
+            mkdir /logs
+            pip install --no-deps .[test] > /logs/install.txt 2>&1
+      - run:
+          name: Check Python code style and mistakes
           command: |
             . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
-            conda --version > /logs/conda_version.txt
             conda activate esmvaltool
-            python --version > /logs/python_version.txt
-            conda env export > /logs/environment.yml
-            pip install .[test] > /logs/install.txt
-            # Run flake8 check with source code (it doesn't work without it)
-            pytest -n 2 -m flake8
-            # Update/install Julia dependencies
-            esmvaltool install Julia > /logs/install_Julia.txt
-            # Remove source to test installed software
-            rm -r esmvaltool
-            pytest -n 2 -m 'not flake8'
-      - store_artifacts:
-          path: /logs
-      - store_artifacts:
-          path: test-reports/
-      - store_test_results:
-          path: test-reports/
+            pre-commit run --all
+      - run:
+          name: Remove source code to test the installed software
+          command: rm -r esmvaltool
+      - test_and_report
+      - save_cache:
+          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          paths:
+            - /root/.cache/pip
+            - .pytest_cache
       - coverage-reporter/send_report:
-          coverage-reports: 'test-reports/coverage.xml'
+          coverage-reports: "test-reports/coverage.xml"
           project-token: $CODACY_PROJECT_TOKEN
-          # Skip if token isn't defined.
-          # Useful to let forks CI pass without passing secrets
-          skip: true
+          skip: true # skip if project-token is not defined (i.e. on a fork)
 
   test_installation_from_source_test_mode:
-    # Test Python 3 installation
-    working_directory: /test_installation
+    # Test installation from source
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
+    resource_class: large
     steps:
-      - checkout
-      - check_changes
-      - restore_cache:
-          key: test-install-{{ .Branch }}
-      - run:
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            mkdir /logs
-            # Install
-            mamba create --name esmvaltool 'python=3.10' >> /logs/conda.txt 2>&1
-            mamba env update --name esmvaltool >> /logs/conda.txt 2>&1
-            set +x; conda activate esmvaltool; set -x
-            mamba install julia >> /logs/conda.txt 2>&1
-            pip install .[test] > /logs/install.txt 2>&1
-            esmvaltool install Julia
-            # Remove source to test installed software
-            rm -r esmvaltool
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            mamba env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
-            # Test installation
-            pytest -n 2
-            esmvaltool -h
-            ncl -V
-            # cdo test, check that it supports hdf5
-            cdo --version
-            echo 0 | cdo -f nc input,r1x1 tmp.nc
-            ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
-            cdo -f nc copy tmp.nc tmp2.nc
-          no_output_timeout: 30m
-      - save_cache:
-          key: test-install-{{ .Branch }}
-          paths:
-            - "/opt/conda/pkgs"
-            - ".eggs"
-      - store_artifacts:
-          path: /logs
-      - store_artifacts:
-          path: test-reports/
-      - store_test_results:
-          path: test-reports/
+      - test_installation_from_source:
+          extra: test
 
   test_installation_from_source_develop_mode:
     # Test development installation
-    working_directory: /develop
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
+    resource_class: large
     steps:
-      - checkout
-      - check_changes
+      - test_installation_from_source:
+          extra: develop
+          flags: "--editable"
+
+  test_upstream_development:
+    # Test running recipes with the development version of ESMValCore. The
+    # purpose of this test to discover backward-incompatible changes early on in
+    # the development cycle.
+    docker:
+      - image: condaforge/miniforge3:latest
+    resource_class: large
+    steps:
       - run:
+          name: Install git and ssh
+          environment:
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
+          command: apt update && apt install -y git ssh
+      - checkout
+      - run:
+          name: Generate cache key
+          command: echo $(date '+%Y')-$(expr $(date '+%V') / 2) | tee cache_key.txt
+      - restore_cache:
+          key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+      - run:
+          name: Install
+          no_output_timeout: 30m
+          command: |
+            # Install according to instructions on readthedocs with the
+            # development version of ESMValTool and ESMValCore:
+            # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
+            . /opt/conda/etc/profile.d/conda.sh
+            mkdir /logs
+            # Temporarily install intake-esgf here until it is an ESMValCore dependency in v2.14.
+            echo "  - intake-esgf" >> environment.yml
+            conda env create -n esmvaltool -f environment.yml --verbose
+            conda activate esmvaltool
+            mamba list >> /logs/conda.txt
+            pip install --no-deps --editable .[develop]
+            git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
+            pip install --no-deps --editable $HOME/ESMValCore[develop]
+      - log_versions
+      - test_and_report
+      - run:
+          name: Run recipes
           command: |
             . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            mkdir /logs
-            # Install
-            mamba create --name esmvaltool 'python=3.10' >> /logs/conda.txt 2>&1
-            mamba env update --name esmvaltool >> /logs/conda.txt 2>&1
-            set +x; conda activate esmvaltool; set -x
-            mamba install julia >> /logs/conda.txt 2>&1
-            pip install -e .[develop] > /logs/install.txt 2>&1
-            esmvaltool install Julia
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            mamba env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
-            # Test installation
-            pytest -n 2
-            esmvaltool -h
-            ncl -V
-            cdo --version
-          no_output_timeout: 30m
+            conda activate esmvaltool
+            esmvaltool config copy data-esmvalcore-esgf.yml
+            for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
+              esmvaltool run --max-parallel-tasks=2 "$recipe"
+            done
       - store_artifacts:
-          path: /logs
+          path: /root/esmvaltool_output
+      - save_cache:
+          key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          paths:
+            - /opt/conda/pkgs
+            - /root/.cache/pip
+            - /root/climate_data
 
   build_documentation:
     # Test building documentation
-    working_directory: /doc
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
+    resource_class: medium
     steps:
       - checkout
-      - restore_cache:
-          key: documentation-{{ .Branch }}
       - run:
           command: |
             mkdir /logs
+            . /opt/conda/etc/profile.d/conda.sh
             # Install
-            pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
-            pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
+            conda env create -n esmvaltool -f environment_python.yml
+            conda activate esmvaltool
+            pip install --no-deps .[doc]
+            pip check
             # Log versions
             dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test building documentation
-            MPLBACKEND=Agg sphinx-build -W doc/sphinx/source/ doc/sphinx/build/
-      - save_cache:
-          key: documentation-{{ .Branch }}
-          paths:
-            - ".eggs"
+            MPLBACKEND=Agg sphinx-build -W doc/sphinx/source doc/spinx/build
       - store_artifacts:
           path: /logs
 
   test_installation_from_conda:
     # Test conda package installation
-    working_directory: /esmvaltool
     docker:
-      - image: condaforge/mambaforge
+      - image: condaforge/miniforge3:latest
+    resource_class: large
     steps:
       - run:
-          environment:
-            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.10' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.12' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
-            # install the package
-            mamba install -c conda-forge esmvaltool >> /logs/install.txt 2>&1
             # Log versions
             mamba env export > /logs/environment.yml
             # Test installation
-            esmvaltool -h
+            esmvaltool -- --help
+            esmvaltool version
             ncl -V
             cdo --version
-          no_output_timeout: 30m
       - store_artifacts:
           path: /logs
 
@@ -202,8 +288,6 @@ workflows:
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
-      - build_documentation
-      - test_installation_from_conda
   nightly:
     triggers:
       - schedule:
@@ -216,5 +300,6 @@ workflows:
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
+      - test_upstream_development
       - build_documentation
       - test_installation_from_conda

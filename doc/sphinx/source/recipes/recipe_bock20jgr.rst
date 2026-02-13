@@ -82,7 +82,7 @@ User settings in recipe
    * time_avg: type of time average (currently only "yearly" and "monthly" are
      available).
    * ts_anomaly: calculates anomalies with respect to the defined reference
-     period; for each gird point by removing the mean for the given
+     period; for each grid point by removing the mean for the given
      calendar month (requiring at least 50% of the data to be
      non-missing)
    * ref_start: start year of reference period for anomalies
@@ -151,7 +151,7 @@ User settings in recipe
 
    * Required settings (variables)*
 
-   * reference_dataset: name of reference datatset
+   * reference_dataset: name of reference dataset
 
    *Optional settings (variables)*
 
@@ -229,8 +229,8 @@ User settings in recipe
      large multi-dimensional datasets, this might significantly reduce the
      computation time if only the multi-model mean dataset is relevant.
    * output_attributes: *dict*. Write additional attributes to netcdf files.
-   * seaborn_settings: *dict*. Options for :func:`seaborn.set` (affects all
-     plots).
+   * seaborn_settings: *dict*. Options for :func:`seaborn.set_theme` (affects
+     all plots).
 
 
 Variables
@@ -295,9 +295,9 @@ Observations and reformat scripts
 
 * JRA-55 (ana4mips) - reanalysis of sea surface pressure
 
-* NCEP - reanalysis of surface temperature
+* NCEP-NCAR-R1 - reanalysis of surface temperature
 
-  *Reformat script:* cmorizers/data/formatters/datasets/ncep.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/ncep_ncar_r1.py
 
 * PATMOS-x - total cloud cover
 
@@ -315,7 +315,7 @@ References
 * Copernicus Climate Change Service (C3S), 2017: ERA5: Fifth generation of
   ECMWF atmospheric reanalyses of the global climate, edited, Copernicus
   Climate Change Service Climate Data Store (CDS).
-  https://cds.climate.copernicus.eu/cdsapp#!/home
+  https://doi.org/10.24381/cds.143582cf
 
 * Flato, G., J. Marotzke, B. Abiodun, P. Braconnot, S.C. Chou, W. Collins, P.
   Cox, F. Driouech, S. Emori, V. Eyring, C. Forest, P. Gleckler, E. Guilyardi,
@@ -375,14 +375,14 @@ Example plots
    :align:   center
    :width:   9cm
 
-   Relative space-time root-mean-square deviation (RMSD) calculated from the 
-   climatological seasonal cycle of the CMIP3, CMIP5, and CMIP6 simulations 
-   (1980-1999) compared to observational data sets (Table 5). A relative 
-   performance is displayed, with blue shading being better and red shading 
-   worse than the median RMSD of all model results of all ensembles. A diagonal 
-   split of a grid square shows the relative error with respect to the reference 
-   data set (lower right triangle) and the alternative data set (upper left 
-   triangle) which are marked in Table 5. White boxes are used when data are not 
+   Relative space-time root-mean-square deviation (RMSD) calculated from the
+   climatological seasonal cycle of the CMIP3, CMIP5, and CMIP6 simulations
+   (1980-1999) compared to observational data sets (Table 5). A relative
+   performance is displayed, with blue shading being better and red shading
+   worse than the median RMSD of all model results of all ensembles. A diagonal
+   split of a grid square shows the relative error with respect to the reference
+   data set (lower right triangle) and the alternative data set (upper left
+   triangle) which are marked in Table 5. White boxes are used when data are not
    available for a given model and variable (Fig. 6).
 
 .. _fig_bock20jgr_5:
@@ -390,5 +390,5 @@ Example plots
    :align:   center
    :width:   9cm
 
-   Centered pattern correlations between models and observations for the annual 
-   mean climatology over the period 1980–1999 (Fig. 7). 
+   Centered pattern correlations between models and observations for the annual
+   mean climatology over the period 1980–1999 (Fig. 7).

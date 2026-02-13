@@ -15,6 +15,9 @@ documentation:
     - manubens_nicolau
     - caron_louis-philippe
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 

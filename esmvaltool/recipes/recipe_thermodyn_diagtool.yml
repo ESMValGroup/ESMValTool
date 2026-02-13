@@ -16,6 +16,9 @@ documentation:
     - lembo_valerio
     - koldunov_nikolay
 
+  maintainer:
+    - unmaintained
+
   references:
     - lembo16climdyn
     - lucarini14revgeop

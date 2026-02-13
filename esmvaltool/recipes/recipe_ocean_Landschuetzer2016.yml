@@ -11,7 +11,7 @@ documentation:
 
   authors:
     - lovato_tomas
-  
+
   maintainer:
     - lovato_tomas
 
@@ -130,5 +130,5 @@ diagnostics:
         <<: *write_opts
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-        observational_dataset: {dataset: Landschutzer2016, project: OBS}
+        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
         <<: *write_opts

@@ -1,0 +1,63 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: NCEP-DOE-R2
+  project_id: OBS6
+  tier: 2
+  version: '2'
+  modeling_realm: reanaly
+  source: 'https://psl.noaa.gov/data/gridded/data.ncep.reanalysis2.html'
+  reference: 'ncep-doe-r2'
+  comment: |
+    ''
+
+# Variables to CMORize
+variables:
+  # monthly frequency
+  clt_month:
+    short_name: clt
+    mip: Amon
+    raw: tcdc
+    file: 'tcdc\.eatm\.mon\.mean\.nc'
+  hur_month:
+    short_name: hur
+    mip: Amon
+    raw: rhum
+    file: 'rhum\.mon\.mean\.nc'
+  prw_month:
+    short_name: prw
+    mip: Amon
+    raw: pr_wtr
+    file: 'pr_wtr\.eatm\.mon\.mean\.nc'
+  ta_month:
+    short_name: ta
+    mip: Amon
+    raw: air
+    file: 'air\.mon\.mean\.nc'
+  wap_month:
+    short_name: wap
+    mip: Amon
+    raw: omega
+    file: 'omega\.mon\.mean\.nc'
+  pr_month:
+    short_name: pr
+    mip: Amon
+    raw: prate
+    file: 'prate.sfc.mon.mean.nc'
+  tauu_month:
+    short_name: tauu
+    mip: Amon
+    raw: uflx
+    file: 'uflx.sfc.mon.mean.nc'
+    make_negative: true
+  tauv_month:
+    short_name: tauv
+    mip: Amon
+    raw: vflx
+    file: 'vflx.sfc.mon.mean.nc'
+    make_negative: true
+  tos_month:
+    short_name: tos
+    mip: Amon
+    raw: skt
+    file: 'skt.sfc.mon.mean.nc'

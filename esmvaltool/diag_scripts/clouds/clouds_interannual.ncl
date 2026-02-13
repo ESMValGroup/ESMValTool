@@ -13,10 +13,12 @@
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
+;   epsilon:         "epsilon" value to be replaced with missing values
 ;   explicit_cn_levels: use these contour levels for plotting
-;   extrafiles:      write plots for individual models to separate files
-;                    (True, False)
+;   filename_add:    optionally add this string to plot filesnames
 ;   projection:      map projection, e.g., Mollweide, Mercator
+;   var:             short_name of variable to process (default = "" - use
+;                    first variable in variable list)
 ;
 ; Required variable_info attributes (variable specific)
 ;   none
@@ -29,7 +31,12 @@
 ;   none
 ;
 ; Modification history
+;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20211006-lauer_axel: removed write_plots
+;   20210413-lauer_axel: added multi-obs mean and average over all models
+;                        as individual plots
+;   20210407-lauer_axel: added option to speficfy variable if more than one
+;                        variable is present
 ;   20190220-lauer_axel: added provenance to output (v2.0)
 ;   20181120-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -55,28 +62,45 @@ load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 
 begin
   enter_msg(DIAG_SCRIPT, "")
 
-  var0 = variable_info[0]@short_name
+  set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
+  set_default_att(diag_script_info, "epsilon", 1.0e-4)
+  set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
+  set_default_att(diag_script_info, "var", "")
+
+  if (diag_script_info@var .eq. "") then
+    var0 = variable_info[0]@short_name
+  else
+    var0 = diag_script_info@var
+  end if
+
+  variables = metadata_att_as_array(variable_info, "short_name")
+  if (.not. any(variables .eq. var0)) then
+    errstr = "diagnostic " + diag + " requires the following variable: " + var0
+    error_msg("f", DIAG_SCRIPT, "", errstr)
+  end if
+
+  var0_info = select_metadata_by_name(variable_info, var0)
+  var0_info := var0_info[0]
   info0 = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info0)
-  if (isatt(variable_info[0], "reference_dataset")) then
-    refname = variable_info[0]@reference_dataset
+
+  if (isatt(var0_info, "reference_dataset")) then
+    refname = var0_info@reference_dataset
   end if
+
   names = metadata_att_as_array(info0, "dataset")
+  projects = metadata_att_as_array(info0, "project")
   infiles = metadata_att_as_array(info0, "filename")
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
-  set_default_att(diag_script_info, "extrafiles", False)
-  set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
-
-  extrafiles = diag_script_info@extrafiles
 
   ; make sure path for (mandatory) netcdf output exists
 
@@ -97,6 +121,34 @@ begin
   ; if reference dataset has been defined, use it so plots can be sorted
   if (isvar("refname")) then
     ref_ind = ind(names .eq. refname)
+  end if
+
+  if (diag_script_info@filename_add .ne. "") then
+    filename_add = "_" + diag_script_info@filename_add
+  else
+    filename_add = ""
+  end if
+
+  ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
+
+  idxobs = get_obs(names, projects, "")
+
+  if (idxobs(0) .eq. -1) then
+    flag_multiobs = False
+  else
+    flag_multiobs = True
+  end if
+
+  ; find all indices of models w/o MultiModelMean/MultiModelMedian (if present)
+
+  idxmod = get_mod(names, projects)
+
+  if (idxmod(0) .eq. -1) then  ; no model found
+    flag_multimod = False
+  elseif (dimsizes(idxmod) .eq. 1) then  ; one model found
+    flag_multimod = False
+  else  ; more than one model found
+    flag_multimod = True
   end if
 
 end
@@ -154,6 +206,34 @@ begin
       A0@units = "mm day-1"
     end if
 
+    ; check if time dimension is a multiple of 12
+    ; if not, use only complete years
+
+    idx = ind(dims .eq. "time")
+    if (.not.ismissing(idx)) then
+      dimsize = dimsizes(A0)
+      nt = dimsize(idx)
+      if (mod(nt, 12) .ne. 0) then
+        if (nt .lt. 12) then
+          error_msg("f", DIAG_SCRIPT, "", "time dimension < 12 (" \
+                    + names(imod) + ")")
+        else
+          tfull = nt - mod(nt, 12)
+          log_info("warning, using only first " + tostring(tfull) \
+                   + " time steps (" + names(imod) + ")")
+          if (dimsizes(dims) .eq. 2) then
+            A0 := A0(0:tfull - 1, :)
+          else if (dimsizes(dims) .eq. 3) then
+            A0 := A0(0:tfull - 1, :, :)
+          else
+            error_msg("f", DIAG_SCRIPT, "", "number of dimensions " \
+                      + "must be 2 or 3 (" + names(imod) + ")")
+          end if
+          end if
+        end if
+      end if
+    end if
+
     ; subtract climatological seasonal cycle from time series
 
     if (isvar("timeseries")) then
@@ -174,8 +254,66 @@ begin
     end if
     mean = time_operations(A0, -1, -1, "average", "annualclim", True)
     ; replace "epsilon" values with missing value
-    mean = where(abs(mean).lt.1.0e-4, mean@_FillValue, mean)
+    mean = where(abs(mean).lt.diag_script_info@epsilon, mean@_FillValue, mean)
     data1 = 100.0 * data1 / abs(mean)
+
+    ; create arrays for multi-obs and multi-model averages (if requested)
+
+    if (ii .eq. 0) then
+      multidim = dimsizes(data1)
+      if (flag_multiobs) then
+        newdims = array_append_record(dimsizes(idxobs), multidim, 0)
+        multiobs_all = new(newdims, float)
+      end if
+      if (flag_multimod) then
+        newdims = array_append_record(dimsizes(idxmod), multidim, 0)
+        multimod_all = new(newdims, float)
+      end if
+    end if
+
+    ; calculate multi-obs and multi-model averages (if requested)
+
+    if (flag_multiobs) then
+      iidx = ind(idxobs .eq. imod)
+      if (.not.ismissing(iidx)) then
+        dims1 = dimsizes(data1)
+        dimerror = False
+        if (dimsizes(multidim) .eq. dimsizes(dims1)) then
+          if (any(multidim - dims1 .ne. 0)) then
+            dimerror = True
+          end if
+        else
+          dimerror = True
+        end if
+        if (dimerror) then
+          error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
+                    + "do not match. Use preprocessor to regrid data to " \
+                    + "common grid.")
+        end if
+        multiobs_all(iidx, :, :) = data1
+      end if
+    end if
+
+    if (flag_multimod) then
+      iidx = ind(idxmod .eq. imod)
+      if (.not.ismissing(iidx)) then
+        dims1 = dimsizes(data1)
+        dimerror = False
+        if (dimsizes(multidim) .eq. dimsizes(dims1)) then
+          if (any(multidim - dims1 .ne. 0)) then
+            dimerror = True
+          end if
+        else
+          dimerror = True
+        end if
+        if (dimerror) then
+          error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
+                    + "do not match. Use preprocessor to regrid data to " \
+                    + "common grid.")
+        end if
+        multimod_all(iidx, :, :) = data1
+      end if
+    end if
 
     ; ###########################################
     ; # Style dependent annotation              #
@@ -189,10 +327,11 @@ begin
     ; # plot ressources                         #
     ; ###########################################
 
-    data1@res_gsnMaximize    = True      ; use full page for the plot
-    data1@res_cnFillOn       = True      ; color plot desired
-    data1@res_cnLineLabelsOn = False     ; contour lines
-    data1@res_cnLinesOn      = False
+    res = True
+
+    res@cnFillOn       = True      ; color plot desired
+    res@cnLineLabelsOn = False     ; contour lines
+    res@cnLinesOn      = False
 
     ; colors
     ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
@@ -204,68 +343,67 @@ begin
 
     ; annotation
 
-    data1@res_tiMainOn             = False
-    data1@res_gsnLeftStringFontHeightF = 0.015
-    data1@res_cnLevelSelectionMode = "ExplicitLevels"
+    res@tiMainString = names(imod)
+    res@tiMainFontHeightF = 0.025
+    res@gsnStringFontHeightF = 0.02
+    res@cnLevelSelectionMode = "ExplicitLevels"
 
     if (diag_script_info@projection.eq."Robinson") then
-      data1@res_mpPerimOn = False  ; turn off perimeter around map
-      data1@res_mpGridLineColor = -1
-      data1@res_mpGridAndLimbOn = True
+      res@mpPerimOn = False  ; turn off perimeter around map
+      res@mpGridLineColor = -1
+      res@mpGridAndLimbOn = True
     end if
 
-    data1@res_mpOutlineOn      = True
-    data1@res_mpFillOn         = False
+    res@mpOutlineOn      = True
+    res@mpFillOn         = False
 
     ; variable specific plotting settings
 
-    if (any((/"clt"/).eq.var0)) then
-      data1@res_cnLevels            = ispan(5, 50, 5)
+    if (any((/"clt", "prw"/).eq.var0)) then
+      res@cnLevels            = ispan(5, 50, 5)
     else
-      data1@res_cnLevels            = ispan(5, 100, 5)
+      res@cnLevels            = ispan(5, 100, 5)
     end if
 
-    if (var0.eq."lwp") then
-      data1@res_mpOutlineOn        = False
-      data1@res_mpFillOn           = True
-      data1@res_mpLandFillColor    = "Black"
-;      delete(pal)
-;      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
-    end if
-
-    nboxes = dimsizes(data1@res_cnLevels)
+    nboxes = dimsizes(res@cnLevels)
     clen = dimsizes(pal)
     stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
     fill_colors = ispan(2, clen(0) - 1, stride)
-    data1@res_cnFillColors = fill_colors
+    res@cnFillColors = fill_colors
 
-    data1@res_lbLabelBarOn         = False
-    data1@res_gsnRightString       = ""
+    res@gsnRightString       = ""
+
+    gavg = area_operations(data1, -90., 90., 0., 360., "average", True)
+    if (.not.ismissing(gavg)) then
+      res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    else
+      res@gsnLeftString = ""
+    end if
 
     ; map attributes
 
-    data1@res_mpFillDrawOrder         = "PostDraw"    ; draw map last
-    data1@res_cnMissingValFillColor   = "Gray"
+    res@mpFillDrawOrder         = "PostDraw"    ; draw map last
+    res@cnMissingValFillColor   = "Gray"
 
     ; no tickmarks and no labels
 
-    data1@res_tmYLLabelsOn         = False
-    data1@res_tmYLOn               = False
-    data1@res_tmYRLabelsOn         = False
-    data1@res_tmYROn               = False
-    data1@res_tmXBLabelsOn         = False
-    data1@res_tmXBOn               = False
-    data1@res_tmXTLabelsOn         = False
-    data1@res_tmXTOn               = False
-    data1@res_cnInfoLabelOn        = False    ; turn off cn info label
+    res@tmYLLabelsOn         = False
+    res@tmYLOn               = False
+    res@tmYRLabelsOn         = False
+    res@tmYROn               = False
+    res@tmXBLabelsOn         = False
+    res@tmXBOn               = False
+    res@tmXTLabelsOn         = False
+    res@tmXTOn               = False
+    res@cnInfoLabelOn        = False    ; turn off cn info label
 
-    data1@res_mpProjection         = diag_script_info@projection
+    res@mpProjection         = diag_script_info@projection
 
     ; set explicit contour levels
 
     if (isatt(diag_script_info, "explicit_cn_levels")) then
-      data1@res_cnLevelSelectionMode = "ExplicitLevels"
-      data1@res_cnLevels = diag_script_info@explicit_cn_levels
+      res@cnLevelSelectionMode = "ExplicitLevels"
+      res@cnLevels = diag_script_info@explicit_cn_levels
     end if
 
     ; ###########################################
@@ -282,145 +420,151 @@ begin
       data1@diag_script = (/DIAG_SCRIPT/)
     end if
     data1@var = var0  ; Overwrite existing entry
-    if (isatt(variable_info[0], "long_name")) then
-      data1@var_long_name = variable_info[0]@long_name
+    if (isatt(var0_info, "long_name")) then
+      data1@long_name = var0_info@long_name
     else
-      data1@var_long_name = var0
+      data1@long_name = var0
     end if
-    data1@var_units    = "%"
+    data1@units    = "%"
 
     ; copy attributes for netCDF output
 
-    data1@long_name = "interannual variability " + data1@var_long_name
-    data1@units = data1@var_units
+    data1@long_name = "interannual variability " + data1@long_name
 
     ; ###########################################
     ; # create the plot                         #
     ; ###########################################
 
-    data1@res_gsnFrame       = False  ; don't advance frame
-    data1@res_gsnDraw        = False
+    res@lbTitleString      = data1@units
+    res@lbTitlePosition    = "Bottom"
+    res@lbTitleFontHeightF = 0.02
+    res@lbLabelFontHeightF = 0.02
 
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
-      if (.not.extrafiles) then
-        wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
-                      + var0)
-      end if
-;      drawNDCGrid(wks)  ; debugging option
-    end if
-
-    if (extrafiles) then
-      if (isvar("wks")) then
-        delete(wks)
-      end if
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
-                    + var0 + "_" + annots(imod))
+                    + var0 + filename_add)
     end if
 
-    maps(ii) = contour_map(wks, data1, var0)
+    maps(ii) = gsn_csm_contour_map(wks, data1, res)
 
-    if (extrafiles) then
-      txres = True
-      txres@txFontHeightF = 0.03
-      txres@txJust = "BottomRight"
-      txres@txPerimOn = True
-      txres@txBackgroundFillColor = "white"
-      text = gsn_add_text(wks, maps(ii), annots(imod), 170, -80, txres)
-      draw(maps(ii))
-      frame(wks)
-      plotfile = maps@outfile
+    ; #########################################
+    ; # output all datasets to common netCDF  #
+    ; #########################################
 
-      ; ##########################################
-      ; # output each dataset to separate netCDF #
-      ; ##########################################
+    nc_filename = work_dir + "clouds_interannual_" + var0 + ".nc"
+    nc_filename@existing = "append"
+    data1@var = var0 + "_var_" + annots(imod)
+    nc_outfile = ncdf_write(data1, nc_filename)
 
-      nc_filename = work_dir + "clouds_interannual_" + var0 + "_" \
-        + annots(imod) + ".nc"
-      nc_outfile = ncdf_write(data1, nc_filename)
-
-      ; -------------------------------------------------------------------
-      ; write provenance info
-      ; -------------------------------------------------------------------
-
-      statistics = (/"clim", "var"/)
-      domain = ("glob")
-      plottype = ("geo")
-      climofile = infiles(imod)
-      caption = "Interannual variability of variable " + var0 + \
-                " from dataset " + annots(imod) + "."
-
-      log_provenance(nc_outfile, plotfile, caption, statistics, domain, \
-                     plottype, "", "", climofile)
-
-    else  ; extrafiles .eq. false
-
-      ; #########################################
-      ; # output all datasets to common netCDF  #
-      ; #########################################
-
-      nc_filename = work_dir + "clouds_interannual_" + var0 + ".nc"
-      nc_filename@existing = "append"
-      data1@var = var0 + "_var_" + annots(imod)
-      nc_outfile = ncdf_write(data1, nc_filename)
-
-    end if  ; if extrafiles
   end do  ; ii-loop (datasets)
+
+  ; create panel plot
 
   pres                            = True    ; needed to override
                                             ; panelling defaults
-  pres@gsnPanelLabelBar           = True    ; add common colorbar
   ; print dataset name on each panel
   pres@gsnPanelFigureStrings      = annots(ind_all_sorted)
   pres@gsnPanelFigureStringsFontHeightF = 0.007
   pres@lbLabelFontHeightF         = 0.01
   pres@lbAutoManage               = False
   pres@lbTopMarginF               = 0.1
-  pres@lbTitleOn                  = True
-  pres@lbTitleFontHeightF         = 0.009
-  pres@lbTitlePosition            = "Bottom"
-  pres@lbTitleString              = "~F8~s~F21~" + var0 + " (%)"
   pres@lbPerimOn                  = False     ; draw line around label
                                               ; bar area
   pres@gsnPanelCenter             = False
   pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
                                               ; the bottom
-;  pres@gsnPanelDebug              = True
+  outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
 
-  if (extrafiles) then
-    if (isvar("wks")) then
-      delete(wks)
-    end if
-    ; plot legend
-    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
-                  + var0 + "_legend")
-    pres@lbMonoFillPattern = True
-    pres@lbOrientation = "Horizontal"
-    pres@vpWidthF = 0.7
-    pres@vpHeightF = 0.1
-    pres@lbLabelFontHeightF = 0.015
-    pres@lbLabelAlignment = "InteriorEdges"
-    pres@lbTitleFontHeightF = 0.015
-    labels = tostring(data1@res_cnLevels)
-    pres@lbFillColors = fill_colors
-    gsn_labelbar_ndc(wks, nboxes, labels, 0.1, 0.9, pres)
-  else
-    outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
-    log_info(" Wrote " + outfile)
+  ; plot multi-obs and multi-model average (if requested)
+
+  if (flag_multiobs) then
+    multiobs = dim_avg_n(multiobs_all, 0)
+    delete(multiobs_all)
+    copy_VarMeta(data1, multiobs)
+    gavg = area_operations(multiobs, -90., 90., 0., 360., "average", True)
+    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@tiMainString = "Multi-obs average"
+    map_multiobs = gsn_csm_contour_map(wks, multiobs, res)
   end if
+
+  if (flag_multimod) then
+    multimod = dim_avg_n(multimod_all, 0)
+    delete(multimod_all)
+    copy_VarMeta(data1, multimod)
+
+    mask1 = multiobs
+    mask2 = multimod
+    mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+    mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+    amask = mask1 + mask2
+    delete(mask1)
+    delete(mask2)
+    refmasked = multiobs
+    refmasked = refmasked + amask
+    datmasked = multimod
+    datmasked = datmasked + amask
+    delete(amask)
+    corr = calculate_metric(refmasked, datmasked, "correlation")
+    gavg = area_operations(datmasked, -90., 90., 0., 360., \
+                           "average", True)
+    rmsd = calculate_metric(refmasked, datmasked, "RMSD")
+
+;    system("rm debug.nc")
+;    debugfile = addfile("debug.nc", "c")
+;    debugfile->refmasked = refmasked
+;    debugfile->datmasked = datmasked
+
+    delete(refmasked)
+    delete(datmasked)
+
+    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@gsnCenterString = "corr = " + sprintf("%6.3f", corr)
+    res@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd)
+
+;    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
+;    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@tiMainString = "Multi-model average"
+    map_multimod = gsn_csm_contour_map(wks, multimod, res)
+
+  end if
+
+  log_info(" Wrote " + outfile)
 
   ; ------------------------------------------------------------------------
   ; write provenance to common netcdf and plot file
   ; ------------------------------------------------------------------------
 
-  if (.not. extrafiles) then
-    statistics = (/"clim", "var"/)
-    domain = "global"
-    plottype = "geo"
-    caption = "Interannual variability of variable " + var0 + "."
-    log_provenance(nc_outfile, outfile, caption, statistics, domain, \
-                   plottype, "", "", infiles)
+  statistics = (/"clim", "var"/)
+  domain = "global"
+  plottype = "geo"
+  caption = "Interannual variability of variable " + var0 + "."
+  log_provenance(nc_outfile, outfile, caption, statistics, domain, \
+                 plottype, "", "", infiles)
+
+  ; ----------------------------------------------------------------------
+  ; write differences of the multi-model and multi-obs means to netcdf
+  ; ----------------------------------------------------------------------
+
+  if (flag_multimod .and. flag_multiobs) then
+    diff = multimod
+    diff = diff - multiobs
+    diff@var = "MMM-MOBSMEAN"
+
+    nc_filename2 = work_dir + "clouds_interannual_" + var0 + \
+      "_mmm-mobsmean-absdiff.nc"
+    nc_filename2@existing = "append"
+
+    diff@var_long_name = "MMM - MOBSMEAN"
+    multimod@var = "MMM"
+    multimod@var_long_name = "multi-model mean (MMM)"
+    multiobs@var = "MOBSMEAN"
+    multiobs@var_long_name = "multi-obs mean (MOBSMEAN)"
+
+    nc_outfile2 = ncdf_write(diff, nc_filename2)
+    nc_outfile2 = ncdf_write(multimod, nc_filename2)
+    nc_outfile2 = ncdf_write(multiobs, nc_filename2)
   end if
 
   leave_msg(DIAG_SCRIPT, "")

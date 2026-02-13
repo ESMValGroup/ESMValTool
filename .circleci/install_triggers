@@ -1,6 +1,6 @@
 ^\.circleci/
 ^environment\.yml$
-^esmvaltool/install/
-^package/
+^pyproject.toml$
 ^setup\.py$
 ^setup\.cfg$
+^MANIFEST.in$

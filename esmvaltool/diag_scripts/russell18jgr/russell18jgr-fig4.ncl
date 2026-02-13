@@ -93,7 +93,7 @@ begin
                   (/238, 91, 12/), (/209, 49, 7/), (/178, 0, 0/) /)
   colors_new = colors_new / 256.0
 
-  plotpath = config_user_info@plot_dir + "/Russell18jgr-fig4_" \
+  plotpath = config_user_info@plot_dir + "Russell18jgr-fig4_" \
     + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
     + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -366,16 +366,6 @@ begin
     delete(var_final)
     delete(exact_lon)
     delete(totaltransport)
-    ; Call provenance logger
-    log_provenance(ncdf_outfile, \
-                   plotpath, \
-                   "Russell et al 2018 figure 4", \
-                   "mean", \
-                   "sh", \
-                   "geo", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   (/inputfile_paths(iii), volfile_paths(iii)/))
 
   end do
 
@@ -389,4 +379,15 @@ begin
               + "This is not an error, no response is needed by user for " \
               + "plotting. ")
   end if
+
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + file_type, \
+                 "Russell et al 2018 figure 4", \
+                 "mean", \
+                 "sh", \
+                 "geo", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 inputfile_paths)
 end

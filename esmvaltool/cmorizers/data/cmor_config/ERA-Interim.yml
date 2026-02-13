@@ -126,6 +126,7 @@ variables:
     mip: day
     raw: z
     file: 'ERA-Interim_z_daily_*.nc'
+
   # monthly frequency
   clivi:
     mip: Amon
@@ -136,6 +137,22 @@ variables:
     mip: Amon
     raw: tcc
     file: 'ERA-Interim_tcc_monthly_*.nc'
+  # clt-low, clt-med, clt-high: support to be added in the future
+#  clt-low:
+#    short_name: clt-low
+#    mip: Amon
+#    raw: lcc
+#    file: 'ERA-Interim_lcc_monthly_*.nc'
+#  clt-med:
+#    short_name: clt-med
+#    mip: Amon
+#    raw: mcc
+#    file: 'ERA-Interim_mcc_monthly_*.nc'
+#  clt-high:
+#    short_name: clt-high
+#    mip: Amon
+#    raw: hcc
+#    file: 'ERA-Interim_hcc_monthly_*.nc'
   clwvi:
     mip: Amon
     raw:
@@ -145,6 +162,21 @@ variables:
     files:
       - 'ERA-Interim_p56.162_monthly_*.nc'
       - 'ERA-Interim_p57.162_monthly_*.nc'
+  cl_month:
+    short_name: cl
+    mip: Amon
+    raw: cc
+    file: 'ERA-Interim_cc_monthly_*.nc'
+  cli_month:
+    short_name: cli
+    mip: Amon
+    raw: ciwc
+    file: 'ERA-Interim_ciwc_monthly_*.nc'
+  clw_month:
+    short_name: clw
+    mip: Amon
+    raw: clwc
+    file: 'ERA-Interim_clwc_monthly_*.nc'
   evspsbl_month:
     short_name: evspsbl
     mip: Amon
@@ -171,6 +203,11 @@ variables:
     mip: Amon
     raw: q
     file: 'ERA-Interim_q_monthly_*.nc'
+  lwp_month:
+    short_name: lwp
+    mip: Amon
+    raw: p56.162
+    file: 'ERA-Interim_p56.162_monthly_*.nc'
   pr_month:
     short_name: pr
     mip: Amon
@@ -195,6 +232,16 @@ variables:
     mip: Amon
     raw: msl
     file: 'ERA-Interim_msl_monthly_*.nc'
+  rlut_month:
+    short_name: rlut
+    mip: Amon
+    raw: ttr
+    file: 'ERA-Interim_ttr_monthly_*.nc'
+  rlutcs_month:
+    short_name: rlutcs
+    mip: Amon
+    raw: ttrc
+    file: 'ERA-Interim_ttrc_monthly_*.nc'
   rsds_month:
     short_name: rsds
     mip: Amon
@@ -210,6 +257,26 @@ variables:
     mip: Emon
     raw: ssr
     file: 'ERA-Interim_ssr_monthly_*.nc'
+  rsut_month:
+    short_name: rsut
+    mip: Amon
+    raw:
+      - tisr
+      - tsr
+    operator: diff
+    files:
+      - 'ERA-Interim_tisr_monthly_*.nc'
+      - 'ERA-Interim_tsr_monthly_*.nc'
+  rsutcs_month:
+    short_name: rsutcs
+    mip: Amon
+    raw:
+      - tisr
+      - tsrc
+    operator: diff
+    files:
+      - 'ERA-Interim_tisr_monthly_*.nc'
+      - 'ERA-Interim_tsrc_monthly_*.nc'
   ta:
     mip: Amon
     raw: t
