@@ -48,7 +48,7 @@ def download_dataset(
     if start_date is None:
         start_date = datetime(1958, 1, 1)
     if end_date is None:
-        end_date = datetime(2022, 12, 31)
+        end_date = datetime(2023, 12, 31)
     loop_date = start_date
 
     # download files
