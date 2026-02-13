@@ -53,7 +53,7 @@ def download_dataset(
 
     # download files
 
-    url = "https://tds.gdex.ucar.edu/thredds/catalog/files/g/d628001"
+    url = "https://osdf-director.osg-htc.org/ncar/gdex/d628001"
     download_options = []
 
     # define variables to download
@@ -95,10 +95,3 @@ def download_dataset(
             )
 
         loop_date += relativedelta.relativedelta(years=1)
-
-    # clean up temporary files
-
-    if os.path.exists("Authentication.log"):
-        os.remove("Authentication.log")
-    if os.path.exists("auth.rda_ucar_edu"):
-        os.remove("auth.rda_ucar_edu")
