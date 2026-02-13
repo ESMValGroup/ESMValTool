@@ -3,17 +3,17 @@
 ---
 documentation:
   title: Comparison of ocean heat and carbon uptake
-  
+
   description: |
     Recipe to produce figures comparing ocean heat and carbon uptake in 4xCO2.
-    Produces Figures 1 and 2 in Gillett 2023. 
+    Produces Figures 1 and 2 in Gillett 2023.
 
   authors:
     - gillett_nathan
 
 preprocessors:
 
- 
+
   global_land:
     weighting_landsea_fraction:
       area_type: land
@@ -28,16 +28,16 @@ preprocessors:
       area_type: sea
     area_statistics:
       operator: sum
-      fx_variables:
-        areacello:
+#      fx_variables:
+#        areacello:
     annual_statistics:
       operator: mean
 
   global_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
+#      fx_variables:
+#        areacella:
     annual_statistics:
       operator: mean
 
@@ -58,7 +58,7 @@ diagnostics:
           - {dataset: ACCESS-ESM1-5, institute: CSIRO, exp: piControl, ensemble: r1i1p1f1, start_year: 601, end_year: 750}
           - {dataset: MPI-ESM1-2-LR, institute: MPI-M, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1850, end_year: 1999}
           - {dataset: MPI-ESM1-2-LR, institute: MPI-M, exp: piControl, ensemble: r1i1p1f1, start_year: 1850, end_year: 1999}
-          - {dataset: CESM2, institute: NCAR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150} 
+          - {dataset: CESM2, institute: NCAR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150}
           - {dataset: CESM2, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 502, end_year: 651}
           - {dataset: NorESM2-MM, institute: NCC, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150}
           - {dataset: NorESM2-MM, institute: NCC, exp: piControl, ensemble: r1i1p1f1, start_year: 1201, end_year: 1350}
@@ -89,5 +89,3 @@ diagnostics:
     scripts:
       fig_proportionality:
         script: prop_figs.py
-  
- 

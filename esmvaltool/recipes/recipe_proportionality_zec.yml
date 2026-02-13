@@ -3,7 +3,7 @@
 ---
 documentation:
   title: Comparison of ocean heat and carbon uptake
-  
+
   description: |
     Recipe to produce figures comparing ocean heat and carbon uptake in zero emissions simulation esm-1pct-brch-1000PgC.
     Produces figures in supplement to Gillett (2023).
@@ -13,7 +13,7 @@ documentation:
 
 preprocessors:
 
- 
+
   global_land:
     weighting_landsea_fraction:
       area_type: land
@@ -28,16 +28,16 @@ preprocessors:
       area_type: sea
     area_statistics:
       operator: sum
-      fx_variables:
-        areacello:
+#      fx_variables:
+#        areacello:
     annual_statistics:
       operator: mean
 
   global_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
+#      fx_variables:
+#        areacella:
     annual_statistics:
       operator: mean
 
@@ -89,5 +89,3 @@ diagnostics:
     scripts:
       fig_proportionality:
         script: prop_figs_zec.py
-  
- 
