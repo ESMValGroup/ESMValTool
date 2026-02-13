@@ -48,12 +48,12 @@ def download_dataset(
         )
 
     data_paths = [
-        # "nitrate/netcdf/all/1.00/woa18_all_n00_01.nc",
-        # "oxygen/netcdf/all/1.00/woa18_all_o00_01.nc",
-        # "phosphate/netcdf/all/1.00/woa18_all_p00_01.nc",
-        "salinity/netcdf/decav/0.25/woa23_decav_s00_04.nc",
-        # "silicate/netcdf/all/1.00/woa18_all_i00_01.nc",
-        "temperature/netcdf/decav/0.25/woa23_decav_t00_04.nc",
+        "nitrate/netcdf/all/1.00/woa23_all_n00_01.nc",
+        "oxygen/netcdf/all/1.00/woa23_all_o00_01.nc",
+        "phosphate/netcdf/all/1.00/woa23_all_p00_01.nc",
+        "salinity/netcdf/decav/1.00/woa23_decav_s00_01.nc",
+        "silicate/netcdf/all/1.00/woa23_all_i00_01.nc",
+        "temperature/netcdf/decav/1.00/woa23_decav_t00_01.nc",
     ]
 
     for source_file in data_paths:
