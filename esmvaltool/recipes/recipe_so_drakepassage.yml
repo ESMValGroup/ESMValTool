@@ -1,0 +1,52 @@
+# ESMValTool
+# recipe_so_acc_sigma_tr.yml
+---
+documentation:
+  description:
+    Creates a transect through Drake Passage of zonal velocity with
+    the sigma contour.
+  title:
+    Drake Passage zonal velocity transect with sigma contour
+
+  authors:
+    - demora_lee
+
+datasets:
+  - dataset: HadGEM3-GC31-LL
+
+preprocessors:
+  # ------------------------------------------------------------------------
+  # Preprocessor settings for Drake Passage transect
+  # ------------------------------------------------------------------------
+  time_mean:
+    climate_statistics:
+      operator: 'mean'
+      period: 'full'
+
+diagnostics:
+  # ------------------------------------------------------------------------
+  # Drake Passage zonal velocity transect with sigma contour
+  # --------------------------------------------------------------------------------
+  transect:
+    description:  Transect of zonal velocity and sigma
+    variables:
+      thetao: # Temperature ocean
+        ensemble: r1i1p1f3
+        exp: historical
+        grid: gn
+        mip: Omon
+        project: CMIP6
+        timerange: 2000/2001
+        preprocessor: time_mean
+      # so:    # Salinity ocean
+      #   ensemble: r1i1p1f3
+      #   exp: historical
+      #   grid: gn
+      #   mip: Omon
+      #   project: CMIP6
+      #   timerange: 2000/2001
+      #   preprocessor: time_mean
+
+    scripts:
+      script1:
+        script: /scratch/project_465001823/twilder/ESMValTool/esmvaltool/diag_scripts/southern_ocean/diagnostic_acc_sigma_tr.py
