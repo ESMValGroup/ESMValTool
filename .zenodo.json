@@ -67,11 +67,6 @@
       "name": "Adeniyi, Kemisola"
     },
     {
-      "affiliation": "University of Bremen, Germany",
-      "name": "Castellani, Giulia",
-      "orcid": "0000-0001-6151-015X"
-    },
-    {
       "affiliation": "ISAC-CNR, Italy",
       "name": "Arnone, Enrico",
       "orcid": "0000-0001-6740-5051"
@@ -176,6 +171,10 @@
       "name": "Gier, Bettina"
     },
     {
+      "affiliation": "University of Bremen, Germany",
+      "name": "Castellani, Giulia"
+    },
+    {
       "affiliation": "Met Office, UK",
       "name": "Gillett, Ed"
     },
@@ -192,10 +191,6 @@
       "affiliation": "HZG, Germany",
       "name": "Hagemann, Stefan",
       "orcid": "0000-0001-5444-2945"
-    },
-    {
-      "affiliation": "Met Office, UK",
-      "name": "Hall, Sophie"
     },
     {
       "affiliation": "University of Canterbury, New Zealand",
@@ -345,9 +340,9 @@
       "orcid": "0000-0003-4637-5337"
     },
     {
-      "affiliation": "Met Office, UK",
-      "name": "Storkey, Dave",
-      "orcid": "0000-0001-8000-5335"
+      "affiliation": "ECCC, Canada",
+      "name": "Stevens, Robin",
+      "orcid": "0000-0002-8737-6988"
     },
     {
       "affiliation": "URead, UK",
@@ -368,12 +363,12 @@
       "orcid": "0000-0001-6133-7801"
     },
     {
-      "affiliation": "DLR, Germany",
-      "name": "Sarauer, Ellen"
-    },
-    {
       "affiliation": "University of Bremen, Germany",
       "name": "Schulze, Kirsten"
+    },
+    {
+      "affiliation": "DLR, Germany",
+      "name": "Sarauer, Ellen"
     },
     {
       "affiliation": "University of Reading, UK",
@@ -458,9 +453,9 @@
   "license": {
     "id": "Apache-2.0"
   },
-  "publication_date": "2025-03-05",
+  "publication_date": "2025-10-20",
   "title": "ESMValTool",
-  "version": "v2.12.0",
+  "version": "v2.13.0",
   "communities": [
     {
       "identifier": "enes-ri"

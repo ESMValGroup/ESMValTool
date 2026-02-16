@@ -688,6 +688,16 @@ diagnostics:
          type: reanaly, version: 1, start_year: 1979, end_year: 2007}
     scripts: null
 
+  JRA-3Q:
+    description: JRA-3Q check
+    variables:
+      tasmax:
+      tasmin:
+    additional_datasets:
+      - {dataset: JRA-3Q, project: OBS6, mip: day, tier: 2,
+         type: reanaly, version: 1, start_year: 1948, end_year: 2024}
+    scripts: null
+
   JRA-55:
     description: JRA-55 check
     variables:
