@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 2
   version: "v1"
-  modeling_realm: reanaly
+  type: reanaly
   source: "https://psl.noaa.gov/data/gridded/data.cmap.html"
   reference: "cmap"
   comment: |
