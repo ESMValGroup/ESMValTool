@@ -49,7 +49,7 @@ diagnostics:
         mip: Amon
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
-          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1}
+          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -68,5 +68,5 @@ diagnostics:
               ERA5:
                 color: black
                 linestyle: dotted
-              GPCP-SG:
+              GPCP-V2.3:
                 color: black
