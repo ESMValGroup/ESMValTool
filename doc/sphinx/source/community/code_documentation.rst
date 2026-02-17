@@ -424,15 +424,6 @@ To link to a section from the ESMValCore documentation from the reStructuredText
 For example, ``:ref:`esmvalcore:recipe``` to link to
 :ref:`esmvalcore:recipe`.
 
-There is a script that generates the navigation menu shown on the left when
-you view the documentation.
-This script is called
-`doc/sphinx/source/gensidebar.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/gensidebar.py>`_
-in the ESMValTool repository and it should be identical to
-`doc/gensidebar.py <https://github.com/ESMValGroup/ESMValCore/blob/main/doc/gensidebar.py>`_
-in the ESMValCore repository, or the sidebar will change when navigating from
-the ESMValTool documentation to the ESMValCore documentation and vice-versa.
-
 .. _tests:
 
 Tests
