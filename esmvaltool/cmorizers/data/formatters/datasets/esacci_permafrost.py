@@ -17,12 +17,12 @@ Download and processing instructions
    Put all files in a single directory.
 """
 
-import glob
 import logging
 import os
 import os.path
 from copy import deepcopy
 from datetime import datetime
+from pathlib import Path
 
 import iris
 import numpy as np
@@ -341,11 +341,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for short_name, var in cfg["variables"].items():
             if "short_name" not in var:
                 var["short_name"] = short_name
-            filepattern = os.path.join(
-                in_dir,
-                var["file"].format(year=loop_date.year),
+            in_file = list(
+                Path(in_dir).glob(var["file"].format(year=loop_date.year))
             )
-            in_file = glob.glob(filepattern)[0]
             if not in_file:
                 logger.info(
                     "%d: no data not found for variable %s",
@@ -353,6 +351,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     short_name,
                 )
             else:
-                _extract_variable(in_file, var, cfg, out_dir, loop_date.year)
+                _extract_variable(
+                    str(in_file[0]), var, cfg, out_dir, loop_date.year
+                )
 
         loop_date += relativedelta.relativedelta(years=1)
