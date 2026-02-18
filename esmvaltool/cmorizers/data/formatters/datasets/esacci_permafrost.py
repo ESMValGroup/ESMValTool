@@ -67,8 +67,13 @@ def _regrid_infile(infile, outfile, weightsfile):
     ysize = 10353
     totalsize = xsize * ysize
 
-    # description of ESACCI-PERMAFROST v3.0 polar stereographic
-    # grid for cdo
+    # Description of the ESACCI-PERMAFROST v3.0 polar stereographic
+    # grid for CDO.
+    # All data below are included as global attibutes and as attributes of
+    # variable "polar_stereographic" in the ESACCI-PERMAFROST netCDF files
+    # downloaded. A ready-made grid definition file for CDO can also be found
+    # in the CDO forum here: https://code.mpimet.mpg.de/boards/2/topics/12769
+
     esagrid = (
         f"gridtype  = projection\n"
         f"gridsize  = {totalsize}\n"
