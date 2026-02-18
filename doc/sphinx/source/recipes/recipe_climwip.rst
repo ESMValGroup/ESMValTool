@@ -60,7 +60,7 @@ Recipes are stored in esmvaltool/recipes/
 * ``recipe_climwip_test_performance_sigma.yml``: Advanced sample recipe for testing the perfect model test in particular
 * ``recipe_climwip_brunner2020esd.yml``: Slightly modified results for `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_
 
-Archived recipes:
+Archived recipes (stored in archive/legacy_recipes):
 
 .. note::
 
