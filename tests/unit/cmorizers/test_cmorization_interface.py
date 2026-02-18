@@ -36,7 +36,7 @@ def test_formatters_have_required_interface():
         except AssertionError:
             print(
                 f"Bad args in {os.path.join(formatters_folder, formatter)}: "
-                f"{spec.args}"
+                f"{spec.args}",
             )
             print(f"Expected {arg_names}.")
             error = True
@@ -46,7 +46,7 @@ def test_formatters_have_required_interface():
 def test_downloaders_have_required_interface():
     formatters_folder = os.path.dirname(ddt.__file__)
     arg_names = (
-        "config",
+        "original_data_dir",
         "dataset",
         "dataset_info",
         "start_date",
@@ -66,7 +66,7 @@ def test_downloaders_have_required_interface():
             package="esmvaltool.cmorizers.data.downloaders.datasets",
         )
         spec = inspect.getfullargspec(
-            member.__getattribute__("download_dataset")
+            member.__getattribute__("download_dataset"),
         )
         try:
             assert len(spec.args) == len(arg_names)
@@ -75,7 +75,7 @@ def test_downloaders_have_required_interface():
         except AssertionError:
             print(
                 f"Bad args in {os.path.join(formatters_folder, formatter)}: "
-                f"{spec.args}"
+                f"{spec.args}",
             )
             error = True
 

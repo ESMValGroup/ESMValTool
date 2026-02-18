@@ -4,7 +4,7 @@ attributes:
 
   dataset_id: WOA
   tier: 2
-  modeling_realm: clim
+  type: clim
 
   # WOA13
   # project_id: OBS

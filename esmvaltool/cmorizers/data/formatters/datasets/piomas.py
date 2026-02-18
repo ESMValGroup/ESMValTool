@@ -74,19 +74,21 @@ class PIOMAS:
     def prepare_grid_info(self):
         """Read grid information."""
         grids = np.loadtxt(
-            os.path.join(self.in_dir, self.cfg["custom"]["scalar_file"])
+            os.path.join(self.in_dir, self.cfg["custom"]["scalar_file"]),
         )
         grids = grids.reshape(2, NY, NX)
         self.scalar_coords = self._create_lat_lon_coords(
-            grids[1, ...], grids[0, ...]
+            grids[1, ...],
+            grids[0, ...],
         )
 
         grids = np.loadtxt(
-            os.path.join(self.in_dir, self.cfg["custom"]["vector_file"])
+            os.path.join(self.in_dir, self.cfg["custom"]["vector_file"]),
         )
         grids = grids.reshape(7, NY, NX)
         self.vector_coords = self._create_lat_lon_coords(
-            grids[1, ...], grids[0, ...]
+            grids[1, ...],
+            grids[0, ...],
         )
 
         # Area in m2
@@ -127,7 +129,10 @@ class PIOMAS:
             )
             set_global_atts(cube, self.cfg["attributes"])
             save_variable(
-                cube, var_info.short_name, self.out_dir, self.cfg["attributes"]
+                cube,
+                var_info.short_name,
+                self.out_dir,
+                self.cfg["attributes"],
             )
 
     @staticmethod

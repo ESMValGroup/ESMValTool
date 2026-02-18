@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools >= 40.6.0",
-    "setuptools_scm>=6.2",
+    "setuptools>=80",
+    "setuptools_scm>=8",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -14,11 +14,9 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
@@ -73,7 +71,6 @@ dependencies = [
     "pyyaml",
     "rasterio>=1.3.10",
     "requests",
-    "ruamel.yaml",
     "scikit-image",
     "scikit-learn>=1.4.0",  # github.com/ESMValGroup/ESMValTool/issues/3504
     "scipy",
@@ -88,9 +85,10 @@ dependencies = [
     "zarr",
 ]
 description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
-license = {text = "Apache License, Version 2.0"}
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 name = "ESMValTool"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [project.optional-dependencies]
 # Execute `pip install .[test]` once and then use `pytest` to run tests
@@ -107,16 +105,15 @@ test = [
 doc = [
     "autodocsumm>=0.2.2",
     "myst-nb",
-    "sphinx>=6.1.3",
+    "sphinx>=6.1.3,<9",  # <9 due to ESMValTool/issues/4316
     "pydata_sphinx_theme",
 ]
 develop = [
     "esmvaltool[test,doc]",
     "codespell",
-    "docformatter",
     "imagehash",
     "pre-commit",
-    "prospector[with_pyroma]>=1.12",
+    "ruff==0.14.5", # keep in sync with .pre-commit-config.yaml
     "vprof",
     "yamllint",
 ]
@@ -138,7 +135,6 @@ Issues = "https://github.com/ESMValGroup/ESMValTool/issues"
 
 [tool.setuptools]
 include-package-data = true
-license-files = ["LICENSE"]
 packages = ["esmvaltool"]
 zip-safe = false
 
@@ -189,31 +185,35 @@ exclude_lines = [
 ignore-words-list = "emac,hist,oce,pres,vas,runn"
 
 [tool.ruff]
-fix = true
 line-length = 79
 show-fixes = true
 
 [tool.ruff.lint]
 select = ["ALL"]
-# syntax from github.com/astral-sh/ruff/issues/10878
-exclude = ["archive/*"]
 ignore = [
-    # TODO: when replacing `prospector` with `ruff`, ignore rules that are
-    # overly technical or conflict with other rules.
-    "E501",     # Disable line-too-long as this is taken care of by the formatter.
+    "ANN",      # Type hints are not required for diagnostic scripts.
     "D105",     # Disable missing docstring in magic method as these are well defined.
+    'D107',     # __init__ docstring is usually part of the class docstring.
     "E501",     # Disable line-too-long as this is taken care of by the formatter.
     "FIX002",   # TODOs can be useful when something cannot be done immediately.
+    "T20",      # Allow printing things in diagnostic scripts.
+    "TD",       # Do not impose a specific format on TODOs.
     "S603",     # Uncheckable
-    "TD002",    # Missing author in TODO: can be seen from git history
     "TRY003",   # Fixing this would require many exceptions
+]
+exclude = [
+    "archive/*",  # No longer maintained code.
+    "doc/sphinx/source/conf.py",  # Partly automatically generated.
+    "esmvaltool/utils/nclcodestyle/*.py",  # This is a slightly modified copy of pycodestyle.
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"esmvaltool/cmorizers/**.py" = [
+    "ARG001",   # Ignore unused function argument for CMORizers because these are caused by implementing the interface.
+]
 "tests/**.py" = [
     "B011",     # `assert False` is valid test code.
     "S101",     # Use of assert in tests code is required.
-    "T20",      # Printing things can help with debugging tests.
     "SLF001",   # Testing private members is ok
     "PLR2004",  # Magic values in tests are fine.
     # Docstrings in tests are only needed if the code is not self-explanatory.
@@ -223,15 +223,6 @@ ignore = [
     "D103",     # Missing docstring in public function
     "D104",     # Missing docstring in public package
 ]
-"test_*.py" = [
-    "B011",  # `assert False` is valid test code.
-    # Docstrings in tests are only needed if the code is not self-explanatory.
-    "D100",  # Missing docstring in public module
-    "D101",  # Missing docstring in public class
-    "D102",  # Missing docstring in public method
-    "D103",  # Missing docstring in public function
-    "D104",  # Missing docstring in public package
-]
 
 [tool.ruff.lint.isort]
 known-first-party = ["esmvaltool"]
@@ -240,31 +231,10 @@ known-first-party = ["esmvaltool"]
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-max-args = 7
+max-args = 7  # Use a more relaxed value than the default.
 
-[tool.pylint.main]
-jobs = 1  # Running more than one job in parallel crashes prospector.
-ignore-paths = [
-    "doc/sphinx/source/conf.py",  # Sphinx configuration file
-]
-
-[tool.pylint.basic]
-good-names = [
-    "_",            # Used by convention for unused variables
-    "i", "j", "k",  # Used by convention for indices
-    "logger",       # Our preferred name for the logger
-]
-
-[tool.pylint.format]
-max-line-length = 79
-
-[tool.pylint."messages control"]
-disable = [
-    "import-error",      # Needed because Codacy does not install dependencies
-    "file-ignored",      # Disable messages about disabling checks
-    "line-too-long",     # Disable line-too-long as this is taken care of by the formatter.
-    "locally-disabled",  # Disable messages about disabling checks
-]
+[tool.ruff.lint.mccabe]
+max-complexity = 15  # Use a more relaxed value than the default.
 
 [tool.pydocstyle]
 convention = "numpy"

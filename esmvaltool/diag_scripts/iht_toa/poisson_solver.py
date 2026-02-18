@@ -120,7 +120,7 @@ class SphericalPoisson:
         deltay = np.pi / src_shape[0]
         yyy = -0.5 * np.pi + 0.5 * deltay
         hvj[0] = 0.0
-        for j in range(0, src_shape[0]):
+        for j in range(src_shape[0]):
             hpi[j] = np.cos(yyy)
             hvj[j + 1] = np.cos(yyy + 0.5 * deltay)
             yyy += deltay
@@ -139,11 +139,11 @@ class SphericalPoisson:
         # First calculate the Poisson equations 5-point stencil
         # A_w is the contribution from i-1, A_e is from i+1,
         # A_s is j-1, A_n is j+1, and A_p is the diagonal
-        for j in range(0, src_shape[0]):
+        for j in range(src_shape[0]):
             txa = aaa / hpi[j] ** 2.0
             tyb = bbb / hpi[j]
 
-            for i in range(0, src_shape[1]):
+            for i in range(src_shape[1]):
                 a_matrix[0, j, i] = txa
                 a_matrix[1, j, i] = txa
                 a_matrix[2, j, i] = tyb * hvj[j]
@@ -273,7 +273,8 @@ class SphericalPoisson:
         grad_phi = np.gradient(self.energy_flux_potential, deltay, axis=0)
         grad_phi = grad_phi[1:-1, 1:-1]
         self.meridional_heat_transport = np.sum(
-            (grad_phi.T * np.cos(yvalues) * deltax).T, axis=1
+            (grad_phi.T * np.cos(yvalues) * deltax).T,
+            axis=1,
         )
 
     def calc_ax(self, x_matrix):

@@ -3,8 +3,8 @@
 import contextlib
 import os
 import sys
+from pathlib import Path
 
-import esmvalcore
 import iris
 import iris.coord_systems
 import iris.coords
@@ -14,16 +14,15 @@ import numpy as np
 import pytest
 import yaml
 from cf_units import Unit
-from packaging import version
 
-from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.cmorizers.data.cmorizer import DataCommand
 
 
 @contextlib.contextmanager
 def keep_cwd():
     """Use a context manager since the cmorizer enters and stays in the
-    cmorization dir, risking to write test outputs away from test-reports."""
+    cmorization dir, risking to write test outputs away from test-reports.
+    """
     curr_path = os.getcwd()
     try:
         yield
@@ -31,16 +30,15 @@ def keep_cwd():
         os.chdir(curr_path)
 
 
-def write_config_file(dirname):
+def write_config_file(dirname: Path, *, add_rootpath: bool = False) -> str:
     """Replace configuration values for testing."""
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
-        "rootpath": {
-            "RAWOBS": str(dirname / "raw_stuff"),
-        },
         "log_level": "debug",
     }
+    if add_rootpath:
+        cfg["rootpath"] = {"RAWOBS": str(dirname / "original_data")}
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
     return str(config_file)
 
@@ -85,7 +83,7 @@ def _create_sample_cube(time_step):
     return cube
 
 
-def put_dummy_data(data_path):
+def put_dummy_data(data_path: Path) -> None:
     """Create a small dummy netCDF file to be cmorized."""
     data_info = [
         # dir_name, file_name_prefix, var_name
@@ -108,16 +106,6 @@ def put_dummy_data(data_path):
             iris.save(gen_cube, file_path)
 
 
-def check_log_file(log_file, no_data=False):
-    """Check the cmorization log file."""
-    with open(log_file) as log:
-        if no_data:
-            msg = "Data for WOA not found"
-        else:
-            msg = "Fixing data"
-        assert any(msg in line for line in log)
-
-
 def check_output_exists(output_path):
     """Check if cmorizer outputted."""
     # eg Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc
@@ -138,10 +126,11 @@ def check_output_exists(output_path):
 def check_conversion(output_path):
     """Check basic cmorization."""
     cube = iris.load_cube(
-        os.path.join(output_path, os.listdir(output_path)[0])
+        os.path.join(output_path, os.listdir(output_path)[0]),
     )
     assert cube.coord("time").units == Unit(
-        "days since 1950-1-1 00:00:00", calendar="gregorian"
+        "days since 1950-1-1 00:00:00",
+        calendar="gregorian",
     )
     assert cube.coord("latitude").units == "degrees"
 
@@ -155,86 +144,75 @@ def arguments(*args):
     sys.argv = backup
 
 
-@pytest.mark.skipif(
-    version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
-    reason="ESMValCore >= v2.14.0",
-)
-def test_cmorize_obs_woa_no_data_config_file(tmp_path):
+def test_cmorize_obs_woa_no_data(tmp_path: Path) -> None:
     """Test for example run of cmorize_obs command."""
-    config_file = write_config_file(tmp_path)
-    os.makedirs(os.path.join(tmp_path, "raw_stuff", "Tier2"))
-    os.makedirs(os.path.join(tmp_path, "output_dir"))
-    with keep_cwd():
-        with pytest.raises(RuntimeError):
-            with pytest.warns(ESMValToolDeprecationWarning):
-                DataCommand().format("WOA", config_file=config_file)
+    write_config_file(tmp_path)
+    os.makedirs(os.path.join(tmp_path, "original_data", "Tier2"))
+    with (
+        keep_cwd(),
+        pytest.raises(
+            NotADirectoryError, match="Data for dataset 'WOA' not found"
+        ),
+    ):
+        DataCommand().format(
+            "WOA",
+            original_data_dir=tmp_path / "original_data",
+            config_dir=tmp_path,
+        )
 
-    log_dir = os.path.join(tmp_path, "output_dir")
-    log_file = os.path.join(
-        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
-    )
-    check_log_file(log_file, no_data=True)
 
-
-@pytest.mark.skipif(
-    version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
-    reason="ESMValCore >= v2.14.0",
-)
-def test_cmorize_obs_woa_data_config_file(tmp_path):
+@pytest.mark.parametrize("original_data_dir_type", ["str", "Path"])
+def test_cmorize_obs_woa_data(
+    tmp_path: Path,
+    original_data_dir_type: str,
+) -> None:
     """Test for example run of cmorize_obs command."""
-    config_file = write_config_file(tmp_path)
-    data_path = os.path.join(tmp_path, "raw_stuff", "Tier2", "WOA")
+    if original_data_dir_type == "str":
+        original_data_dir = str(tmp_path / "original_data")
+    else:
+        original_data_dir = tmp_path / "original_data"
+    write_config_file(tmp_path)
+    data_path = os.path.join(tmp_path, "original_data", "Tier2", "WOA")
     put_dummy_data(data_path)
     with keep_cwd():
-        with pytest.warns(ESMValToolDeprecationWarning):
-            DataCommand().format("WOA", config_file=config_file)
+        DataCommand().format(
+            "WOA",
+            original_data_dir=original_data_dir,
+            config_dir=tmp_path,
+        )
 
     log_dir = os.path.join(tmp_path, "output_dir")
     log_file = os.path.join(
-        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
+        log_dir,
+        os.listdir(log_dir)[0],
+        "run",
+        "main_log.txt",
     )
-    check_log_file(log_file, no_data=False)
+    assert "Fixing data" in Path(log_file).read_text(encoding="utf-8")
     output_path = os.path.join(log_dir, os.listdir(log_dir)[0], "Tier2", "WOA")
     check_output_exists(output_path)
     check_conversion(output_path)
 
 
-@pytest.mark.skipif(
-    version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
-    reason="ESMValCore < v2.12.0",
-)
-def test_cmorize_obs_woa_no_data(tmp_path):
+def test_cmorize_obs_woa_data_no_original_data_dir(tmp_path: Path) -> None:
     """Test for example run of cmorize_obs command."""
-    write_config_file(tmp_path)
-    os.makedirs(os.path.join(tmp_path, "raw_stuff", "Tier2"))
-    with keep_cwd():
-        with pytest.raises(RuntimeError):
-            DataCommand().format("WOA", config_dir=str(tmp_path))
-
-    log_dir = os.path.join(tmp_path, "output_dir")
-    log_file = os.path.join(
-        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
-    )
-    check_log_file(log_file, no_data=True)
-
-
-@pytest.mark.skipif(
-    version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
-    reason="ESMValCore < v2.12.0",
-)
-def test_cmorize_obs_woa_data(tmp_path):
-    """Test for example run of cmorize_obs command."""
-    write_config_file(tmp_path)
-    data_path = os.path.join(tmp_path, "raw_stuff", "Tier2", "WOA")
+    write_config_file(tmp_path, add_rootpath=True)
+    data_path = os.path.join(tmp_path, "original_data", "Tier2", "WOA")
     put_dummy_data(data_path)
     with keep_cwd():
-        DataCommand().format("WOA", config_dir=str(tmp_path))
+        DataCommand().format(
+            "WOA",
+            config_dir=tmp_path,
+        )
 
     log_dir = os.path.join(tmp_path, "output_dir")
     log_file = os.path.join(
-        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
+        log_dir,
+        os.listdir(log_dir)[0],
+        "run",
+        "main_log.txt",
     )
-    check_log_file(log_file, no_data=False)
+    assert "Fixing data" in Path(log_file).read_text(encoding="utf-8")
     output_path = os.path.join(log_dir, os.listdir(log_dir)[0], "Tier2", "WOA")
     check_output_exists(output_path)
     check_conversion(output_path)

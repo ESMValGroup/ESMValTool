@@ -1,10 +1,16 @@
 """wget based downloader."""
 
+from __future__ import annotations
+
 import logging
 import subprocess
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from .downloader import BaseDownloader
+
+if TYPE_CHECKING:
+    from esmvaltool.cmorizers.data.typing import DatasetInfo
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +31,7 @@ class WGetDownloader(BaseDownloader):
         if self.overwrite:
             raise ValueError(
                 "Overwrite does not work with downloading directories through "
-                "wget. Please, remove the unwanted data manually"
+                "wget. Please, remove the unwanted data manually",
             )
         command = (
             ["wget"]
@@ -69,7 +75,7 @@ class WGetDownloader(BaseDownloader):
         # will need to check file existence manually here (-O and --no-clobber
         # do not work well together).
         if not self.overwrite and output_filename is None:
-            output_options.append(f"--directory-prefix={str(output_dir)}")
+            output_options.append(f"--directory-prefix={output_dir!s}")
             output_options.append("--no-clobber")
         else:
             if (
@@ -109,8 +115,20 @@ class WGetDownloader(BaseDownloader):
 class NASADownloader(WGetDownloader):
     """Downloader for the NASA repository."""
 
-    def __init__(self, config, dataset, dataset_info, overwrite):
-        super().__init__(config, dataset, dataset_info, overwrite)
+    def __init__(
+        self,
+        original_data_dir: Path,
+        dataset: str,
+        dataset_info: DatasetInfo,
+        *,
+        overwrite: bool,
+    ) -> None:
+        super().__init__(
+            original_data_dir=original_data_dir,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
 
         self._wget_common_options = [
             "--load-cookies=~/.urs_cookies",
@@ -152,5 +170,6 @@ class NASADownloader(WGetDownloader):
         if wget_options is None:
             wget_options = []
         super().download_file(
-            server_path, self._wget_common_options + wget_options
+            server_path,
+            self._wget_common_options + wget_options,
         )

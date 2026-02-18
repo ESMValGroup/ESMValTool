@@ -47,7 +47,7 @@ lats = np.array(
         64.867516,
         64.8669,
         70.3744666666667,
-    ]
+    ],
 )
 
 lons = np.array(
@@ -90,7 +90,7 @@ lons = np.array(
         -147.85883,
         -147.858383,
         -148.552166666667,
-    ]
+    ],
 )
 
 site_points = (("latitude", lats), ("longitude", lons))
