@@ -166,9 +166,6 @@ def _regrid_infile(infile, outfile, weightsfile):
         options="-f nc",
     )
 
-    # delete temporary file
-    os.remove(esagrid_file)
-
 
 def _extract_variable(in_file, var, cfg, out_dir, year):
     logger.info(
