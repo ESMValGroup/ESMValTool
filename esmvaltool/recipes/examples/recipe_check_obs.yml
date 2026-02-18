@@ -709,7 +709,7 @@ diagnostics:
       wap:
     additional_datasets:
       - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1958, end_year: 2022}
+         type: reanaly, version: 1, start_year: 1958, end_year: 2023}
     scripts: null
 
   Kadow2020:
