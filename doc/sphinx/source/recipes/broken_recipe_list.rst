@@ -16,7 +16,7 @@ More details can be found in the :ref:`broken recipe policy
      - Affected diagnostics
      - Broken since release
      - Problem
-     - GitHub issue
+     - GitHub issues
    * - `recipe_check_obs.yml`
      - All
      - v2.12.0
