@@ -22,8 +22,3 @@ More details can be found in the :ref:`broken recipe policy
      - v2.12.0
      - Various missing datasets
      - `#3939 <https://github.com/ESMValGroup/ESMValTool/issues/3939>`_
-   * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
-     - ``Figure_4``
-     - v2.11.0
-     - CESM1 CMIP5 Omon data no longer available
-     - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
