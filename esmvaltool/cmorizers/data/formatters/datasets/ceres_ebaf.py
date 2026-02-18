@@ -4,15 +4,17 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
+    https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
 
 Last access
-    20220701
+    20260206
 
 Download and processing instructions
-    Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
-    Enter "Email Address" and click on "Get Data"
-    Wait for the processing to be finished and click on "Download"
+    - Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly", "Regional" (0-360,
+      -90-90)
+    - Enter "Email Address" and click on "Get Data"
+    - Wait for the processing to be finished and click on "Download"
+
 """
 
 import logging
@@ -57,6 +59,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     attrs["mip"] = var["mip"]
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
+    utils.fix_var_metadata(cube, cmor_info)
 
     # Save variable
     with warnings.catch_warnings():

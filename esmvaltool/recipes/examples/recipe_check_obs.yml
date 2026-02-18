@@ -53,11 +53,15 @@ diagnostics:
     variables:
       rlut:
       rlutcs:
+      rsdt:
       rsut:
       rsutcs:
+      rtmt:
+      rtnt:
+        derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: Ed4.1, start_year: 2001, end_year: 2021}
+         type: sat, version: Ed4.2.1, start_year: 2001, end_year: 2024}
     scripts: null
 
 
