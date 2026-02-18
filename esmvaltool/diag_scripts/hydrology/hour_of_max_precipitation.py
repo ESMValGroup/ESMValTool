@@ -1,10 +1,10 @@
-"""Calculate and plot hour of maximum precipitation.
+"""Calculate and plot hour of daily maximum precipitation.
 
 Description
 -----------
-This diagnostics calculates the hour of maximum precipitation and plots it. The
-input data needs to be subdaily and of shape (hour, latitude, longitude). The
-hour dimension should be in local solar time (see
+This diagnostics calculates the hour of daily maximum precipitation and plots
+it. The input data needs to be subdaily and of shape (hour, latitude,
+longitude). The hour dimension should be in local solar time (see
 :func:`~esmvalcore.preprocessor.local_solar_time`).
 
 Author
@@ -15,8 +15,8 @@ Configuration options in recipe
 -------------------------------
 caption: str, optional
     Figure caption used for provenance tracking. By default, uses "Global map
-    of the hour of the daily maximum precipitation for {dataset}.".
-cbar_label: str, optional (default: "Hour of maximum precipitation")
+    of the hour of the daily maximum precipitation for {alias}.".
+cbar_label: str, optional (default: "Hour of daily maximum precipitation")
     Colorbar label.
 cbar_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
@@ -30,7 +30,8 @@ matplotlib_rc_params: dict, optional
     Options given here will be passed to :func:`matplotlib.rc_context` and used
     for all plots produced with this diagnostic.
 method: str, optional (default: `"dft"`)
-    Method to determine the hour of maximum precipitation. Possible options:
+    Method to determine the hour of daily maximum precipitation. Possible
+    options:
 
     - If `"dft"`, apply a discrete Fourier transform (DFT) to the data and use
       the peak of the first component (see
@@ -56,6 +57,8 @@ pyplot_kwargs: dict, optional
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
     argument(s) for these functions (if values are dictionaries, these are
     interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can contain format strings (e.g., `"{dataset}
+    ({project})"`).
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
@@ -141,7 +144,7 @@ def _calculate_hour_of_max_precipitation(
     cube: Cube,
     cfg: dict[str, Any],
 ) -> Cube:
-    """Calculate hour of maximum daily precipitation."""
+    """Calculate hour of daily maximum daily precipitation."""
     hour_dim = cube.coord_dims("hour")[0]
 
     # Mask values mean diurnal cycle is smaller than threshold
@@ -159,7 +162,7 @@ def _calculate_hour_of_max_precipitation(
     )
     cube = cube.copy(np.ma.masked_array(cube.data, mask=broadcasted_mask))
 
-    # Calculate hour of maximum precipitation
+    # Calculate hour of daily maximum precipitation
     if cfg["method"] == "dft":
         dft = np.fft.rfft(cube.data, axis=hour_dim)
 
@@ -204,9 +207,9 @@ def _get_default_cfg(cfg: dict) -> dict:
 
     cfg.setdefault(
         "caption",
-        "Global map of the hour of the daily maximum precipitation for {dataset}.",
+        "Global map of the hour of the daily maximum precipitation for {alias}.",
     )
-    cfg.setdefault("cbar_label", "Hour of maximum precipitation")
+    cfg.setdefault("cbar_label", "Hour of daily maximum precipitation")
     cfg.setdefault(
         "cbar_kwargs",
         {"orientation": "horizontal", "ticks": [0, 3, 6, 9, 12, 15, 18, 21]},
@@ -270,26 +273,29 @@ def _get_provenance_record(
     }
 
 
-def _create_plot(cube: Cube, cfg: dict[str, Any]) -> Figure:
+def _create_plot(cube: Cube, dataset: dict, cfg: dict[str, Any]) -> Figure:
     """Plot map."""
     fig = plt.figure(**cfg["figure_kwargs"])
     axes = fig.add_subplot(projection=_get_projection(cfg))
     plot_kwargs = cfg["plot_kwargs"]
     plot_kwargs["axes"] = axes
     map_plot = iris.plot.pcolormesh(cube, **plot_kwargs)
-    _process_pyplot_kwargs(**cfg["pyplot_kwargs"])
+    axes.set_title(dataset["alias"])
+    _process_pyplot_kwargs(cfg["pyplot_kwargs"], dataset)
     cbar = plt.colorbar(map_plot, ax=axes, **cfg["cbar_kwargs"])
     cbar.set_label(cfg["cbar_label"])
     return fig
 
 
-def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
+def _process_pyplot_kwargs(pyplot_kwargs: Any, dataset: dict) -> None:
     """Process functions for :mod:`matplotlib.pyplot`."""
     for func, arg in pyplot_kwargs.items():
         if arg is None:
             getattr(plt, func)()
         elif isinstance(arg, dict):
             getattr(plt, func)(**arg)
+        elif isinstance(arg, str):
+            getattr(plt, func)(arg.format(**dataset))
         else:
             getattr(plt, func)(arg)
 
@@ -313,7 +319,7 @@ def main(cfg: dict) -> None:
 
         # Plot
         logger.info("Plotting map for %s", dataset["alias"])
-        figure = _create_plot(cube, cfg)
+        figure = _create_plot(cube, dataset, cfg)
         save_figure(
             basename,
             provenance_record,

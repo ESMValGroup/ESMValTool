@@ -46,3 +46,6 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hour_of_max_precipitation.py
+        caption: Hour of daily maximum precipitation in the Tropics (30°S-30°N) for {dataset}.
+        pyplot_kwargs:
+          title: "{dataset}"
