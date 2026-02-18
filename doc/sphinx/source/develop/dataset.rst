@@ -57,7 +57,7 @@ guidelines:
 - Provide some additional variable attributes. Necessary additional variable
   attributes are: ``dimensions``, ``out_name`` (usually equal to ``short_name``).
   There are also additional variable attributes that can be defined here (see
-  the already available cmorizers).
+  the already available custom variables).
 
 It is recommended to extend the file
 `esmvalcore/cmor/tables/cmip6-custom/CMIP6_custom.json <https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/cmor/tables/cmip6-custom/CMIP6_custom.json>`__
