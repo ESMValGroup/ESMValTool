@@ -87,12 +87,12 @@ def put_dummy_data(data_path: Path) -> None:
     """Create a small dummy netCDF file to be cmorized."""
     data_info = [
         # dir_name, file_name_prefix, var_name
-        ("temperature", "woa18_decav81B0_t", "t_an"),
-        ("salinity", "woa18_decav81B0_s", "s_an"),
-        ("oxygen", "woa18_all_o", "o_an"),
-        ("nitrate", "woa18_all_n", "n_an"),
-        ("phosphate", "woa18_all_p", "p_an"),
-        ("silicate", "woa18_all_i", "i_an"),
+        ("temperature", "woa23_decav_t", "t_an"),
+        ("salinity", "woa23_decav_s", "s_an"),
+        ("oxygen", "woa23_all_o", "o_an"),
+        ("nitrate", "woa23_all_n", "n_an"),
+        ("phosphate", "woa23_all_p", "p_an"),
+        ("silicate", "woa23_all_i", "i_an"),
     ]
 
     for dir_name, file_name_prefix, var_name in data_info:
