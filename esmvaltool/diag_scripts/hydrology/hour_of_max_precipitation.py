@@ -57,8 +57,8 @@ pyplot_kwargs: dict, optional
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
     argument(s) for these functions (if values are dictionaries, these are
     interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can contain format strings (e.g., `"{dataset}
-    ({project})"`).
+    String arguments can contain format strings (e.g., ``"{dataset}
+    ({project})"``).
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
