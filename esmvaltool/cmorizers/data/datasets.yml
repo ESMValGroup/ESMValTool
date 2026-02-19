@@ -573,13 +573,13 @@ datasets:
 
   ESACCI-PERMAFROST:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/permafrost/data
-    last_access: 2024-02-27
+    source: ftp://dap.ceda.ac.uk/neodc/esacci/permafrost/data
+    last_access: 2026-02-18
     info: |
       Download the data from:
-        active_layer_thickness/L4/area4/pp/v03.0
-        ground_temperature/L4/area4/pp/v03.0
-        permafrost_extent/L4/area4/pp/v03.0
+        active_layer_thickness/L4/area4/pp/v05.0/northern_hemisphere/<yyyy>/
+        ground_temperature/L4/area4/pp/v05.0/northern_hemisphere/<yyyy>/
+        permafrost_extent/L4/area4/pp/v05.0/northern_hemisphere/<yyyy>/
       Put all files in a single directory.
 
   ESACCI-SEAICE:

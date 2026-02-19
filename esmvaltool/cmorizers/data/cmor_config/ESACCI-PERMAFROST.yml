@@ -2,11 +2,11 @@
 # Common global attributes for CMORizer output
 attributes:
   dataset_id: ESACCI-PERMAFROST
-  version: 'v3.0'
+  version: 'v5.0NH'
   tier: 2
   modeling_realm: sat
   project_id: OBS6
-  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/permafrost'
+  source: 'ftp://dap.ceda.ac.uk/neodc/esacci/permafrost'
   reference: "esacci-permafrost"
   comment: ""
 
@@ -15,15 +15,15 @@ variables:
   alt:
     mip: Lyr
     raw: ALT
-    file: 'ESACCI-PERMAFROST-L4-ALT-*-AREA4_PP-{year}-fv03.0.nc'
+    file: 'ESACCI-PERMAFROST-L4-ALT-*-AREA4_PP-{year}-fv05.0.nc'
     weights_dir: './esacci-permafrost-weights'
   gtd:
     mip: Lyr
     raw: [GST, T1m, T2m, T5m, T10m]
-    file: 'ESACCI-PERMAFROST-L4-GTD-*-AREA4_PP-{year}-fv03.0.nc'
+    file: 'ESACCI-PERMAFROST-L4-GTD-*-AREA4_PP-{year}-fv05.0.nc'
     weights_dir: './esacci-permafrost-weights'
   pfr:
     mip: Lyr
     raw: PFR
-    file: 'ESACCI-PERMAFROST-L4-PFR-*-AREA4_PP-{year}-fv03.0.nc'
+    file: 'ESACCI-PERMAFROST-L4-PFR-*-AREA4_PP-{year}-fv05.0.nc'
     weights_dir: './esacci-permafrost-weights'

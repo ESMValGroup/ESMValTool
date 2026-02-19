@@ -5,7 +5,7 @@ from datetime import datetime
 
 from dateutil import relativedelta
 
-from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 logger = logging.getLogger(__name__)
 
@@ -38,18 +38,18 @@ def download_dataset(
     if start_date is None:
         start_date = datetime(1997, 1, 1)
     if end_date is None:
-        end_date = datetime(2019, 12, 31)
+        end_date = datetime(2023, 12, 31)
 
-    downloader = CCIDownloader(
+    downloader = WGetDownloader(
         config=config,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
 
-    downloader.connect()
+    version = "v05.0"
 
-    version = "v03.0"
+    path = "https://dap.ceda.ac.uk/neodc/esacci/permafrost/data/"
 
     ccivars = [
         "active_layer_thickness",
@@ -61,15 +61,12 @@ def download_dataset(
     loop_date = start_date
     while loop_date <= end_date:
         for var in ccivars:
-            pathname = f"{var}/L4/area4/pp/{version}/"
-            fname = f"ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc"
-            if downloader.file_exists(fname, pathname):
-                downloader.download_files(fname, pathname)
-            else:
-                logger.info(
-                    "%d: no data for %s %s",
-                    loop_date.year,
-                    var,
-                    version,
-                )
+            folder = (
+                path
+                + f"{var}/L4/area4/pp/{version}/northern_hemisphere/{loop_date.year}/"
+            )
+            downloader.download_folder(
+                folder,
+                wget_options=["-e robots=off", "--no-parent", "--accept=nc"],
+            )
         loop_date += relativedelta.relativedelta(years=1)

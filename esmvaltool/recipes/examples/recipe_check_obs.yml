@@ -320,8 +320,8 @@ diagnostics:
       gtd:
       pfr:
     additional_datasets:
-      - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v3.0,
-         frequency: yr, start_year: 1997, end_year: 2019}
+      - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v5.0NH,
+         frequency: yr, start_year: 1997, end_year: 2023}
     scripts: null
 
   ESACCI-OC:

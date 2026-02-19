@@ -4,16 +4,18 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
-   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/permafrost/data
+   ftp://dap.ceda.ac.uk/neodc/esacci/permafrost/data
 
 Last access
-   20240227
+   20260218
 
 Download and processing instructions
-   Download the data from:
-     active_layer_thickness/L4/area4/pp/v03.0
-     ground_temperature/L4/area4/pp/v03.0
-     permafrost_extent/L4/area4/pp/v03.0
+   Use automatic downloader (recommended)
+       esmvaltool data download ESACCI-PERMAFROST
+   or download the data from:
+     active_layer_thickness/L4/area4/pp/v05.0/northern_hemisphere/<yyyy>
+     ground_temperature/L4/area4/pp/v05.0/northern_hemisphere/<yyyy>
+     permafrost_extent/L4/area4/pp/v05.0/northern_hemisphere/<yyyy>
    Put all files in a single directory.
 """
 
@@ -29,6 +31,7 @@ import numpy as np
 from cdo import Cdo
 from dateutil import relativedelta
 from esmvalcore.cmor.table import CMOR_TABLES
+from iris import NameConstraint
 from netCDF4 import Dataset
 
 from esmvaltool.cmorizers.data.utilities import save_variable, set_global_atts
@@ -47,6 +50,18 @@ def _fix_coordinates(cube: iris.cube.Cube, definition):
             coord = cube.coord(axis=axis)
             if axis == "T":
                 coord.convert_units("days since 1850-1-1 00:00:00.0")
+                time = coord.units.num2date(coord.points[0])
+                # set time bounds to (year-01-01 00:00, year+1-01-01 00:00)
+                start_date = datetime(time.year, 1, 1)
+                end_date = datetime(time.year + 1, 1, 1)
+                if coord.bounds is not None:
+                    coord.bounds = None
+                coord.bounds = np.array(
+                    [
+                        coord.units.date2num(start_date),
+                        coord.units.date2num(end_date),
+                    ],
+                )
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
             coord.long_name = coord_def.long_name
@@ -62,53 +77,9 @@ def _fix_coordinates(cube: iris.cube.Cube, definition):
 def _regrid_infile(infile, outfile, weightsfile):
     """Regrid infile to 0.5 deg x 0.5 deg grid using cdo."""
     cdo = Cdo()
-    # ESACCI-PERMAFROST v3.0 dimensions of raw input data
-    xsize = 14762
-    ysize = 10353
-    totalsize = xsize * ysize
 
-    # Description of the ESACCI-PERMAFROST v3.0 polar stereographic
-    # grid for CDO.
-    # All data below are included as global attibutes and as attributes of
-    # variable "polar_stereographic" in the ESACCI-PERMAFROST netCDF files
-    # downloaded. A ready-made grid definition file for CDO can also be found
-    # in the CDO forum here: https://code.mpimet.mpg.de/boards/2/topics/12769
-
-    esagrid = (
-        f"gridtype  = projection\n"
-        f"gridsize  = {totalsize}\n"
-        f"xsize     = {xsize}\n"
-        f"ysize     = {ysize}\n"
-        f"xname     = x\n"
-        f'xlongname = "x coordinate of projection"\n'
-        f'xunits    = "m"\n'
-        f"yname     = y\n"
-        f'ylongname = "y coordinate of projection"\n'
-        f'yunits    = "m"\n'
-        f"xfirst    = -6111475.22239475\n"
-        f"xinc      = 926.625433138333\n"
-        f"yfirst    = 4114895.09469662\n"
-        f"yinc      = -926.625433138333\n"
-        f"grid_mapping = polar_stereographic\n"
-        f"grid_mapping_name = polar_stereographic\n"
-        f"straight_vertical_longitude_from_pole = 0.\n"
-        f"false_easting = 0.\n"
-        f"false_northing = 0.\n"
-        f"latitude_of_projection_origin = 90.\n"
-        f"standard_parallel = 71.\n"
-        f"longitude_of_prime_meridian = 0.\n"
-        f"semi_major_axis = 6378137.\n"
-        f"inverse_flattening = 298.257223563\n"
-        f'proj_params = "+proj=stere +lat_0=90 +lat_ts=71 +lon_0=0'
-        f' +k=1" +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"\n'
-    )
-
-    esagrid_file = "./esacci_grid.txt"
-
-    # write grid description to ASCII file
-    with open(esagrid_file, "w", encoding="ascii") as file:
-        file.write(esagrid)
-        file.close()
+    xsize = 36000
+    ysize = 6000
 
     # define dimensions of target grid (regular lat-lon grid)
     target_dimx = 720  # delta_lon = 0.5 deg
@@ -143,8 +114,7 @@ def _regrid_infile(infile, outfile, weightsfile):
 
     if not weightsfile_ok:
         logger.info(
-            "Generating regridding weights. This will take"
-            " about 5-10 minutes (or more)...",
+            "Generating regridding weights. This can take several minutes...",
         )
         # check if path for weight files exists, if not create folder
         path = os.path.split(weightsfile)[0]
@@ -152,7 +122,7 @@ def _regrid_infile(infile, outfile, weightsfile):
             os.makedirs(path)
         # generate weights
         cdo.genbil(
-            f"{target_grid} -setgrid,{esagrid_file}",
+            f"{target_grid}",
             input=infile,
             output=weightsfile,
             options="-f nc",
@@ -160,7 +130,7 @@ def _regrid_infile(infile, outfile, weightsfile):
 
     # now regrid data to 0.5 deg x 0.5 deg
     cdo.remap(
-        f"{target_grid},{weightsfile} -setgrid,{esagrid_file}",
+        f"{target_grid},{weightsfile}",
         input=infile,
         output=outfile,
         options="-f nc",
@@ -179,8 +149,10 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     cmor_table = CMOR_TABLES[attributes["project_id"]]
     definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
-    if "weights_dir" in var.keys():
+    if "weights_dir" in var:
         weights_dir = var["weights_dir"]
+        # create directory if needed
+        Path(weights_dir).mkdir(parents=True, exist_ok=True)
     else:
         weights_dir = "."
 
@@ -188,11 +160,19 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     # (using the preprocessor (ESMF) is too slow)
 
     regridded_file = f"./{year}_{var['short_name']}.nc"
-    weights_file = f"{weights_dir}/{year}_{var['short_name']}_weights.nc"
+    weights_file = f"{weights_dir}/{var['short_name']}_weights.nc"
     _regrid_infile(in_file, regridded_file, weights_file)
 
-    # load input file
-    cubes = iris.load(regridded_file)
+    # load input file (make sure only the variables specified in the config file
+    # as "raw" are loaded)
+    if type(var["raw"]) is list:
+        constraints = []
+        for rawname in var["raw"]:
+            constraints.append(NameConstraint(var_name=rawname))
+    else:
+        constraints = NameConstraint(var_name=var["raw"])
+
+    cubes = iris.load(regridded_file, constraints)
 
     if len(cubes) > 1:
         # variable gtd contains the vertical levels as separate variables
@@ -222,8 +202,6 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
             )
             cube.var_name = "gst"
             cube.standard_name = "soil_temperature"  # "valid" standard name
-            cube.attributes.pop("actual_min")
-            cube.attributes.pop("actual_max")
         tmp_cube = cubes.merge_cube()
         # setting the attribute 'positive' is needed for Iris to recognize
         # this coordinate as 'Z' axis
@@ -269,16 +247,16 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
         "ancillary_variables",
     ]
     for attr in drop_attrs:
-        if attr in cube.attributes.keys():
+        if attr in cube.attributes:
             cube.attributes.pop(attr)
     for attr in drop_var_attrs:
-        if attr in cube.attributes.keys():
+        if attr in cube.attributes:
             cube.attributes.pop(attr)
 
     set_global_atts(cube, attributes)
 
     cube.coord("time").points = (
-        cube.coord("time").core_points().astype("float64")
+        cube.coord("time").core_points().astype("float64"),
     )
 
     # Set correct names
@@ -331,7 +309,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if start_date is None:
         start_date = datetime(1997, 1, 1)
     if end_date is None:
-        end_date = datetime(2019, 12, 31)
+        end_date = datetime(2023, 12, 31)
 
     loop_date = start_date
     while loop_date <= end_date:
@@ -339,7 +317,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             if "short_name" not in var:
                 var["short_name"] = short_name
             in_file = list(
-                Path(in_dir).glob(var["file"].format(year=loop_date.year))
+                Path(in_dir).glob(var["file"].format(year=loop_date.year)),
             )
             if not in_file:
                 logger.info(
@@ -349,7 +327,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 )
             else:
                 _extract_variable(
-                    str(in_file[0]), var, cfg, out_dir, loop_date.year
+                    str(in_file[0]),
+                    var,
+                    cfg,
+                    out_dir,
+                    loop_date.year,
                 )
 
         loop_date += relativedelta.relativedelta(years=1)
