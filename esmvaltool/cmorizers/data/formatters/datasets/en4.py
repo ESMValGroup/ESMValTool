@@ -1,4 +1,4 @@
-"""
+r"""
 CMORizer for EN4 dataset.
 
 This script processes EN4 ocean temperature and salinity data to CMOR-compliant format for use in ESMValTool.
@@ -18,10 +18,10 @@ Info
     and Gouretski and Cheng (2020) MBT corrections applied.
 
 Download instructions
-    - Edit the text file for your chosen years, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
-    - Save .txt file in directory for data to be downloaded to.
-    - Run 'wget -i EN.4.2.2.profiles.g10.download-list.txt' in same directory.
-    - Unzip files prior to running the cmorizer script.
+    - Save this text file in directory for data to be downloaded, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
+    - Edit this .txt. file for your chosen years.
+    - Run 'wget -i EN.4.2.2.analyses.g10.download-list.txt' in the same directory.
+    - Unzip files prior to running the cmorizer script using 'unzip \*.zip'.
 
 """
 
