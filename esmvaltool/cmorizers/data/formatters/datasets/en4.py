@@ -115,7 +115,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         cmor_info_srf = cmor_table.get_variable(var_info["mip"], srf_var)
 
         cube = load_and_prepare_cube(
-            fullpath, var, var_info, glob_attrs, cmor_table,
+            fullpath,
+            var,
+            var_info,
+            glob_attrs,
+            cmor_table,
         )
         surface_cube = extract_surface_var(cube, cmor_info_srf)
         logger.info("Saving for %s", var)
