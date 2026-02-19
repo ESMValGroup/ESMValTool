@@ -13,8 +13,7 @@ Last access
 Download and processing instructions
     Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
     "Instructions for downloading". All *.he5 files need to be saved in the
-    $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-    directory defined in the configuration. Apply this procedure to
+    Tier3/MLS-AURA directory. Apply this procedure to
     both links provided above. The temperature fields are necessary for quality
     control of the RHI data (see Data Quality Document for MLS-AURA for more
     information).
@@ -61,7 +60,7 @@ def _cut_cube(cube, var_info):
     if "cut_levels_outside" in var_info:
         lims = var_info["cut_levels_outside"]
         constraint = iris.Constraint(
-            air_pressure=lambda cell: lims[0] < cell < lims[1]
+            air_pressure=lambda cell: lims[0] < cell < lims[1],
         )
         cube = cube.extract(constraint)
     return cube
@@ -84,7 +83,8 @@ def _extract_cubes(files_dict, cfg):
             iris.coord_categorisation.add_month_number(cube, "time")
             iris.coord_categorisation.add_year(cube, "time")
             cube = cube.aggregated_by(
-                ["month_number", "year"], iris.analysis.MEAN
+                ["month_number", "year"],
+                iris.analysis.MEAN,
             )
             cube.remove_coord("month_number")
             cube.remove_coord("year")
@@ -118,7 +118,9 @@ def _get_cube(gridded_data, time, pressure):
         (LON_COORD, 3),
     ]
     cube = iris.cube.Cube(
-        gridded_data, dim_coords_and_dims=coord_spec, units="%"
+        gridded_data,
+        dim_coords_and_dims=coord_spec,
+        units="%",
     )
     return cube
 
@@ -144,7 +146,11 @@ def _get_cubes_dict(files_dict, cfg):
         # Get cubes for all desired variables
         for var, var_info in cfg["variables"].items():
             (gridded_data, time, pressure) = _get_gridded_data(
-                var_info["raw_var"], nc_rhi, nc_loc, nc_t, filename_rhi
+                var_info["raw_var"],
+                nc_rhi,
+                nc_loc,
+                nc_t,
+                filename_rhi,
             )
             cubes_dict[var].append(_get_cube(gridded_data, time, pressure))
         file_idx += 1
@@ -214,7 +220,7 @@ def _get_files(in_dir, cfg):
         if date not in files_dict_t:
             raise ValueError(
                 f"No corresponding temperature file for RHI file "
-                f"{filename_rhi} found"
+                f"{filename_rhi} found",
             )
         all_files[date] = (filename_rhi, files_dict_t[date])
     logger.info("Found %d files", len(all_files))
@@ -238,7 +244,8 @@ def _get_gridded_data(variable, nc_rhi, nc_loc, nc_t, filename):
 
     # Extract data
     data = np.ma.array(
-        nc_rhi.variables[variable][:], mask=_get_mask(nc_rhi, nc_t, nc_loc)
+        nc_rhi.variables[variable][:],
+        mask=_get_mask(nc_rhi, nc_t, nc_loc),
     )
 
     # For version 4.20, remove last four profiles (see Data Quality Document)
@@ -259,7 +266,7 @@ def _get_gridded_data(variable, nc_rhi, nc_loc, nc_t, filename):
                 "lat": lat,
                 "lon": lon,
                 "data": data[:, p_idx].filled(np.nan),
-            }
+            },
         )
 
         # Create daily-mean gridded data using pivot table
@@ -299,16 +306,22 @@ def _get_mask(nc_rhi, nc_t, nc_loc):
 
     # Quality of Temperature (accept only values greater than 0.2/0.9)
     pressure_greater_90 = np.where(
-        nc_loc.variables["Pressure"][:] > 90, True, False
+        nc_loc.variables["Pressure"][:] > 90,
+        True,
+        False,
     )
     quality_t = np.expand_dims(nc_t.variables["Quality"][:], -1)
     quality_t = np.broadcast_to(quality_t, mask.shape)
     new_mask = np.full(mask.shape, False)
     new_mask[:, pressure_greater_90] = np.where(
-        quality_t[:, pressure_greater_90] > 0.9, False, True
+        quality_t[:, pressure_greater_90] > 0.9,
+        False,
+        True,
     )
     new_mask[:, ~pressure_greater_90] = np.where(
-        quality_t[:, ~pressure_greater_90] > 0.2, False, True
+        quality_t[:, ~pressure_greater_90] > 0.2,
+        False,
+        True,
     )
     mask |= new_mask
 

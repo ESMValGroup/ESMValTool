@@ -162,7 +162,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 for month in months:
                     filename = fpattern.format(year=year, month=month)
                     var_cubes.append(
-                        extract_variable(short_name, var, filename)
+                        extract_variable(short_name, var, filename),
                     )
 
             cube = var_cubes.merge_cube()
@@ -176,5 +176,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         set_global_atts(cube, attrs)
 
         save_variable(
-            cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+            cube,
+            short_name,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )

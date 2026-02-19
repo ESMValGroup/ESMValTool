@@ -322,6 +322,10 @@ authors:
     name: Juckes, Martin
     institute: BADC, UK
     orcid:
+  jury_martin:
+    name: Jury, Martin
+    institute: WEGC, Austria
+    orcid: https://orcid.org/0000-0003-0590-7843
   kadygrov_nikolay:
     name: Kadygrov, Nikolay
     institute: IPSL, France
@@ -355,6 +359,11 @@ authors:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  kroissenbrunner_thomas:
+    name: Kroissenbrunner, Thomas
+    institute: WEGC, Austria
+    github: thomaskroi1996
+    orcid:
   kuehbacher_birgit:
     name: Kuehbacher, Birgit
     institute: DLR, Germany
@@ -881,11 +890,13 @@ projects:
   ipcc_ar6: IPCC AR6 WG1 contributions
   isenes3: EU H2020 Infrastructure for the European Network for Earth System Modelling - Phase 3
   primavera: EU H2020 project PRIMAVERA
+  preval: PREVAL ÖKS
   qa4ecv: QA4ECV
   russell_project: US Clivar, Ocean Carbon Biogeochemistry, ESGF, NOAA, NSF, NASA, US Antarctic program
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
   usmile: ERC Synergy Grant USMILE
+
 
 
 realms:

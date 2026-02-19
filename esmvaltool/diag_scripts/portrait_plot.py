@@ -290,7 +290,7 @@ def split_legend(cfg, grid, data):
                 edgecolor="black",
                 linewidth=0.5,
                 fill=True,
-            )
+            ),
         )
         label_at[i](label)
 
@@ -477,7 +477,7 @@ def sort_data(cfg, dataset):
             dataset[cfg["y_by"]].str.lower(),
             dataset[cfg["group_by"]].str.lower(),
             dataset[cfg["split_by"]].str.lower(),
-        ]
+        ],
     )
     if cfg["x_by"] in ["alias", "dataset"]:
         # NOTE: not clean, but it works for many cases
@@ -517,7 +517,9 @@ def main(cfg):
     dataset = sort_data(cfg, dataset)
     if cfg["normalize"] is not None:
         dataset["var"] = normalize(
-            dataset["var"], cfg["normalize"], [cfg["x_by"], cfg["group_by"]]
+            dataset["var"],
+            cfg["normalize"],
+            [cfg["x_by"], cfg["group_by"]],
         )
     with mpl.rc_context(cfg["matplotlib_rc_params"]):
         plot(cfg, dataset["var"])

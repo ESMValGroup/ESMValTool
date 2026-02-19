@@ -31,7 +31,6 @@ from esmvaltool import __version__
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # This is used for linking and such so we link to the thing we're building
-rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
 if on_rtd:
     # On Readthedocs, the conda environment used for building the documentation
     # is not `activated`. As a consequence, a few critical environment variables
@@ -39,12 +38,11 @@ if on_rtd:
     # In a normal environment, i.e. a local build of the documentation, the
     # normal environment activation takes care of this.
     rtd_project = os.environ.get("READTHEDOCS_PROJECT")
+    rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
     rtd_conda_prefix = f"/home/docs/checkouts/readthedocs.org/user_builds/{rtd_project}/conda/{rtd_version}"
     os.environ["ESMFMKFILE"] = f"{rtd_conda_prefix}/lib/esmf.mk"
     os.environ["PROJ_DATA"] = f"{rtd_conda_prefix}/share/proj"
     os.environ["PROJ_NETWORK"] = "OFF"
-if rtd_version not in ["latest", "stable", "doc"]:
-    rtd_version = "latest"
 
 # Generate gallery
 sys.path.append(os.path.dirname(__file__))
@@ -211,7 +209,7 @@ html_static_path = [
 ]
 
 html_css_files = ["custom.css"]
-
+html_js_files = []
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
@@ -275,6 +273,7 @@ latex_elements = {
     # Additional stuff for the LaTeX preamble.
     'preamble':
     r'''
+   \maxdeadcycles=1000
    \makeatletter
    \renewcommand{\maketitle}{
      \newcommand{\MONTH}{%
@@ -452,10 +451,7 @@ numfig = True
 intersphinx_mapping = {
     'cartopy': ('https://cartopy.readthedocs.io/latest/', None),
     'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
-    'esmvalcore':
-    (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
-     None),
-    'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
+    'esmvalcore': ('https://docs.esmvaltool.org/projects/ESMValCore/en/latest/', None),
     'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),
     'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
     'matplotlib': ('https://matplotlib.org/stable/', None),

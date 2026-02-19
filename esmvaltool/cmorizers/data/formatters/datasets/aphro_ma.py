@@ -65,7 +65,9 @@ logger = logging.getLogger(__name__)
 def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
     """Extract variable."""
     logger.info(
-        "CMORizing variable '%s' from input file '%s'", short_name, filepath
+        "CMORizing variable '%s' from input file '%s'",
+        short_name,
+        filepath,
     )
 
     with catch_warnings():
@@ -107,7 +109,11 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
     if "add_mon" in var.keys():
@@ -127,7 +133,11 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
 
             # Save variable
             utils.save_variable(
-                cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+                cube,
+                short_name,
+                out_dir,
+                attrs,
+                unlimited_dimensions=["time"],
             )
 
 
@@ -140,9 +150,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for version in var["version"].values():
             logger.info("CMORizing variable '%s'", short_name)
             filenames = raw_filename.format(
-                raw_file_var=var["raw_file_var"], version=version
+                raw_file_var=var["raw_file_var"],
+                version=version,
             )
             for filepath in sorted(Path(in_dir).glob(filenames)):
                 _extract_variable(
-                    short_name, var, cfg, filepath, out_dir, version
+                    short_name,
+                    var,
+                    cfg,
+                    filepath,
+                    out_dir,
+                    version,
                 )

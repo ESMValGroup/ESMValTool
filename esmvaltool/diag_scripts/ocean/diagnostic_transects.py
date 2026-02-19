@@ -117,7 +117,7 @@ def make_depth_safe(cube):
         Input cube to make the depth coordinate safe
 
     Returns
-    ----------
+    -------
     iris.cube.Cube:
         Output cube with a safe depth coordinate
 
@@ -162,7 +162,7 @@ def make_cube_region_dict(cube):
         the opened dataset as a cube.
 
     Returns
-    ---------
+    -------
     dict
         A dictionairy of layer name : layer cube.
     """
@@ -211,7 +211,7 @@ def determine_set_y_logscale(cfg, metadata):
         The metadata dictionairy for a specific model.
 
     Returns
-    ----------
+    -------
     bool:
         Boolean to flag whether to plot as a log scale.
     """
@@ -275,7 +275,7 @@ def make_transects_plots(
 
         # Add title to plot
         title = " ".join(
-            [metadata["dataset"], metadata["long_name"], region_title]
+            [metadata["dataset"], metadata["long_name"], region_title],
         )
         titlify(title)
 
@@ -285,7 +285,7 @@ def make_transects_plots(
         # Determine image filename:
         if multi_model:
             path = diagtools.folder(cfg["plot_dir"]) + os.path.basename(
-                filename
+                filename,
             ).replace(".nc", region + "_transect" + image_extention)
         else:
             path = diagtools.get_image_path(
@@ -399,7 +399,10 @@ def make_transect_contours(
 
         # Add legend
         diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.08, loc="below"
+            plot_details,
+            plt.gca(),
+            column_width=0.08,
+            loc="below",
         )
 
         # Add title to plot
@@ -408,7 +411,7 @@ def make_transect_contours(
                 metadata["dataset"],
                 metadata["long_name"],
                 determine_transect_str(cube, region),
-            ]
+            ],
         )
         titlify(title)
 
@@ -418,7 +421,7 @@ def make_transect_contours(
         # Determine image filename:
         if metadata["dataset"].find("MultiModel") > -1:
             path = diagtools.folder(cfg["plot_dir"]) + os.path.basename(
-                filename
+                filename,
             )
             path.replace(".nc", region + "_transect_contour" + image_extention)
         else:
@@ -551,7 +554,7 @@ def multi_model_contours(
                 str(threshold),
                 units,
                 determine_transect_str(model_cubes[filename][region], region),
-            ]
+            ],
         )
         titlify(title)
         plt.legend(loc="best")
@@ -562,7 +565,7 @@ def multi_model_contours(
             metadatas[filename],
             prefix="MultipleModels",
             suffix="_".join(
-                ["contour_tramsect", region, str(threshold) + image_extention]
+                ["contour_tramsect", region, str(threshold) + image_extention],
             ),
             metadata_id_list=[
                 "field",
@@ -577,7 +580,9 @@ def multi_model_contours(
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9.0, 6.0)
         diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15
+            plot_details,
+            plt.gca(),
+            column_width=0.15,
         )
 
         logger.info("Saving plots to %s", path)
@@ -621,7 +626,8 @@ def main(cfg):
         metadatas = diagtools.get_input_files(cfg, index=index)
 
         thresholds = diagtools.load_thresholds(
-            cfg, next(iter(metadatas.values()))
+            cfg,
+            next(iter(metadatas.values())),
         )
 
         #######

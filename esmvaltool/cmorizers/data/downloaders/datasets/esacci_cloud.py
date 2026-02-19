@@ -12,14 +12,19 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -31,7 +36,6 @@ def download_dataset(
     overwrite : bool
         Overwrite already downloaded files
     """
-
     start_date_day = False
     if start_date is None:
         start_date = datetime(1982, 1, 1)
@@ -41,7 +45,7 @@ def download_dataset(
     loop_date = start_date
 
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -54,7 +58,7 @@ def download_dataset(
         logger.info(
             'If daily data needs to be downloaded change "daily_data" in the '
             'cmor_config file to "True" '
-            "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)"
+            "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)",
         )
 
     # Base paths for L3U (daily data) and L3C (monthly data)
@@ -128,7 +132,8 @@ def download_dataset(
                 wget_options_l3c = wget_options.copy()
                 wget_options_l3c.append(f"--accept={date}*.nc")
                 logger.info(
-                    "Download folder for monthly data (L3C): %s", folder_l3c
+                    "Download folder for monthly data (L3C): %s",
+                    folder_l3c,
                 )
                 downloader.download_file(folder_l3c, wget_options_l3c)
 
@@ -141,13 +146,14 @@ def download_dataset(
                         <= datetime(2007, 2, 1)
                     ):
                         logger.info(
-                            "Downloading daily data (L3U) for sat = %s", sat
+                            "Downloading daily data (L3U) for sat = %s",
+                            sat,
                         )
                         folder_l3u = base_path_l3u + sat + f"{year}/{month:02}"
                         wget_options_l3u = wget_options.copy()
                         wget_options_l3u.append(
                             f"--accept={date}*CLD_MASKTYPE*.nc,"
-                            f"{date}*CLD_PRODUCTS*.nc"
+                            f"{date}*CLD_PRODUCTS*.nc",
                         )
                         logger.info(
                             "Download folder for daily data (L3U): %s",
