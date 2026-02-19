@@ -17,8 +17,13 @@ More details can be found in the :ref:`broken recipe policy
      - Broken since release
      - Problem
      - GitHub issue
-   * - `recipe_check_obs.yml`
+   * - ``recipe_check_obs.yml``
      - All
      - v2.12.0
      - Various missing datasets
-     - `#3939 <https://github.com/ESMValGroup/ESMValTool/issues/3939>`_
+     - :issue:`3939`
+   * - ``recipe_kcs.yml``
+     - ``kcs/local_resampling.py``
+     - v2.14.0
+     - Diagnostic error (related to datetimes)
+     - :issue:`4353`
