@@ -4,6 +4,7 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
+   WOA23: https://www.ncei.noaa.gov/data/oceans/woa/WOA23/DATA
    WOA18: https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA
    WOA13: https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2
 
@@ -24,6 +25,7 @@ Download and processing instructions
 
 
 Modification history
+   20230213-chun_felicity: WOA23 update
    20210311-lovato_tomas: handle WOA18/WOA13, raw data download, use OBS6
    20200911-bock_lisa: extend to WOA18
    20190328-lovato_tomas: cmorizer revision
@@ -53,7 +55,7 @@ def _fix_data(cube, var, version):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
 
-    if version == "2018":
+    if version in ["2018", "2023"]:
         with constant_metadata(cube):
             if var in ["o2", "po4", "si", "no3"]:
                 cube /= 1000.0  # Convert from umol/kg to mol/m^3
