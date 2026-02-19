@@ -256,7 +256,7 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     set_global_atts(cube, attributes)
 
     cube.coord("time").points = (
-        cube.coord("time").core_points().astype("float64"),
+        cube.coord("time").core_points().astype("float64")
     )
 
     # Set correct names
