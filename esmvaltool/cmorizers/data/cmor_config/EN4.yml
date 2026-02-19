@@ -8,7 +8,7 @@ attributes:
   dataset_id: EN4
   version: '4.2.2'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html'
   reference: 'good2013jgr'
