@@ -114,6 +114,7 @@ dependencies:
   - r-ncdf4.helpers
   - r-pcict
   - r-plyr
+  - r-r.utils
   - r-rcolorbrewer
   - r-rcpp
   - r-s2dverification
