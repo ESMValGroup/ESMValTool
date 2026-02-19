@@ -258,4 +258,4 @@ diagnostics:
     
     scripts: 
       iod_script:
-        script: /home/users/hannah.ellis/esmvaltool_recipes/diag_scripts/tilt_scatter.py
+        script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/tilt_scatter.py
