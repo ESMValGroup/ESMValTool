@@ -7,7 +7,7 @@ attributes:
   dataset_id: Scripps-CO2-KUM
   version: '14-Oct-2021'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS6
   source: 'https://scrippsco2.ucsd.edu/data/atmospheric_co2/kum.html'
   reference: 'scripps_co2'

@@ -2,7 +2,7 @@ attributes:
   project_id: 'OBS'
   dataset_id: 'ESACCI-LANDCOVER'
   tier: 2
-  modeling_realm: sat
+  type: sat
   institution: 'Universite catholique de Louvain'
   reference: 'esacci-landcover'
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft'

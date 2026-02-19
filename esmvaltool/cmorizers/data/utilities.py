@@ -266,8 +266,8 @@ def fix_coords(
 def fix_var_metadata(cube, var_info):
     """Fix var metadata from CMOR table.
 
-    Sets var_name, long_name, standard_name and units
-    in accordance with CMOR standards from specific CMOR table.
+    Sets var_name, long_name, standard_name, units, and 'positive' attribute in
+    accordance with CMOR standards from specific CMOR table.
 
     Parameters
     ----------
@@ -291,6 +291,8 @@ def fix_var_metadata(cube, var_info):
     cube.var_name = var_info.short_name
     cube.long_name = var_info.long_name
     set_units(cube, var_info.units)
+    if var_info.positive:
+        cube.attributes["positive"] = var_info.positive
     return cube
 
 
@@ -367,7 +369,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     name_elements = [
         attrs["project_id"],
         attrs["dataset_id"],
-        attrs["modeling_realm"],
+        attrs["type"],
         attrs["version"],
         attrs["mip"],
         var,
