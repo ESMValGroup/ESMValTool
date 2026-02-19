@@ -16,7 +16,7 @@ Last access
 Download and processing instructions
     Download daily files from:
     https://data.marine.copernicus.eu/product/SEALEVEL_GLO_PHY_L4_MY_008_047/services
-
+    Using daily data (sea surface height above geoid) as the month product is sea level anomalies.
 
 """
 
@@ -39,7 +39,7 @@ def _get_filepaths(in_dir, basename):
 
     for root, _dir, files in os.walk(in_dir, followlinks=True):
         if len(files) > 1:
-            return_files = []  # load and concat each list & process
+            return_files = []
             for filename in files:
                 if regex.match(filename):
                     return_files.append(os.path.join(root, filename))
@@ -60,8 +60,8 @@ def _extract_variable(cmor_info, attrs, file_ls, out_dir):
         # logger.info('Number of day files to concatenate: %d', len(filepaths))
         iris.util.equalise_attributes(cubels)
         iris.util.unify_time_units(cubels)
-        # if cmor.frequency is mon, check to save out
-        cube_mon = cubels.concatenate_cube()  # create mean for month
+        # if cmor.frequency is monthly
+        cube_mon = cubels.concatenate_cube()
         cube_mon = iris.util.squeeze(cube_mon)
         cube_prepls.append(monthly_statistics(cube_mon, "mean"))
 
