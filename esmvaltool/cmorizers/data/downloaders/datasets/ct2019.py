@@ -8,7 +8,7 @@ from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(
-    config,
+    original_data_dir,
     dataset,
     dataset_info,
     start_date,
@@ -19,8 +19,8 @@ def download_dataset(
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -39,7 +39,7 @@ def download_dataset(
     loop_date = start_date
 
     downloader = FTPDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,

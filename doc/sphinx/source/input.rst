@@ -171,7 +171,10 @@ Datasets for which auto-download is supported can be downloaded with:
 
 .. code-block:: bash
 
-    esmvaltool data download --config_file [CONFIG_FILE] [DATASET_LIST]
+    esmvaltool data download --original-data-dir ~/RAWOBS [DATASET_LIST]
+
+where the ``--original-data-dir`` option specifies a directory where the orignal
+data will be stored, ``~/RAWOBS`` in this example but it can be chosen freely.
 
 Note that all Tier3 and some Tier2 datasets for which auto-download is supported
 will require an authentication. In such cases enter your credentials in your
@@ -204,11 +207,12 @@ To CMORize one or more datasets, run:
 
 .. code-block:: bash
 
-    esmvaltool data format --config_file [CONFIG_FILE] [DATASET_LIST]
+    esmvaltool data format --original-data-dir ~/RAWOBS [DATASET_LIST]
 
-The ``rootpath`` to the raw data to be CMORized must be specified in the
-:ref:`configuration <esmvalcore:config_options>` as ``RAWOBS``.
-Within this path, the data are expected to be organized in subdirectories
+where the ``--original-data-dir`` option specifies a directory where the orignal
+data is stored, ``~/RAWOBS`` in this example but it can be chosen freely.
+
+Within the directory pointed to by ``--original-data-dir``, the data are expected to be organized in subdirectories
 corresponding to the data tier: Tier2 for freely-available datasets (other than
 obs4MIPs and ana4mips) and Tier3 for restricted datasets (i.e., dataset which
 requires a registration to be retrieved or provided upon request to the
@@ -219,8 +223,7 @@ The CMORization follows the `CMIP5 CMOR tables
 respectively.
 The resulting output is saved in the output_dir, again following the Tier
 structure.
-The output file names follow the definition given in :ref:`config-developer
-file <esmvalcore:config-developer>` for the ``OBS`` project:
+The output file names follow the convention:
 
 .. code-block::
 
@@ -341,6 +344,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | ESACCI-SEAICE                          | siconc (SIday, SImon)                                                                                |   2  | Python          |
 +----------------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SEA-SURFACE-SALINITY            | sos (Omon)                                                                                           |   2  | Python          |
++----------------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-SNOW                            | snc, snw (day)                                                                                       |   2  | Python          |
 +----------------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SOILMOISTURE                    | sm (Eday, Lmon), smStderr (Eday)                                                                     |   2  | Python          |
 +----------------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -538,8 +543,6 @@ Instead, the CMORization is performed 'on the fly' when running a recipe.
 Native datasets can be hosted either under a dedicated project (usually done
 for native model output) or under project ``native6`` (usually done for native
 reanalysis/observational products).
-These projects are configured in the :ref:`config-developer file
-<esmvalcore:configure_native_models>`.
 
 A list of all currently supported native datasets is :ref:`provided here
 <esmvalcore:read_native_datasets>`.

@@ -24,7 +24,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.13.*
+  - esmvalcore ==2.14.0rc1
   - fiona
   - fire
   - fsspec
@@ -79,7 +79,7 @@ dependencies:
   # Python packages needed for building docs
   - autodocsumm >=0.2.2
   - myst-nb
-  - sphinx >=6.1.3
+  - sphinx >=6.1.3,<9  # github.com/ESMValGroup/ESMValTool/issues/4316
   - pydata-sphinx-theme
   # Python packages needed for development
   - codespell ==2.3.0

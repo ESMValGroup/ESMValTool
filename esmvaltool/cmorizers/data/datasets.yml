@@ -151,7 +151,7 @@ datasets:
         - Tick all available months
         - Tick Nominal day 20
       - Click 'submit form'
-      - According to ESMValTool practice, put them in the right rawobsdir folder
+      - According to ESMValTool practice, put them in the Tier3/CDS-SATELLITE-LAI-FAPAR folder
       - Request might need to be split into chunks to not exceed download limit
       - Fails setting standard name for variable FAPAR
 
@@ -200,10 +200,10 @@ datasets:
 
   CERES-EBAF:
     tier: 2
-    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
-    last_access: 2022-07-01
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
+    last_access: 2026-02-06
     info: |
-      Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+      Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly Mean", "Regional" (0-360, -90-90)
       Enter "Email Address" and click on "Get Data"
       Wait for the processing to be finished and click on "Download"
 
@@ -316,8 +316,7 @@ datasets:
     source: https://www.esrl.noaa.gov/gmd/ccgg/carbontracker/index.php
     last_access: 2020-03-23
     info: |
-      Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-      ``$RAWOBSPATH`` is given by your configuration) where the raw
+      Create a new empty directory ``Tier2/CT2019`` where the original
       data will be stored. The download of the data is automatically handled by
       this script. If data is already present in this directory, the download is
       skipped (to force a new download delete your old files).
@@ -346,7 +345,7 @@ datasets:
     last_access: 2019-05-15
     info: |
       Download and unpack all the *.tar files under a single directory
-      (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
+      (no subdirectories with years) in Tier2/Eppley-VGPM-MODIS
 
   ERA-Interim-Land:
     tier: 3
@@ -463,13 +462,13 @@ datasets:
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v6.0/netcdf
     last_access: 2025-07-16
     info: |
-        Download and processing instructions:
-        Use the following CLI to download all the files:
-        esmvaltool data download ESACCI-BIOMASS
-        The underlying downloader is located here:
-        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
-        and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
-        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-BIOMASS
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-BIOMASS
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
+      and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
+      under a single directory as follow: Tier2/ESACCI-BIOMASS
 
   ESACCI-CLOUD:
     tier: 2
@@ -505,13 +504,13 @@ datasets:
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
     last_access: 2024-07-11
     info: |
-        Download and processing instructions:
-        Use the following CLI to download all the files:
-        esmvaltool data download ESACCI-LANDCOVER
-        The underlying downloader is located here:
-        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
-        and it will download all the files currently available on CEDA (1992-2020)
-        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-LANDCOVER
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+      and it will download all the files currently available on CEDA (1992-2020)
+      under a single directory as follow: Tier2/ESACCI-LANDCOVER
 
   ESACCI-LST:
     tier: 2
@@ -522,7 +521,7 @@ datasets:
         https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
       Download and processing instructions:
         Put all files under a single directory (no subdirectories with years)
-        in ${RAWOBS}/Tier2/ESACCI-LST
+        in Tier2/ESACCI-LST
         BOTH DAY and NIGHT files are needed for each month
 
       Caveats
@@ -537,7 +536,7 @@ datasets:
         OceanColour webpage https://esa-oceancolour-cci.org/
       Username and password are provided on this website
       Put all files under a single directory (no subdirectories with years)
-      in ${RAWOBS}/Tier2/ESACCI-OC
+      in Tier2/ESACCI-OC
 
   ESACCI-OZONE:
     tier: 2
@@ -610,6 +609,19 @@ datasets:
         v01.8/30days/
         v02.31/30days/
       Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-SNOW:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow/data
+    last_access: 2024-02-14
+    info: |
+      Download the data from:
+        scfg/AVHRR-MERGED/v2.0/
+        swe/MERGED/v2.0/
+      Put all scfg files in a single directory called 'scfg'
+      (no subdirectories with years or months).
+      Put all swe files in a single directory called 'swe'
+      (no subdirectories with years or months).
 
   ESACCI-SST:
     tier: 2
@@ -776,7 +788,7 @@ datasets:
           - GRCTellus.JPL.200204_202004.GLO.RL06M.MSCNv02CRI.nc
           - LAND_MASK.CRI.nc
       - Download the grace months table  which holds important information
-        on data coverage. Save it in the RAWOBSDIR.
+        on data coverage. Save it in the Tier3/GRACE directory.
             https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
       - Manually inspect and check the months table
 
@@ -1009,8 +1021,7 @@ datasets:
     info: |
       Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
       "Instructions for downloading". All *.he5 files need to be saved in the
-      $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-      directory defined in the configuration. Apply this procedure to both
+      Tier3/MLS-AURA directory. Apply this procedure to both
       links provided above. The temperature fields are necessary for quality
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
@@ -1079,7 +1090,6 @@ datasets:
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface
         pr_wtr.eatm.mon.mean.nc
-
 
   NCEP-NCAR-R1:
     tier: 2
