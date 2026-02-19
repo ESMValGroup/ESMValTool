@@ -22,6 +22,10 @@ def get_provenance_record(caption, ancestor_files):
     # associated recipe uses contains a caption string with placeholders
     # like {long_name} that are now populated from attributes dictionary.
     # note that for simple recipes, caption can be set here as a simple string
+
+    # Ensure ancestor_files is a list
+    if not isinstance(ancestor_files, list):
+        ancestor_files = [ancestor_files] if ancestor_files else []
     
     logger.debug("Creating provenance record.")
     record = {
@@ -63,6 +67,19 @@ def get_prefix(file_or_files):
     files = file_or_files if isinstance(file_or_files, list) else [file_or_files]
     return os.path.basename(files[0]).split("_")[0]
 
+def fix_cube_attributes(cube):
+    """
+    Convert cube attributes to a standard Python dict for compatibility with ESMValCore.
+    This is needed for Python 3.13 and newer Iris versions where CubeAttrsDict 
+    doesn't support .pop() with default values.
+    """
+    if hasattr(cube, 'attributes'):
+        print('FIXING CUBE ATTRIBUTES!')
+        cube.attributes = dict(cube.attributes)
+        print('FIXED CUBE ATTRIBUTES!')
+        print(cube.attributes)
+    return cube
+
 def compute_cube_diff(cfg, dict1, dict2, output_basename, skew=None):
     """
     Compute the difference between two cubes or skewness of the result and return a dictionary of results.
@@ -93,7 +110,7 @@ def compute_cube_diff(cfg, dict1, dict2, output_basename, skew=None):
             long_name="Skewness of difference",
             var_name="skewness",
             units="1",
-            attributes=diff_cube.attributes)
+            attributes=dict(diff_cube.attributes))
 
         result_cube = skew_cube
     else:
@@ -108,6 +125,7 @@ def compute_cube_diff(cfg, dict1, dict2, output_basename, skew=None):
     save_prefix = get_prefix(files)
     save_string = f"{save_prefix}_{output_basename}_{dataset1}"
     provenance_record = get_provenance_record(save_string, files)
+    #result_cube = fix_cube_attributes(result_cube)
     save_data(save_string, provenance_record, cfg, result_cube)
 
     return diff_results
