@@ -71,7 +71,7 @@ diagnostics:
       pr:
     additional_datasets:
       - {project: OBS6, dataset: CMAP, mip: Amon, tier: 2,
-        type: sat, version: v1}
+        type: reanaly, version: v1}
     scripts: null
 
 
