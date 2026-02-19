@@ -200,10 +200,10 @@ datasets:
 
   CERES-EBAF:
     tier: 2
-    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
-    last_access: 2022-07-01
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
+    last_access: 2026-02-06
     info: |
-      Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+      Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly Mean", "Regional" (0-360, -90-90)
       Enter "Email Address" and click on "Get Data"
       Wait for the processing to be finished and click on "Download"
 
@@ -612,6 +612,19 @@ datasets:
         v01.8/30days/
         v02.31/30days/
       Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-SNOW:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow/data
+    last_access: 2024-02-14
+    info: |
+      Download the data from:
+        scfg/AVHRR-MERGED/v2.0/
+        swe/MERGED/v2.0/
+      Put all scfg files in a single directory called 'scfg'
+      (no subdirectories with years or months).
+      Put all swe files in a single directory called 'swe'
+      (no subdirectories with years or months).
 
   ESACCI-SST:
     tier: 2

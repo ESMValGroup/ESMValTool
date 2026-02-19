@@ -4,7 +4,7 @@ attributes:
   dataset_id: TCOM-N2O
   version: '1.0'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'https://zenodo.org/record/7386001'
   reference: 'tcom_n2o'

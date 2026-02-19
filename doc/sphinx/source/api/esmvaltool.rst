@@ -29,6 +29,8 @@ Diagnostic Scripts
    esmvaltool.diag_scripts.monitor
    esmvaltool.diag_scripts.ocean
    esmvaltool.diag_scripts.seaborn_diag
+   esmvaltool.diag_scripts.plot_histogram
    esmvaltool.diag_scripts.portrait_plot
    esmvaltool.diag_scripts.climate_metrics.tcre
    esmvaltool.diag_scripts.climate_metrics.zec
+   esmvaltool.diag_scripts.hydrology.hour_of_max_precipitation

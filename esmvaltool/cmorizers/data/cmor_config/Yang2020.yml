@@ -4,7 +4,7 @@ attributes:
   dataset_id: Yang2020
   version: "1"
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: https://doi.org/10.26008/1912/bco-dmo.810032.1
   reference: yang2020
