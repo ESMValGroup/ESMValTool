@@ -8,7 +8,7 @@ attributes:
   dataset_id: CMEMS
   version: 'SEALEVEL-GLO-PHY-L4'
   tier: 2
-  modeling_realm: sat
+  type: sat
   source: ''
   reference: 'cmems'
   comment: ''

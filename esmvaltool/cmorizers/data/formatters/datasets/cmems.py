@@ -23,6 +23,7 @@ Download and processing instructions
 import logging
 import os
 import re
+from pathlib import Path
 
 import iris
 from esmvalcore.preprocessor import monthly_statistics
@@ -39,10 +40,11 @@ def _get_filepaths(in_dir, basename):
 
     for root, _dir, files in os.walk(in_dir, followlinks=True):
         if len(files) > 1:
-            return_files = []
-            for filename in files:
-                if regex.match(filename):
-                    return_files.append(os.path.join(root, filename))
+            return_files = [
+                (Path(root) / filename)
+                for filename in files
+                if regex.match(filename)
+            ]
 
             return_ls.append(return_files)
 
@@ -57,7 +59,6 @@ def _extract_variable(cmor_info, attrs, file_ls, out_dir):
     cube_prepls = iris.cube.CubeList()
     for filepaths in file_ls:
         cubels = iris.load(filepaths, standard_name)
-        # logger.info('Number of day files to concatenate: %d', len(filepaths))
         iris.util.equalise_attributes(cubels)
         iris.util.unify_time_units(cubels)
         # if cmor.frequency is monthly
@@ -72,7 +73,11 @@ def _extract_variable(cmor_info, attrs, file_ls, out_dir):
 
     utils.set_global_atts(cube, attrs)
     utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        var,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
