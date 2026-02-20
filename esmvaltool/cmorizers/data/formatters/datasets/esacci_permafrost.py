@@ -19,11 +19,11 @@ Download and processing instructions
    Put all files in a single directory.
 """
 
+import datetime
 import logging
 import os
 import os.path
 from copy import deepcopy
-from datetime import datetime
 from pathlib import Path
 
 import iris
@@ -52,8 +52,12 @@ def _fix_coordinates(cube: iris.cube.Cube, definition):
                 coord.convert_units("days since 1850-1-1 00:00:00.0")
                 time = coord.units.num2date(coord.points[0])
                 # set time bounds to (year-01-01 00:00, year+1-01-01 00:00)
-                start_date = datetime(time.year, 1, 1)
-                end_date = datetime(time.year + 1, 1, 1)
+                start_date = datetime.datetime(
+                    time.year, 1, 1, tzinfo=datetime.UTC
+                )
+                end_date = datetime.datetime(
+                    time.year + 1, 1, 1, tzinfo=datetime.UTC
+                )
                 if coord.bounds is not None:
                     coord.bounds = None
                 coord.bounds = np.array(
@@ -307,9 +311,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     )
 
     if start_date is None:
-        start_date = datetime(1997, 1, 1)
+        start_date = datetime.datetime(1997, 1, 1, tzinfo=datetime.UTC)
     if end_date is None:
-        end_date = datetime(2023, 12, 31)
+        end_date = datetime.datetime(2023, 12, 31, tzinfo=datetime.UTC)
 
     loop_date = start_date
     while loop_date <= end_date:

@@ -1,7 +1,7 @@
 """Script to download ESACCI-PERMAFROST."""
 
+import datetime
 import logging
-from datetime import datetime
 
 from dateutil import relativedelta
 
@@ -11,19 +11,19 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config: dict,
-    dataset: str,
-    dataset_info: dict,
-    start_date: datetime,
-    end_date: datetime,
-    overwrite: bool,
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ) -> None:
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -36,12 +36,12 @@ def download_dataset(
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(1997, 1, 1)
+        start_date = datetime.datetime(1997, 1, 1, tzinfo=datetime.UTC)
     if end_date is None:
-        end_date = datetime(2023, 12, 31)
+        end_date = datetime.datetime(2023, 12, 31, tzinfo=datetime.UTC)
 
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -57,7 +57,8 @@ def download_dataset(
         "permafrost_extent",
     ]
 
-    # download active layer thickness
+    # download cci variables active layer thickness, ground temperature and
+    # permafrost extent
     loop_date = start_date
     while loop_date <= end_date:
         for var in ccivars:
