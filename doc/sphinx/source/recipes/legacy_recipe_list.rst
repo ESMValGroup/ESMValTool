@@ -14,3 +14,6 @@ require a legacy version of ESMValTool to run.
    legacy/recipe_rainfarm
    legacy/recipe_schlund20jgr
    legacy/recipe_spei
+   legacy/recipe_wenzel14jgr
+   legacy/recipe_wenzel16jclim
+   legacy/recipe_wenzel16nat

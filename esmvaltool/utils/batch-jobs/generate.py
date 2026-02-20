@@ -163,15 +163,6 @@ SPECIAL_RECIPES = {
         "time": "#SBATCH --time=08:00:00 \n",
         "memory": "#SBATCH --constraint=512G \n",
     },
-    "recipe_schlund20jgr_gpp_abs_rcp85": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_schlund20jgr_gpp_change_1pct": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_schlund20jgr_gpp_change_rcp85": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
     "recipe_sea_surface_salinity": {
         "partition": "#SBATCH --partition=compute \n",
     },
@@ -189,12 +180,6 @@ SPECIAL_RECIPES = {
         "partition": "#SBATCH --partition=compute \n",
     },
     "recipe_wflow": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_wenzel16jclim": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_wenzel16nat": {
         "partition": "#SBATCH --partition=compute \n",
     },
 }
@@ -222,7 +207,6 @@ MAX_PARALLEL_TASKS = {
     "recipe_lauer22jclim_fig5_lifrac": 1,
     "recipe_smpi": 1,
     "recipe_smpi_4cds": 1,
-    "recipe_wenzel14jgr": 1,
 }
 
 DISTRIBUTED_RECIPES = [

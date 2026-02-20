@@ -86,14 +86,11 @@ Future projections
    recipe_li17natcc
    recipe_meehl20sciadv
    recipe_emergent_constraints
-   recipe_wenzel14jgr
    recipe_schlund20esd
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
    recipe_kcs
-   recipe_wenzel16jclim
-   recipe_wenzel16nat
    recipe_tcr
    recipe_tcre
    recipe_tebaldi21esd

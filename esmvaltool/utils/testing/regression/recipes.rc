@@ -14,7 +14,6 @@
    "recipe_bock20jgr.yml",
    "recipe_capacity_factor.yml",
    "recipe_carvalhais14nat.yml",
-   "recipe_climwip_brunner2019_med.yml",
    "recipe_climwip_brunner20esd.yml",
    "recipe_climwip_test_basic.yml",
    "recipe_climwip_test_performance_sigma.yml",
@@ -81,9 +80,6 @@
    "recipe_toymodel.yml",
    "recipe_validation.yml",
    "recipe_validation_CMIP6.yml",
-   "recipe_wenzel14jgr.yml",
-   "recipe_wenzel16jclim.yml",
-   "recipe_wenzel16nat.yml",
    "recipe_williams09climdyn_CREM.yml",
    "recipe_zmnam.yml",
    "cmorizers/recipe_era5-land.yml",
@@ -106,7 +102,4 @@
    "hydrology/recipe_marrmot.yml",
    "hydrology/recipe_pcrglobwb.yml",
    "hydrology/recipe_wflow.yml",
-   "schlund20jgr/recipe_schlund20jgr_gpp_abs_rcp85.yml",
-   "schlund20jgr/recipe_schlund20jgr_gpp_change_1pct.yml",
-   "schlund20jgr/recipe_schlund20jgr_gpp_change_rcp85.yml"
 ] %}

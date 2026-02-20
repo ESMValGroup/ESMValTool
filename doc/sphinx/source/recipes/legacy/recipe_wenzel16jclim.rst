@@ -1,7 +1,13 @@
 .. _recipes_wenzel16jclim:
 
-Multiple ensemble diagnostic regression (MDER) for constraining future austral jet position
-===========================================================================================
+Legacy recipe: Multiple ensemble diagnostic regression (MDER) for constraining future austral jet position
+==========================================================================================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe
+   is only included for documentation purposes and not maintained any more. The
+   last known ESMValTool version supporting this recipe is version 2.13.0.
 
 Overview
 --------
@@ -28,12 +34,12 @@ The following plots are reproduced:
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in archive/legacy_recipes
 
    * recipe_wenzel16jclim.yml
 
 
-Diagnostics are stored in diag_scripts/
+Diagnostics are stored in archive/legacy_diag_scripts
 
    * austral_jet/asr.ncl
    * austral_jet/main.ncl
