@@ -3,7 +3,7 @@
 ---
 documentation:
   description: |
-    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    Test recipe for OBS, no preprocessor or diagnostics are applied,
     just to check correct reading of the CMORized data.
 
   title: Recipe to test run all obs cmorizers.
@@ -178,6 +178,17 @@ diagnostics:
       - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
          version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
     # yamllint enable rule:octal-values
+    scripts: null
+
+
+  EN4:
+    description: EN4 check
+    variables:
+      thetao:
+      so:
+    additional_datasets:
+      - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly,
+         version: 4.2.2, tier: 2, start_year: 1900, end_year: 2024}
     scripts: null
 
 
