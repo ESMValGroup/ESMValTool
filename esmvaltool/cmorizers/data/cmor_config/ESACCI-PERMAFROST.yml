@@ -4,7 +4,7 @@ attributes:
   dataset_id: ESACCI-PERMAFROST
   version: 'v5.0NH'
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: 'ftp://dap.ceda.ac.uk/neodc/esacci/permafrost'
   reference: "esacci-permafrost"
