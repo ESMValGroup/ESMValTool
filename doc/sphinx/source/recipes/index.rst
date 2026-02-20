@@ -138,6 +138,7 @@ Ocean
    recipe_enso_clivar
    recipe_oceans
    recipe_sea_surface_salinity
+   recipe_steric_patterns
    recipe_russell18jgr
 
 Other
