@@ -53,10 +53,16 @@ def _fix_coordinates(cube: iris.cube.Cube, definition):
                 time = coord.units.num2date(coord.points[0])
                 # set time bounds to (year-01-01 00:00, year+1-01-01 00:00)
                 start_date = datetime.datetime(
-                    time.year, 1, 1, tzinfo=datetime.UTC
+                    time.year,
+                    1,
+                    1,
+                    tzinfo=datetime.UTC,
                 )
                 end_date = datetime.datetime(
-                    time.year + 1, 1, 1, tzinfo=datetime.UTC
+                    time.year + 1,
+                    1,
+                    1,
+                    tzinfo=datetime.UTC,
                 )
                 if coord.bounds is not None:
                     coord.bounds = None
@@ -95,7 +101,7 @@ def _regrid_infile(infile, outfile, weightsfile):
 
     weightsfile_ok = False
 
-    if os.path.isfile(weightsfile):
+    if Path(weightsfile).exists():
         weights = Dataset(weightsfile, "r")
         # make sure dimensions of source and target grids match
         # expected values
@@ -122,8 +128,7 @@ def _regrid_infile(infile, outfile, weightsfile):
         )
         # check if path for weight files exists, if not create folder
         path = os.path.split(weightsfile)[0]
-        if not os.path.exists(path):
-            os.makedirs(path)
+        Path(path).mkdir(parents=True, exist_ok=True)
         # generate weights
         cdo.genbil(
             f"{target_grid}",
@@ -170,9 +175,9 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     # load input file (make sure only the variables specified in the config file
     # as "raw" are loaded)
     if type(var["raw"]) is list:
-        constraints = []
-        for rawname in var["raw"]:
-            constraints.append(NameConstraint(var_name=rawname))
+        constraints = [
+            NameConstraint(var_name=rawname) for rawname in var["raw"]
+        ]
     else:
         constraints = NameConstraint(var_name=var["raw"])
 
@@ -290,7 +295,7 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
         attributes,
         unlimited_dimensions=["time"],
     )
-    os.remove(regridded_file)  # delete temporary file
+    Path(regridded_file).unlink()  # delete temporary file
     logger.info("Finished CMORizing %s", in_file)
 
 
