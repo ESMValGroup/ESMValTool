@@ -1,10 +1,21 @@
-"""Script to download ESACCI-AEROSOL from CCI CEDA ftp."""
+"""Script to download ESACCI-AEROSOL data.
 
+From CCI CEDA ftp (AATSR) and via Copernicus Climate Data Store (SLSTR).
+"""
+
+import gzip
+import logging
+import shutil
+import zipfile
 from datetime import datetime
+from pathlib import Path
 
+import cdsapi
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+
+logger = logging.getLogger(__name__)
 
 
 def download_dataset(
@@ -33,9 +44,27 @@ def download_dataset(
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(1997, 1, 1)
+        aatsr_year1 = 1997
+        slstr_year1 = 2017
+    else:
+        aatsr_year1 = start_date.year
+        slstr_year1 = start_date.year
     if end_date is None:
-        end_date = datetime(2011, 1, 1)
+        aatsr_year2 = 2011
+        slstr_year2 = 2022
+    else:
+        aatsr_year2 = end_date.year
+        slstr_year2 = end_date.year
+
+    # =============================
+    # Download AATSR data from CEDA
+    # =============================
+
+    if start_date is None:
+        start_date = datetime(aatsr_year1, 1, 1)
+    if end_date is None:
+        end_date = datetime(aatsr_year2, 12, 31)
+
     loop_date = start_date
 
     downloader = CCIDownloader(
@@ -46,12 +75,147 @@ def download_dataset(
     )
     downloader.connect()
 
-    while loop_date <= end_date:
-        year = loop_date.year
-        if year < 2003:
-            downloader.set_cwd("ATSR2_SU/L3/v4.21/MONTHLY")
-        else:
-            downloader.set_cwd("AATSR_SU/L3/v4.21/MONTHLY")
+    name = "AATSR"
+    algorithm = "SU"
+    version = "v4.3"
 
-        downloader.download_year(loop_date.year)
+    # download monthly AATSR data
+
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = "ATSR2"
+        else:
+            instrument = "AATSR"
+        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/MONTHLY"
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.download_folder(
+                f"{loop_date.year}", f"{name}-{algorithm}-{version}-monthly"
+            )
+        else:
+            logger.info("%d: no data found", loop_date.year)
         loop_date += relativedelta.relativedelta(years=1)
+
+    # download daily AATSR data
+
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = "ATSR2"
+        else:
+            instrument = "AATSR"
+        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/DAILY"
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
+            if downloader.exists(f"{loop_date.month:02}"):
+                downloader.download_folder(
+                    f"{loop_date.month:02}",
+                    f"{name}-{algorithm}-{version}-daily",
+                )
+            else:
+                logger.info(
+                    "%d/%d: no data found", loop_date.year, loop_date.month
+                )
+        else:
+            logger.info("%d: no data found", loop_date.year)
+        loop_date += relativedelta.relativedelta(months=1)
+
+    # ================================================
+    # Download SLSTR data from CDS (daily and monthly)
+    # ================================================
+
+    raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
+    output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
+    output_folder.mkdir(parents=True, exist_ok=True)
+
+    cds_url = "https://cds.climate.copernicus.eu/api"
+
+    name = "SLSTR"
+    algorithm = "SU"
+    version = "v1.12"
+
+    requests = {}
+
+    # The CDS requests have to be done for each month separately to avoid the
+    # error "cost limits exceeded - Your request is too large, please
+    # reduce your selection.".
+    # Note: AOD and fine mode AOD are both selected with
+    #       "variable": "aerosol_optical_depth", so no need to have two separate
+    #       requests for "aerosol_optical_depth" and
+    #       "fine_mode_aerosol_optical_depth"
+
+    for year in range(slstr_year1, slstr_year2):
+        for month in range(1, 13):
+            requests.update(
+                {
+                    "aod_slstr_daily_" + str(year) + f"{month:02d}": {
+                        "time_aggregation": "daily_average",
+                        "variable": "aerosol_optical_depth",
+                        "sensor_on_satellite": [
+                            "slstr_on_sentinel_3a",
+                            "slstr_on_sentinel_3b",
+                        ],
+                        "algorithm": ["swansea"],
+                        "year": str(year),
+                        "month": f"{month:02d}",
+                        "day": [f"{m:02d}" for m in range(1, 32)],
+                        "version": ["v1_12"],
+                    },
+                    "aod_slstr_monthly_" + str(year) + f"{month:02d}": {
+                        "time_aggregation": "monthly_average",
+                        "variable": "aerosol_optical_depth",
+                        "sensor_on_satellite": [
+                            "slstr_on_sentinel_3a",
+                            "slstr_on_sentinel_3b",
+                        ],
+                        "algorithm": ["swansea"],
+                        "year": str(year),
+                        "month": f"{month:02d}",
+                        "version": ["v1_12"],
+                    },
+                }
+            )
+
+    cds_client = cdsapi.Client(cds_url)
+
+    for var_name, request in requests.items():
+        if "daily" in var_name:
+            outdir = output_folder / f"{name}-{algorithm}-{version}-daily/"
+        else:
+            outdir = output_folder / f"{name}-{algorithm}-{version}-monthly"
+        outdir.mkdir(parents=True, exist_ok=True)
+
+        logger.info("Downloading %s data to %s", var_name, outdir)
+
+        file_path = outdir / f"{var_name}.gz"
+
+        if file_path.exists() and not overwrite:
+            logger.info(
+                "File %s already exists. Skipping download.",
+                file_path,
+            )
+            continue
+
+        try:
+            cds_client.retrieve(
+                "satellite-aerosol-properties",
+                request,
+                file_path.as_posix(),
+            )
+            # Handle both .gz and .zip files
+            with open(file_path, "rb") as file:
+                magic = file.read(2)
+
+            if magic == b"PK":  # ZIP file signature
+                logger.info("Detected ZIP file: %s", file_path)
+                with zipfile.ZipFile(file_path, "r") as zip_ref:
+                    zip_ref.extractall(outdir)
+            else:
+                logger.info("Detected GZIP file: %s", file_path)
+                with gzip.open(file_path, "rb") as f_in:
+                    with open(outdir / file_path.stem, "wb") as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+        except Exception as ex:
+            logger.info("%s: no data downloaded for %s", type(ex), var_name)

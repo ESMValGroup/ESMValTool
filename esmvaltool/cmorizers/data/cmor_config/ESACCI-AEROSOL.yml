@@ -1,0 +1,114 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-AEROSOL
+  version: 'SU'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS
+  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/ and https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties'
+  reference: ["esacci-aerosol"]
+  comment: "Note that the variable *Stderr is an uncertainty not a standard error."
+
+# Variables to cmorize
+variables:
+# monthly means (AATSR)
+  aatsr_od550aer_month:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od550aer
+    raw: AOD550_mean
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  aatsr_od870aer_month:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od870aer
+    raw: AOD870_mean
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  aatsr_od550lt1aer_month:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od550lt1aer
+    raw: FM_AOD550_mean
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  aatsr_abs550aer_month:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: abs550aer
+    raw: AAOD550_mean
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  aatsr_od550aerStderr_month:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od550aerStderr
+    raw: AOD550_uncertainty
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  aatsr_od870aerStderr_month:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od870aerStderr
+    raw: AOD870_uncertainty
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+# monthly means (SLSTR)
+  slstr_od550aer_month:
+    version: SLSTR-SU-v1.12
+    mip: aero
+    short_name: od550aer
+    raw: AOD550_mean
+    file: '{year}??-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-MONTHLY-v1.12.nc'
+  slstr_od550lt1aer_month:
+    version: SLSTR-SU-v1.12
+    mip: aero
+    short_name: od550lt1aer
+    raw: FM_AOD550_mean
+    file: '{year}??-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-MONTHLY-v1.12.nc'
+# daily data (AATSR)
+  aatsr_od550aer_day:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od550aer
+    raw: AOD550_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  aatsr_od870aer_day:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od870aer
+    raw: AOD870_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  aatsr_od550lt1aer_day:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od550lt1aer
+    raw: FM_AOD550_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  aatsr_abs550aer_day:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: abs550aer
+    raw: AAOD550_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  aatsr_od550aerStderr_day:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od550aerStderr
+    raw: AOD550_uncertainty
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  aatsr_od870aerStderr_day:
+    version: AATSR-SU-v4.3
+    mip: aero
+    short_name: od870aerStderr
+    raw: AOD870_uncertainty
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+# daily data (SLSTR)
+  slstr_od550aer_day:
+    version: SLSTR-SU-v1.12
+    mip: aero
+    short_name: od550aer
+    raw: AOD550_mean
+    file: '{year}????-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-DAILY-v1.12.nc'
+  slstr_od550lt1aer_day:
+    version: SLSTR-SU-v1.12
+    mip: aero
+    short_name: od550lt1aer
+    raw: FM_AOD550_mean
+    file: '{year}????-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-DAILY-v1.12.nc'
