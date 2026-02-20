@@ -541,17 +541,18 @@ datasets:
   ESACCI-OZONE:
     tier: 2
     source: https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
-    last_access: 2025-02-11
+    last_access: 2026-02-12
     info: |
       Download the data from:
             GTO-ECV total column (variable toz)
             Select the following from the CDS:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Atm. mole content of ozone"
-            Vertical aggregation = "Total column"
-            Sensor = "MERGED-UV"
+            Vertical aggregation = "Total columns UV"
+            Sensor = "GTO-ECV"
             Year = select all (1995-2023)
             Month = select all (1-12)
             Version = "v2000"
@@ -559,16 +560,35 @@ datasets:
             SAGE-CCI-OMPS (variable o3)
             Select the following options from the same link:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
-            Vertical aggregation = " Vertical profiles from limb sensors"
-            Sensor = " CMZM (Monthly zonal mean merged concentration product from limb
-            sensors ACE, GOMOS, MIPAS, OMPS, OSIRIS, SAGE-2 and SCIAMACHY)"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "SAGE-CCI-OMPS_CONC"
             Year = select all (1984-2022)
             Month = select all (1-12)
             Version = "v0008"
-      Put all files under a single directory (no subdirectories with years).
+
+            MEGRIDOP (variable o3)
+            Select the following options from the same link:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
+
+            Processing Level = "Level 3"
+            Variable = "Mole concentration of ozone in air"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "MEGRIDOP_CONC"
+            Year = select all (2001-2022)
+            Month = select all (1-12)
+            Version = "v0004"
+
+            IASI (variables o3, toz)
+            Download from BIRA WebDAV server: https://webdav.aeronomie.be
+            Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/
+            Username: o3_cci_public
+            No password (leave empty)
+            Download each year (yyyy) into separate folders named "IASI_yyyy"
 
   ESACCI-SEAICE:
     tier: 2
