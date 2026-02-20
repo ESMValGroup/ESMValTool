@@ -147,6 +147,7 @@ def _regrid_infile(infile, outfile, weightsfile):
 
 
 def _extract_variable(in_file, var, cfg, out_dir, year):
+    """Extract, process and save variable."""
     logger.info(
         "CMORizing variable '%s' from input file '%s'",
         var["short_name"],
