@@ -74,7 +74,6 @@
    "recipe_smpi.yml",
    "recipe_smpi_4cds.yml",
    "recipe_snowalbedo.yml",
-   "recipe_spei.yml",
    "recipe_tcr.yml",
    "recipe_thermodyn_diagtool.yml",
    "recipe_toymodel.yml",
