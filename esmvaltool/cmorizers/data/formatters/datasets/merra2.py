@@ -24,7 +24,6 @@ from datetime import datetime
 import cf_units
 import iris
 from dask import array as da
-from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -247,8 +246,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
                 attributes["component_raw_2"] = components[1]
                 attributes["component_operation"] = oper
                 break
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip"], var["short_name"])
+    definition = cfg["cmor_table"].get_variable(var["mip"], var["short_name"])
 
     cube = _load_cube(in_files, var)
 
