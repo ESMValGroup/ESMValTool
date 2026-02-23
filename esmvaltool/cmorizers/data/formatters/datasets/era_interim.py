@@ -529,7 +529,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     cfg["attributes"]["comment"] = (
         cfg["attributes"]["comment"].strip().format(year=datetime.now().year)
     )
-    cfg.pop("cmor_table")
 
     n_workers = cfg_user.get("max_parallel_tasks")
     if n_workers is None:
