@@ -283,7 +283,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year, month):
         ap_half = cubes.extract_cube("atmosphere_pressure_grid")
         ap_half.data = np.ma.masked_invalid(ap_half.data)
         ap_half = monthly_statistics(ap_half, operator="mean")
-        # reoder air pressure (aux coordinate) before adding to cube
+        # reorder air pressure (aux coordinate) before adding to cube
         # (otherwise, data of aux coordiante remains in original order)
         ap_half.transpose([0, 1, 3, 2])
         ap_full = cube.copy()
