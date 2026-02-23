@@ -4,7 +4,7 @@ attributes:
   dataset_id: ESACCI-AEROSOL
   version: 'SU'
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/ and https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties'
   reference: ["esacci-aerosol"]

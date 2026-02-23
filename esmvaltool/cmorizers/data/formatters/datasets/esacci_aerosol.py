@@ -55,11 +55,11 @@ Modification history
    20250811-lauer_axel: written.
 """
 
+import datetime
 import glob
 import logging
 import os
 from copy import deepcopy
-from datetime import datetime
 
 import cf_units
 import iris
@@ -82,7 +82,9 @@ def _create_masked_cube(cube, year, month, day):
     dataset_time_unit = str(masked_cube.coord("time").units)
     dataset_time_calender = masked_cube.coord("time").units.calendar
     # Convert datetime
-    newtime = datetime(year=year, month=month, day=day)
+    newtime = datetime.datetime(
+        year=year, month=month, day=day, tzinfo=datetime.UTC
+    )
     newtime = cf_units.date2num(
         newtime, dataset_time_unit, dataset_time_calender
     )
@@ -115,6 +117,7 @@ def _fix_coordinates(cube, definition):
 
 
 def _extract_variable(in_files, var, cfg, out_dir, is_daily):
+    """Extract, process and save variable to netCDF."""
     logger.info(
         "CMORizing variable '%s' from input files '%s'",
         var["short_name"],
@@ -154,9 +157,13 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
         month0 = int(time0[4:6])
         day0 = int(time0[6:8])
         if is_daily:
-            timestamp = datetime(year0, month0, day0)
+            timestamp = datetime.datetime(
+                year0, month0, day0, tzinfo=datetime.UTC
+            )
         else:
-            timestamp = datetime(year0, month0, 15)
+            timestamp = datetime.datetime(
+                year0, month0, 15, tzinfo=datetime.UTC
+            )
         time_coord = iris.coords.DimCoord(
             cf_units.date2num(timestamp, time_unit, time_calendar),
             standard_name="time",
@@ -197,8 +204,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     # cubes containing only nan to fill possible gaps
 
     if is_daily:
-        loop_date = datetime(year0, 1, 1)
-        while loop_date <= datetime(year0, 12, 31):
+        loop_date = datetime.datetime(year0, 1, 1, tzinfo=datetime.UTC)
+        while loop_date <= datetime.datetime(
+            year0, 12, 31, tzinfo=datetime.UTC
+        ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
                 if loop_date == cubetime:
@@ -215,8 +224,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                 full_list.append(masked_cube)
             loop_date += relativedelta.relativedelta(days=1)
     else:
-        loop_date = datetime(year0, 1, 15)
-        while loop_date <= datetime(year0, 12, 31):
+        loop_date = datetime.datetime(year0, 1, 15, tzinfo=datetime.UTC)
+        while loop_date <= datetime.datetime(
+            year0, 12, 31, tzinfo=datetime.UTC
+        ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
                 if loop_date == cubetime:
@@ -246,9 +257,6 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
 
     # Fix units
     cube.units = definition.units
-
-    #    # Fix data type
-    #    cube.data = cube.core_data().astype('float32')
 
     # Roll longitude
     cube.coord("longitude").points = cube.coord("longitude").points + 180.0
@@ -297,11 +305,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for var_name, var in cfg["variables"].items():
         # Define dataset-specific default time ranges
         if var_name.find("aatsr") >= 0:
-            dataset_start = datetime(1997, 1, 1)
-            dataset_end = datetime(2011, 12, 31)
+            dataset_start = datetime.datetime(1997, 1, 1, tzinfo=datetime.UTC)
+            dataset_end = datetime.datetime(2011, 12, 31, tzinfo=datetime.UTC)
         elif var_name.find("slstr") >= 0:
-            dataset_start = datetime(2017, 1, 1)
-            dataset_end = datetime(2022, 12, 31)
+            dataset_start = datetime.datetime(2017, 1, 1, tzinfo=datetime.UTC)
+            dataset_end = datetime.datetime(2022, 12, 31, tzinfo=datetime.UTC)
         else:
             errmsg = f"Unknown dataset for variable {var_name}"
             raise ValueError(errmsg)

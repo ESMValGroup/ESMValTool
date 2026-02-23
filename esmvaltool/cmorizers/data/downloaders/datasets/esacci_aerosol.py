@@ -3,12 +3,11 @@
 From CCI CEDA ftp (AATSR) and via Copernicus Climate Data Store (SLSTR).
 """
 
+import datetime
 import gzip
 import logging
 import shutil
 import zipfile
-from datetime import datetime
-from pathlib import Path
 
 import cdsapi
 from dateutil import relativedelta
@@ -61,9 +60,9 @@ def download_dataset(
     # =============================
 
     if start_date is None:
-        start_date = datetime(aatsr_year1, 1, 1)
+        start_date = datetime.datetime(aatsr_year1, 1, 1, tzinfo=datetime.UTC)
     if end_date is None:
-        end_date = datetime(aatsr_year2, 12, 31)
+        end_date = datetime.datetime(aatsr_year2, 12, 31, tzinfo=datetime.UTC)
 
     loop_date = start_date
 
@@ -126,7 +125,7 @@ def download_dataset(
     # Download SLSTR data from CDS (daily and monthly)
     # ================================================
 
-    raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
+    raw_obs_dir = original_data_dir
     output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
     output_folder.mkdir(parents=True, exist_ok=True)
 
