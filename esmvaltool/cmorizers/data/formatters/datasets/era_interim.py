@@ -175,14 +175,16 @@ def _fix_coordinates(cube, cmor_table, definition):
     if "height10m" in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.0)
 
-    for coord_def in definition.coordinates.values():
-        axis = coord_def.axis
+    for original_coord_def in definition.coordinates.values():
+        axis = original_coord_def.axis
 
         # ERA-Interim cloud parameters are downloaded on pressure levels
         # (CMOR standard = generic (hybrid) levels, alevel)
-        if axis == "" and coord_def.name == "alevel":
+        if axis == "" and original_coord_def.name == "alevel":
             axis = "Z"
             coord_def = cmor_table.coords["plev19"]
+        else:
+            coord_def = original_coord_def
 
         coord = cube.coord(axis=axis)
         if axis == "T":
