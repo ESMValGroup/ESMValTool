@@ -56,10 +56,9 @@ Modification history
 """
 
 import datetime
-import glob
 import logging
-import os
 from copy import deepcopy
+from pathlib import Path
 
 import cf_units
 import iris
@@ -83,10 +82,15 @@ def _create_masked_cube(cube, year, month, day):
     dataset_time_calender = masked_cube.coord("time").units.calendar
     # Convert datetime
     newtime = datetime.datetime(
-        year=year, month=month, day=day, tzinfo=datetime.UTC
+        year=year,
+        month=month,
+        day=day,
+        tzinfo=datetime.UTC,
     )
     newtime = cf_units.date2num(
-        newtime, dataset_time_unit, dataset_time_calender
+        newtime,
+        dataset_time_unit,
+        dataset_time_calender,
     )
     masked_cube.coord("time").points = float(newtime)
 
@@ -158,11 +162,17 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
         day0 = int(time0[6:8])
         if is_daily:
             timestamp = datetime.datetime(
-                year0, month0, day0, tzinfo=datetime.UTC
+                year0,
+                month0,
+                day0,
+                tzinfo=datetime.UTC,
             )
         else:
             timestamp = datetime.datetime(
-                year0, month0, 15, tzinfo=datetime.UTC
+                year0,
+                month0,
+                15,
+                tzinfo=datetime.UTC,
             )
         time_coord = iris.coords.DimCoord(
             cf_units.date2num(timestamp, time_unit, time_calendar),
@@ -170,14 +180,14 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
             var_name="time",
             units=cf_units.Unit(time_unit, calendar=time_calendar),
         )
-        cube = iris.util.new_axis(cube)
-        cube.add_dim_coord(time_coord, 0)
+        newcube = iris.util.new_axis(cube)
+        newcube.add_dim_coord(time_coord, 0)
 
         for attr in drop_attrs:
-            if attr in cube.attributes:
-                cube.attributes.pop(attr)
+            if attr in newcube.attributes:
+                newcube.attributes.pop(attr)
 
-        new_list.append(cube)
+        new_list.append(newcube)
 
     # make sure there is one cube for every day (daily data) or
     # every month (monthly data) of the year
@@ -206,7 +216,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     if is_daily:
         loop_date = datetime.datetime(year0, 1, 1, tzinfo=datetime.UTC)
         while loop_date <= datetime.datetime(
-            year0, 12, 31, tzinfo=datetime.UTC
+            year0,
+            12,
+            31,
+            tzinfo=datetime.UTC,
         ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
@@ -216,10 +229,14 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                     break
             if not date_available:
                 logger.debug(
-                    "No data available for %s", loop_date.strftime("%Y-%m-%d")
+                    "No data available for %s",
+                    loop_date.strftime("%Y-%m-%d"),
                 )
                 masked_cube = _create_masked_cube(
-                    new_list[0], loop_date.year, loop_date.month, loop_date.day
+                    new_list[0],
+                    loop_date.year,
+                    loop_date.month,
+                    loop_date.day,
                 )
                 full_list.append(masked_cube)
             loop_date += relativedelta.relativedelta(days=1)
@@ -236,7 +253,8 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                     break
             if not date_available:
                 logger.debug(
-                    "No data available for %s", loop_date.strftime("%Y-%m")
+                    "No data available for %s",
+                    loop_date.strftime("%Y-%m"),
                 )
                 masked_cube = _create_masked_cube(
                     new_list[0], loop_date.year, loop_date.month, loop_date.day
@@ -263,7 +281,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     nlon = len(cube.coord("longitude").points)
     cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
     cube.attributes.update(
-        {"geospatial_lon_min": "0", "geospatial_lon_max": "360"}
+        {"geospatial_lon_min": "0", "geospatial_lon_max": "360"},
     )
 
     # Fix coordinates
@@ -275,12 +293,15 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     version = attributes["version"]
-    if is_daily:
-        attributes["version"] = f"{version}-DAILY"
-    else:
-        attributes["version"] = f"{version}-MONTHLY"
+    attributes["version"] = (
+        f"{version}-DAILY" if is_daily else f"{version}-MONTHLY"
+    )
     save_variable(
-        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        unlimited_dimensions=["time"],
     )
     logger.info("Finished CMORizing %s", ", ".join(in_files))
 
@@ -306,10 +327,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         # Define dataset-specific default time ranges
         if var_name.find("aatsr") >= 0:
             dataset_start = datetime.datetime(1997, 1, 1, tzinfo=datetime.UTC)
-            dataset_end = datetime.datetime(2011, 12, 31, tzinfo=datetime.UTC)
+            #            dataset_end = datetime.datetime(2011, 12, 31, tzinfo=datetime.UTC)
+            dataset_end = datetime.datetime(1997, 12, 31, tzinfo=datetime.UTC)
         elif var_name.find("slstr") >= 0:
             dataset_start = datetime.datetime(2017, 1, 1, tzinfo=datetime.UTC)
-            dataset_end = datetime.datetime(2022, 12, 31, tzinfo=datetime.UTC)
+            #            dataset_end = datetime.datetime(2022, 12, 31, tzinfo=datetime.UTC)
+            dataset_end = datetime.datetime(2017, 12, 31, tzinfo=datetime.UTC)
         else:
             errmsg = f"Unknown dataset for variable {var_name}"
             raise ValueError(errmsg)
@@ -338,16 +361,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.info("Input data for %s is monthly data", var_name)
             daily = False
         while loop_date <= end_date_x:
-            if daily:
-                freqstr = "daily"
-            else:
-                freqstr = "monthly"
-            filepattern = os.path.join(
-                in_dir,
-                f"{glob_attrs['version']}-{freqstr}",
-                var["file"].format(year=loop_date.year),
-            )
-            in_files = glob.glob(filepattern)
+            freqstr = "daily" if daily else "monthly"
+            filepattern = var["file"].format(year=loop_date.year)
+            srcdir = Path(in_dir) / f"{glob_attrs['version']}-{freqstr}"
+            in_files = [str(p) for p in srcdir.glob(pattern=filepattern)]
             if not in_files:
                 logger.info(
                     "%d: no data not found for variable %s",

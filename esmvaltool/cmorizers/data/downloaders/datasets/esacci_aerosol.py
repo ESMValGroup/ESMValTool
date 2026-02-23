@@ -82,15 +82,13 @@ def download_dataset(
 
     loop_date = start_date
     while loop_date <= end_date:
-        if loop_date.year < 2003:
-            instrument = "ATSR2"
-        else:
-            instrument = "AATSR"
+        instrument = "ATSR2" if loop_date.year < 2003 else "AATSR"
         rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/MONTHLY"
         downloader.set_cwd(rel_base_dir)
         if downloader.exists(f"{loop_date.year}"):
             downloader.download_folder(
-                f"{loop_date.year}", f"{name}-{algorithm}-{version}-monthly"
+                f"{loop_date.year}",
+                f"{name}-{algorithm}-{version}-monthly",
             )
         else:
             logger.info("%d: no data found", loop_date.year)
@@ -100,10 +98,7 @@ def download_dataset(
 
     loop_date = start_date
     while loop_date <= end_date:
-        if loop_date.year < 2003:
-            instrument = "ATSR2"
-        else:
-            instrument = "AATSR"
+        instrument = "ATSR2" if loop_date.year < 2003 else "AATSR"
         rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/DAILY"
         downloader.set_cwd(rel_base_dir)
         if downloader.exists(f"{loop_date.year}"):
@@ -115,7 +110,9 @@ def download_dataset(
                 )
             else:
                 logger.info(
-                    "%d/%d: no data found", loop_date.year, loop_date.month
+                    "%d/%d: no data found",
+                    loop_date.year,
+                    loop_date.month,
                 )
         else:
             logger.info("%d: no data found", loop_date.year)
@@ -174,7 +171,7 @@ def download_dataset(
                         "month": f"{month:02d}",
                         "version": ["v1_12"],
                     },
-                }
+                },
             )
 
     cds_client = cdsapi.Client(cds_url)
