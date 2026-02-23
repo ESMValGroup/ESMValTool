@@ -315,7 +315,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize ESACCI-AEROSOL dataset."""
     glob_attrs = cfg["attributes"]
-    glob_version = glob_attrs["version"] if "version" in glob_attrs else ""
+    glob_version = glob_attrs.get("version", "")
 
     logger.info(
         "Starting cmorization for tier%s OBS files: %s",
