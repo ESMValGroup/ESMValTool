@@ -1656,7 +1656,7 @@ class MultiDatasets(MonitorBase):
         # https://github.com/SciTools/cartopy/issues/2468)
         fix_cartopy_bug = all(
             [
-                self.plots[plot_type]["projection"] is not None,
+                self.plots[plot_type]["projection"] == "Robinson",
                 plot_func is iris.plot.contourf,
             ],
         )

@@ -540,8 +540,6 @@ Instead, the CMORization is performed 'on the fly' when running a recipe.
 Native datasets can be hosted either under a dedicated project (usually done
 for native model output) or under project ``native6`` (usually done for native
 reanalysis/observational products).
-These projects are configured in the :ref:`config-developer file
-<esmvalcore:configure_native_models>`.
 
 A list of all currently supported native datasets is :ref:`provided here
 <esmvalcore:read_native_datasets>`.
