@@ -67,7 +67,7 @@ from dask import array as da
 from dateutil import relativedelta
 from esmvalcore.cmor.table import CMOR_TABLES
 
-from ...utilities import save_variable
+from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
@@ -243,7 +243,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     else:
         loop_date = datetime.datetime(year0, 1, 15, tzinfo=datetime.UTC)
         while loop_date <= datetime.datetime(
-            year0, 12, 31, tzinfo=datetime.UTC
+            year0,
+            12,
+            31,
+            tzinfo=datetime.UTC,
         ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
@@ -257,7 +260,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                     loop_date.strftime("%Y-%m"),
                 )
                 masked_cube = _create_masked_cube(
-                    new_list[0], loop_date.year, loop_date.month, loop_date.day
+                    new_list[0],
+                    loop_date.year,
+                    loop_date.month,
+                    loop_date.day,
                 )
                 full_list.append(masked_cube)
             loop_date += relativedelta.relativedelta(months=1)
@@ -296,7 +302,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     attributes["version"] = (
         f"{version}-DAILY" if is_daily else f"{version}-MONTHLY"
     )
-    save_variable(
+    utils.save_variable(
         cube,
         cube.var_name,
         out_dir,
@@ -309,10 +315,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize ESACCI-AEROSOL dataset."""
     glob_attrs = cfg["attributes"]
-    if "version" in glob_attrs:
-        glob_version = glob_attrs["version"]
-    else:
-        glob_version = ""
+    glob_version = glob_attrs["version"] if "version" in glob_attrs else ""
 
     logger.info(
         "Starting cmorization for tier%s OBS files: %s",
@@ -327,12 +330,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         # Define dataset-specific default time ranges
         if var_name.find("aatsr") >= 0:
             dataset_start = datetime.datetime(1997, 1, 1, tzinfo=datetime.UTC)
-            #            dataset_end = datetime.datetime(2011, 12, 31, tzinfo=datetime.UTC)
-            dataset_end = datetime.datetime(1997, 12, 31, tzinfo=datetime.UTC)
+            dataset_end = datetime.datetime(2011, 12, 31, tzinfo=datetime.UTC)
         elif var_name.find("slstr") >= 0:
             dataset_start = datetime.datetime(2017, 1, 1, tzinfo=datetime.UTC)
-            #            dataset_end = datetime.datetime(2022, 12, 31, tzinfo=datetime.UTC)
-            dataset_end = datetime.datetime(2017, 12, 31, tzinfo=datetime.UTC)
+            dataset_end = datetime.datetime(2022, 12, 31, tzinfo=datetime.UTC)
         else:
             errmsg = f"Unknown dataset for variable {var_name}"
             raise ValueError(errmsg)
