@@ -340,7 +340,6 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Run CMORizer for MERRA2."""
-    cfg.pop("cmor_table")
     if start_date is None:
         start_date = 1980
     else:
