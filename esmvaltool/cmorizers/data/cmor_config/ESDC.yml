@@ -9,7 +9,7 @@ attributes:
   grid: 0.25deg
   chunking: 1x720x1440
   # chunking: 256x128x128
-  modeling_realm: reanaly
+  type: reanaly
   source: http://data.rsc4earth.de/EarthSystemDataCube/
   reference: 'esdc'
   comment: ''

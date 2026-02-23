@@ -5,7 +5,7 @@ attributes:
   dataset_id: ESACCI-WATERVAPOUR
   version: CDR2-L3-COMBI-05deg-fv3.1
   tier: 3
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
   reference: ["esacci-watervapour"]

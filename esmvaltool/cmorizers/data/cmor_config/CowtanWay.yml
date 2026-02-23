@@ -24,7 +24,7 @@ attributes:
     v7: '1961-1990'
     v8: '1961-1990'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html'
   reference: 'cowtanway'

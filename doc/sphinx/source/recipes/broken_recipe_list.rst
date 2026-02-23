@@ -17,18 +17,13 @@ More details can be found in the :ref:`broken recipe policy
      - Broken since release
      - Problem
      - GitHub issue
-   * - `recipe_check_obs.yml`
+   * - ``recipe_check_obs.yml``
      - All
      - v2.12.0
      - Various missing datasets
-     - `#3939 <https://github.com/ESMValGroup/ESMValTool/issues/3939>`_
-   * - :ref:`recipe_climwip_brunner2019_med.yml <recipe_climwip>`
-     - All (preprocessor issue)
-     - v2.11.0
-     - Failed to run preprocessor function ``fix_metadata`` on the data: Unable to convert units
-     - `#3694 <https://github.com/ESMValGroup/ESMValTool/issues/3694>`_
-   * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
-     - ``Figure_4``
-     - v2.11.0
-     - CESM1 CMIP5 Omon data no longer available
-     - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
+     - :issue:`3939`
+   * - ``recipe_kcs.yml``
+     - ``kcs/local_resampling.py``
+     - v2.14.0
+     - Diagnostic error (related to datetimes)
+     - :issue:`4353`

@@ -94,7 +94,9 @@ def _get_anomaly_data(input_data):
         grouped_data = group_metadata(var_data, "dataset")
         for dataset_name, datasets in grouped_data.items():
             logger.debug(
-                "Calculating '%s' anomaly for dataset '%s'", var, dataset_name
+                "Calculating '%s' anomaly for dataset '%s'",
+                var,
+                dataset_name,
             )
             data_4x = select_metadata(datasets, exp=EXP_4XCO2[project])
             data_pic = select_metadata(datasets, exp="piControl")
@@ -103,12 +105,12 @@ def _get_anomaly_data(input_data):
             if not data_4x:
                 raise ValueError(
                     f"No '{EXP_4XCO2[project]}' data available for '{var}' of "
-                    f"'{dataset_name}'"
+                    f"'{dataset_name}'",
                 )
             if not data_pic:
                 raise ValueError(
                     f"No 'piControl' data available for '{var}' of "
-                    f"'{dataset_name}'"
+                    f"'{dataset_name}'",
                 )
 
             # Calculate anomaly, extract correct years and save it
@@ -118,7 +120,7 @@ def _get_anomaly_data(input_data):
             if cube.ndim != 1:
                 raise ValueError(
                     f"This diagnostic supports only 1D (time), input data, "
-                    f"got {cube.ndim}D data"
+                    f"got {cube.ndim}D data",
                 )
             new_input_data.append(
                 {
@@ -128,7 +130,7 @@ def _get_anomaly_data(input_data):
                         data_pic[0]["filename"],
                     ],
                     "cube": cube,
-                }
+                },
             )
     return new_input_data
 
@@ -170,13 +172,13 @@ def _get_multi_model_mean(input_data):
             except KeyError as exc:
                 raise KeyError(
                     f"No data for '{var}' of dataset '{dataset['dataset']}' "
-                    f"for multi-model mean calculation"
+                    f"for multi-model mean calculation",
                 ) from exc
             if cube.ndim > 1:
                 raise ValueError(
                     f"Calculation of multi-model mean not supported for input "
                     f"data with more than one dimension (which should be "
-                    f"time), got {cube.ndim:d}-dimensional cube"
+                    f"time), got {cube.ndim:d}-dimensional cube",
                 )
             ancestors.extend(dataset["ancestors"])
             dataset_names.append(dataset["dataset"])
@@ -295,7 +297,8 @@ def _write_ecs_regression(cfg, tas_cube, rtnt_cube, reg_stats, dataset_name):
         cube.attributes = attrs
         cubes.append(cube)
     netcdf_path = get_diagnostic_filename(
-        "ecs_regression_" + dataset_name, cfg
+        "ecs_regression_" + dataset_name,
+        cfg,
     )
     io.iris_save(cubes, netcdf_path)
     return netcdf_path
@@ -306,7 +309,7 @@ def check_input_data(cfg):
     if not variables_available(cfg, ["tas"]):
         raise ValueError(
             "This diagnostic needs variable 'tas' if 'read_external_file' is "
-            "not given"
+            "not given",
         )
     if not (
         variables_available(cfg, ["rtnt"])
@@ -314,7 +317,7 @@ def check_input_data(cfg):
     ):
         raise ValueError(
             "This diagnostic needs the variable 'rtnt' or 'rtmt' if "
-            "'read_external_file' is not given"
+            "'read_external_file' is not given",
         )
     input_data = cfg["input_data"].values()
     project_group = group_metadata(input_data, "project")
@@ -322,7 +325,7 @@ def check_input_data(cfg):
     if len(projects) > 1:
         raise ValueError(
             f"This diagnostic supports only unique 'project' attributes, got "
-            f"{projects}"
+            f"{projects}",
         )
     project = projects[0]
     if project not in EXP_4XCO2:
@@ -332,7 +335,7 @@ def check_input_data(cfg):
     if exps != {"piControl", EXP_4XCO2[project]}:
         raise ValueError(
             f"This diagnostic needs 'piControl' and '{EXP_4XCO2[project]}' "
-            f"experiments, got {exps}"
+            f"experiments, got {exps}",
         )
 
 
@@ -350,7 +353,8 @@ def preprocess_data(cfg):
             dataset["short_name"] = "rtnt"
     if RTMT_DATASETS:
         logger.info(
-            "Using 'rtmt' instead of 'rtnt' for datasets '%s'", RTMT_DATASETS
+            "Using 'rtmt' instead of 'rtnt' for datasets '%s'",
+            RTMT_DATASETS,
         )
 
     # Calculate anomalies for every dataset
@@ -385,13 +389,13 @@ def get_provenance_record(caption):
 def read_external_file(cfg):
     """Read external file to get ECS."""
     filepath = os.path.expanduser(
-        os.path.expandvars(cfg["read_external_file"])
+        os.path.expandvars(cfg["read_external_file"]),
     )
     if not os.path.isabs(filepath):
         filepath = os.path.join(os.path.dirname(__file__), filepath)
     if not os.path.isfile(filepath):
         raise FileNotFoundError(
-            f"Desired external file '{filepath}' does not exist"
+            f"Desired external file '{filepath}' does not exist",
         )
     with open(filepath) as infile:
         external_data = yaml.safe_load(infile)
@@ -423,7 +427,11 @@ def plot_gregory_plot(cfg, dataset_name, tas_data, rtnt_data, reg_stats):
     # Plot data
     if cfg.get("complex_gregory_plot"):
         legend = _plot_complex_gregroy_plot(
-            cfg, axes, tas_cube, rtnt_cube, reg_stats
+            cfg,
+            axes,
+            tas_cube,
+            rtnt_cube,
+            reg_stats,
         )
         sep = cfg["sep_year"]
         caption = (
@@ -492,7 +500,11 @@ def plot_gregory_plot(cfg, dataset_name, tas_data, rtnt_data, reg_stats):
 
     # Write netcdf file for every plot
     netcdf_path = _write_ecs_regression(
-        cfg, tas_cube, rtnt_cube, reg_stats, dataset_name
+        cfg,
+        tas_cube,
+        rtnt_cube,
+        reg_stats,
+        dataset_name,
     )
 
     # Provenance
@@ -592,7 +604,7 @@ def main(cfg):
         logger.info("Processing '%s'", dataset_name)
         if dataset_name not in rtnt_data:
             raise ValueError(
-                f"No 'rtmt' or 'rtnt' data for '{dataset_name}' available"
+                f"No 'rtmt' or 'rtnt' data for '{dataset_name}' available",
             )
         tas_cube = tas_data[dataset_name][0]["cube"]
         rtnt_cube = rtnt_data[dataset_name][0]["cube"]

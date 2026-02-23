@@ -1,0 +1,51 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on precipitation.
+  description: >
+    Plot diurnal cycles of precipitation.
+  authors:
+    - schlund_manuel
+  maintainer:
+    - schlund_manuel
+
+
+# Note: the following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+
+preprocessors:
+
+  local_solar_time:
+    custom_order: true
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+    local_solar_time:
+    climate_statistics:
+      period: hourly
+    convert_units:
+      units: mm day-1
+
+
+diagnostics:
+
+  plot_hour_of_maximum_precipitation:
+    description: Plot maps showing hour of maximum precipitation.
+    variables:
+      pr:
+        timerange: 20000601/20000901
+        mip: 3hr
+        preprocessor: local_solar_time
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, frequency: 1hr, tier: 3}
+    scripts:
+      plot:
+        script: hydrology/hour_of_max_precipitation.py
+        caption: Hour of daily maximum precipitation in the Tropics (30°S-30°N) for {dataset}.
+        pyplot_kwargs:
+          title: "{dataset}"

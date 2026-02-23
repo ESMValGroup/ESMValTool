@@ -73,7 +73,6 @@ def weighting(distance):
 
 def define_esmf_field(ifile, data_onlevel, name):
     """Define ESMF field from netCDF file."""
-
     grid_obs = esmpy.Grid(filename=ifile, filetype=esmpy.FileFormat.GRIDSPEC)
     mask_obs = grid_obs.add_item(esmpy.GridItem.MASK)
     mask_obs[:] = data_onlevel.mask.astype("int").T
@@ -87,15 +86,16 @@ def define_esmf_field(ifile, data_onlevel, name):
 
 def add_esmf_cyclic(metadata_obs, data_onlevel, interpolated):
     """Add cyclic points to interpolated data."""
-
     data_onlevel_cyc, lon_obs_cyc = add_cyclic_point(
-        data_onlevel, coord=metadata_obs["lon2d"][0, :]
+        data_onlevel,
+        coord=metadata_obs["lon2d"][0, :],
     )
 
     lonc, latc = np.meshgrid(lon_obs_cyc, metadata_obs["lat2d"][:, 0])
 
     interpolated_cyc, lon_obs_cyc = add_cyclic_point(
-        interpolated, coord=metadata_obs["lon2d"][0, :]
+        interpolated,
+        coord=metadata_obs["lon2d"][0, :],
     )
     return lonc, latc, data_onlevel_cyc, interpolated_cyc
 
@@ -118,7 +118,9 @@ def esmf_regriding(sourcefield, distfield, metadata_obs, data_onlev_obs):
     data_interpolated = distfield.data[:].T
     data_interpolated = np.ma.masked_equal(data_interpolated, 0)
     lonc, latc, data_onlevel_cyc, interpolated_cyc = add_esmf_cyclic(
-        metadata_obs, data_onlev_obs, data_interpolated
+        metadata_obs,
+        data_onlev_obs,
+        data_interpolated,
     )
     return lonc, latc, data_onlevel_cyc, interpolated_cyc
 
@@ -149,7 +151,9 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     # climatology and model data on the level
     data_onlev_obs = data_obs[0, level_depth, :, :]
     data_onlev_mod = interpolate_vert(
-        metadata_mod["lev"], target_depth, data_model[0, :, :, :]
+        metadata_mod["lev"],
+        target_depth,
+        data_model[0, :, :, :],
     )
 
     # prepear interpolation fields
@@ -160,7 +164,10 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     sourcefield.data[...] = data_onlev_mod.T
 
     lonc, latc, data_onlev_obs_cyc, data_interpolated_cyc = esmf_regriding(
-        sourcefield, distfield, metadata_obs, data_onlev_obs
+        sourcefield,
+        distfield,
+        metadata_obs,
+        data_onlev_obs,
     )
 
     return lonc, latc, target_depth, data_onlev_obs_cyc, data_interpolated_cyc

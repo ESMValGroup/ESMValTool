@@ -21,6 +21,7 @@ import esmvaltool
 
 try:
     from github import Github
+    from github.Auth import Token
 except ImportError:
     print("Please `pip install pygithub`")
 
@@ -36,7 +37,7 @@ except FileNotFoundError:
         "Please create an access token and store it in the file "
         "~/.github_api_key, see:\nhttps://help.github.com/en/github/"
         "authenticating-to-github/creating-a-personal-access-token-"
-        "for-the-command-line"
+        "for-the-command-line",
     )
 
 VERSION = {
@@ -62,6 +63,7 @@ LABELS = {
         "bug",  # important, keep at the top
         "api",
         "cmor",
+        "config",
         "containerization",
         "community",
         "dask",
@@ -97,6 +99,7 @@ TITLES = {
     "deprecated feature": "Deprecations",
     "bug": "Bug fixes",
     "cmor": "CMOR standard",
+    "config": "Configuration",
     "dask": "Computational performance improvements",
     "diagnostic": "Diagnostics",
     "fix for dataset": "Fixes for datasets",
@@ -105,6 +108,12 @@ TITLES = {
     "api": "Notebook API (experimental)",
     "enhancement": "Improvements",
 }
+
+IGNORE_USERS = (
+    "pre-commit-ci[bot]",
+    "dependabot[bot]",
+)
+"""Ignore all PRs from specific users (e.g., bots)."""
 
 
 def draft_notes_since(project, previous_release_date=None, labels=None):
@@ -134,11 +143,11 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
     labelless_pulls = []
     print(
         f"The following PRs (updated after {previous_release_date}) are "
-        f"considered in the changelog"
+        f"considered in the changelog",
     )
     print(
         f"Note: Unmerged PRs or PRs that have been merged before "
-        f"{previous_release_date} are not shown\n"
+        f"{previous_release_date} are not shown\n",
     )
     for pull in pulls:
         if pull.updated_at.astimezone(TIMEZONE) < previous_release_date:
@@ -147,6 +156,8 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
             not pull.merged
             or pull.merged_at.astimezone(TIMEZONE) < previous_release_date
         ):
+            continue
+        if pull.user.login in IGNORE_USERS:
             continue
         print(
             pull.updated_at.astimezone(TIMEZONE),
@@ -193,7 +204,7 @@ def format_notes(lines, version):
             sections.append("\n".join(["", title, "~" * len(title), ""]))
             if label == "backwards incompatible change":
                 sections.append(
-                    "TODO: add examples of how to deal with these changes\n"
+                    "TODO: add examples of how to deal with these changes\n",
                 )
             sections.append("\n".join(entry for _, entry in entries))
     notes = "\n".join(sections)
@@ -202,7 +213,7 @@ def format_notes(lines, version):
 
 
 def _get_pull_requests(project):
-    session = Github(GITHUB_API_KEY)
+    session = Github(auth=Token(GITHUB_API_KEY))
     repo = session.get_repo(GITHUB_REPO[project])
     pulls = repo.get_pulls(
         state="closed",

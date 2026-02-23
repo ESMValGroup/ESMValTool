@@ -36,7 +36,7 @@ Download and processing instructions
     Version = "v0008"
 
     Put all files under a single directory (no subdirectories with years).
-    in ${RAWOBS}/Tier2/ESACCI-OZONE
+    in Tier2/ESACCI-OZONE
 
 """
 
@@ -191,14 +191,19 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     filename,
                 )
                 cube = _extract_variable(
-                    var_name, var, cfg, filename, year, month
+                    var_name,
+                    var,
+                    cfg,
+                    filename,
+                    year,
+                    month,
                 )
                 all_data_cubes.append(cube)
 
         if not all_data_cubes:
             raise ValueError(
                 f"No valid data found for {var_name} within the selected time"
-                " range"
+                " range",
             )
 
         final_cube = concatenate(all_data_cubes)

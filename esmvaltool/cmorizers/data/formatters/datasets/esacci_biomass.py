@@ -12,7 +12,7 @@ Last access
 Download and processing instructions
     Download 10 km file:
       v6.0/netcd/ESACCI-BIOMASS-L4-AGB-MERGED-10000m-fv6.0.nc
-    Put file in ${RAWOBS}/Tier2/ESACCI-BIOMASS
+    Put file in Tier2/ESACCI-BIOMASS
     Or use automatic download script:
       esmvaltool data download ESACCI-BIOMASS
 """
@@ -109,7 +109,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
                 [
                     out_timecoord.units.date2num(start_date),
                     out_timecoord.units.date2num(end_date),
-                ]
+                ],
             )
             # write output to file
             logger.debug("Saving cube\n%s", outcube)

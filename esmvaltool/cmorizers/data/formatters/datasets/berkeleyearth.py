@@ -60,7 +60,8 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
 
     # init a dummy cube to enable coord_categorisation
     dummycube = iris.cube.Cube(
-        np.zeros(int(n_days), np.int64), dim_coords_and_dims=[(times, 0)]
+        np.zeros(int(n_days), np.int64),
+        dim_coords_and_dims=[(times, 0)],
     )
     coord_categorisation.add_year(dummycube, "time", name="year")
     coord_categorisation.add_month_number(dummycube, "time", name="month")
@@ -72,7 +73,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
 
     # build timecoord for the climatology cube
     dummycube_clim = dummycube.extract(
-        iris.Constraint(year=lambda cell: cell == climstart + climcenter)
+        iris.Constraint(year=lambda cell: cell == climstart + climcenter),
     )
     timecoord_clim = dummycube_clim.coord("time")
 
@@ -111,7 +112,7 @@ def calc_abs_temperature(cube_anom, cube_clim, short_name):
     array.fill_value = fill_value
 
     # calculate abs fields
-    for i in range(0, cube_anom.coord("time").shape[0]):
+    for i in range(cube_anom.coord("time").shape[0]):
         with catch_warnings():
             filterwarnings(
                 action="ignore",
@@ -124,7 +125,10 @@ def calc_abs_temperature(cube_anom, cube_clim, short_name):
 
     # build absolute tas cube
     cube_abs = iris.cube.Cube(
-        array, var_name=var_name, units=units, dim_coords_and_dims=crds_n_dims
+        array,
+        var_name=var_name,
+        units=units,
+        dim_coords_and_dims=crds_n_dims,
     )
 
     return cube_abs
@@ -163,7 +167,10 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
 
     # redo the broken time coordinate
     cube_anom, cube_clim = reinit_broken_time(
-        cube_anom, cube_clim, climstart, climend
+        cube_anom,
+        cube_clim,
+        climstart,
+        climend,
     )
 
     # derive absolute tas values
@@ -201,7 +208,11 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
         attrs["comment"] = comments[s_name]
         utils.set_global_atts(cube, attrs)
         utils.save_variable(
-            cube, s_name, out_dir, attrs, unlimited_dimensions=["time"]
+            cube,
+            s_name,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )
 
     # sftlf
@@ -214,7 +225,8 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
 
     # cmorize sftlf units
     cmor_info_sftlf = cfg["cmor_table"].get_variable(
-        var["rawsftlf_mip"], var["rawsftlf_varname"]
+        var["rawsftlf_mip"],
+        var["rawsftlf_varname"],
     )
     attrs_sftlf = cfg["attributes"]
     attrs_sftlf["mip"] = var["rawsftlf_mip"]
@@ -228,7 +240,10 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     utils.fix_var_metadata(cube_sftlf, cmor_info_sftlf)
     utils.set_global_atts(cube_sftlf, attrs_sftlf)
     utils.save_variable(
-        cube_sftlf, var["rawsftlf_varname"], out_dir, attrs_sftlf
+        cube_sftlf,
+        var["rawsftlf_varname"],
+        out_dir,
+        attrs_sftlf,
     )
 
 

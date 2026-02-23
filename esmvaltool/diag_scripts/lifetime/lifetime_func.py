@@ -26,7 +26,7 @@ def create_press(var):
                 var.coord("air_pressure").lazy_points(),
                 var.shape,
                 var.coord_dims("air_pressure"),
-            )
+            ),
         )
     press.long_name = "air_pressure"
     press.var_name = "air_pressure"
@@ -50,21 +50,23 @@ def calculate_gridmassdry(press, hus, z_coord):
     # surface air pressure as cube
     surface = press.coord(z_coord)[0].points
     pmax = press.extract(
-        iris.Constraint(coord_values={z: surface for z in [z_coord]})
+        iris.Constraint(coord_values=dict.fromkeys([z_coord], surface)),
     ).copy()
     if "surface_air_pressure" in press.coords():
         pmax.data = press.coord("surface_air_pressure").lazy_points()
     else:
         pmax.data = da.full_like(
             press.extract(
-                iris.Constraint(coord_values={z: surface for z in [z_coord]})
+                iris.Constraint(
+                    coord_values=dict.fromkeys([z_coord], surface),
+                ),
             ),
             101525.0,
         )
 
     # grid area -> m2
     lat_lon_dims = sorted(
-        tuple(set(hus.coord_dims("latitude") + hus.coord_dims("longitude")))
+        tuple(set(hus.coord_dims("latitude") + hus.coord_dims("longitude"))),
     )
     lat_lon_slice = next(hus.slices(["latitude", "longitude"], ordered=False))
     area_2d = iris.analysis.cartography.area_weights(lat_lon_slice)
@@ -108,12 +110,14 @@ def calculate_rho(variables):
     # model levels
     if "grmassdry" in variables and "grvol" in variables:
         rho = _number_density_dryair_by_grid(
-            variables["grmassdry"], variables["grvol"]
+            variables["grmassdry"],
+            variables["grvol"],
         )
     # pressure levels
     elif "ta" in variables and "hus" in variables:
         rho = _number_density_dryair_by_press(
-            variables["ta"], variables["hus"]
+            variables["ta"],
+            variables["hus"],
         )
     else:
         raise NotImplementedError(
@@ -124,7 +128,7 @@ def calculate_rho(variables):
             "Provide either:\n"
             " - grmassdry and grvol\n"
             " or\n"
-            " - ta and hus"
+            " - ta and hus",
         )
 
     return rho
@@ -205,7 +209,7 @@ def dpres_plevel(plev, pmin, pmax, z_coord="air_pressure"):
     else:
         raise NotImplementedError(
             "Pressure level calculation is not implemented for the present "
-            "coordinates"
+            "coordinates",
         )
 
     return dplev
@@ -336,7 +340,7 @@ def climatological_tropopause(cube):
     """Return cube with climatological tropopause pressure."""
     if not cube.coords("latitude", dim_coords=True):
         raise NotImplementedError(
-            "The provided cube must have a latitude cooridnate"
+            "The provided cube must have a latitude cooridnate",
         )
 
     tpp = (
@@ -347,7 +351,9 @@ def climatological_tropopause(cube):
 
     tp_clim = cube.copy()
     tp_clim.data = broadcast_to_shape(
-        tpp, cube.shape, cube.coord_dims("latitude")
+        tpp,
+        cube.shape,
+        cube.coord_dims("latitude"),
     )
     tp_clim.standard_name = "tropopause_air_pressure"
     tp_clim.var_name = "tp_clim"
@@ -365,28 +371,36 @@ def sum_up_to_plot_dimensions(var, plot_type):
         elif var.coords("lev", dim_coords=True):
             z_coord = var.coords("lev", dim_coords=True)[0]
         elif var.coords(
-            "atmosphere_hybrid_sigma_pressure_coordinate", dim_coords=True
+            "atmosphere_hybrid_sigma_pressure_coordinate",
+            dim_coords=True,
         ):
             z_coord = var.coords(
-                "atmosphere_hybrid_sigma_pressure_coordinate", dim_coords=True
+                "atmosphere_hybrid_sigma_pressure_coordinate",
+                dim_coords=True,
             )[0]
         else:
             msg = f"No valid Z-coord available for data\n{var}"
             raise ValueError(msg)
         cube = var.collapsed(
-            ["longitude", "latitude", z_coord], iris.analysis.SUM, weights=None
+            ["longitude", "latitude", z_coord],
+            iris.analysis.SUM,
+            weights=None,
         )
     else:
         raise NotImplementedError(
             f"The sum to plot dimensions for plot_type '{plot_type}' is "
-            f"currently not implemented"
+            f"currently not implemented",
         )
 
     return cube
 
 
 def calculate_reaction_rate(
-    temp, reaction_type, coeff_a, coeff_er, coeff_b=None
+    temp,
+    reaction_type,
+    coeff_a,
+    coeff_er,
+    coeff_b=None,
 ):
     """Calculate the reaction rate.
 
@@ -400,12 +414,12 @@ def calculate_reaction_rate(
     if coeff_b is not None:
         reaction_rate = coeff_a * iris.analysis.maths.exp(
             coeff_b * iris.analysis.maths.log(reaction_rate)
-            - coeff_er / reaction_rate
+            - coeff_er / reaction_rate,
         )
     else:
         # standard reaction rate (arrhenius)
         reaction_rate = coeff_a * iris.analysis.maths.exp(
-            coeff_er / reaction_rate
+            coeff_er / reaction_rate,
         )
 
     # set units

@@ -23,7 +23,7 @@ def test_create_links(tmpdir_factory):
 
     link = create_link(cfg, filepath)
     if not os.path.islink(link):
-        raise AssertionError()
+        raise AssertionError
 
 
 #

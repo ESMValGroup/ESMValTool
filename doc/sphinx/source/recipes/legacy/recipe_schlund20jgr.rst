@@ -69,13 +69,12 @@ Observations and reformat scripts
 
 * CRU_ (*pr*, *tas*)
 * ERA-Interim_ (*rsds*)
-* LAI3g_ (*lai*)
+* LAI3g (*lai*)
 * MTE_ (*gpp*, *gppStderr*)
 * Scripps-CO2-KUM_ (*co2s*)
 
 .. _CRU: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
-.. _ERA-Interim: http://apps.ecmwf.int/datasets/data/interim-full-moda/
-.. _LAI3g: http://cliveg.bu.edu/modismisr/lai3g-fpar3g.html
+.. _ERA-Interim: https://cds.climate.copernicus.eu/stac-browser/collections/reanalysis-era-interim?.language=en
 .. _MTE: http://www.bgc-jena.mpg.de/geodb/BGI/Home
 .. _Scripps-CO2-KUM: https://scrippsco2.ucsd.edu/data/atmospheric_co2/kum.html
 

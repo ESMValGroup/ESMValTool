@@ -11,7 +11,7 @@ attributes:
   tier: 2
   project_id: OBS
   source: 'ESA CCI'
-  modeling_realm: sat
+  type: sat
   reference: 'esacci_lst'
   comment: ''
   start_year: 2003

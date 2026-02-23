@@ -268,18 +268,18 @@ def read_obs_metrics(csvfile, required=False):
                     #  should be uncertainty ranges (i.e. multiple obs sources)
                     if len(row) == 1:
                         obs[metric] = tuple(
-                            sorted([float(row[0]), float(row[0])])
+                            sorted([float(row[0]), float(row[0])]),
                         )
                     elif len(row) == 2:
                         obs[metric] = tuple(
-                            sorted([float(row[0]), float(row[1])])
+                            sorted([float(row[0]), float(row[1])]),
                         )
                     elif len(row) == 4:
                         obs[metric] = tuple(
-                            sorted([float(row[0]), float(row[1])])
+                            sorted([float(row[0]), float(row[1])]),
                         )
                         acc[metric] = tuple(
-                            sorted([float(row[2]), float(row[3])])
+                            sorted([float(row[2]), float(row[3])]),
                         )
                     else:
                         msg = "Obs metrics file is not properly configured"
@@ -356,13 +356,12 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
         # Get GREEN automatically if test within observational uncertainty
         if is_test_in_obs:
             colour = GREEN
-        else:
-            # If test outside model uncertainty, but reference outside
-            #  observational uncertainty and test is better than reference
-            #  then get AMBER.
-            if not is_test_in_var:
-                if (not is_ref_in_obs) and is_test_better:
-                    colour = AMBER
+        # If test outside model uncertainty, but reference outside
+        #  observational uncertainty and test is better than reference
+        #  then get AMBER.
+        elif not is_test_in_var:
+            if (not is_ref_in_obs) and is_test_better:
+                colour = AMBER
 
     return colour
 
@@ -399,15 +398,15 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     else:
         # Create reference metrics dictionary with values of 1.0 to match
         #  test metrics dictionary
-        ref = {metric: 1.0 for metric in test.keys()}
+        ref = dict.fromkeys(test.keys(), 1.0)
 
     for metric in test.keys():
         colours[metric] = metric_colour(
             test[metric],
             ref=ref[metric],
-            var=var.get(metric, None),
-            obs=obs.get(metric, None),
-            acc=acc.get(metric, None),
+            var=var.get(metric),
+            obs=obs.get(metric),
+            acc=acc.get(metric),
         )
 
     return colours
@@ -441,14 +440,13 @@ def normalise(test, ref, same=False):
                 else:
                     ref[metric] = 1.0e-20
                     norm[metric] = test[metric] / ref[metric]
+            elif ref[metric] != 0:
+                norm[metric] = tuple(x / ref[metric] for x in test[metric])
             else:
-                if ref[metric] != 0:
-                    norm[metric] = tuple(x / ref[metric] for x in test[metric])
-                else:
-                    ref[metric] = 1.0
-                    norm[metric] = tuple(
-                        x * 0.0 / ref[metric] for x in test[metric]
-                    )
+                ref[metric] = 1.0
+                norm[metric] = tuple(
+                    x * 0.0 / ref[metric] for x in test[metric]
+                )
 
     return norm
 
@@ -659,7 +657,7 @@ def plot_nac(
     if len(tests) > len(MARKERS):
         raise TestError(
             f"Number of tests, {len(tests)}, is larger than available "
-            f"plot MARKERS, {len(MARKERS)}."
+            f"plot MARKERS, {len(MARKERS)}.",
         )
     n_tests = []
     for test, marker in zip(tests, MARKERS[: len(tests)], strict=True):

@@ -83,21 +83,24 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
     plt.imshow(total_frac.data[::-1])
     plt.savefig(
         os.path.join(
-            masksavedir, masksavename + "total_frac." + cfg["output_file_type"]
-        )
+            masksavedir,
+            masksavename + "total_frac." + cfg["output_file_type"],
+        ),
     )
     plt.imshow(fracmask[::-1])
     plt.savefig(
         os.path.join(
-            masksavedir, masksavename + "fracmask." + cfg["output_file_type"]
-        )
+            masksavedir,
+            masksavename + "fracmask." + cfg["output_file_type"],
+        ),
     )
     plt.imshow(snowmask[::-1])
     plt.title("snowmask")
     plt.savefig(
         os.path.join(
-            masksavedir, masksavename + "snowmask." + cfg["output_file_type"]
-        )
+            masksavedir,
+            masksavename + "snowmask." + cfg["output_file_type"],
+        ),
     )
     plt.imshow(snowfreemask[::-1])
     plt.title("snowfreemask")
@@ -105,7 +108,7 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
         os.path.join(
             masksavedir,
             masksavename + "snowfreemask." + cfg["output_file_type"],
-        )
+        ),
     )
 
     # Distinguish between snowfree and snow areas
@@ -168,7 +171,7 @@ def _prepare_data_for_linreg(model_data, islice, jslice):
         else:
             logger.info(
                 "Variance zero or not enough\
-                   valid data for this landcover class"
+                   valid data for this landcover class",
             )
             lc_logical[i_0] = False
     # Now the multiple lin reg part
@@ -206,10 +209,14 @@ def _get_reconstructed_albedos(model_data, cfg):
                 > cfg["params"]["minnum_gc_bb"]
             ):
                 x_0, y_0, lc_logical = _prepare_data_for_linreg(
-                    model_data, islice, jslice
+                    model_data,
+                    islice,
+                    jslice,
                 )
                 alb_lc[:, i, j] = _reconstruct_albedo_pixel(
-                    x_0, y_0, lc_logical
+                    x_0,
+                    y_0,
+                    lc_logical,
                 )
 
     return alb_lc
@@ -239,8 +246,9 @@ def _write_albedochanges_to_disk(alb_lc, template_cube, datadict, cfg):
             transition_cube.data = result_dict[jkey] - result_dict[ikey]
             transition_cube.rename(
                 f"albedo_change_from_{names[ikey]}_to_{names[jkey]}".replace(
-                    "Frac", ""
-                )
+                    "Frac",
+                    "",
+                ),
             )
             logger.info("Calculated: %s", transition_cube.name())
             # Get some usefull info for constructing the filenames
@@ -282,7 +290,8 @@ def _write_albedochanges_to_disk(alb_lc, template_cube, datadict, cfg):
             }
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(
-                    os.path.join(cfg["work_dir"], basename), prov_rec
+                    os.path.join(cfg["work_dir"], basename),
+                    prov_rec,
                 )
 
 
@@ -389,7 +398,9 @@ def main(cfg):
 
         # Add the appropriate masks to model_data
         model_data = _add_masks_albedolandcover(
-            model_data, this_models_xxfracs, cfg
+            model_data,
+            this_models_xxfracs,
+            cfg,
         )
 
         # Now get albedo change due to landcover change

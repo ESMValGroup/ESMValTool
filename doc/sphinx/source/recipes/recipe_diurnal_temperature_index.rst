@@ -51,7 +51,7 @@ Observations and reformat scripts
 References
 ----------
 
-* Amiri, S. (2013). Economic and Environmental Benefits of CHP-based District Heating Systems in Sweden. Retrieved from http://www.sgc.se/ckfinder/userfiles/files/sokmotor/LiU67.pdf
+* Amiri, S. (2013). Economic and Environmental Benefits of CHP-based District Heating Systems in Sweden. Retrieved from https://www.diva-portal.org/smash/get/diva2:622636/FULLTEXT01.pdf
 
 * Braganza, K., Karoly, D. J., & Arblaster, J. M. (2004). Diurnal temperature range as an index of global climate change during the twentieth century. Geophysical Research Letters, 31(13), n/a – n/a. https://doi.org/10.1029/2004GL019998
 

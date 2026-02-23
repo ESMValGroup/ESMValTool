@@ -73,8 +73,8 @@ def cube_to_save_vars(list_dict):
                         var_name=list_dict["name"][iii]["var_name"],
                         long_name=list_dict["name"][iii]["long_name"],
                         units=list_dict["name"][iii]["units"],
-                    )
-                ]
+                    ),
+                ],
             )
         else:
             cubes.append(
@@ -83,14 +83,18 @@ def cube_to_save_vars(list_dict):
                     var_name=list_dict["name"][iii]["var_name"],
                     long_name=list_dict["name"][iii]["long_name"],
                     units=list_dict["name"][iii]["units"],
-                )
+                ),
             )
 
     return cubes
 
 
 def get_provenance_record(
-    ancestor_files, caption, statistics, domains, plot_type="bar"
+    ancestor_files,
+    caption,
+    statistics,
+    domains,
+    plot_type="bar",
 ):
     """Get Provenance record."""
     record = {
@@ -148,11 +152,14 @@ def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
 
     caption = (
         "Global average multi-model mean comparing different "
-        + "model experiments and flux variables."
+        "model experiments and flux variables."
     )
 
     provenance_record = get_provenance_record(
-        _get_sel_files_var(cfg, available_vars), caption, ["mean"], ["global"]
+        _get_sel_files_var(cfg, available_vars),
+        caption,
+        ["mean"],
+        ["global"],
     )
 
     diagnostic_file = get_diagnostic_filename("bar_all", cfg)
@@ -169,7 +176,7 @@ def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
                 "var_name": iexp + "_all",
                 "long_name": "Fluxes for " + iexp + " experiment",
                 "units": "W m-2",
-            }
+            },
         )
 
     iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
@@ -212,7 +219,7 @@ def main(cfg):
     # Variables
     # var = e.Variables(cfg)
     available_vars = list(
-        group_metadata(cfg["input_data"].values(), "short_name")
+        group_metadata(cfg["input_data"].values(), "short_name"),
     )
     logging.debug("Found variables in recipe:\n%s", available_vars)
 
@@ -221,7 +228,7 @@ def main(cfg):
     if len(available_exp) > 6:
         raise ValueError(
             "The diagnostic can only plot up to 6 different "
-            + "model experiments."
+            "model experiments.",
         )
 
     ###########################################################################
@@ -248,7 +255,8 @@ def main(cfg):
             data_var[iexp][jvar] = 0.0
 
     pathlist = data.get_path_list(
-        short_name=available_vars[0], exp=available_exp[0]
+        short_name=available_vars[0],
+        exp=available_exp[0],
     )
 
     for dataset_path in pathlist:
@@ -266,7 +274,8 @@ def main(cfg):
     data_var_sum = {}
     for iexp in available_exp:
         data_var_sum[iexp] = np.fromiter(
-            data_var[iexp].values(), dtype=np.float64
+            data_var[iexp].values(),
+            dtype=np.float64,
         ) / float(len(pathlist))
 
     # Plot ECS regression if desired

@@ -42,7 +42,10 @@ def get_provenance_record(attributes):
 def get_output_stem(attributes):
     """Get output file stem, specific to HYPE."""
     short_to_stem = dict(
-        tas="Tobs", tasmin="TMINobs", tasmax="TMAXobs", pr="Pobs"
+        tas="Tobs",
+        tasmin="TMINobs",
+        tasmax="TMAXobs",
+        pr="Pobs",
     )
 
     shortname = attributes["short_name"]
@@ -81,7 +84,9 @@ def main(cfg):
     """Process data for use as input to the HYPE hydrological model."""
     input_data = cfg["input_data"].values()
     grouped_input_data = group_metadata(
-        input_data, "long_name", sort="dataset"
+        input_data,
+        "long_name",
+        sort="dataset",
     )
 
     for long_name in grouped_input_data:
@@ -90,7 +95,9 @@ def main(cfg):
             logger.info("Processing dataset %s", attributes["dataset"])
 
             output_file = get_diagnostic_filename(
-                get_output_stem(attributes), cfg, "txt"
+                get_output_stem(attributes),
+                cfg,
+                "txt",
             )
             Path(output_file).parent.mkdir(exist_ok=True)
 
@@ -99,7 +106,10 @@ def main(cfg):
             frame = pandas.DataFrame(data, index=times, columns=ids)
 
             frame.to_csv(
-                output_file, sep=" ", index_label="DATE", float_format="%.3f"
+                output_file,
+                sep=" ",
+                index_label="DATE",
+                float_format="%.3f",
             )
 
             # Store provenance
