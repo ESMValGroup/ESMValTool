@@ -395,12 +395,11 @@ from __future__ import annotations
 import inspect
 import logging
 import warnings
-from collections.abc import Callable, Iterable
 from copy import copy, deepcopy
 from functools import partial
 from pathlib import Path
 from pprint import pformat
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import cartopy.crs as ccrs
 import dask.array as da
@@ -418,9 +417,7 @@ from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord, Coord
 from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
-from matplotlib.axes import Axes
 from matplotlib.colors import CenteredNorm
-from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import (
     AutoMinorLocator,
@@ -441,6 +438,12 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 from esmvaltool.diag_scripts.shared._base import sorted_metadata
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -516,7 +519,7 @@ class MultiDatasets(MonitorBase):
         #   under `default_settings`.
         # - default_settings: allowed user-defined settings in recipe and their
         #   default values.
-        plot_settings = {
+        return {
             "1d_profile": {
                 "function": partial(self.create_1d_plot, "1d_profile"),
                 "coords": (["air_pressure"], ["altitude"]),
@@ -855,8 +858,6 @@ class MultiDatasets(MonitorBase):
             },
         }
 
-        return plot_settings
-
     def __init__(self, cfg: dict) -> None:
         """Initialize class member."""
         super().__init__(cfg)
@@ -896,10 +897,11 @@ class MultiDatasets(MonitorBase):
         # Check given plot types and set default settings for them
         for plot_type, plot_options in self.plots.items():
             if plot_type not in self.plot_settings:
-                raise ValueError(
+                msg = (
                     f"Got unexpected plot type '{plot_type}' for option "
-                    f"'plots', expected one of {list(self.plot_settings)}",
+                    f"'plots', expected one of {list(self.plot_settings)}"
                 )
+                raise ValueError(msg)
             if plot_options is None:
                 plot_options = {}
                 self.plots[plot_type] = plot_options
@@ -917,11 +919,12 @@ class MultiDatasets(MonitorBase):
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
             if self.cfg["facet_used_for_labels"] not in dataset:
-                raise ValueError(
+                msg = (
                     f"facet_used_for_labels "
                     f"'{self.cfg['facet_used_for_labels']}' not present for "
-                    f"the following dataset:\n{pformat(dataset)}",
+                    f"the following dataset:\n{pformat(dataset)}"
                 )
+                raise ValueError(msg)
 
         # Load seaborn settings
         sns.set_theme(**self.cfg["seaborn_settings"])
@@ -1005,7 +1008,8 @@ class MultiDatasets(MonitorBase):
             x_pos_bias = self.plots[plot_type]["x_pos_stats_bias"]
             x_pos = self.plots[plot_type]["x_pos_stats_avg"]
         else:
-            raise NotImplementedError(f"plot_type '{plot_type}' not supported")
+            msg = f"plot_type '{plot_type}' not supported"
+            raise NotImplementedError(msg)
 
         # Mean
         weights = area_weights(cube_1)
@@ -1106,10 +1110,11 @@ class MultiDatasets(MonitorBase):
         expected_dims_str = " or ".join(
             [str(dims) for dims in expected_dimensions],
         )
-        raise ValueError(
+        msg = (
             f"Expected cube with dimensional coordinates "
-            f"{expected_dims_str}, got {cube.summary(shorten=True)}",
+            f"{expected_dims_str}, got {cube.summary(shorten=True)}"
         )
+        raise ValueError(msg)
 
     def _customize_plot(
         self,
@@ -1224,10 +1229,11 @@ class MultiDatasets(MonitorBase):
         try:
             string = string.format(**dataset)
         except KeyError as exc:
-            raise ValueError(
+            msg = (
                 f"Not all necessary facets in {description} available for "
-                f"dataset\n{pformat(dataset)}",
-            ) from exc
+                f"dataset\n{pformat(dataset)}"
+            )
+            raise ValueError(msg) from exc
         return string
 
     def _get_benchmark_datasets(self, datasets: list[dict]) -> list[dict]:
@@ -1239,11 +1245,12 @@ class MultiDatasets(MonitorBase):
         if len(benchmark_datasets) >= 1:
             return benchmark_datasets
 
-        raise ValueError(
+        msg = (
             f"Expected at least 1 benchmark dataset (with 'benchmark_dataset: "
             f"True' for variable '{variable}'), got "
-            f"{len(benchmark_datasets):d}",
+            f"{len(benchmark_datasets):d}"
         )
+        raise ValueError(msg)
 
     def _get_benchmark_mask(
         self,
@@ -1266,10 +1273,11 @@ class MultiDatasets(MonitorBase):
         elif metric == "pearsonr":
             mask = np.where(cube.data <= percentile_cubes[0].data, 0, 1)
         else:
-            raise ValueError(
+            msg = (
                 f"Could not create benchmarking mask, unknown benchmarking "
-                f"metric: '{metric}'",
+                f"metric: '{metric}'"
             )
+            raise ValueError(msg)
 
         return cube.copy(mask)
 
@@ -1311,17 +1319,19 @@ class MultiDatasets(MonitorBase):
             "emd": 1,
         }
         if metric not in n_percentiles:
-            raise ValueError(f"Unknown benchmarking metric: '{metric}'.")
+            msg = f"Unknown benchmarking metric: '{metric}'."
+            raise ValueError(msg)
 
         if len(percentile_datasets) >= n_percentiles[metric]:
             return percentile_datasets
 
         variable = datasets[0][self.cfg["group_variables_by"]]
-        raise ValueError(
+        msg = (
             f"Expected at least {n_percentiles[metric]} percentile datasets "
             f"(created with multi-model statistics preprocessor for variable "
-            f"'{variable}'), got {len(percentile_datasets):d}",
+            f"'{variable}'), got {len(percentile_datasets):d}"
         )
+        raise ValueError(msg)
 
     def _get_bias_dataset(self, dataset_1: dict, dataset_2: dict) -> dict:
         """Get bias dataset (dataset_1 - dataset_2)."""
@@ -1371,8 +1381,7 @@ class MultiDatasets(MonitorBase):
         else:
             cbar_label = self.plots[plot_type]["cbar_label"]
             descr = f"cbar_label of {plot_type} '{cbar_label}'"
-        cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
-        return cbar_label
+        return self._fill_facet_placeholders(cbar_label, dataset, descr)
 
     def _get_coords_for_2d_plotting(
         self,
@@ -1440,10 +1449,11 @@ class MultiDatasets(MonitorBase):
         """Get plot function."""
         plot_func = self.plots[plot_type]["plot_func"]
         if not hasattr(iris.plot, plot_func):
-            raise AttributeError(
+            msg = (
                 f"Got invalid plot function '{plot_func}' for plotting "
-                f"{plot_type}, expected function of iris.plot",
+                f"{plot_type}, expected function of iris.plot"
             )
+            raise AttributeError(msg)
         logger.info(
             "Creating %s plots using function '%s'",
             plot_type,
@@ -1502,10 +1512,11 @@ class MultiDatasets(MonitorBase):
 
         # Check if desired projection is valid
         if not hasattr(ccrs, projection):
-            raise AttributeError(
+            msg = (
                 f"Got invalid projection '{projection}' for plotting "
-                f"{plot_type}, expected class of cartopy.crs",
+                f"{plot_type}, expected class of cartopy.crs"
             )
+            raise AttributeError(msg)
 
         return getattr(ccrs, projection)(**projection_kwargs)
 
@@ -1539,11 +1550,12 @@ class MultiDatasets(MonitorBase):
             d for d in datasets if d.get("reference_for_monitor_diags", False)
         ]
         if len(ref_datasets) > 1:
-            raise ValueError(
+            msg = (
                 f"Expected at most 1 reference dataset (with "
                 f"'reference_for_monitor_diags: True' for variable "
-                f"'{variable}', got {len(ref_datasets):d}",
+                f"'{variable}', got {len(ref_datasets):d}"
             )
+            raise ValueError(msg)
         if ref_datasets:
             return ref_datasets[0]
         return None
@@ -1553,7 +1565,8 @@ class MultiDatasets(MonitorBase):
         input_data = list(self.cfg["input_data"].values())
 
         if not input_data:
-            raise ValueError("No input data given")
+            msg = "No input data given"
+            raise ValueError(msg)
 
         slices = not any(
             self.cfg["group_variables_by"] in ds for ds in input_data
@@ -1573,11 +1586,12 @@ class MultiDatasets(MonitorBase):
                     )  # type: ignore
                 except ConstraintMismatchError as exc:
                     var_names = [c.var_name for c in cubes]
-                    raise ValueError(
+                    msg = (
                         f"Cannot load data: multiple variables ({var_names}) "
                         f"are available in file {filename}, but not the "
-                        f"requested '{var_name}'",
-                    ) from exc
+                        f"requested '{var_name}'"
+                    )
+                    raise ValueError(msg) from exc
 
             # Fix time coordinate if present
             if cube.coords("time", dim_coords=True):
@@ -2235,15 +2249,17 @@ class MultiDatasets(MonitorBase):
         given_variables = list(self.grouped_input_data)
         if var_order := self.plots[plot_type]["var_order"]:
             if len(set(var_order)) != len(var_order):
-                raise ValueError(
+                msg = (
                     f"List of variables given by `var_order` ({var_order}) "
-                    f"contains duplicates",
+                    f"contains duplicates"
                 )
+                raise ValueError(msg)
             if set(var_order) != set(given_variables):
-                raise ValueError(
+                msg = (
                     f"List of variables given by `var_order` ({var_order}) "
-                    f"does not agree with given variables ({given_variables})",
+                    f"does not agree with given variables ({given_variables})"
                 )
+                raise ValueError(msg)
         else:
             var_order = given_variables
 
@@ -2260,11 +2276,12 @@ class MultiDatasets(MonitorBase):
             # Get dataset to be benchmarked
             benchmark_datasets = self._get_benchmark_datasets(datasets)
             if len(benchmark_datasets) > 1:
-                raise ValueError(
+                msg = (
                     f"Plot {plot_type} only supports a single dataset with "
                     f"'benchmark_dataset: True' for variable '{var_key}', got "
-                    f"{len(benchmark_datasets):d}",
+                    f"{len(benchmark_datasets):d}"
                 )
+                raise ValueError(msg)
             benchmark_dataset = benchmark_datasets[0]
             all_benchmark_datasets[var_key] = benchmark_dataset
 
