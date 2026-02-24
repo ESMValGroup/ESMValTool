@@ -137,6 +137,16 @@ Configuration options for 1D plots
 ----------------------------------
 aspect_ratio: float, optional (default: None)
     Aspect ratio of the plot.
+axes_kwargs: dict, optional
+    Optional calls to methods of the corresponding :mod:`matplotlib.axes.Axes`
+    instance. Dictionary keys are functions of :mod:`matplotlib.axes.Axes`.
+    Dictionary values are used as argument(s) for these functions (if values
+    are dictionaries, these are interpreted as keyword arguments; otherwise a
+    single argument is assumed). String arguments can include facets in curly
+    brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``. Examples: ``{set_title:
+    'Awesome Plot of {long_name}'}``, ``{set_xlabel: '{short_name}'}``,
+    ``{set_xlim: [0, 5]}``.
 caption: str, optional
     Figure caption used for provenance tracking. Can include facets in curly
     brackets which will be derived from the corresponding dataset, e.g.,
@@ -207,6 +217,16 @@ Configuration options for 2D plots
 ----------------------------------
 aspect_ratio: float, optional (default: None)
     Aspect ratio of the plot.
+axes_kwargs: dict, optional
+    Optional calls to methods of the corresponding :mod:`matplotlib.axes.Axes`
+    instance. Dictionary keys are functions of :mod:`matplotlib.axes.Axes`.
+    Dictionary values are used as argument(s) for these functions (if values
+    are dictionaries, these are interpreted as keyword arguments; otherwise a
+    single argument is assumed). String arguments can include facets in curly
+    brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``. Examples: ``{set_title:
+    'Awesome Plot of {long_name}'}``, ``{set_xlabel: '{short_name}'}``,
+    ``{set_xlim: [0, 5]}``.
 caption: str, optional
     Figure caption used for provenance tracking. Can include facets in curly
     brackets which will be derived from the corresponding dataset, e.g.,
@@ -324,6 +344,16 @@ y_minor_formatter: str, optional (default: None)
 
 Configuration options for boxplots
 ----------------------------------
+axes_kwargs: dict, optional
+    Optional calls to methods of the corresponding :mod:`matplotlib.axes.Axes`
+    instance. Dictionary keys are functions of :mod:`matplotlib.axes.Axes`.
+    Dictionary values are used as argument(s) for these functions (if values
+    are dictionaries, these are interpreted as keyword arguments; otherwise a
+    single argument is assumed). String arguments can include facets in curly
+    brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``. Examples: ``{set_title:
+    'Awesome Plot of {long_name}'}``, ``{set_xlabel: '{short_name}'}``,
+    ``{set_xlim: [0, 5]}``.
 caption: str, optional
     Figure caption used for provenance tracking. Can include facets in curly
     brackets which will be derived from the corresponding dataset, e.g.,
@@ -423,6 +453,7 @@ class MultiDatasets(MonitorBase):
         """Plot settings."""
         default_settings_1d = {
             "aspect_ratio": None,
+            "axes_kwargs": {},
             "caption": None,
             "envelope_kwargs": {
                 "alpha": 0.8,
@@ -447,6 +478,7 @@ class MultiDatasets(MonitorBase):
         }
         default_settings_2d = {
             "aspect_ratio": None,
+            "axes_kwargs": {},
             "caption": None,
             "cbar_label": "{short_name} [{units}]",
             "cbar_label_bias": "Δ{short_name} [{units}]",
@@ -556,6 +588,7 @@ class MultiDatasets(MonitorBase):
                 },
                 "pyplot_kwargs": {},
                 "default_settings": {
+                    "axes_kwargs": {},
                     "caption": None,
                     "fontsize": None,
                     "plot_kwargs": {},
@@ -1171,6 +1204,11 @@ class MultiDatasets(MonitorBase):
         # Further customize plot appearance
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
+            dataset,
+        )
+        self._process_axes_kwargs(
+            axes,
+            self.plots[plot_type]["axes_kwargs"],
             dataset,
         )
 
@@ -1862,6 +1900,32 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type]["pyplot_kwargs"],
                 benchmark_dataset,
             )
+            self._process_axes_kwargs(
+                axes,
+                self.plots[plot_type]["axes_kwargs"],
+                benchmark_dataset,
+            )
+
+    def _process_axes_kwargs(
+        self,
+        axes: Axes,
+        axes_kwargs: dict[str, Any],
+        dataset: dict,
+    ) -> None:
+        """Process functions for :class:`matplotlib.axes.Axes`."""
+        for func, arg in axes_kwargs.items():
+            if isinstance(arg, str):
+                arg = self._fill_facet_placeholders(
+                    arg,
+                    dataset,
+                    f"axes_kwargs '{func}: {arg}'",
+                )
+            if arg is None:
+                getattr(axes, func)()
+            elif isinstance(arg, dict):
+                getattr(axes, func)(**arg)
+            else:
+                getattr(axes, func)(arg)
 
     def _process_pyplot_kwargs(
         self,

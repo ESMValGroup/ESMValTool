@@ -24,6 +24,8 @@ annual_cycle_complex:
     plots:
       annual_cycle:
         aspect_ratio: 0.5
+        axes_kwargs:
+          set_xlabel: X Label
         gridline_kwargs:
           color: blue
         hlines:
@@ -38,7 +40,6 @@ annual_cycle_complex:
             color: C1
         pyplot_kwargs:
           suptitle: Suptitle
-          xlabel: X Label
           xlim: [1, 100]
         show_y_minor_ticklabels: true
 annual_cycle_log_x_log_y:
@@ -47,10 +48,11 @@ annual_cycle_log_x_log_y:
   settings:
     plots:
       annual_cycle:
+        axes_kwargs:
+          set_xlim: [1, 100]
         log_x: true
         log_y: true
         pyplot_kwargs:
-          xlim: [1, 100]
           ylim: [1, 100]
         show_x_minor_ticks: true
         show_y_minor_ticks: true
@@ -98,6 +100,8 @@ benchmarking_annual_cycle_complex:
     plots:
       benchmarking_annual_cycle:
         aspect_ratio: 0.5
+        axes_kwargs:
+          set_xlabel: X Label
         gridline_kwargs:
           color: blue
         hlines:
@@ -111,7 +115,6 @@ benchmarking_annual_cycle_complex:
             color: C1
         pyplot_kwargs:
           suptitle: Suptitle
-          xlabel: X Label
           xlim: [1, 100]
         show_x_minor_ticks: true
         show_y_minor_ticks: true
@@ -145,6 +148,8 @@ benchmarking_boxplot_complex:
   settings:
     plots:
       benchmarking_boxplot:
+        axes_kwargs:
+          set_ylabel: Y Label {units}
         fontsize: 8
         plot_kwargs:
           color: green
@@ -232,6 +237,8 @@ benchmarking_zonal_complex:
     plots:
       benchmarking_zonal:
         aspect_ratio: 1.5
+        axes_kwargs:
+          set_xlabel: X Label
         cbar_label: Var
         cbar_kwargs:
           ticks: [2, 5, 8]
@@ -247,7 +254,6 @@ benchmarking_zonal_complex:
             cmap: YlOrRd
         pyplot_kwargs:
           suptitle: Suptitle
-          xlabel: X Label
           ylabel: Y Label
           xlim: [0, 100]
         rasterize: false
@@ -437,6 +443,9 @@ map_pcolormesh:
   settings:
     plots:
       map:
+        axes_kwargs:
+          set_extent: [0, 60, 20, 55]
+          set_title: "{dataset} (part of map)"
         plot_func: pcolormesh
         plot_kwargs:
           default:
@@ -493,6 +502,8 @@ zonal_mean_profile_plev_3_panel:
     plots:
       zonal_mean_profile:
         aspect_ratio: 1.5
+        axes_kwargs:
+          set_xlabel: X Label
         cbar_label: Var
         cbar_label_bias: dVar
         cbar_kwargs:
@@ -514,7 +525,6 @@ zonal_mean_profile_plev_3_panel:
           norm: centered
         pyplot_kwargs:
           suptitle: Suptitle
-          xlabel: X Label
           ylabel: Y Label
           xlim: [0, 100]
         rasterize: false
@@ -541,6 +551,8 @@ zonal_mean_profile_plev_1_panel:
     plots:
       zonal_mean_profile:
         aspect_ratio: 1.5
+        axes_kwargs:
+          set_xlabel: X Label
         cbar_label: Var
         cbar_kwargs:
           ticks: [10, 12, 14]
@@ -556,7 +568,6 @@ zonal_mean_profile_plev_1_panel:
             cmap: YlOrRd
         pyplot_kwargs:
           suptitle: Suptitle
-          xlabel: X Label
           ylabel: Y Label
           xlim: [0, 100]
         rasterize: false
