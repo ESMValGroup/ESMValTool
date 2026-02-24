@@ -903,7 +903,7 @@ class MultiDatasets(MonitorBase):
                 )
                 raise ValueError(msg)
             if plot_options is None:
-                plot_options = {}
+                plot_options = {}  # noqa: PLW2901
                 self.plots[plot_type] = plot_options
 
             # Only use default projection options if no projection is specified
@@ -929,7 +929,7 @@ class MultiDatasets(MonitorBase):
         # Load seaborn settings
         sns.set_theme(**self.cfg["seaborn_settings"])
 
-    def _add_colorbar(
+    def _add_colorbar(  # noqa: PLR0913
         self,
         plot_type: str,
         plot_1: Any,
@@ -1039,7 +1039,7 @@ class MultiDatasets(MonitorBase):
                 mean.data,
                 dataset_1["units"],
             )
-        if np.abs(mean.data) >= 0.1:
+        if np.abs(mean.data) >= 0.1:  # noqa: PLR2004
             mean_val = f"{mean.data:.2f} {cube_1.units}"
         else:
             mean_val = f"{mean.data:.2e} {cube_1.units}"
@@ -1060,7 +1060,7 @@ class MultiDatasets(MonitorBase):
             iris.analysis.RMS,
             weights=weights,
         )
-        if np.abs(rmse.data) >= 0.1:
+        if np.abs(rmse.data) >= 0.1:  # noqa: PLR2004
             rmse_val = f"{rmse.data:.2f} {cube_1.units}"
         else:
             rmse_val = f"{rmse.data:.2e} {cube_1.units}"
@@ -1116,7 +1116,7 @@ class MultiDatasets(MonitorBase):
         )
         raise ValueError(msg)
 
-    def _customize_plot(
+    def _customize_plot(  # noqa: PLR0912
         self,
         plot_type: str,
         axes: Axes,
@@ -1139,7 +1139,7 @@ class MultiDatasets(MonitorBase):
             axes.xaxis.set_major_formatter(FormatStrFormatter("%.1f"))
             x_minor_locator = LogLocator(
                 base=10.0,
-                subs=np.arange(1.0, 10.0) * 0.1,  # type: ignore
+                subs=np.arange(1.0, 10.0) * 0.1,
                 numticks=12,
             )
         else:
@@ -1488,7 +1488,7 @@ class MultiDatasets(MonitorBase):
         # Replace facets with dataset entries for string arguments
         for key, val in plot_kwargs.items():
             if isinstance(val, str):
-                val = self._fill_facet_placeholders(
+                val = self._fill_facet_placeholders(  # noqa: PLW2901
                     val,
                     dataset,
                     f"plot_kwargs of {plot_type} '{key}: {val}'",
@@ -1560,7 +1560,7 @@ class MultiDatasets(MonitorBase):
             return ref_datasets[0]
         return None
 
-    def _load_and_preprocess_data(self) -> list[dict]:
+    def _load_and_preprocess_data(self) -> list[dict]:  # noqa: PLR0912
         """Load and preprocess data."""
         input_data = list(self.cfg["input_data"].values())
 
@@ -1577,13 +1577,13 @@ class MultiDatasets(MonitorBase):
             logger.info("Loading %s", filename)
             cubes = iris.load(filename)
             if len(cubes) == 1:
-                cube: Cube = cubes[0]  # type: ignore
+                cube: Cube = cubes[0]
             else:
                 var_name = dataset["short_name"]
                 try:
                     cube = cubes.extract_cube(
                         iris.NameConstraint(var_name=var_name),
-                    )  # type: ignore
+                    )
                 except ConstraintMismatchError as exc:
                     var_names = [c.var_name for c in cubes]
                     msg = (
@@ -1715,7 +1715,7 @@ class MultiDatasets(MonitorBase):
         if fix_cartopy_bug:
             plot_kwargs["transform_first"] = True
             npx = da if cube.has_lazy_data() else np
-            cube = cube.copy(npx.ma.filled(cube.core_data(), np.nan))  # type: ignore
+            cube = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
 
         return plot_func(cube, **plot_kwargs)
 
@@ -1729,7 +1729,7 @@ class MultiDatasets(MonitorBase):
         **additional_plot_kwargs: Any,
     ) -> Any:
         """Plot 2D data."""
-        fig: Figure = axes.get_figure()  # type: ignore
+        fig: Figure = axes.get_figure()
 
         # Some options are not supported for map plots
         if "map" in plot_type:
@@ -1744,14 +1744,14 @@ class MultiDatasets(MonitorBase):
 
         # Show coastlines for map plots
         if "map" in plot_type:
-            axes.coastlines()  # type: ignore
+            axes.coastlines()
 
         # Title and axis labels
         fig.suptitle(dataset["long_name"])
         axes.set_title(self._get_label(dataset))
         (x_coord, y_coord) = self._get_coords_for_2d_plotting(plot_type, cube)
-        axes.set_xlabel(f"{x_coord.name()} [{x_coord.units}]")  # type: ignore
-        axes.set_ylabel(f"{y_coord.name()} [{y_coord.units}]")  # type: ignore
+        axes.set_xlabel(f"{x_coord.name()} [{x_coord.units}]")
+        axes.set_ylabel(f"{y_coord.name()} [{y_coord.units}]")
 
         # Customize plot with user-defined settings
         self._customize_plot(plot_type, axes, dataset)
@@ -1929,7 +1929,7 @@ class MultiDatasets(MonitorBase):
         """Process functions for :class:`matplotlib.axes.Axes`."""
         for func, arg in axes_kwargs.items():
             if isinstance(arg, str):
-                arg = self._fill_facet_placeholders(
+                arg = self._fill_facet_placeholders(  # noqa: PLW2901
                     arg,
                     dataset,
                     f"axes_kwargs '{func}: {arg}'",
@@ -1951,11 +1951,11 @@ class MultiDatasets(MonitorBase):
         """Process functions for :mod:`matplotlib.pyplot`."""
         for func, arg in pyplot_kwargs.items():
             if transpose_axes and func.startswith("x"):
-                func = func.replace("x", "y", 1)
+                func = func.replace("x", "y", 1)  # noqa: PLW2901
             elif transpose_axes and func.startswith("y"):
-                func = func.replace("y", "x", 1)
+                func = func.replace("y", "x", 1)  # noqa: PLW2901
             if isinstance(arg, str):
-                arg = self._fill_facet_placeholders(
+                arg = self._fill_facet_placeholders(  # noqa: PLW2901
                     arg,
                     dataset,
                     f"pyplot_kwargs '{func}: {arg}'",
@@ -2029,7 +2029,7 @@ class MultiDatasets(MonitorBase):
             cube: Cube = iris.pandas.as_cubes(
                 df_single_var,
                 aux_coord_cols=["Dataset"],
-            )[0]  # type: ignore
+            )[0]
             cube.var_name = var_key
             cube.long_name = dataset["long_name"]
             if dataset["standard_name"]:
