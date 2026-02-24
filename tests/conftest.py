@@ -6,8 +6,11 @@ import pytest
 
 
 def pytest_addoption(parser):
-    """Add option to save imagehashes (used for diagnostic tests)."""
+    """Add pytest options."""
+    # Save imagehashes (used for diagnostic tests)
     parser.addoption("--save_imagehashes")
+    # Show image paths (used for diagnostic tests)
+    parser.addoption("--show_images")
 
 
 def pytest_runtest_setup(item):
