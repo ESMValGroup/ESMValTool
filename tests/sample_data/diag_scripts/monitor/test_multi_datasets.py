@@ -25,7 +25,9 @@ DEFAULT_SETTINGS = {
 
 
 @pytest.mark.diagnostic_image_output
-@pytest.mark.parametrize("input_data,settings,expected_pngs", TEST_SETUPS)
+@pytest.mark.parametrize(
+    ("input_data", "settings", "expected_pngs"), TEST_SETUPS
+)
 def test_diagnostic_image_output(
     pytestconfig,
     tmp_path: Path,
