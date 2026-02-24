@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
+import pytest
 import yaml
 from imagehash import hex_to_hash, phash
 from PIL import Image
@@ -109,7 +110,10 @@ def load_test_setups(path: str | Path) -> list[tuple]:
         setups = yaml.safe_load(file)
 
     parametrize_input: list[tuple] = [
-        (s["input_data"], s["settings"], s["expected_pngs"]) for s in setups
+        pytest.param(
+            s["input_data"], s["settings"], s["expected_pngs"], id=test_id
+        )
+        for test_id, s in setups.items()
     ]
 
     return parametrize_input
