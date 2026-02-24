@@ -138,15 +138,15 @@ Configuration options for 1D plots
 aspect_ratio: float, optional (default: None)
     Aspect ratio of the plot.
 axes_kwargs: dict, optional
-    Optional calls to methods of the corresponding :mod:`matplotlib.axes.Axes`
-    instance. Dictionary keys are functions of :mod:`matplotlib.axes.Axes`.
-    Dictionary values are used as argument(s) for these functions (if values
-    are dictionaries, these are interpreted as keyword arguments; otherwise a
-    single argument is assumed). String arguments can include facets in curly
-    brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``. Examples: ``{set_title:
-    'Awesome Plot of {long_name}'}``, ``{set_xlabel: '{short_name}'}``,
-    ``{set_xlim: [0, 5]}``.
+    Optional calls to methods of the corresponding
+    :class:`matplotlib.axes.Axes` instance. Dictionary keys are functions of
+    :class:`matplotlib.axes.Axes`. Dictionary values are used as argument(s)
+    for these functions (if values are dictionaries, these are interpreted as
+    keyword arguments; otherwise a single argument is assumed). String
+    arguments can include facets in curly brackets which will be derived from
+    the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``{set_title: 'Awesome Plot of {long_name}'}``,
+    ``{set_xlabel: '{short_name}'}``, ``{set_xlim: [0, 5]}``.
 caption: str, optional
     Figure caption used for provenance tracking. Can include facets in curly
     brackets which will be derived from the corresponding dataset, e.g.,
@@ -218,15 +218,15 @@ Configuration options for 2D plots
 aspect_ratio: float, optional (default: None)
     Aspect ratio of the plot.
 axes_kwargs: dict, optional
-    Optional calls to methods of the corresponding :mod:`matplotlib.axes.Axes`
-    instance. Dictionary keys are functions of :mod:`matplotlib.axes.Axes`.
-    Dictionary values are used as argument(s) for these functions (if values
-    are dictionaries, these are interpreted as keyword arguments; otherwise a
-    single argument is assumed). String arguments can include facets in curly
-    brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``. Examples: ``{set_title:
-    'Awesome Plot of {long_name}'}``, ``{set_xlabel: '{short_name}'}``,
-    ``{set_xlim: [0, 5]}``.
+    Optional calls to methods of the corresponding
+    :class:`matplotlib.axes.Axes` instance. Dictionary keys are functions of
+    :class:`matplotlib.axes.Axes`. Dictionary values are used as argument(s)
+    for these functions (if values are dictionaries, these are interpreted as
+    keyword arguments; otherwise a single argument is assumed). String
+    arguments can include facets in curly brackets which will be derived from
+    the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``{set_title: 'Awesome Plot of {long_name}'}``,
+    ``{set_xlabel: '{short_name}'}``, ``{set_xlim: [0, 5]}``.
 caption: str, optional
     Figure caption used for provenance tracking. Can include facets in curly
     brackets which will be derived from the corresponding dataset, e.g.,
@@ -345,15 +345,15 @@ y_minor_formatter: str, optional (default: None)
 Configuration options for boxplots
 ----------------------------------
 axes_kwargs: dict, optional
-    Optional calls to methods of the corresponding :mod:`matplotlib.axes.Axes`
-    instance. Dictionary keys are functions of :mod:`matplotlib.axes.Axes`.
-    Dictionary values are used as argument(s) for these functions (if values
-    are dictionaries, these are interpreted as keyword arguments; otherwise a
-    single argument is assumed). String arguments can include facets in curly
-    brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``. Examples: ``{set_title:
-    'Awesome Plot of {long_name}'}``, ``{set_xlabel: '{short_name}'}``,
-    ``{set_xlim: [0, 5]}``.
+    Optional calls to methods of the corresponding
+    :class:`matplotlib.axes.Axes` instance. Dictionary keys are functions of
+    :class:`matplotlib.axes.Axes`. Dictionary values are used as argument(s)
+    for these functions (if values are dictionaries, these are interpreted as
+    keyword arguments; otherwise a single argument is assumed). String
+    arguments can include facets in curly brackets which will be derived from
+    the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``{set_title: 'Awesome Plot of {long_name}'}``,
+    ``{set_xlabel: '{short_name}'}``, ``{set_xlim: [0, 5]}``.
 caption: str, optional
     Figure caption used for provenance tracking. Can include facets in curly
     brackets which will be derived from the corresponding dataset, e.g.,
