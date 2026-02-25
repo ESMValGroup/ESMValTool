@@ -15,9 +15,9 @@ configuration options  <esmvalcore:config_for_cli>` and the section on
 
 To install the default configuration in the default location, run
 
- .. code:: bash
+.. code:: bash
 
-	esmvaltool config copy defaults/config-user.yml
+   esmvaltool config copy defaults/config-user.yml
 
 Note that this needs to be customized using the instructions above, so
 the ``esmvaltool`` command can find the data on your system, before it can run
