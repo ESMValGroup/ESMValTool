@@ -1928,6 +1928,13 @@ class MultiDatasets(MonitorBase):
     ) -> None:
         """Process functions for :class:`matplotlib.axes.Axes`."""
         for func, arg in axes_kwargs.items():
+            # For set_extent, make sure to specify coordinate system that is
+            # used (will always be PlateCarree; see
+            # https://stackoverflow.com/questions/43470238/cartopy-set-extent-extending-requested-boundary#43505490)
+            if func == "set_extent":
+                if not isinstance(arg, dict):
+                    arg = {"extents": arg}  # noqa: PLW2901
+                arg["crs"] = ccrs.PlateCarree()
             if isinstance(arg, str):
                 arg = self._fill_facet_placeholders(  # noqa: PLW2901
                     arg,
