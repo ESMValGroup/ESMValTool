@@ -144,6 +144,7 @@ jobs:
           command: rm -r esmvaltool
       - test_and_report
       - run:
+          # Documentation available at https://docs.codacy.com/coverage-reporter/
           name: Upload coverage report to Codacy
           command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -s -r test-reports/coverage.xml
       - save_cache:
