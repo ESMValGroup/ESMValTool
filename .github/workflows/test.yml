@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - pin_numpy2
   schedule:
     - cron: "0 0 * * *"
 
