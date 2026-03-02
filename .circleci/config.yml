@@ -1,9 +1,6 @@
 ---
 version: 2.1
 
-orbs:
-  coverage-reporter: codacy/coverage-reporter@13.13.0
-
 commands:
   check_changes:
     steps:
@@ -146,15 +143,14 @@ jobs:
           name: Remove source code to test the installed software
           command: rm -r esmvaltool
       - test_and_report
+      - run:
+          name: Upload coverage report to Codacy
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r test-reports/coverage.xml
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - /root/.cache/pip
             - .pytest_cache
-      - coverage-reporter/send_report:
-          coverage-reports: "test-reports/coverage.xml"
-          project-token: $CODACY_PROJECT_TOKEN
-          skip: true # skip if project-token is not defined (i.e. on a fork)
 
   test_installation_from_source_test_mode:
     # Test installation from source
