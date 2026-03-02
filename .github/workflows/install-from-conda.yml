@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - pin_numpy2
   schedule:
     - cron: "0 4 * * *"
 
@@ -37,7 +38,7 @@ jobs:
           which mamba 2>&1 | tee -a conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
           python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - name: Install ESMValTool
-        run: mamba install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: mamba install esmvaltool "numpy>=2" 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Verify installation
         run: |
           pip check
