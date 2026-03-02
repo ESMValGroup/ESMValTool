@@ -145,7 +145,7 @@ jobs:
       - test_and_report
       - run:
           name: Upload coverage report to Codacy
-          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r test-reports/coverage.xml
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -s -r test-reports/coverage.xml
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
