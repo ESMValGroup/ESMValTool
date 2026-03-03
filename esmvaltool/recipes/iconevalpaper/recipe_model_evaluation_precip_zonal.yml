@@ -13,7 +13,7 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
-  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, component: atm, var_type: atm_2d_ml}
+  - {dataset: ICON-XPP, project: ICON, exp: historical-202510p1, component: atm, var_type: atm_2d_ml}
 
 timerange_for_models: &time_period
   timerange: '1995/2014'

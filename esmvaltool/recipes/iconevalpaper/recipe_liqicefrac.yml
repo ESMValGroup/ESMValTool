@@ -17,7 +17,7 @@ regridding: &regridding
 
 datasets:
   # one year is enough data
-  - {dataset: ICON-XPP, exp: tvp1826_003, project: ICON, var_type: atm_3d_ml, timerange: '2014/2014'}
+  - {dataset: ICON-XPP, exp: historical-202510p1, project: ICON, var_type: atm_3d_ml, timerange: '2014/2014'}
 
 
 supplementary_variables: &supplementary_variables

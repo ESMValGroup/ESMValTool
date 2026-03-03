@@ -1,0 +1,146 @@
+# ESMValTool
+---
+documentation:
+  title: Basic sanity checks.
+  description: >
+    Calculate basic sanity checks on monthly output e.g. for monitoring new model runs.
+  authors:
+    - bock_lisa
+    - castellani_giulia
+    - lauer_axel
+    - schulze_kirsten
+  maintainer:
+    - lauer_axel
+
+
+# YAML anchors for later use
+
+plot_script: &plot_script
+  script: monitor/multi_datasets.py
+  facet_used_for_labels: legend_label
+  group_variables_by: short_name # variable_group
+  plot_filename: "{plot_type}_{exp}_{real_name}_{dataset}_{mip}"
+  plot_folder: "{plot_dir}"
+
+timeseries_plot: &timeseries_plot
+  caption: >
+    Timeseries of global mean {long_name} (solid line) and global min/max values
+    (dashed lines). As "reasonable" ranges for the global mean, red lines show
+    min and max values found in reference datasets (observations, reanalyses)
+    across all months and all reference datasets.
+  plot_kwargs:
+    'global mean':
+      color: blue
+      label: null
+      linestyle: '-'
+      linewidth: 2
+      label: '{dataset}'
+    'global min':
+      color: blue
+      label: null
+      linestyle: '--'
+      linewidth: 1
+    'global max':
+      color: blue
+      label: null
+      linestyle: '--'
+      linewidth: 1
+
+
+# Note: The following model is just an example
+datasets:
+##  - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2, type: reanaly, version: 1, start_year: 1995, end_year: 2014}
+  - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, start_year: 1995, end_year: 2014}
+#  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 1995, end_year: 2014, alias: 'ERA5'}
+#  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 1993, end_year: 2014, component: atm, var_type: atm_2d_ml, alias: 'ICON-XPP'}
+
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+  - {short_name: areacello, skip: true}
+  - {short_name: sftlf, skip: true}
+  - {short_name: sftof, skip: true}
+
+
+preprocessors:
+
+  global_sum:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    area_statistics:
+      operator: sum
+
+
+diagnostics:
+
+  # *******************
+  # *** global sums ***
+  # *******************
+
+  air_mass:
+    description: time series of global air mass anomaly
+    variables:
+      ps:
+        preprocessor: global_sum
+        legend_label: 'global sum'
+        mip: Amon
+        exp: historical
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            caption: "Timeseries of global air mass (solid blue line)."
+            pyplot_kwargs:
+              title: "Global air mass"
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+#  prw_mass:
+#    description: time series of global water vapour mass
+#    variables:
+#      prw_sum:
+#        short_name: prw
+#        preprocessor: global_sum
+#        legend_label: 'global sum'
+#        mip: Amon
+#        exp: historical
+#    scripts:
+#      timeseries:
+#        <<: *plot_script
+#        plots:
+#          timeseries:
+#            caption: >
+#              Timeseries of global water vapour mass (solid line) and
+#              global min/max values (dashed lines). As "reasonable" ranges for the global
+#              sum, red lines show min and max values found in reference datasets
+#              (observations, reanalyses) across all months and all reference datasets.
+#            pyplot_kwargs:
+#              title: "Global sum of water vapour"
+#            hlines:
+#              - y: 1.420688e+16
+#                color: red
+#                linewidth: 2
+#              - y: 1.128716e+16
+#                color: red
+#                linewidth: 2
+#            plot_kwargs:
+#              'global sum':
+#                color: blue
+#                label: null
+#                linestyle: '-'
+#                linewidth: 2
+#                label: '{dataset}'
+#                zorder: 3

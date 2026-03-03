@@ -1,0 +1,474 @@
+# ESMValTool
+#DASK --memory_limit=7760MB
+#DASK --n_workers=4
+#TAGS ocean
+#TAGS timeseries
+---
+documentation:
+  title: Ocean Evaluation (Time Series).
+  description: Time series of ocean variables.
+  authors:
+  - bock_lisa
+  - weigel_katja
+datasets_cmip6:
+- project: CMIP6
+  dataset: '*'
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  institute: '*'
+  timerange: 19790101/20141231
+datasets_tos:
+- project: OBS6
+  dataset: ESACCI-SST
+  type: sat
+  version: 3.0-L4-analysis
+  tier: 2
+  timerange: 19800101/20211231
+#- project: OBS
+#  dataset: HadISST
+#  type: reanaly
+#  version: '1'
+#  tier: 2
+#  timerange: 19790101/20211231
+#- project: OBS6
+#  dataset: NOAA-ERSSTv5
+#  type: reanaly
+#  version: v5
+#  tier: 2
+#  timerange: 19790101/20201231
+supplementary_variables:
+- short_name: areacella
+  skip: true
+- short_name: areacello
+  skip: true
+- short_name: sftlf
+  skip: true
+- short_name: sftof
+  skip: true
+plot_script:
+  script: monitor/multi_datasets.py
+  facet_used_for_labels: alias
+  figure_kwargs:
+    figsize:
+    - 7
+    - 5
+  group_variables_by: variable_group
+  plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+  plot_folder: '{plot_dir}'
+timeseries_plot:
+  gridline_kwargs:
+    color: darkgray
+    linewidth: 0.5
+    alpha: 0.3
+  legend_kwargs:
+    loc: upper center
+    bbox_to_anchor:
+    - 0.5
+    - -0.4
+    borderaxespad: 0.0
+  pyplot_kwargs:
+    title: '{title}'
+  plot_kwargs:
+    ICON-XPP:
+      label: '{dataset}'
+      linewidth: 1.25
+      zorder: 2.5
+      color: C0
+#    ICON_tvp1826_001:
+#      label: '{dataset} ({exp})'
+#      linewidth: 1.25
+#      zorder: 2.5
+#      color: C0
+#    ICON_ICON-XPP:
+#      label: '{dataset} ({exp})'
+#      linewidth: 1.25
+#      zorder: 2.5
+#      color: C0
+#    ICON_ICON-XPP_tvp1826_001:
+#      label: '{dataset} ({exp})'
+#      linewidth: 1.25
+#      zorder: 2.5
+#      color: C0
+    default:
+      color: lightgray
+      label: null
+      linewidth: 0.75
+      zorder: 1.0
+    CMIP6:
+      label: '{project}'
+    CMIP6_CESM2:
+      label: '{project}'
+    OBS:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+    OBS6:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dashdot
+    native6:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dotted
+    OBS_HadISST:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+    OBS6_ESACCI-SST:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dashed
+    OBS6_NOAA-ERSSTv5:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dashdot
+datasets:
+- supplementary_variables:
+  - short_name: areacella
+    skip: true
+  - short_name: areacello
+    skip: true
+  - short_name: sftlf
+    skip: true
+  - short_name: sftof
+    skip: true
+  dataset: ICON-XPP
+#  exp: tvp1826_001
+  exp: historical-202510p1
+  project: ICON
+  timerange: 19790101/20141231
+  alias: ICON-XPP
+#  dataset: ICON-XPP
+#  exp: tvp1802_001
+#  project: ICON
+#  timerange: 19790101/20141231
+#  frequency: mon
+#  alias: 'ICON-XPP'
+
+preprocessors:
+  create_global_annual_mean_time_series:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    convert_units:
+      units: degC
+  create_nino34_time_series:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_longitude: -170
+      end_longitude: -120
+      start_latitude: -5
+      end_latitude: 5
+    mask_landsea:
+      mask_out: land
+    anomalies:
+      period: month
+    rolling_window_statistics:
+      coordinate: time
+      operator: mean
+      window_length: 3
+    area_statistics:
+      operator: mean
+diagnostics:
+  timeseries_nino34:
+    description: Time series for Oceanic Nino Index in Nino 3.4 region.
+    themes:
+    - phys
+    realms:
+    - ocean
+    variables:
+      tos:
+        mip: Omon
+        preprocessor: create_nino34_time_series
+        title: Nino 3.4
+        additional_datasets:
+        - project: OBS6
+          dataset: ESACCI-SST
+          type: sat
+          version: 3.0-L4-analysis
+          tier: 2
+          timerange: 19800101/20211231
+#        - project: OBS
+#          dataset: HadISST
+#          type: reanaly
+#          version: '1'
+#          tier: 2
+#          timerange: 19790101/20211231
+#        - project: OBS6
+#          dataset: NOAA-ERSSTv5
+#          type: reanaly
+#          version: v5
+#          tier: 2
+#          timerange: 19790101/20201231
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        - short_name: areacello
+          skip: true
+        - short_name: sftlf
+          skip: true
+        - short_name: sftof
+          skip: true
+    additional_datasets:
+    - project: CMIP6
+      dataset: '*'
+      exp: historical
+      ensemble: r1i1p1f1
+      grid: gn
+      institute: '*'
+      timerange: 19790101/20141231
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        figure_kwargs:
+          figsize:
+          - 7
+          - 5
+        group_variables_by: variable_group
+        plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+        plot_folder: '{plot_dir}'
+        plots:
+          timeseries:
+            gridline_kwargs:
+              color: darkgray
+              linewidth: 0.5
+              alpha: 0.3
+            legend_kwargs:
+              loc: upper center
+              bbox_to_anchor:
+              - 0.5
+              - -0.4
+              borderaxespad: 0.0
+            pyplot_kwargs:
+              title: '{title}'
+              ylim:
+              - -3
+              - 3
+              ylabel: Oceanic Nino Index (K)
+            plot_kwargs:
+              ICON-XPP:
+                label: '{dataset}'
+                linewidth: 1.25
+                zorder: 2.5
+                color: C0
+#              ICON_tvp1826_001:
+#                label: '{dataset} ({exp})'
+#                linewidth: 1.25
+#                zorder: 2.5
+#                color: C0
+#              ICON_ICON-XPP:
+#                label: '{dataset} ({exp})'
+#                linewidth: 1.25
+#                zorder: 2.5
+#                color: C0
+#              ICON_ICON-XPP_tvp1826_001:
+#                label: '{alias}'
+#                linewidth: 1.25
+#                zorder: 2.5
+#                color: C0
+              default:
+                color: lightgray
+                label: null
+                linewidth: 0.75
+                zorder: 1.0
+              CMIP6:
+                label: '{project}'
+              CMIP6_CESM2:
+                label: '{project}'
+              OBS:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+              OBS6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashdot
+              native6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dotted
+              OBS_HadISST:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+              OBS6_ESACCI-SST:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashed
+              OBS6_NOAA-ERSSTv5:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashdot
+            hlines:
+            - y: 1.5
+              color: black
+              linestyle: dashed
+            - y: -1.5
+              color: black
+              linestyle: dashed
+  timeseries_tos:
+    description: Time series for global mean sea surface temperature.
+    themes:
+    - phys
+    realms:
+    - ocean
+    variables:
+      tos:
+        mip: Omon
+        preprocessor: create_global_annual_mean_time_series
+        title: Global Mean Sea Surface Temperature
+        additional_datasets:
+        - project: OBS6
+          dataset: ESACCI-SST
+          type: sat
+          version: 3.0-L4-analysis
+          tier: 2
+          timerange: 19800101/20211231
+#        - project: OBS
+#          dataset: HadISST
+#          type: reanaly
+#          version: '1'
+#          tier: 2
+#          timerange: 19790101/20211231
+#        - project: OBS6
+#          dataset: NOAA-ERSSTv5
+#          type: reanaly
+#          version: v5
+#          tier: 2
+#          timerange: 19790101/20201231
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        - short_name: areacello
+          skip: true
+        - short_name: sftlf
+          skip: true
+        - short_name: sftof
+          skip: true
+    additional_datasets:
+    - project: CMIP6
+      dataset: '*'
+      exp: historical
+      ensemble: r1i1p1f1
+      grid: gn
+      institute: '*'
+      timerange: 19790101/20141231
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        figure_kwargs:
+          figsize:
+          - 7
+          - 5
+        group_variables_by: variable_group
+        plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+        plot_folder: '{plot_dir}'
+        plots:
+          timeseries:
+            gridline_kwargs:
+              color: darkgray
+              linewidth: 0.5
+              alpha: 0.3
+            legend_kwargs:
+              loc: upper center
+              bbox_to_anchor:
+              - 0.5
+              - -0.4
+              borderaxespad: 0.0
+            pyplot_kwargs:
+              title: '{title}'
+            plot_kwargs:
+              ICON-XPP:
+                label: '{dataset}'
+                linewidth: 1.25
+                zorder: 2.5
+                color: C0
+#              ICON_tvp1826_001:
+#                label: '{dataset} ({exp})'
+#                linewidth: 1.25
+#                zorder: 2.5
+#                color: C0
+#              ICON_ICON-XPP:
+#                label: '{dataset} ({exp})'
+#                linewidth: 1.25
+#                zorder: 2.5
+#                color: C0
+#              ICON_ICON-XPP_tvp1826_001:
+#                label: '{dataset} ({exp})'
+#                linewidth: 1.25
+#                zorder: 2.5
+#                color: C0
+              default:
+                color: lightgray
+                label: null
+                linewidth: 0.75
+                zorder: 1.0
+              CMIP6:
+                label: '{project}'
+              CMIP6_CESM2:
+                label: '{project}'
+              OBS:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+              OBS6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashdot
+              native6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dotted
+              OBS_HadISST:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+              OBS6_ESACCI-SST:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashed
+              OBS6_NOAA-ERSSTv5:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashdot
