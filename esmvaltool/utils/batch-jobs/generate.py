@@ -98,9 +98,6 @@ SPECIAL_RECIPES = {
     "recipe_extreme_index": {
         "partition": "#SBATCH --partition=compute \n",
     },
-    "recipe_eyring06jgr": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
     "recipe_flato13ipcc_figures_938_941_cmip6": {
         "partition": "#SBATCH --partition=compute \n",
     },

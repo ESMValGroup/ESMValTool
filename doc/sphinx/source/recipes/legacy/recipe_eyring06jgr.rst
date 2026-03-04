@@ -1,7 +1,13 @@
 .. _recipe_eyring06jgr:
 
-Diagnostics of stratospheric dynamics and chemistry
-===================================================
+Legacy recipe: Diagnostics of stratospheric dynamics and chemistry
+==================================================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe
+   is only included for documentation purposes and not maintained any more. The
+   last known ESMValTool version supporting this recipe is version 2.14.0.
 
 Overview
 --------
@@ -18,11 +24,11 @@ The following plots are reproduced:
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
+Recipes are stored in archive/legacy_recipes
 
 * recipe_eyring06jgr.yml
 
-Diagnostics are stored in esmvaltool/diag_scripts/eyring06jgr/
+Diagnostics are stored in archive/legacy_diag_scripts/eyring06jgr/
 
 * eyring06jgr_fig01.ncl
 * eyring06jgr_fig05a.ncl
