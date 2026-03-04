@@ -7,7 +7,7 @@ Legacy recipe: Ozone and associated climate impacts
 
    This recipe has been retired and moved to the folder "archive". This recipe
    is only included for documentation purposes and not maintained any more. The
-   last known ESMValTool version supporting this recipe is version 2.14.0.
+   last known ESMValTool version supporting this recipe is version 2.13.0.
 
 Overview
 --------
