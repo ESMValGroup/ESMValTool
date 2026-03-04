@@ -71,10 +71,11 @@ SPECIAL_RECIPES = {
     "recipe_bock20jgr_fig_8-10": {
         "partition": "#SBATCH --partition=shared \n",
         "time": "#SBATCH --time=48:00:00 \n",
-        "memory": "#SBATCH --mem=50G \n",
+        "memory": "#SBATCH --mem=150G \n",
     },
     "recipe_check_obs": {
         "partition": "#SBATCH --partition=compute \n",
+        "time": "#SBATCH --time=8:00:00 \n",
         "memory": "#SBATCH --constraint=512G \n",
     },
     "recipe_climate_change_hotspot": {
@@ -207,6 +208,7 @@ MAX_PARALLEL_TASKS = {
     "recipe_collins13ipcc": 1,
     "recipe_lauer22jclim_fig3-4_zonal": 1,
     "recipe_lauer22jclim_fig5_lifrac": 1,
+    "recipe_ref_timeseries_region": 2,
     "recipe_smpi": 1,
     "recipe_smpi_4cds": 1,
 }
