@@ -1,0 +1,172 @@
+# ESMValTool
+#TAGS ocean
+#TAGS maps
+---
+documentation:
+  title: Ocean Evaluation (Maps).
+  description: '<p>Map plots of ocean variables.</p> <p><i>Note</i></p> <p>Time ranges
+    for the different datasets differ: <ul> <li>ICON: 19790101/20101231</li> <li>WOA
+    (20000101/20001231)</li> </ul></p>
+
+    '
+  authors:
+  - bock_lisa
+  - weigel_katja
+datasets_so:
+- project: OBS6
+  dataset: WOA
+  type: clim
+  version: '2018'
+  tier: 2
+  reference_for_monitor_diags: true
+  alias: WOA
+  timerange: 20000101/20001231
+datasets_tos:
+- project: OBS6
+  dataset: WOA
+  type: clim
+  version: '2018'
+  tier: 2
+  reference_for_monitor_diags: true
+  alias: WOA
+  timerange: 20000101/20001231
+plot_script:
+  script: monitor/multi_datasets.py
+  facet_used_for_labels: alias
+  group_variables_by: variable_group
+  plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+  plot_folder: '{plot_dir}'
+map_plot:
+  common_cbar: true
+  fontsize: 8
+  gridline_kwargs:
+    color: darkgray
+    linewidth: 0.5
+    alpha: 0.3
+  pyplot_kwargs:
+    suptitle: '{title}'
+  plot_kwargs:
+    default:
+      levels: 12
+datasets:
+- supplementary_variables:
+  - short_name: areacella
+    skip: true
+  - short_name: areacello
+    skip: true
+  - short_name: sftlf
+    skip: true
+  - short_name: sftof
+    skip: true
+  dataset: ICON-XPP
+  exp: historical-202510p1
+  project: ICON
+  timerange: 19810101/20101231
+preprocessors:
+  create_map:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    climate_statistics:
+      operator: mean
+      period: full
+  create_map_sos:
+    custom_order: true
+    extract_levels:
+      coordinate: depth
+      levels: 0
+      scheme: nearest_extrapolate
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    climate_statistics:
+      operator: mean
+      period: full
+    mask_landsea:
+      mask_out: land
+    convert_units:
+      units: g kg-1
+diagnostics:
+#  maps_sos:
+#    description: Map plots of sea surface salinity.
+#    themes:
+#    - phys
+#    realms:
+#    - ocean
+#    variables:
+#      so:
+#        mip: Omon
+#        preprocessor: create_map_sos
+#        title: Sea Surface Salinity
+#        additional_datasets:
+#        - project: OBS6
+#          dataset: WOA
+#          type: clim
+#          version: '2018'
+#          tier: 2
+#          reference_for_monitor_diags: true
+#          alias: WOA
+#          timerange: 20000101/20001231
+#    scripts:
+#      plot:
+#        script: monitor/multi_datasets.py
+#        facet_used_for_labels: alias
+#        group_variables_by: variable_group
+#        plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+#        plot_folder: '{plot_dir}'
+#        plots:
+#          map:
+#            common_cbar: true
+#            fontsize: 8
+#            gridline_kwargs:
+#              color: darkgray
+#              linewidth: 0.5
+#              alpha: 0.3
+#            pyplot_kwargs:
+#              suptitle: '{title}'
+#            plot_kwargs:
+#              default:
+#                levels: 12
+  maps_tos:
+    description: Map plots of sea surface temperature.
+    themes:
+    - phys
+    realms:
+    - ocean
+    variables:
+      tos:
+        mip: Omon
+        preprocessor: create_map
+        title: Sea Surface Temperature
+        additional_datasets:
+        - project: OBS6
+          dataset: WOA
+          type: clim
+          version: '2018'
+          tier: 2
+          reference_for_monitor_diags: true
+          alias: WOA
+          timerange: 20000101/20001231
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        group_variables_by: variable_group
+        plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+        plot_folder: '{plot_dir}'
+        plots:
+          map:
+            common_cbar: true
+            fontsize: 8
+            gridline_kwargs:
+              color: darkgray
+              linewidth: 0.5
+              alpha: 0.3
+            pyplot_kwargs:
+              suptitle: '{title}'
+            plot_kwargs:
+              default:
+                levels: 12

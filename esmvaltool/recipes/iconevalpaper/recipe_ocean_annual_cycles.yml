@@ -1,0 +1,732 @@
+# ESMValTool
+#TAGS ocean
+#TAGS maps
+#TAGS annual-cycles
+---
+documentation:
+  title: Ocean Evaluation (Annual Cycles)
+  description: Annual cycles of ocean variables. (ongoing) model simulations.
+  authors:
+  - bock_lisa
+  - weigel_katja
+defaults_cmip6:
+  project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+datasets_cmip6:
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: ACCESS-CM2
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: ACCESS-ESM1-5
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: CAMS-CSM1-0
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: CanESM5
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: CESM2-WACCM-FV2
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: CESM2-WACCM
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: CESM2
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: EC-Earth3
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f3
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: HadGEM3-GC31-LL
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: ICON-ESM-LR
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: IPSL-CM6A-LR
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: MIROC6
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: MPI-ESM-1-2-HAM
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: MPI-ESM1-2-HR
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: MPI-ESM1-2-LR
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: MRI-ESM2-0
+- project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f2
+  grid: gn
+  timerange: 19790101/20140101
+  dataset: UKESM1-0-LL
+- dataset: ORAS5
+  project: native6
+  mip: Omon
+  type: OBS6
+  version: CONS_v0.1
+  tier: 2
+  ugrid: false
+  raw_name: somxl030
+  raw_units: m
+  supplementary_variables:
+  - short_name: areacello
+    skip: true
+  - short_name: sftof
+    skip: true
+  horizontal_grid: /work/bd0854/b380103/ORAS5/grids/oras5_mesh_T.nc
+supplementary_variables:
+- short_name: areacella
+  skip: true
+- short_name: areacello
+  skip: true
+- short_name: sftlf
+  skip: true
+- short_name: sftof
+  skip: true
+plot_script:
+  script: monitor/multi_datasets.py
+  facet_used_for_labels: alias
+  figure_kwargs:
+    figsize:
+    - 7
+    - 5
+  group_variables_by: variable_group
+  plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+  plot_folder: '{plot_dir}'
+annual_cycle_plot:
+  aspect_ratio: 0.5
+  gridline_kwargs:
+    color: darkgray
+    linewidth: 0.5
+    alpha: 0.3
+  legend_kwargs:
+    loc: upper center
+    bbox_to_anchor:
+    - 0.5
+    - -0.4
+    borderaxespad: 0.0
+  pyplot_kwargs:
+    title: '{title} (19790101/20140101)'
+  plot_kwargs:
+    ICON-XPP:
+      label: '{dataset}'
+      linewidth: 1.25
+      zorder: 2.5
+      color: C0
+    default:
+      color: lightgray
+      label: null
+      linewidth: 0.75
+      zorder: 1.0
+    CMIP6:
+      label: '{project}'
+    CMIP6_CESM2:
+      label: '{project}'
+    OBS:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+    OBS6:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dashdot
+    native6:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dotted
+datasets:
+- supplementary_variables:
+  - short_name: areacella
+    skip: true
+  - short_name: areacello
+    skip: true
+  - short_name: sftlf
+    skip: true
+  - short_name: sftof
+    skip: true
+  dataset: ICON-XPP
+  exp: historical-202510p1
+  project: ICON
+  h: true
+  timerange: 19790101/20140101
+  alias: ICON-XPP
+preprocessors:
+  create_monthly_climatology_southern_ocean:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_shape:
+      shapefile: ar6
+      crop: true
+      decomposed: true
+      ids:
+        Name:
+        - Southern-Ocean
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+  create_monthly_climatology_labrador_sea:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_longitude: -67
+      end_longitude: -42
+      start_latitude: 46
+      end_latitude: 66
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+  create_monthly_climatology_weddell_sea:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_longitude: -66
+      end_longitude: -16
+      start_latitude: -77
+      end_latitude: -60
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+diagnostics:
+  annual_cycles:
+    description: Annual cycle plots.
+    themes:
+    - phys
+    realms:
+    - ocean
+    variables:
+      mlotst_labrador_sea:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: create_monthly_climatology_labrador_sea
+        title: Mixed Layer Depth for Labrador Sea
+        additional_datasets:
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ACCESS-CM2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ACCESS-ESM1-5
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CAMS-CSM1-0
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CanESM5
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2-WACCM-FV2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2-WACCM
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: EC-Earth3
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f3
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: HadGEM3-GC31-LL
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ICON-ESM-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: IPSL-CM6A-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MIROC6
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM-1-2-HAM
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM1-2-HR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM1-2-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MRI-ESM2-0
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f2
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: UKESM1-0-LL
+        - dataset: ORAS5
+          project: native6
+          mip: Omon
+          type: OBS6
+          version: CONS_v0.1
+          tier: 2
+          ugrid: false
+          raw_name: somxl030
+          raw_units: m
+          supplementary_variables:
+          - short_name: areacello
+            skip: true
+          - short_name: sftof
+            skip: true
+          horizontal_grid: /work/bd0854/b380103/ORAS5/grids/oras5_mesh_T.nc
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        - short_name: areacello
+          skip: true
+        - short_name: sftlf
+          skip: true
+        - short_name: sftof
+          skip: true
+      mlotst_southern_ocean:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: create_monthly_climatology_southern_ocean
+        title: Mixed Layer Depth for Southern Ocean
+        additional_datasets:
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ACCESS-CM2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ACCESS-ESM1-5
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CAMS-CSM1-0
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CanESM5
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2-WACCM-FV2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2-WACCM
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: EC-Earth3
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f3
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: HadGEM3-GC31-LL
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ICON-ESM-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: IPSL-CM6A-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MIROC6
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM-1-2-HAM
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM1-2-HR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM1-2-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MRI-ESM2-0
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f2
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: UKESM1-0-LL
+        - dataset: ORAS5
+          project: native6
+          mip: Omon
+          type: OBS6
+          version: CONS_v0.1
+          tier: 2
+          ugrid: false
+          raw_name: somxl030
+          raw_units: m
+          supplementary_variables:
+          - short_name: areacello
+            skip: true
+          - short_name: sftof
+            skip: true
+          horizontal_grid: /work/bd0854/b380103/ORAS5/grids/oras5_mesh_T.nc
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        - short_name: areacello
+          skip: true
+        - short_name: sftlf
+          skip: true
+        - short_name: sftof
+          skip: true
+      mlotst_weddell_sea:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: create_monthly_climatology_weddell_sea
+        title: Mixed Layer Depth for Weddell Sea
+        additional_datasets:
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ACCESS-CM2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ACCESS-ESM1-5
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CAMS-CSM1-0
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CanESM5
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2-WACCM-FV2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2-WACCM
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: CESM2
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: EC-Earth3
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f3
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: HadGEM3-GC31-LL
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: ICON-ESM-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: IPSL-CM6A-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MIROC6
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM-1-2-HAM
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM1-2-HR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MPI-ESM1-2-LR
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f1
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: MRI-ESM2-0
+        - project: CMIP6
+          exp: historical
+          ensemble: r1i1p1f2
+          grid: gn
+          timerange: 19790101/20140101
+          dataset: UKESM1-0-LL
+        - dataset: ORAS5
+          project: native6
+          mip: Omon
+          type: OBS6
+          version: CONS_v0.1
+          tier: 2
+          ugrid: false
+          raw_name: somxl030
+          raw_units: m
+          supplementary_variables:
+          - short_name: areacello
+            skip: true
+          - short_name: sftof
+            skip: true
+          horizontal_grid: /work/bd0854/b380103/ORAS5/grids/oras5_mesh_T.nc
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        - short_name: areacello
+          skip: true
+        - short_name: sftlf
+          skip: true
+        - short_name: sftof
+          skip: true
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        figure_kwargs:
+          figsize:
+          - 7
+          - 5
+        group_variables_by: variable_group
+        plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+        plot_folder: '{plot_dir}'
+        plots:
+          annual_cycle:
+            aspect_ratio: 0.5
+            gridline_kwargs:
+              color: darkgray
+              linewidth: 0.5
+              alpha: 0.3
+            legend_kwargs:
+              loc: upper center
+              bbox_to_anchor:
+              - 0.5
+              - -0.4
+              borderaxespad: 0.0
+            pyplot_kwargs:
+              title: '{title} (19790101/20140101)'
+            plot_kwargs:
+              ICON-XPP:
+                label: '{dataset}'
+                linewidth: 1.25
+                zorder: 2.5
+                color: C0
+              default:
+                color: lightgray
+                label: null
+                linewidth: 0.75
+                zorder: 1.0
+              CMIP6:
+                label: '{project}'
+              CMIP6_CESM2:
+                label: '{project}'
+              OBS:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+              OBS6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashdot
+              native6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dotted
