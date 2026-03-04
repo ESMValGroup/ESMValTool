@@ -190,7 +190,6 @@ MAX_PARALLEL_TASKS = {
     "recipe_bock20jgr_fig_8-10": 1,
     "recipe_daily_era5": 1,
     "recipe_easy_ipcc": 1,
-    "recipe_eyring13jgr_12": 1,
     "recipe_climate_change_hotspot": 1,
     "recipe_flato13ipcc_figure_96": 1,
     "recipe_flato13ipcc_figures_938_941_cmip3": 1,
