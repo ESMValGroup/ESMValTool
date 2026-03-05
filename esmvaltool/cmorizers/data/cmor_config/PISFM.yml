@@ -1,0 +1,47 @@
+---
+# ESMValTool CMORizer configuration for PI-SFM model output.
+# Add the raw output file directory to your ESMValTool user config:
+#   rootpath:
+#     RAWOBS: /path/to/Tier1/PISFM/
+#
+# Then run:
+#   esmvaltool data format --datasets PISFM
+
+# Glob pattern used to locate the raw PI-SFM generation output file
+# under the RAWOBS directory configured in the ESMValTool user config.
+filename: "output_pisfm_*.nc"
+
+# Path NetCDF file covering the
+# same spatial domain and time period as the model output. Latitude,
+# longitude, and time coordinates are read from this file because the
+# PI-SFM generation script does not write them correctly.
+reference_file: "/path/to/nextgems_highres_reference.nc"
+
+# Dataset label used in output filenames and the Tier directory name.
+# Corresponds to the 'dataset' key in the ESMValTool recipe.
+method_name: "PISFM"
+tier: 1
+# Region tag appended to filenames (e.g. 'Scandinavia', 'IBE', 'CE').
+# Set to null to omit the region tag.
+region: "Scandinavia"
+
+# NetCDF groups to process from the raw output file.
+# 'prediction' contains the ensemble model output (4D: ensemble x time x y x x).
+# 'truth' contains the high-resolution reference (3D: time x y x x).
+groups:
+  - "prediction"
+  - "truth"
+
+# Time step of the model output in hours.
+time_freq_hours: 3
+
+# If true, reconstruct the time axis from the first valid entry at
+# time_freq_hours intervals. Set to false only if the generation script
+# wrote correct time values.
+fix_time: true
+
+# Global attributes written to all output files.
+attributes:
+  institution: "DLR"
+  source: "PI-SFM: physics-informed stochastic flow matching for climate downscaling"
+  references: "https://doi.org/TO-ADD"

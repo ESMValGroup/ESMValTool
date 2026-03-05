@@ -23,7 +23,8 @@ from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 UNITS= {} #store units of variables
-
+#color-blind friendly color palette
+CB_COLORS = ["#0072B2", "#D55E00", "#009E73", "#E69F00", "#CC79A7", "#56B4E9", "#F0E442", "#000000"]
 def _get_provenance_record(cfg, plot_file, caption, plot_types = ["map"], statistics= ["other"]):
     """Create a provenance record describing the diagnostic data and plot."""
     ancestor_files = []
@@ -95,29 +96,165 @@ def update_variable_units(datasets: list[dict]) -> bool:
 
     return UNITS
 
-def calculate_spatial_metrics(truth, pred_ens, var_name):
+
+def avg_pool_2d_weighted(data, lat_points, kernel=10, stride=10):
+    """Average pool 2D data with cos(lat) weighting.
+    
+    Parameters
+    ----------
+    data : numpy.ndarray
+        Data array with shape (time, lat, lon)
+    lat_points : numpy.ndarray
+        Latitude values for each row (1D array of length lat)
+    kernel : int
+        Pooling kernel size
+    stride : int
+        Pooling stride
+    
+    Returns
+    -------
+    numpy.ndarray
+        Pooled data with shape (time, lat_out, lon_out)
+    numpy.ndarray
+        Coarse latitude points (lat_out,)
+    """
+    t, h, w = data.shape
+    h_out = (h - kernel) // stride + 1
+    w_out = (w - kernel) // stride + 1
+    
+    pooled = np.zeros((t, h_out, w_out))
+    coarse_lat_points = np.zeros(h_out)
+    
+    for i in range(h_out):
+        lat_start = i * stride
+        lat_end = lat_start + kernel
+        
+        # Get latitudes for this coarse cell
+        cell_lats = lat_points[lat_start:lat_end]
+        coarse_lat_points[i] = np.mean(cell_lats)
+        
+        # Compute cos(lat) weights for each row in the cell
+        cos_weights = np.cos(np.deg2rad(cell_lats))
+        # Normalize weights
+        cos_weights = cos_weights / np.sum(cos_weights)
+        
+        for j in range(w_out):
+            lon_start = j * stride
+            lon_end = lon_start + kernel
+            
+            # Extract the block: (time, kernel, kernel)
+            block = data[:, lat_start:lat_end, lon_start:lon_end]
+            
+            # Weight by cos(lat) along latitude dimension
+            # First average over longitude, then weighted average over latitude
+            lon_mean = np.mean(block, axis=2)  # (time, kernel_lat)
+            weighted_mean = np.sum(lon_mean * cos_weights[np.newaxis, :], axis=1)  # (time,)
+            pooled[:, i, j] = weighted_mean
+    
+    return pooled, coarse_lat_points
+
+
+def calculate_conservation_error(truth, pred_ens, lat_points, pool_factor=10):
+    """Calculate conservation error by comparing coarsened truth and predictions.
+    
+    The conservation error measures how well the downscaled predictions preserve
+    the large-scale mean when aggregated back to a coarser resolution.
+    
+    Parameters
+    ----------
+    truth : numpy.ndarray
+        Ground truth data (time, lat, lon)
+    pred_ens : numpy.ndarray
+        Ensemble predictions (n_ens, time, lat, lon)
+    lat_points : numpy.ndarray
+        Latitude values for each row
+    pool_factor : int
+        Coarsening factor (default: 10)
+    
+    Returns
+    -------
+    dict
+        Dictionary containing conservation error metrics
+    """
+    n_ens = pred_ens.shape[0]
+    
+    # Coarsen the ground truth
+    truth_coarse, coarse_lats = avg_pool_2d_weighted(
+        truth, lat_points, kernel=pool_factor, stride=pool_factor
+    )
+    
+    # Coarsen ensemble mean prediction
+    ens_mean = np.mean(pred_ens, axis=0)
+    pred_coarse, _ = avg_pool_2d_weighted(
+        ens_mean, lat_points, kernel=pool_factor, stride=pool_factor
+    )
+    
+    # Conservation error: difference between coarsened prediction and coarsened truth
+    # This represents how well the downscaling preserves large-scale averages
+    conservation_error_map = np.mean(np.abs(pred_coarse - truth_coarse), axis=0)
+    
+    # Mean conservation error (spatial mean with cos(lat) weighting)
+    cos_weights = np.cos(np.deg2rad(coarse_lats))
+    cos_weights = cos_weights / np.sum(cos_weights)
+    
+    # Weighted spatial mean
+    conservation_mean = np.sum(
+        np.mean(conservation_error_map, axis=1) * cos_weights
+    )
+    
+    # Also compute the mean absolute spatial difference 
+    # (difference between domain-averaged coarse pred and truth at each timestep)
+    domain_mean_truth = np.mean(truth_coarse, axis=(1, 2))
+    domain_mean_pred = np.mean(pred_coarse, axis=(1, 2))
+    conservation_domain_mean = np.mean(np.abs(domain_mean_pred - domain_mean_truth))
+    
+    return {
+        "conservation": conservation_error_map,
+        "conservation_mean": conservation_mean,
+        "conservation_domain_mean": conservation_domain_mean,
+        "coarse_lat_points": coarse_lats,
+    }
+
+
+def calculate_spatial_metrics(truth, pred_ens, var_name, lat_points=None, cfg=None):
     """Calculate spatial metrics for evaluation.
     
     Parameters
     ----------
     truth : numpy.ndarray
-        Ground truth data (time, lon, lat)
+        Ground truth data (time, lat, lon)
     pred_ens : numpy.ndarray
-        Ensemble predictions (n_ens, time, lon, lat)
+        Ensemble predictions (n_ens, time, lat, lon)
     var_name : str
         Variable name
+    lat_points : numpy.ndarray, optional
+        Latitude values for cos(lat) weighting in conservation error
+    cfg : dict, optional
+        Configuration dictionary with options:
+        - compute_relbias_pr: bool, whether to compute relative bias for pr
+        - compute_conservation: list, variables for which to compute conservation error
+        - pool_factor: int, coarsening factor for conservation error
     
     Returns
     -------
     dict
         Dictionary containing all calculated metrics
     """
-    n_ens, time, lon, lat  = pred_ens.shape
+    n_ens, time, lat, lon = pred_ens.shape
     ens_mean = np.mean(pred_ens, axis=0)
     
-    # Bias and Relative Bias
+    # Get configuration options
+    if cfg is None:
+        cfg = {}
+    compute_relbias_pr = cfg.get("compute_relbias_pr", True)
+    compute_conservation_vars = cfg.get("compute_conservation", ["pr", "huss"])
+    pool_factor = cfg.get("pool_factor", 10)
+    
+    # Bias
     bias = np.mean(ens_mean - truth, axis=0)
-    if var_name in ["pr"]:
+    
+    # Relative Bias (optional for pr)
+    if var_name in ["pr"] and compute_relbias_pr:
         relbias = bias / (np.mean(truth, axis=0) + 1e-6)
     else:
         relbias = None
@@ -129,15 +266,6 @@ def calculate_spatial_metrics(truth, pred_ens, var_name):
             crps_map[i, j] = np.mean(
                 crps_ensemble(truth[:, i, j], pred_ens[:, :, i, j].T)
             )
-    
-    # Correlation
-    corr_map = np.zeros((lat, lon))
-    for i in range(lat):
-        for j in range(lon):
-            if np.std(ens_mean[:, i, j]) > 0 and np.std(truth[:, i, j]) > 0:
-                corr_map[i, j], _ = pearsonr(ens_mean[:, i, j], truth[:, i, j])
-            else:
-                corr_map[i, j] = np.nan
     
     # Variance ratio
     var_truth = np.var(truth, axis=0)
@@ -163,24 +291,38 @@ def calculate_spatial_metrics(truth, pred_ens, var_name):
     bias_mean = np.mean(np.abs(bias))
     relbias_mean = np.mean(np.abs(relbias)) if relbias is not None else None
     crps_mean = np.mean(crps_map)
-    corr_mean = np.nanmean(corr_map)
     
-    return {
+    result = {
         "bias": bias,
         "relbias": relbias,
         "crps": crps_map,
-        "corr": corr_map,
         "varratio": variance_ratio,
         "bias_mean": bias_mean,
         "relbias_mean": relbias_mean,
         "crps_mean": crps_mean,
-        "corr_mean": corr_mean,
         "mae_mean": mae_mean,
         "ssr": ssr,
     }
+    
+    # Conservation error (only for specified variables)
+    if var_name in compute_conservation_vars and lat_points is not None:
+        conservation_results = calculate_conservation_error(
+            truth, pred_ens, lat_points, pool_factor
+        )
+        result.update(conservation_results)
+    else:
+        result["conservation"] = None
+        result["conservation_mean"] = None
+        result["conservation_domain_mean"] = None
+    
+    return result
 
-def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg):
+
+def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg, lat_points=None):
     """Plot panel of spatial metrics for all methods.
+    
+    Simplified version showing: Bias, Relative Bias (optional for pr), CRPS, 
+    Variance Ratio, and Conservation Error (for pr and huss).
     
     Parameters
     ----------
@@ -190,55 +332,85 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
         Variable name
     method_names : list of str
         List of method names
+    extent : list
+        Spatial extent [lon_min, lon_max, lat_min, lat_max]
     cfg : dict
         Configuration dictionary
+    lat_points : numpy.ndarray, optional
+        Latitude points for conservation error plotting
     """
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
+    from matplotlib.gridspec import GridSpec
     
     n_methods = len(method_names)
     
     # Get variable units
-    var_units = UNITS[var_name]
+    var_units = UNITS.get(var_name, "")
     
-    # Define metrics to plot based on variable
-    if var_name in ["pr"]:
-        metrics_to_plot = ["bias", "relbias", "crps", "corr", "varratio"]
-        vmins = [-0.1, -0.3, 0., 0.6, 0.5]
-        vmaxs = [0.1, 0.3, 0.1, 1., 1.5]
-        titles = [
-            f"Bias ({var_units})", 
-            "Relative Bias (%)", 
-            f"CRPS ({var_units})", 
-            "Correlation", 
-            "Variance Ratio (%)"
-        ]
-        cmaps = ["RdBu", "BrBG", "YlGnBu", "gist_ncar", "PiYG"]
-        # Whether to show percentage in the mean text
-        show_pct = [False, True, False, False, True]
-    else:
-        metrics_to_plot = ["bias", "crps", "corr", "varratio"]
-        vmins = [-0.5, 0, 0.8, 0.75]
-        vmaxs = [0.5, 0.5, 1, 1.25]
-        titles = [
-            f"Bias ({var_units})", 
-            f"CRPS ({var_units})", 
-            "Correlation", 
-            "Variance Ratio (%)"
-        ]
-        cmaps = ["BrBG", "YlGnBu", "gist_ncar", "PiYG"]
-        show_pct = [False, False, False, True]
+    # Get configuration options
+    compute_relbias_pr = cfg.get("compute_relbias_pr", True)
+    compute_conservation_vars = cfg.get("compute_conservation", ["pr", "huss"])
+    
+    # Build metrics to plot based on variable and config
+    metrics_to_plot = ["bias"]
+    vmins = [-0.1 if var_name == "pr" else -0.5]
+    vmaxs = [0.1 if var_name == "pr" else 0.5]
+    titles = [f"Bias ({var_units})"]
+    cmaps = ["RdBu"]
+    show_pct = [False]
+    is_coarse = [False]  # Track which metrics are on coarse grid
+    
+    # Add relative bias for pr if enabled
+    if var_name == "pr" and compute_relbias_pr:
+        metrics_to_plot.append("relbias")
+        vmins.append(-0.5)
+        vmaxs.append(0.5)
+        titles.append("Relative Bias (%)")
+        cmaps.append("BrBG")
+        show_pct.append(True)
+        is_coarse.append(False)
+    
+    # Add CRPS
+    metrics_to_plot.append("crps")
+    vmins.append(0.)
+    vmaxs.append(0.1 if var_name == "pr" else 0.5)
+    titles.append(f"CRPS ({var_units})")
+    cmaps.append("YlGnBu")
+    show_pct.append(False)
+    is_coarse.append(False)
+    
+    # Add variance ratio
+    # metrics_to_plot.append("varratio")
+    # vmins.append(0.5)
+    # vmaxs.append(1.5)
+    # titles.append("Variance Ratio")
+    # cmaps.append("PiYG")
+    # show_pct.append(True)
+    # is_coarse.append(False)
+    
+    # Add conservation error for specified variables
+    if var_name in compute_conservation_vars:
+        metrics_to_plot.append("conservation")
+        if var_name == "pr":
+            vmins.append(0.)
+            vmaxs.append(0.05)
+        else:
+            vmins.append(0.)
+            vmaxs.append(0.5)
+        titles.append(f"Conservation Error ({var_units})")
+        cmaps.append("cool")
+        show_pct.append(False)
+        is_coarse.append(True)
     
     # Create figure with cartopy projection
     projection = ccrs.PlateCarree()
     
     fig = plt.figure(figsize=(3.5 * len(metrics_to_plot), 3.2 * n_methods))
     
-    # Create grid for subplots
-    from matplotlib.gridspec import GridSpec
     gs = GridSpec(n_methods, len(metrics_to_plot), figure=fig, 
-                  hspace=0.15, wspace=0.10, 
-                  left=0.08, right=0.95, top=0.95, bottom=0.08)
+                  hspace=0.05, wspace=0.15, 
+                  left=0.05, right=0.95, top=0.95, bottom=0.08)
     
     axes = []
     for row in range(n_methods):
@@ -252,7 +424,7 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
         for col, metric in enumerate(metrics_to_plot):
             ax = axes[row][col]
             
-            metric_map = metrics_all_methods[row][metric]
+            metric_map = metrics_all_methods[row].get(metric)
             
             if metric_map is None:
                 ax.text(0.5, 0.5, "N/A", ha='center', va='center', fontsize=14,
@@ -260,21 +432,24 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
                 ax.axis('off')
                 continue
             
+            # Determine extent for this metric (coarse grid has different extent)
+            if is_coarse[col] and "coarse_lat_points" in metrics_all_methods[row]:
+                # For coarse grid, we still use the same extent but the data is smaller
+                plot_extent = extent
+            else:
+                plot_extent = extent
+            
             # Plot the metric map
             im = ax.imshow(metric_map, cmap=cmaps[col],
                 vmin=vmins[col], vmax=vmaxs[col],
                 origin='lower', aspect='auto',
                 transform=projection,
-                extent=extent  # Adjust based on your domain
+                extent=plot_extent
             )
             
             # Add coastlines and features
-            ax.coastlines(resolution='50m', linewidth=0.8, color='black', alpha=0.6)
-            ax.add_feature(cfeature.BORDERS, linewidth=0.5, edgecolor='black', alpha=0.3)
-            
-            # Set extent to your region (adjust these values based on your data)
-            # Example for a specific region - you may need to extract this from data
-            # ax.set_extent([lon_min, lon_max, lat_min, lat_max], crs=projection)
+            ax.coastlines(resolution='50m', linewidth=1.0, color='black', alpha=0.8)
+            ax.add_feature(cfeature.BORDERS, linewidth=0.7, edgecolor='black', alpha=0.5)
             
             # Add gridlines
             gl = ax.gridlines(draw_labels=False, linewidth=0.5, 
@@ -282,15 +457,14 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
             
             # Add column title only on first row
             if row == 0:
-                ax.set_title(titles[col], fontsize=11, fontweight='bold', pad=10)
+                ax.set_title(titles[col], fontsize=14, fontweight='bold', pad=10)
             
             # Add method name on the left (outside the axis)
             if col == 0:
-                # Position the text to the left of the axis
                 ax.text(
                     -0.15, 0.5, method,
                     transform=ax.transAxes,
-                    fontsize=12, fontweight='bold',
+                    fontsize=14, fontweight='bold',
                     va='center', ha='right',
                     rotation=90
                 )
@@ -298,7 +472,7 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
             # Show mean value
             mean_val = np.nanmean(np.abs(metric_map))
             
-            # Convert to percentage if needed (for display in label, not text box)
+            # Convert to percentage if needed
             if show_pct[col]:
                 display_val = mean_val * 100
             else:
@@ -307,26 +481,36 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
             ax.text(
                 0.05, 0.95, f"Mean: {display_val:.3f}",
                 ha='left', va='top', transform=ax.transAxes,
-                fontsize=9, bbox=dict(
-                    facecolor='white', edgecolor='black',
+                fontsize=10, bbox=dict(
+                    facecolor='white', edgecolor='white',
                     boxstyle='round,pad=0.5', alpha=0.9
                 ),
                 zorder=10
             )
+            
+            # For conservation error, also show domain mean error
+            # if metric == "conservation" and metrics_all_methods[row].get("conservation_domain_mean") is not None:
+            #     domain_mean = metrics_all_methods[row]["conservation_domain_mean"]
+            #     ax.text(
+            #         0.05, 0.82, f"Domain: {domain_mean:.4f}",
+            #         ha='left', va='top', transform=ax.transAxes,
+            #         fontsize=10, bbox=dict(
+            #             facecolor='white', edgecolor='white',
+            #             boxstyle='round,pad=0.3', alpha=0.9
+            #         ),
+            #         zorder=10
+            #     )
     
     # Add colorbars at the bottom of each column
     for col in range(len(metrics_to_plot)):
-        # Get the position of the last axis in this column
         ax_for_cbar = axes[-1][col]
         
-        # Create colorbar
         norm = plt.cm.ScalarMappable(
             cmap=cmaps[col],
             norm=plt.Normalize(vmin=vmins[col], vmax=vmaxs[col])
         )
         norm.set_array([])
         
-        # Get axis position
         pos = ax_for_cbar.get_position()
         cbar_ax = fig.add_axes([pos.x0, pos.y0 - 0.04, pos.width, 0.02])
         
@@ -334,8 +518,9 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
             norm, cax=cbar_ax,
             orientation='horizontal'
         )
-        cbar.ax.tick_params(labelsize=9)
-    
+        cbar.set_ticks(np.linspace(vmins[col], vmaxs[col], 5))
+        cbar.ax.tick_params(labelsize=10)
+        
     # Save figure
     plot_file = os.path.join(
         cfg["plot_dir"],
@@ -345,7 +530,7 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg)
     plt.close()
     
     caption = f"Spatial metrics for {var_name} across different ML methods"
-    _get_provenance_record(cfg, plot_file, caption, ["metrics", "map"],["mean", "other", "corr"])
+    _get_provenance_record(cfg, plot_file, caption, ["metrics", "map"], ["mean", "other"])
     
     logger.info("Saved spatial metrics plot: %s", plot_file)
 
@@ -413,20 +598,21 @@ def plot_energy_spectrum(truth, preds_methods, method_names, var_name, cfg):
     
     # Plot
     plt.figure(figsize=(10, 6))
-    plt.plot(wavelengths, truth_spectrum, label="Reference", lw=2.5, color='black')
+    plt.plot(wavelengths, truth_spectrum, label="Reference", lw=3.5, color='black')
     
-    colors = plt.cm.tab10(np.linspace(0, 1, len(method_names)))
+    colors = CB_COLORS[:len(method_names)]
     for method, spectrum, color in zip(method_names, pred_spectra, colors):
-        plt.plot(wavelengths, spectrum, label=method, linestyle="--", lw=2, color=color)
+        plt.plot(wavelengths, spectrum, label=method, linestyle="--", lw=3.5, color=color)
     
     plt.gca().invert_xaxis()
     plt.xscale("log")
     plt.yscale("log")
-    plt.xlabel("Length scale (km)", fontsize=12)
-    plt.ylabel("Normalized Energy", fontsize=12)
-    plt.title(f"Energy Spectrum: {var_name}", fontsize=14, fontweight='bold')
-    plt.legend(fontsize=11)
+    plt.xlabel("Length scale (km)", fontsize=22)
+    plt.ylabel("Normalized Energy", fontsize=22)
+    plt.title(f"Energy Spectrum", fontsize=32, fontweight='bold')
+    plt.legend(fontsize=22)
     plt.grid(True, which="both", ls="--", alpha=0.5)
+    plt.tick_params(axis='both', which='major', labelsize=20)
     plt.tight_layout()
     
     # Save
@@ -541,10 +727,10 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
     centers = (edges[:-1] + edges[1:]) / 2
     epsilon = 1e-10
     truth_hist = np.maximum(truth_hist, epsilon)
-    plt.plot(centers, np.log10(truth_hist), label="Reference", lw=2.5, color='black')
+    plt.plot(centers, np.log10(truth_hist), label="Reference", lw=3.5, color='black')
     
     # Prediction histograms
-    colors = plt.cm.tab10(np.linspace(0, 1, len(method_names)))
+    colors = CB_COLORS[:len(method_names)]
     for method, pred_ens, color in zip(method_names, preds_methods, colors):
         ensemble_pdfs = []
         for i in range(pred_ens.shape[0]):
@@ -556,18 +742,19 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
         mean_pred_pdf = np.maximum(mean_pred_pdf, epsilon)
         plt.plot(
             centers, np.log10(mean_pred_pdf),
-            label=method, linestyle='--', lw=2, color=color
+            label=method, linestyle='--', lw=3.5, color=color
         )
     
     # Add units to x-axis label
     xlabel = f"{var_name}"
     if var_units:
         xlabel += f" ({var_units})"
-    plt.xlabel(xlabel, fontsize=12)
-    plt.ylabel("log₁₀(PDF)", fontsize=12)
-    plt.title(f"Distribution Comparison: {var_name}", fontsize=14, fontweight='bold')
-    plt.legend(fontsize=11)
+    plt.xlabel(xlabel, fontsize=22)
+    plt.ylabel("log₁₀(PDF)", fontsize=22)
+    plt.title(f"Probability Distribution", fontsize=32, fontweight='bold')
+    plt.legend(fontsize=22)
     plt.grid(True, which="both", ls="--", alpha=0.5)
+    plt.tick_params(axis='both', which='major', labelsize=20)
     plt.tight_layout()
     
     # Save
@@ -678,12 +865,28 @@ def create_metrics_table(metrics_all_methods, method_names, variables_list, cfg)
     cfg : dict
         Configuration dictionary
     """
+    # Get configuration for which metrics to include
+    compute_conservation_vars = cfg.get("compute_conservation", ["pr", "huss"])
+    compute_relbias_pr = cfg.get("compute_relbias_pr", True)
+    
     rows = []
     for var in variables_list:
-        for metric_name in ['mae_mean', 'crps_mean', 'ssr', 'corr_mean']:
+        # Define metrics to include based on variable
+        metric_names = ['mae_mean', 'crps_mean', 'ssr']
+        
+        # Add relbias_mean for pr if enabled
+        if var == "pr" and compute_relbias_pr:
+            metric_names.insert(1, 'relbias_mean')
+        
+        # Add conservation_mean for specified variables
+        if var in compute_conservation_vars:
+            metric_names.append('conservation_mean')
+        
+        for metric_name in metric_names:
             row = {'variable': var, 'metric': metric_name}
             for method, metrics in zip(method_names, metrics_all_methods[var]):
-                row[method] = f"{metrics[metric_name]:.4f}"
+                val = metrics.get(metric_name)
+                row[method] = f"{val:.4f}" if val is not None else "N/A"
             rows.append(row)
     
     df = pd.DataFrame(rows)
@@ -701,10 +904,13 @@ def create_metrics_table(metrics_all_methods, method_names, variables_list, cfg)
     
     return df
 
+
 def calculate_acf_error(truth, pred_ens, var_name):
     """
     Calculate the error in lag-1 autocorrelation (ACF) for each variable.
     For ensemble methods, average ACF at the end.
+
+    Fully vectorized across all spatial locations for performance.
 
     Parameters
     ----------
@@ -720,32 +926,68 @@ def calculate_acf_error(truth, pred_ens, var_name):
     float
         Average signed difference of samples' ACF minus target ACF over all locations
     """
-    n_ens, time, lon, lat = pred_ens.shape
-    acf_errors = []
+    n_ens, time_len, nx, ny = pred_ens.shape
 
-    # For each location, calculate lag-1 ACF for truth and each ensemble member
-    for i in range(lon):
-        for j in range(lat):
-            # Truth ACF
-            truth_ts = truth[:, i, j]
-            if np.std(truth_ts) < 1e-6:
-                continue  # skip if no variance
-            truth_acf = np.corrcoef(truth_ts[:-1], truth_ts[1:])[0, 1]
+    def _vectorized_lag1_acf(data):
+        """Compute lag-1 ACF for all spatial locations at once.
 
-            # Ensemble ACF
-            ens_acfs = []
-            for n in range(n_ens):
-                pred_ts = pred_ens[n, :, i, j]
-                if np.std(pred_ts) < 1e-6:
-                    continue
-                pred_acf = np.corrcoef(pred_ts[:-1], pred_ts[1:])[0, 1]
-                ens_acfs.append(pred_acf)
-            ens_acf = np.mean(ens_acfs)
+        Parameters
+        ----------
+        data : numpy.ndarray
+            Shape (time, nx, ny)
 
-            # Signed difference
-            acf_errors.append(ens_acf - truth_acf)
+        Returns        -------
+        numpy.ndarray
+            Lag-1 ACF at each location, shape (nx, ny). NaN where variance is
+            too low.
+        """
+        x = data[:-1]  # (T-1, nx, ny)
+        y = data[1:]   # (T-1, nx, ny)
 
-    return np.mean(acf_errors) if acf_errors else np.nan
+        # Mean and deviations
+        x_mean = np.mean(x, axis=0)  # (nx, ny)
+        y_mean = np.mean(y, axis=0)
+        dx = x - x_mean[np.newaxis, :, :]
+        dy = y - y_mean[np.newaxis, :, :]
+
+        # Covariance and standard deviations
+        n = x.shape[0]
+        cov_xy = np.sum(dx * dy, axis=0) / n       # (nx, ny)
+        std_x = np.sqrt(np.sum(dx**2, axis=0) / n)
+        std_y = np.sqrt(np.sum(dy**2, axis=0) / n)
+        denom = std_x * std_y
+
+        # Mask low-variance locations
+        acf = np.full((nx, ny), np.nan)
+        valid = denom > 1e-6
+        acf[valid] = cov_xy[valid] / denom[valid]
+        return acf
+
+    # Truth ACF: single vectorized call
+    truth_acf = _vectorized_lag1_acf(truth)  # (nx, ny)
+
+    # Prediction ACF: one vectorized call per ensemble member, then average
+    pred_acf_sum = np.zeros((nx, ny))
+    pred_acf_count = np.zeros((nx, ny))
+    for n in range(n_ens):
+        ens_acf = _vectorized_lag1_acf(pred_ens[n])  # (nx, ny)
+        valid = np.isfinite(ens_acf)
+        pred_acf_sum[valid] += ens_acf[valid]
+        pred_acf_count[valid] += 1
+
+    # Average ensemble ACF
+    pred_acf_mean = np.full((nx, ny), np.nan)
+    valid_ens = pred_acf_count > 0
+    pred_acf_mean[valid_ens] = pred_acf_sum[valid_ens] / pred_acf_count[valid_ens]
+
+    # Signed difference only at locations where both truth and pred are valid
+    valid = np.isfinite(truth_acf) & np.isfinite(pred_acf_mean)
+    if not np.any(valid):
+        return np.nan
+
+    acf_errors = pred_acf_mean[valid] - truth_acf[valid]
+    return float(np.mean(acf_errors))
+
 
 def run_temporal_structure_analysis(truth, preds_methods, method_names, var_name, cfg):
     """
@@ -757,6 +999,7 @@ def run_temporal_structure_analysis(truth, preds_methods, method_names, var_name
         acf_errors.append(acf_error)
 
     return dict(zip(method_names, acf_errors))
+
 
 def create_temporal_structure_table(results, method_names, variables_list, cfg):
     """
@@ -790,11 +1033,281 @@ def create_temporal_structure_table(results, method_names, variables_list, cfg):
     return df
 
 
+def calculate_rank_histogram(truth, pred_ens):
+    """Calculate rank histogram for ensemble predictions.
+    
+    - Rank histogram computed by pooling ranks from all locations and times (for plotting)
+    - MCB computed per-location, then averaged across all locations (EnScale method)
+    
+    For each location and time, compute the rank of the truth within the
+    sorted ensemble members. A calibrated ensemble should produce a flat
+    rank histogram (uniform distribution).
+    
+    The MCB (miscalibration) is computed as the sum of absolute deviations
+    between the observed rank histogram and a uniform distribution.
+    MCB = 0 indicates perfect calibration.
+    
+    Reference: Schillinger et al., "EnScale" (arXiv)
+    
+    Parameters
+    ----------
+    truth : numpy.ndarray
+        Ground truth data (time, lat, lon)
+    pred_ens : numpy.ndarray
+        Ensemble predictions (n_ens, time, lat, lon)
+    
+    Returns
+    -------
+    dict
+        Dictionary containing:
+        - rank_hist_global: Rank histogram pooled over all locations and times (for plotting)
+        - mcb_mean: Mean MCB across all locations (EnScale metric)
+        - n_bins: Number of bins in rank histogram
+    """
+    n_ens, n_time, n_lat, n_lon = pred_ens.shape
+    n_bins = n_ens + 1  # Truth can fall in n_ens + 1 positions
+    uniform = 1.0 / n_bins
+    
+    # =========================================================================
+    # Compute ranks at all locations - VECTORIZED
+    # =========================================================================
+    # Sort ensemble members at each location and time
+    # pred_ens shape: (n_ens, time, lat, lon)
+    pred_ens_sorted = np.sort(pred_ens, axis=0)  # (n_ens, time, lat, lon)
+    
+    # Compute ranks vectorized using broadcasting
+    # For each (time, lat, lon), count how many ensemble members are < truth
+    # truth shape: (time, lat, lon), pred_ens_sorted shape: (n_ens, time, lat, lon)
+    ranks = np.sum(pred_ens_sorted < truth[np.newaxis, :, :, :], axis=0)  # (time, lat, lon)
+    
+    # =========================================================================
+    # 1. Global pooled rank histogram (for plotting)
+    # =========================================================================
+    # Pool all ranks from all locations and times into one histogram
+    ranks_all = ranks.flatten()  # (time * lat * lon,)
+    rank_hist_global = np.bincount(ranks_all, minlength=n_bins)[:n_bins]
+    rank_hist_global_normalized = rank_hist_global / len(ranks_all)
+    
+    # =========================================================================
+    # 2. Per-location MCB, then averaged (EnScale metric)
+    # =========================================================================
+    # Reshape for efficient bincount: flatten lat/lon, keep time separate
+    ranks_flat = ranks.reshape(n_time, -1)  # (time, lat*lon)
+    n_locations = n_lat * n_lon
+    
+    # Compute local histograms using vectorized bincount
+    local_hists = np.zeros((n_locations, n_bins))
+    for loc in range(n_locations):
+        local_hists[loc] = np.bincount(ranks_flat[:, loc], minlength=n_bins)[:n_bins]
+    
+    # Normalize to get frequencies
+    local_hists_normalized = local_hists / n_time  # (n_locations, n_bins)
+    
+    # Compute MCB at each location: sum of |hist - uniform|
+    mcb_per_location = np.sum(np.abs(local_hists_normalized - uniform), axis=1)  # (n_locations,)
+    
+    # Average MCB across all locations (EnScale metric)
+    mcb_mean = np.mean(mcb_per_location)
+    
+    return {
+        "rank_hist_global": rank_hist_global_normalized,
+        "mcb_mean": mcb_mean,
+        "n_bins": n_bins,
+    }
+
+
+def plot_rank_histograms(calibration_results, method_names, var_name, cfg):
+    """Plot rank histograms for all methods using global pooled ranks.
+    
+    Rank histograms pool all ranks from all locations and times into a single
+    histogram for visualization. The MCB shown is the per-location average
+    (EnScale metric), which is computed separately.
+    
+    Parameters
+    ----------
+    calibration_results : list of dict
+        List of calibration results for each method
+    method_names : list of str
+        List of method names
+    var_name : str
+        Variable name
+    cfg : dict
+        Configuration dictionary
+    """
+    n_methods = len(method_names)
+    n_bins = calibration_results[0]["n_bins"]
+    
+    # Create figure with 1 row and n_methods columns
+    fig, axes = plt.subplots(1, n_methods, figsize=(3.5 * n_methods, 4), 
+                              squeeze=False, sharey=True)
+    
+    # Uniform reference
+    uniform = 1.0 / n_bins
+    bins = np.arange(n_bins)
+    
+    colors = CB_COLORS[:n_methods]
+    
+    for col, (method, results, color) in enumerate(zip(method_names, calibration_results, colors)):
+        ax = axes[0, col]
+        
+        rank_hist = results["rank_hist_global"]
+        mcb_mean = results["mcb_mean"]  # Per-location average
+        
+        # Plot histogram bars
+        ax.bar(bins, rank_hist, width=0.8, color=color, alpha=0.7, 
+               edgecolor='black', linewidth=0.5)
+        
+        # Plot uniform reference line
+        ax.axhline(y=uniform, color='red', linestyle='--', linewidth=2, 
+                  label='Uniform')
+        
+        # Add MCB annotation (per-location average)
+        ax.text(0.95, 0.95, f"MCB: {mcb_mean:.3f}", 
+               transform=ax.transAxes, ha='right', va='top',
+               fontsize=15, fontweight='bold',
+               bbox=dict(facecolor='white', edgecolor='black', 
+                        boxstyle='round,pad=0.3', alpha=0.9))
+        
+        # Labels and titles
+        ax.set_title(method, fontsize=15, fontweight='bold')
+        if col == 0:
+            ax.set_ylabel("Frequency", fontsize=15)
+        ax.set_xlabel("Rank", fontsize=15)
+        
+        # Set x-ticks
+        ax.set_xticks(bins[::max(1, n_bins//10)])
+        ax.set_xlim(-0.5, n_bins - 0.5)
+        
+        # Grid
+        ax.grid(True, axis='y', alpha=0.3, linestyle='--')
+    
+    # Add overall title
+    fig.suptitle(f"Rank Histograms\n",
+                 fontsize=21, fontweight='bold', y=1.01)
+    
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    
+    # Save figure
+    plot_file = os.path.join(cfg["plot_dir"], f"rank_histogram_{var_name}.png")
+    plt.savefig(plot_file, dpi=200, bbox_inches='tight')
+    plt.close()
+    
+    caption = f"Rank histograms for {var_name} showing ensemble calibration"
+    _get_provenance_record(cfg, plot_file, caption, ["histogram"], ["other"])
+    
+    logger.info("Saved rank histogram plot: %s", plot_file)
+
+
+def create_calibration_table(calibration_all_vars, method_names, variables_list, cfg):
+    """Create summary table of calibration metrics (MCB).
+    
+    Following EnScale: reports MCB averaged across all locations.
+    
+    Parameters
+    ----------
+    calibration_all_vars : dict
+        Dictionary mapping var_name -> list of calibration results per method
+    method_names : list of str
+        List of method names
+    variables_list : list of str
+        List of variable names
+    cfg : dict
+        Configuration dictionary
+    
+    Returns
+    -------
+    pd.DataFrame
+        Summary dataframe
+    """
+    rows = []
+    
+    for var in variables_list:
+        if var not in calibration_all_vars:
+            continue
+        
+        results_list = calibration_all_vars[var]
+        
+        # MCB mean (averaged over all locations) - main EnScale metric
+        row = {'variable': var, 'metric': 'MCB'}
+        for method, results in zip(method_names, results_list):
+            row[method] = f"{results['mcb_mean']:.4f}"
+        rows.append(row)
+    
+    df = pd.DataFrame(rows)
+    
+    # Save as CSV
+    table_file = os.path.join(cfg["work_dir"], "calibration_mcb_table.csv")
+    df.to_csv(table_file, index=False)
+    
+    # Save as formatted text with description
+    txt_file = os.path.join(cfg["work_dir"], "calibration_mcb_table.txt")
+    with open(txt_file, 'w') as f:
+        f.write("=" * 80 + "\n")
+        f.write("CALIBRATION METRICS (MCB - Miscalibration)\n")
+        f.write("=" * 80 + "\n\n")
+        f.write("Methodology:\n")
+        f.write("- Rank histograms computed at each grid point separately\n")
+        f.write("- MCB = sum of absolute deviations from uniform rank histogram\n")
+        f.write("- Final MCB = average across all spatial locations\n")
+        f.write("- Visualization: global pooled histogram (all ranks pooled)\n\n")
+        f.write("Interpretation:\n")
+        f.write("- MCB = 0 indicates perfect calibration\n")
+        f.write("- Higher MCB indicates worse calibration\n")
+        f.write("- U-shaped histogram → overconfident (too little spread)\n")
+        f.write("- Dome-shaped histogram → underconfident (too much spread)\n")
+        f.write("-" * 80 + "\n\n")
+        f.write(df.to_string(index=False))
+    
+    logger.info("Saved calibration table: %s", table_file)
+    
+    return df
+
+
+def run_calibration_analysis(truth, preds_methods, method_names, var_name, extent, cfg):
+    """Run calibration analysis for a single variable.
+    
+    - Computes global pooled rank histograms (for visualization)
+    - Computes MCB per-location, then averages (EnScale calibration metric)
+    
+    Parameters
+    ----------
+    truth : numpy.ndarray
+        Ground truth data (time, lat, lon)
+    preds_methods : list of numpy.ndarray
+        List of prediction ensembles for each method
+    method_names : list of str
+        List of method names
+    var_name : str
+        Variable name
+    extent : list
+        Spatial extent for plotting (unused, kept for API compatibility)
+    cfg : dict
+        Configuration dictionary
+    
+    Returns
+    -------
+    list of dict
+        List of calibration results for each method
+    """
+    calibration_results = []
+    
+    for method, pred_ens in zip(method_names, preds_methods):
+        logger.info("Computing rank histogram and MCB for %s (%s)", method, var_name)
+        results = calculate_rank_histogram(truth, pred_ens)
+        calibration_results.append(results)
+        logger.info("MCB for %s (%s): %.4f", method, var_name, results['mcb_mean'])
+    
+    # Plot rank histograms (global pooled, with per-location MCB annotated)
+    plot_rank_histograms(calibration_results, method_names, var_name, cfg)
+    
+    return calibration_results
+
+
 def create_comprehensive_summary_table(all_results, method_names, cfg):
     """Create comprehensive summary table with all metrics across analysis types.
 
     This table aggregates metrics from:
-    - Spatial metrics (bias, CRPS, correlation, MAE, SSR)
+    - Spatial metrics (bias, CRPS, MAE, SSR, conservation)
     - Energy spectrum (RALSD)
     - Log PDF distance
     - Temporal consistency (ACF error)
@@ -803,14 +1316,7 @@ def create_comprehensive_summary_table(all_results, method_names, cfg):
     Parameters
     ----------
     all_results : dict
-        Dictionary containing all collected metrics organized by analysis type:
-        {
-            'spatial_metrics': {var_name: [metrics_dict per method]},
-            'energy_spectrum': {var_name: {method: ralsd_value}},
-            'log_density': {var_name: {method: log_pdf_distance}},
-            'temporal_structure': {var_name: {method: acf_error}},
-            'quantile_mae': {var_name: {method: avg_mae}}
-        }
+        Dictionary containing all collected metrics organized by analysis type
     method_names : list of str
         List of method names
     cfg : dict
@@ -821,6 +1327,10 @@ def create_comprehensive_summary_table(all_results, method_names, cfg):
     pd.DataFrame
         Summary dataframe with all metrics
     """
+    # Get configuration
+    compute_conservation_vars = cfg.get("compute_conservation", ["pr", "huss"])
+    compute_relbias_pr = cfg.get("compute_relbias_pr", True)
+    
     rows = []
 
     # Collect all variables across all analysis types
@@ -833,7 +1343,19 @@ def create_comprehensive_summary_table(all_results, method_names, cfg):
         # Spatial metrics
         if 'spatial_metrics' in all_results and var_name in all_results['spatial_metrics']:
             metrics_list = all_results['spatial_metrics'][var_name]
-            for metric_name in ['bias_mean', 'crps_mean', 'corr_mean', 'mae_mean', 'ssr']:
+            
+            # Core metrics
+            core_metrics = ['bias_mean', 'crps_mean', 'mae_mean', 'ssr']
+            
+            # Add relbias for pr if enabled
+            if var_name == "pr" and compute_relbias_pr:
+                core_metrics.insert(1, 'relbias_mean')
+            
+            # Add conservation for specified variables
+            if var_name in compute_conservation_vars:
+                core_metrics.append('conservation_mean')
+            
+            for metric_name in core_metrics:
                 row = {'variable': var_name, 'metric': metric_name, 'analysis_type': 'spatial'}
                 for i, method in enumerate(method_names):
                     if i < len(metrics_list) and metric_name in metrics_list[i]:
@@ -887,6 +1409,19 @@ def create_comprehensive_summary_table(all_results, method_names, cfg):
                     row[method] = "N/A"
             rows.append(row)
 
+        # Calibration (MCB)
+        if 'calibration' in all_results and var_name in all_results['calibration']:
+            calib_list = all_results['calibration'][var_name]
+            
+            # MCB mean (averaged over locations) - main EnScale metric
+            row = {'variable': var_name, 'metric': 'MCB', 'analysis_type': 'calibration'}
+            for i, method in enumerate(method_names):
+                if i < len(calib_list):
+                    row[method] = f"{calib_list[i]['mcb_mean']:.4f}"
+                else:
+                    row[method] = "N/A"
+            rows.append(row)
+
     if not rows:
         logger.warning("No metrics collected for comprehensive summary table")
         return None
@@ -912,15 +1447,17 @@ def create_comprehensive_summary_table(all_results, method_names, cfg):
         f.write("-" * 80 + "\n")
         f.write("Metric descriptions:\n")
         f.write("-" * 80 + "\n")
-        f.write("  bias_mean      : Mean absolute bias (lower is better)\n")
-        f.write("  crps_mean      : Continuous Ranked Probability Score (lower is better)\n")
-        f.write("  corr_mean      : Mean temporal correlation (higher is better)\n")
-        f.write("  mae_mean       : Mean Absolute Error (lower is better)\n")
-        f.write("  ssr            : Spread-Skill Ratio (closer to 1 is better)\n")
-        f.write("  RALSD          : Relative Avg Log Spectral Distance (lower is better)\n")
-        f.write("  log_pdf_dist   : Log PDF Distance (lower is better)\n")
-        f.write("  acf_error      : Lag-1 ACF Error (closer to 0 is better)\n")
-        f.write("  avg_quant_mae  : Average Quantile MAE (lower is better)\n")
+        f.write("  bias_mean        : Mean absolute bias (lower is better)\n")
+        f.write("  relbias_mean     : Mean absolute relative bias for pr (lower is better)\n")
+        f.write("  crps_mean        : Continuous Ranked Probability Score (lower is better)\n")
+        f.write("  mae_mean         : Mean Absolute Error (lower is better)\n")
+        f.write("  ssr              : Spread-Skill Ratio (closer to 1 is better)\n")
+        f.write("  conservation_mean: Conservation Error (lower is better)\n")
+        f.write("  RALSD            : Relative Avg Log Spectral Distance (lower is better)\n")
+        f.write("  log_pdf_distance : Log PDF Distance (lower is better)\n")
+        f.write("  acf_error        : Lag-1 ACF Error (closer to 0 is better)\n")
+        f.write("  avg_quantile_mae : Average Quantile MAE (lower is better)\n")
+        f.write("  MCB              : Miscalibration - avg over locations (lower is better, 0=perfect)\n")
 
     logger.info("Saved comprehensive metrics summary: %s", table_file)
 
@@ -972,7 +1509,7 @@ def create_animation(truth, truth_dates, preds_methods, method_names, var_name, 
         cmap = "YlGnBu"
         vmin = 0
         vmax = np.ceil(np.percentile(truth[start_time:end_time], 99.5))
-        norm = Normalize(vmin=vmin, vmax=vmax) #LogNorm(vmin=vmin, vmax=vmax) #for log scale
+        norm = Normalize(vmin=vmin, vmax=vmax)
     elif var_name in ["tas", "tasmax", "tasmin"]:
         cmap = "RdYlBu_r"
         vmin = np.min(truth[start_time:end_time])
@@ -991,7 +1528,7 @@ def create_animation(truth, truth_dates, preds_methods, method_names, var_name, 
     
     from matplotlib.gridspec import GridSpec
     gs = GridSpec(1, n_cols, figure=fig, 
-                  hspace=0.1, wspace=0.25,
+                  hspace=0.1, wspace=0.3,
                   left=0.05, right=0.95, top=0.85, bottom=0.15)
     
     # Create axes
@@ -1010,10 +1547,10 @@ def create_animation(truth, truth_dates, preds_methods, method_names, var_name, 
     images = []
     for col, ax in enumerate(axes):
         # Setup map features
-        ax.coastlines(resolution='50m', linewidth=0.8, color='black', alpha=0.6)
-        ax.add_feature(cfeature.BORDERS, linewidth=0.5, edgecolor='black', alpha=0.3)
-        ax.gridlines(draw_labels=False, linewidth=0.5, 
-                    color='gray', alpha=0.3, linestyle='--')
+        ax.coastlines(resolution='50m', linewidth=1.0, color='black', alpha=0.8)
+        ax.add_feature(cfeature.BORDERS, linewidth=0.7, edgecolor='black', alpha=0.5)
+        # ax.gridlines(draw_labels=False, linewidth=0.5, 
+        #             color='gray', alpha=0.3, linestyle='--')
         
         # Set extent
         if extent:
@@ -1086,6 +1623,7 @@ def create_animation(truth, truth_dates, preds_methods, method_names, var_name, 
     _get_provenance_record(cfg, output_file, caption, ["map"], ["mean"])
     
     logger.info("Saved animation: %s", output_file)
+
 
 def calculate_wbgt(tas, huss, ps):
     """Calculate Wet-Bulb Globe Temperature (WBGT).
@@ -1206,7 +1744,7 @@ def plot_quantile_mae(truth_data, preds_methods, method_names, var_name, cfg, ra
     quantiles = np.linspace(range[0], range[1], 101)
     
     # Colors for different methods
-    colors = plt.cm.tab10(np.linspace(0, 1, len(method_names)))
+    colors = CB_COLORS[:len(method_names)]
     
     # Calculate and plot quantile MAE for each method
     for method, pred_ens, color in zip(method_names, preds_methods, colors):
@@ -1248,6 +1786,7 @@ def plot_quantile_mae(truth_data, preds_methods, method_names, var_name, cfg, ra
     
     logger.info("Saved quantile MAE plot: %s", plot_file)
 
+
 def main(cfg):
     """Run ML downscaling evaluation diagnostic."""
     logger.setLevel(cfg["log_level"].upper())
@@ -1261,6 +1800,14 @@ def main(cfg):
     logger.info("ML methods: %s", ml_methods)
     logger.info("Reference: %s", reference_name)
     
+    # Log new configuration options
+    compute_relbias_pr = cfg.get("compute_relbias_pr", True)
+    compute_conservation_vars = cfg.get("compute_conservation", ["pr", "huss"])
+    pool_factor = cfg.get("pool_factor", 10)
+    logger.info("Compute relative bias for pr: %s", compute_relbias_pr)
+    logger.info("Compute conservation error for: %s", compute_conservation_vars)
+    logger.info("Pool factor for conservation: %d", pool_factor)
+    
     # Group input data
     input_data = cfg["input_data"].values()
     grouped_data = group_metadata(input_data, "short_name", sort="dataset")
@@ -1271,10 +1818,13 @@ def main(cfg):
         'energy_spectrum': {},
         'log_density': {},
         'temporal_structure': {},
-        'quantile_mae': {}
+        'quantile_mae': {},
+        'calibration': {}
     }
     temporal_structure_results = {}
+    calibration_all_vars = {}
     all_metrics = {}
+    
     # Process each variable
     for var_name in grouped_data:
         logger.info("Processing variable: %s", var_name)
@@ -1318,29 +1868,30 @@ def main(cfg):
 
         truth = truth_cube.data
         
-        #Get extent of regional domain
-        # Extract lat/lon coordinates from the cube
+        # Get extent of regional domain and lat/lon coordinates
+        lat_points = None
         try:
             # Try to get latitude coordinate
             lat_coord = truth_cube.coord('latitude')
             lat_points = lat_coord.points
+            
+            # Handle 2D coordinates
+            if lat_points.ndim == 2:
+                # Take mean along longitude for 1D lat array
+                lat_points = np.mean(lat_points, axis=1)
             
             # Try to get longitude coordinate
             lon_coord = truth_cube.coord('longitude')
             lon_points = lon_coord.points
             
             # Calculate extent
-            # Handle both 1D and 2D coordinate arrays
             if lat_points.ndim == 1 and lon_points.ndim == 1:
-                # 1D coordinates (regular grid)
                 extent = [lon_points.min(), lon_points.max(), 
                         lat_points.min(), lat_points.max()]
-            elif lat_points.ndim == 2 and lon_points.ndim == 2:
-                # 2D coordinates (curvilinear grid)
+            elif lon_points.ndim == 2:
                 extent = [lon_points.min(), lon_points.max(), 
                         lat_points.min(), lat_points.max()]
             else:
-                # Fallback to global extent
                 extent = [-180, 180, -90, 90]
                 logger.warning("Could not determine extent from coordinates, using global extent")
             
@@ -1348,7 +1899,6 @@ def main(cfg):
                         f"lat=[{extent[2]:.2f}, {extent[3]:.2f}]")
             
         except iris.exceptions.CoordinateNotFoundError:
-            # If coordinates not found, use global extent
             extent = [-180, 180, -90, 90]
             logger.warning("Latitude/longitude coordinates not found, using global extent")
 
@@ -1377,12 +1927,18 @@ def main(cfg):
             # Calculate metrics for all methods
             metrics_list = []
             for pred_ens in preds_methods:
-                metrics = calculate_spatial_metrics(truth, pred_ens, var_name)
+                metrics = calculate_spatial_metrics(
+                    truth, pred_ens, var_name, 
+                    lat_points=lat_points, cfg=cfg
+                )
                 metrics_list.append(metrics)
             all_metrics[var_name] = metrics_list
             all_results['spatial_metrics'][var_name] = metrics_list
             # Plot spatial metrics
-            plot_panel_metrics(metrics_list, var_name, method_names_loaded, extent, cfg)
+            plot_panel_metrics(
+                metrics_list, var_name, method_names_loaded, extent, cfg,
+                lat_points=lat_points
+            )
 
         elif analysis_type == "energy_spectrum":
             # Plot energy spectrum
@@ -1409,17 +1965,26 @@ def main(cfg):
                 lpd_dict[method] = lpd
                 logger.info("Log PDF distance for %s (%s): %.4f", method, var_name, lpd)
             all_results['log_density'][var_name] = lpd_dict
+            
         elif analysis_type == "temporal_structure":
             temporal_structure_results[var_name] = run_temporal_structure_analysis(
                 truth, preds_methods, method_names_loaded, var_name, cfg
             )
-            all_results['temporal_structure'][var_name] = temporal_structure_results[var_name]        
+            all_results['temporal_structure'][var_name] = temporal_structure_results[var_name]
+            
         elif analysis_type == "create_animation":
             # Create animation
             create_animation(
                 truth, truth_dates, preds_methods, 
                 method_names_loaded, var_name, extent, cfg
             )
+        
+        elif analysis_type == "calibration":
+            # Run calibration analysis (rank histogram + MCB)
+            calibration_results = run_calibration_analysis(
+                truth, preds_methods, method_names_loaded, var_name, extent, cfg
+            )
+            all_results['calibration'][var_name] = calibration_results
     
     # Handle quantile_MAE analysis separately (may need derived variables)
     if analysis_type == "quantile_MAE":
@@ -1593,7 +2158,7 @@ def main(cfg):
                 method_names_loaded.append(method)
             
             if preds_methods:
-                plot_quantile_mae(truth_data, preds_methods, method_names_loaded, var_name, cfg, range = [0.8,1.0])
+                plot_quantile_mae(truth_data, preds_methods, method_names_loaded, var_name, cfg, range = [0.95,1.0])
                 # Calculate average quantile MAE for each method (using same range)
                 qmae_dict = {}
                 quantiles = np.linspace(0.8, 1.0, 101)
@@ -1612,7 +2177,7 @@ def main(cfg):
                 list(all_metrics.keys()),
                 cfg
             )
-        # Create summary table if temporal_structure was run
+    # Create summary table if temporal_structure was run
     elif analysis_type == "temporal_structure":
         create_temporal_structure_table(
             temporal_structure_results,
@@ -1668,6 +2233,15 @@ def main(cfg):
         table_file = os.path.join(cfg["work_dir"], "quantile_mae_table.csv")
         df.to_csv(table_file, index=False)
         logger.info("Saved quantile MAE table: %s", table_file)
+
+    # Create calibration (MCB) summary table
+    if analysis_type == "calibration" and all_results['calibration']:
+        create_calibration_table(
+            all_results['calibration'],
+            ml_methods,
+            list(all_results['calibration'].keys()),
+            cfg
+        )
 
     # Create comprehensive summary table if any metrics were collected
     has_any_results = any(all_results[key] for key in all_results)
