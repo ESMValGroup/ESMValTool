@@ -1,6 +1,6 @@
 # Global attributes of NetCDF file
 attributes:
-  project_id: CMIP6
+  project_id: OBS6
   dataset_id: MISR
   modeling_realm: atmos
   type: sat
