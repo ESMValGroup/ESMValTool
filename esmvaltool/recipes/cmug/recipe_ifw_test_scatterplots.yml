@@ -74,7 +74,8 @@ diagnostics:
 #          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
 #             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
     additional_datasets:
-      - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)'}
+      - {project: IFW, dataset: ifwf, fstep: '96', frequency: 12hr, alias: 'IFWf (step 96)'}
+#      - {project: IFW, dataset: ifwg, fstep: '96', frequency: 12hr, alias: 'IFWg (step 96)'}
     scripts:
       plot:
 #        script: seaborn_diag.py

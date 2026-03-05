@@ -11,7 +11,8 @@ documentation:
 
 
 datasets:
-  - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)'}
+  - {project: IFW, dataset: ifwf, fstep: '96', frequency: 12hr, alias: 'IFWf (step 96)'}
+#  - {project: IFW, dataset: ifwg, fstep: '96', frequency: 12hr, alias: 'IFWg (step 96)'}
 
 
 preprocessors:
