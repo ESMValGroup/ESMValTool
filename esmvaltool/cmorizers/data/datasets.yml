@@ -280,6 +280,14 @@ datasets:
       https://downloads.psl.noaa.gov/Datasets/cmap/enh/
         precip.mon.mean.nc
 
+  CMEMS:
+    tier: 2
+    source: https://doi.org/10.48670/moi-00148
+    last_access: 2025-02-20
+    info: |
+      Download daily files from:
+      https://data.marine.copernicus.eu/product/SEALEVEL_GLO_PHY_L4_MY_008_047/services
+
   CowtanWay:
     tier: 2
     source: https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html
