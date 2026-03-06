@@ -1044,6 +1044,16 @@ datasets:
     info: |
       Download the file MPI_MOBO-DIC_2004-2019_v2.nc
 
+  MISR:
+    tier: 3
+    source: https://asdc.larc.nasa.gov/project/MISR/MIL3MAEN_004
+    last_access: 2026-02-17
+    info: |
+      To obtain the data set you will need to go to the Data Distribution
+      section of the link, create an account/sign in on the earthdata.nasa.gov website
+      and then follow the instructions for downloading the data.
+      The data is currently freely available, but a registration is required.
+
   MODIS:
     tier: 3
     source: https://ladsweb.modaps.eosdis.nasa.gov/search/order
