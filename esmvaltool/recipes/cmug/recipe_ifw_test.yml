@@ -63,13 +63,15 @@ diagnostics:
         timerange: '20200601/20200630'
         additional_datasets:
           - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20250823}
-      od550aer_model:
-        short_name: od550aer
+#      od550aer_model:
+#        short_name: od550aer
+      od440aer_model:
+        short_name: od440aer
         timerange: '20200601/20200630'
         preprocessor: aeronet_model
         additional_datasets:
-#          - {project: IFW, dataset: ifwf, fstep: '96', frequency: 12hr, alias: 'IFWf (step 96)', activity: 'CMUG', exp: 'step96', mip: aero}
-          - {project: IFW, dataset: ifwg, fstep: '96', frequency: 12hr, alias: 'IFWg (step 96)', activity: 'CMUG', exp: 'step96', mip: aero}
+          - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)', activity: 'CMUG', exp: 'step0', mip: aero}
+#          - {project: IFW, dataset: ifwg, fstep: '96', frequency: 12hr, alias: 'IFWg (step 96)', activity: 'CMUG', exp: 'step96', mip: aero}
     scripts:
       aeronet:
         script: aerosols/aod_aeronet_assess.py
