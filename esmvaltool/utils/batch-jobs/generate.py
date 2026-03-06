@@ -71,10 +71,11 @@ SPECIAL_RECIPES = {
     "recipe_bock20jgr_fig_8-10": {
         "partition": "#SBATCH --partition=shared \n",
         "time": "#SBATCH --time=48:00:00 \n",
-        "memory": "#SBATCH --mem=50G \n",
+        "memory": "#SBATCH --mem=150G \n",
     },
     "recipe_check_obs": {
         "partition": "#SBATCH --partition=compute \n",
+        "time": "#SBATCH --time=8:00:00 \n",
         "memory": "#SBATCH --constraint=512G \n",
     },
     "recipe_climate_change_hotspot": {
@@ -163,15 +164,6 @@ SPECIAL_RECIPES = {
         "time": "#SBATCH --time=08:00:00 \n",
         "memory": "#SBATCH --constraint=512G \n",
     },
-    "recipe_schlund20jgr_gpp_abs_rcp85": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_schlund20jgr_gpp_change_1pct": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_schlund20jgr_gpp_change_rcp85": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
     "recipe_sea_surface_salinity": {
         "partition": "#SBATCH --partition=compute \n",
     },
@@ -191,12 +183,6 @@ SPECIAL_RECIPES = {
     "recipe_wflow": {
         "partition": "#SBATCH --partition=compute \n",
     },
-    "recipe_wenzel16jclim": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_wenzel16nat": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
 }
 
 # These recipes cannot be run with the default number of parallel
@@ -210,9 +196,11 @@ MAX_PARALLEL_TASKS = {
     "recipe_bock20jgr_fig_8-10": 1,
     "recipe_daily_era5": 1,
     "recipe_easy_ipcc": 1,
+    "recipe_eyring13jgr_12": 1,
     "recipe_climate_change_hotspot": 1,
     "recipe_flato13ipcc_figure_96": 1,
     "recipe_flato13ipcc_figures_938_941_cmip3": 1,
+    "recipe_ipccwg1ar6ch3_fig_3_19": 1,
     "recipe_ipccwg1ar6ch3_fig_3_9": 1,
     "recipe_ipccwg1ar6ch3_fig_3_42_a": 1,
     "recipe_ipccwg1ar6ch3_fig_3_43": 1,
@@ -220,9 +208,9 @@ MAX_PARALLEL_TASKS = {
     "recipe_collins13ipcc": 1,
     "recipe_lauer22jclim_fig3-4_zonal": 1,
     "recipe_lauer22jclim_fig5_lifrac": 1,
+    "recipe_ref_timeseries_region": 2,
     "recipe_smpi": 1,
     "recipe_smpi_4cds": 1,
-    "recipe_wenzel14jgr": 1,
 }
 
 DISTRIBUTED_RECIPES = [
