@@ -1,11 +1,15 @@
-"""Script to download ESACCI-OZONE from the CDS."""
+"""Script to download ESACCI-OZONE from the CDS and BIRA WebDAV."""
 
 import gzip
 import logging
+import os
 import shutil
 import zipfile
+from datetime import datetime
 
 import cdsapi
+from dateutil import relativedelta
+from webdav3.client import Client
 
 logger = logging.getLogger(__name__)
 
@@ -26,27 +30,60 @@ def download_dataset(
       the ECMWF account needs to be saved in user's ${HOME} directory.
     - All the files will be saved in Tier2/ESACCI-OZONE.
     """
-    cds_url = "https://cds.climate.copernicus.eu/api"
-
     if dataset == "ESACCI-OZONE":
+        output_folder = (
+            original_data_dir / f"Tier{dataset_info['tier']}" / dataset
+        )
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        cds_url = "https://cds.climate.copernicus.eu/api"
+
+        if start_date is None:
+            gto_year1 = 1995
+            omps_year1 = 1984
+            megridop_year1 = 2001
+        else:
+            gto_year1 = start_date.year
+            omps_year1 = start_date.year
+            megridop_year1 = start_date.year
+        if end_date is None:
+            gto_year2 = 2024
+            omps_year2 = 2023
+            megridop_year2 = 2023
+        else:
+            gto_year2 = end_date.year
+            omps_year2 = end_date.year
+            megridop_year2 = end_date.year
+
         requests = {
-            "toz": {
+            "toz_gto_ecv": {
                 "processing_level": "level_3",
                 "variable": "atmosphere_mole_content_of_ozone",
-                "vertical_aggregation": "total_column",
-                "sensor": ["merged_uv"],
-                "year": [str(y) for y in range(1995, 2024)],
+                "vertical_aggregation": "total_columns_uv",
+                "sensor": ["gto_ecv"],
+                "year": [str(y) for y in range(gto_year1, gto_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v2000"],
             },
-            "o3": {
+            "o3_sage_omps": {
                 "processing_level": "level_3",
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
-                "sensor": ["cmzm"],
-                "year": [str(y) for y in range(1984, 2023)],
+                "sensor": ["sage_cci_omps_conc"],
+                "year": [str(y) for y in range(omps_year1, omps_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v0008"],
+            },
+            "o3_sage_megridop": {
+                "processing_level": "level_3",
+                "variable": "mole_concentration_of_ozone_in_air",
+                "vertical_aggregation": "vertical_profiles_from_limb_sensors",
+                "sensor": ["megridop_conc"],
+                "year": [
+                    str(y) for y in range(megridop_year1, megridop_year2)
+                ],
+                "month": [f"{m:02d}" for m in range(1, 13)],
+                "version": ["v0004"],
             },
         }
 
@@ -88,5 +125,53 @@ def download_dataset(
                     with open(output_folder / file_path.stem, "wb") as f_out:
                         shutil.copyfileobj(f_in, f_out)
 
+        # download IASI data from BIRA WebDAV (IASI data not available on CDS)
+        # all the files will be saved by year (yyyy) in
+        # ${RAWOBS}/Tier2/ESACCI-OZONE/IASI_yyyy
+
+        if start_date is None:
+            start_date = datetime(2008, 1, 1)
+        if end_date is None:
+            end_date = datetime(2023, 12, 31)
+
+        options = {
+            "webdav_hostname": "https://webdav.aeronomie.be",
+            "webdav_login": "o3_cci_public",
+            "webdav_password": "",
+        }
+
+        wd_client = Client(options)
+
+        basepath = "/guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/"
+
+        loop_date = start_date
+        while loop_date <= end_date:
+            year = loop_date.year
+
+            # if needed, create local output directory
+            outdir = output_folder / f"IASI_{year}"
+            os.makedirs(outdir, exist_ok=True)
+
+            # directory on WebDAV server to download
+            remotepath = f"{basepath}/{year}"
+            files = wd_client.list(remotepath)
+            info = wd_client.info(remotepath + "/" + files[0])
+            numfiles = len(files)
+            # calculate approx. download volume in Gbytes
+            size = int(info["size"]) * numfiles // 1073741824
+            del files
+
+            loginfo = (
+                f"downloading {numfiles} files for year {year}"
+                f" (approx. {size} Gbytes)"
+            )
+            logger.info(loginfo)
+
+            # synchronize local (output) directory and WebDAV server directory
+            wd_client.pull(remote_directory=remotepath, local_directory=outdir)
+
+            loop_date += relativedelta.relativedelta(years=1)
+
     else:
-        raise ValueError(f"Unknown dataset: {dataset}")
+        errmsg = f"Unknown dataset: {dataset}"
+        raise ValueError(errmsg)
