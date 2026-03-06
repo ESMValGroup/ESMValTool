@@ -1,6 +1,18 @@
 """Script to download ESACCI-AEROSOL data.
 
 From CCI CEDA ftp (AATSR) and via Copernicus Climate Data Store (SLSTR).
+
+Note: For downloading data from the Copernicus Climate Data Store (CDS), an
+      account is needed. A CDS account can be created at
+      https://cds.climate.copernicus.eu/
+      After creating an account and logging in, the following two steps are
+      required:
+      (1) Setup a CDS Api key. Instructions can be found here:
+          https://cds.climate.copernicus.eu/how-to-api
+      (2) Agree to the "Licence to use Copernicus Products":
+          After logging in, click on your name in the top right corner,
+          select "Your profile", click on the "Licenses" tab and check
+          "Licence to use Copernicus Products".
 """
 
 import datetime
