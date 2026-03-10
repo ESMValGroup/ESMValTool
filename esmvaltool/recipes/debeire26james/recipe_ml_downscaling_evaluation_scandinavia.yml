@@ -1,0 +1,461 @@
+# ESMValTool
+# recipe_ml_downscaling_evaluation.yml
+---
+documentation:
+  description: |
+    Evaluation of ML-based downscaling (UNet, CorrDiff, CorrDiff++, GenFocal, etc...)
+
+  authors:
+    - debeire_kevin
+
+  title: Evaluation of ML-based downscaling
+
+  maintainer:
+    - debeire_kevin
+
+datasets:
+  #NEXTGEMS reference (ground truth) passed as OBS6
+  - {dataset: HIGHRES-REF-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  #Downscaled fields (prediction) passed as OBS6
+  # 1-ensemble-member UNet
+  # - {dataset: UNet-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}  
+  # # # 12-ensemble-member CORRDIFF
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    # 12-ensemble-member CORRDIFF-decay
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+  # 12-ensemble-member CORRDIFF++
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# 2rootpr (instead of pr)
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# 0lossweight (instead of 0.25 before)
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# 025lossweight and UNet encoder
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    # 12-ensemble-member GENFOCAL
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# SFM baseline
+# SFM baseline
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+  - {dataset: SFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+# PISFM Standard gradient update
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+#   - {dataset: PISFM-Standard-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# # PISFM Standard gradient update
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+#   - {dataset: PISFM-Standard-PLW10-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# # PISFM ConFIG gradient update
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+#   - {dataset: PISFM-ConFIG-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# # PISFM ConFIG gradient update
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+#   - {dataset: PISFM-ConFIG-2-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# # PISFM ConFIG Downweight gradient update
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+#   - {dataset: PISFM-ConFIG-DW-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# PISFM ConFIG Downweight gradient update and 200k warmup
+# PISFM ConFIG Downweight gradient update and 200k warmup
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+  - {dataset: PISFM, project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+# PISFM ConFIG Downweight gradient update with split HUS and PR loss
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: PISFM-ConFIG-DW-Splitloss-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    
+
+preprocessors:
+  preproc_extract_time:
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  preproc_convert_tas:
+    convert_units:
+      units: degC
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_convert_huss:
+    convert_units:
+      units: g kg-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_convert_pr:
+    convert_units:
+      units: mm h-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_convert_ps:
+    convert_units:
+      units: hPa
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_quantileMAE_tas:
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+    extract_season:
+      season: "JJA"
+    convert_units:
+      units: degC
+
+  preproc_quantileMAE_huss:
+    extract_season:
+      season: "JJA"
+    convert_units:
+      units: g kg-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_quantileMAE_pr:
+    extract_season:
+      season: "DJF"
+    convert_units:
+      units: mm h-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_quantileMAE_ps:
+    extract_season:
+      season: "JJA"
+    convert_units:
+      units: hPa
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_quantileMAE_uas:
+    extract_season:
+      season: "SON"
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+  preproc_quantileMAE_vas:
+    extract_season:
+      season: "SON"
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
+
+diagnostics:
+  downscaling_evaluation_6M:
+    description: "ML-based downscaling vs HIGHRES-REF"
+    variables:
+      uas:
+        preprocessor: preproc_extract_time
+      vas:
+        preprocessor: preproc_extract_time
+      huss:
+        preprocessor: preproc_convert_huss
+      ps:
+        preprocessor: preproc_convert_ps
+      pr:
+        preprocessor: preproc_convert_pr
+      tas:
+        preprocessor: preproc_convert_tas
+    scripts:
+      spatial_metrics: #calculates bias (relative bias for "pr"), crps, spatial correlation and variance ratio of "reference vs. downscaled fields"
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["SFM-baseline","PISFM"] # ["CorrDiff","SFM-baseline", "SFM-baseline", "SFM-baseline-8M","PISFM","PISFM"] #"PISFM-Standard","PISFM-Standard-PLW10","PISFM-ConFIG","PISFM-ConFIG-2"] #,"PISFM-ConFIG-DW","PISFM","PISFM-ConFIG-DW-Splitloss"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: spatial_metrics
+        compute_relbias_pr: true  # Set to false for arid regions with very low pr (like Sahara)
+        compute_conservation: ["pr", "huss"]  # Variables for conservation error
+        pool_factor: 10  # Coarsening factor to calculate conservation error (10x10 grid cells)
+      energy_spectrum: #plot energy spectrum of "reference vs. downscaled fields"
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["SFM-baseline","PISFM"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: energy_spectrum
+      log_density: #plot log probability density of "reference vs. downscaled fields"
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["SFM-baseline","PISFM"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: log_density
+      # temporal_structure: #calculate error between ACF at lag -1
+      #   script: regional_downscaling/ml_downscaling_evaluation.py
+      #   ml_methods: ["SFM-baseline","PISFM"]
+      #   reference: HIGHRES-REF-Scandinavia
+      #   analysis_type: temporal_structure
+      calibration: #rank histogram and MCB (miscalibration) for ensemble calibration evaluation
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["SFM-baseline","PISFM"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: calibration
+      create_animation: #creates a animation of "reference vs. downscaled fields" snapshots per snapshots
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["SFM-baseline","PISFM"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: create_animation
+        animation_start_time: 800           # Start time index (800)
+        animation_end_time: 810            # End time index (810)
+        animation_frame_duration: 2     # Seconds to pause on each frame
+
+  quantileMAE_6M:
+    description: "ML-based downscaling vs HIGHRES-REF"
+    variables:
+      uas:
+        preprocessor: preproc_quantileMAE_uas
+      vas:
+        preprocessor: preproc_quantileMAE_vas
+      huss:
+        preprocessor: preproc_quantileMAE_huss
+      ps:
+        preprocessor: preproc_quantileMAE_ps
+      pr:
+        preprocessor: preproc_quantileMAE_pr
+      tas:
+        preprocessor: preproc_quantileMAE_tas
+    scripts:
+      quantile_MAE: #plot MAE between quantiles of "reference vs. downscaled fields"
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["SFM-baseline","PISFM"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: quantile_MAE
+        compute_wbgt: true  # Set to true if computing Summer WBGT (wet bulb global temperature) from tas, huss, ps
+        compute_wind: true  # Set to true if computing Fall wind speed from uas, vas
+        compute_pr: true # Set to true if computing Winter precipitation
+
+  relative_performance_heatmap_6M:
+    description: "Relative performance heatmap comparing two ML downscaling methods"
+    scripts:
+      heatmap:
+        script: regional_downscaling/ml_downscaling_heatmap.py
+        ancestors: ['downscaling_evaluation_6M/spatial_metrics', 'downscaling_evaluation_6M/energy_spectrum', 'downscaling_evaluation_6M/log_density', 'downscaling_evaluation_6M/calibration', 'quantileMAE_6M/quantile_MAE'] #'downscaling_evaluation/temporal_structure'
+        method1: "PISFM"           # Numerator method (change as needed)
+        method2: "SFM-baseline"    # Denominator method (change as needed)
+        region_name: "Northern Europe region (unseen during training)" #used as Supertitle
+        heatmap_vmin: 0.80         # Minimum value for colormap
+        heatmap_vmax: 1.20         # Maximum value for colormap
+
+  combined_panel_6M:
+    description: "Combined evaluation panel (spatial metrics + energy spectrum + log PDF + calibration) per variable"
+    scripts:
+      panel:
+        script: regional_downscaling/ml_downscaling_combined_panel.py
+        ancestors: ['downscaling_evaluation_6M/spatial_metrics', 'downscaling_evaluation_6M/energy_spectrum', 'downscaling_evaluation_6M/log_density', 'downscaling_evaluation_6M/calibration']
+        variables: ["pr", "huss", "tas", "ps", "uas", "vas"]
+        panel_fig_width: 18        # Figure width in inches
+        region_name: "Northern Europe region (unseen during training)" #used as Supertitle
