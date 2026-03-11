@@ -200,10 +200,10 @@ datasets:
 
   CERES-EBAF:
     tier: 2
-    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
-    last_access: 2022-07-01
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
+    last_access: 2026-02-06
     info: |
-      Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+      Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly Mean", "Regional" (0-360, -90-90)
       Enter "Email Address" and click on "Get Data"
       Wait for the processing to be finished and click on "Download"
 
@@ -338,6 +338,20 @@ datasets:
     info: |
       Download the ensemble mean files for:
         TG TN TX RR PP
+
+  EN4:
+    tier: 2
+    source: "https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html"
+    last_access: 2025-06-13
+    info: |
+      EN4: quality controlled subsurface ocean temperature and salinity objective analyses.
+      Script tested using analyses with Gouretski and Reseghetti (2010) XBT corrections
+      and Gouretski and Cheng (2020) MBT corrections applied.
+      To download data:
+        - Save this text file in directory for data to be downloaded, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
+        - Edit this .txt. file for your chosen years.
+        - Run 'wget -i EN.4.2.2.analyses.g10.download-list.txt' in the same directory.
+        - Unzip files prior to running the cmorizer script using 'unzip \*.zip'.
 
   Eppley-VGPM-MODIS:
     tier: 2
@@ -598,6 +612,19 @@ datasets:
         v01.8/30days/
         v02.31/30days/
       Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-SNOW:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow/data
+    last_access: 2024-02-14
+    info: |
+      Download the data from:
+        scfg/AVHRR-MERGED/v2.0/
+        swe/MERGED/v2.0/
+      Put all scfg files in a single directory called 'scfg'
+      (no subdirectories with years or months).
+      Put all swe files in a single directory called 'swe'
+      (no subdirectories with years or months).
 
   ESACCI-SST:
     tier: 2

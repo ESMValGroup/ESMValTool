@@ -89,6 +89,7 @@ preprocessors:
     &annual_mean
     annual_statistics:
       operator: mean
+      keep_group_coordinates: true
 
   pp_arctic_sept_sea_ice:
     <<: *extract_test_period

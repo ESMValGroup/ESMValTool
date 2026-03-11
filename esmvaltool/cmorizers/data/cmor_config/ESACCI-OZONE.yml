@@ -3,7 +3,7 @@ attributes:
   dataset_id: ESACCI-OZONE
   version: L3
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: "https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1"
   reference: "esacci-ozone"
