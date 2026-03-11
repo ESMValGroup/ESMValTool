@@ -1,6 +1,6 @@
-"""ESMValTool CMORizer for PI-SFM (and all CorrDiff-based) model output.
+"""ESMValTool CMORizer for PC-SFM (and all CorrDiff-based) model output.
 
-Converts raw NetCDF output from the PI-SFM generation script into
+Converts raw NetCDF output from the PC-SFM generation script into
 CMOR-compliant OBS6-style files for use with ESMValTool. Latitude,
 longitude, and time coordinates are read from a reference high-resolution
 training input file, since the generation script does not write these
@@ -8,10 +8,10 @@ coordinates correctly.
 
 This CMORizer is invoked via the standard ESMValTool interface::
 
-    esmvaltool data format --datasets PISFM
+    esmvaltool data format --datasets PCSFM
 
 Configuration is read from
-``esmvaltool/cmorizers/data/cmor_config/PISFM.yml``, which must include
+``esmvaltool/cmorizers/data/cmor_config/PCSFM.yml``, which must include
 the ``reference_file`` key pointing to a nextGEMS high-resolution target
 file covering the same domain and time period as the model output.
 
@@ -24,8 +24,8 @@ Output directory structure
 
     <rootpath>/
         Tier1/
-            PISFM/
-                OBS6_PISFM_reanaly_<ens>-<region>_3hr_<var>.nc
+            PCSFM/
+                OBS6_PCSFM_reanaly_<ens>-<region>_3hr_<var>.nc
             HIGHRES-REF-<region>/
                 OBS6_HIGHRES-REF-<region>_reanaly_1_3hr_<var>.nc
 
@@ -160,7 +160,7 @@ def _load_reference_coords(ref_file, n_y, n_x):
 def _fix_time(time_vals, freq_hours):
     """Reconstruct a regularly spaced time axis from the first valid entry.
 
-    The PI-SFM generation script does not always write time values
+    The PC-SFM generation script does not always write time values
     correctly beyond the first step. This function rebuilds the full
     sequence at ``freq_hours`` intervals from the first value.
 
@@ -283,7 +283,7 @@ def _write_cmor_file(
         "institution":       cfg.get("attributes", {}).get("institution", "DLR"),
         "source":            cfg.get("attributes", {}).get(
                                  "source",
-                                 "PI-SFM physics-informed stochastic flow matching"
+                                 "PC-SFM physics-informed stochastic flow matching"
                              ),
         "history":           f"CMORized on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "frequency":         "3hrPt",
@@ -318,28 +318,28 @@ def _write_cmor_file(
 # ---------------------------------------------------------------------------
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
-    """CMORize PI-SFM generation output.
+    """CMORize PC-SFM generation output.
 
     This function is called automatically by ESMValTool when running::
 
-        esmvaltool data format --datasets PISFM
+        esmvaltool data format --datasets PCSFM
 
     Parameters
     ----------
     in_dir : str
-        Directory containing the raw PI-SFM output NetCDF file(s).
+        Directory containing the raw PC-SFM output NetCDF file(s).
         The file is located using the ``filename`` glob pattern from
-        ``PISFM.yml``.
+        ``PCSFM.yml``.
     out_dir : str
         Root output directory for CMOR-compliant files (typically the
         OBS6 rootpath configured in the ESMValTool user config).
     cfg : dict
-        Contents of ``esmvaltool/cmorizers/data/cmor_config/PISFM.yml``.
+        Contents of ``esmvaltool/cmorizers/data/cmor_config/PCSFM.yml``.
         Required keys:
           - ``filename``       : glob pattern for the raw output file
           - ``reference_file`` : path to the nextGEMS reference NetCDF
                                  from which lat/lon/time are read
-          - ``method_name``    : dataset label (e.g. 'PISFM')
+          - ``method_name``    : dataset label (e.g. 'PCSFM')
           - ``region``         : region tag appended to filenames
           - ``groups``         : list of NetCDF groups to process
           - ``time_freq_hours``: output time step in hours (default 3)
@@ -359,7 +359,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not matches:
         raise FileNotFoundError(
             f"No file matching '{pattern}' found in {in_dir}. "
-            "Check the 'filename' key in PISFM.yml."
+            "Check the 'filename' key in PCSFM.yml."
         )
     if len(matches) > 1:
         logger.warning(
@@ -373,7 +373,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # Read configuration
     # ------------------------------------------------------------------
     ref_file       = cfg["reference_file"]
-    method_name    = cfg.get("method_name", "PISFM")
+    method_name    = cfg.get("method_name", "PCSFM")
     region         = cfg.get("region", None)
     groups         = cfg.get("groups", ["prediction", "truth"])
     freq_hours     = int(cfg.get("time_freq_hours", 3))
@@ -382,7 +382,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not os.path.isfile(ref_file):
         raise FileNotFoundError(
             f"Reference file not found: {ref_file}. "
-            "Set 'reference_file' in PISFM.yml to a valid path."
+            "Set 'reference_file' in PCSFM.yml to a valid path."
         )
 
     # ------------------------------------------------------------------
