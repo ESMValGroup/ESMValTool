@@ -44,7 +44,7 @@ dependencies = [
     "ecmwf-api-client",
     "eofs",
     "ESMPy",  # not on PyPI
-    "esmvalcore",
+    "esmvalcore>=2.14.0",
     "esmf-regrid>=0.10.0",  # iris-esmf-regrid #342
     "fiona",
     "fire",
