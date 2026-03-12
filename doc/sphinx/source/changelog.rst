@@ -18,7 +18,7 @@ This release includes
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Update the CMORizer command (:pull:`4317`) by :user:`bouweandela`
+-  Update the CMORizer command (:pull:`4317`, :pull:`4326`) by :user:`bouweandela`
    .. admonition:: Upgrade instructions
 
       The ``--config-file`` argument to the ``esmvaltool data`` commands has
@@ -31,10 +31,8 @@ Bug fixes
 ~~~~~~~~~
 
 -  Fix recipe_enso_climatology1 - remove collect diagnostic (:pull:`4221`) by :user:`flicj191`
--  Fix CMORizer command again (:pull:`4326`) by :user:`bouweandela`
 -  Rename ``modeling_realm`` to ``type`` in CMORizers (:pull:`4319`) by :user:`bouweandela`
 -  Fix ``multi_datasets.py`` so it can handle different projections (:pull:`4358`) by :user:`schlunma`
--  Revert from CERES-EBAF_Surface to original CERES-EBAF in recipe_autoassess_landsurface_surfrad.yml (:pull:`4377`) by :user:`valeriupredoi`
 
 Broken or retired recipes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -122,7 +120,7 @@ Improvements
 -  Switch from Prospector to ruff (:pull:`4209`) by :user:`bouweandela`
 -  Fix Codacy configuration (:pull:`4262`) by :user:`bouweandela`
 -  Apply automatic fixes for style issues (:pull:`4263`) by :user:`bouweandela`
--  Update obs4MIPs dataset names (:pull:`4321`) by :user:`bouweandela`
+-  Update obs4MIPs dataset names (:pull:`4321`, :pull:`4377`) by :user:`bouweandela` and :user:`valeriupredoi`
 -  Add ``keep_group_coordinates: true`` to recipes that fail without it (:pull:`4352`) by :user:`schlunma`
 -  Load configuration before accessing CMOR tables (:pull:`4363`) by :user:`bouweandela`
 -  Avoid failing tests on coverage upload from forks (:pull:`4371`) by :user:`bouweandela`
