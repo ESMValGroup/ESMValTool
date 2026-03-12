@@ -45,8 +45,6 @@ Atmosphere
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_extreme_index
-   recipe_eyring06jgr
-   recipe_eyring13jgr
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
