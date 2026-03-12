@@ -411,10 +411,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             glob_attrs["version"] = glob_version
         output_var = var["output"]
         for year in range(start_date_x.year, end_date_x.year + 1):
-            if var_name == "o3_iasi" or var_name == "toz_iasi":
-                subfolder = f"IASI_{year}"
-            else:
-                subfolder = ""
             for month in range(1, 13):
                 # Skip months outside the dataset range
                 current_date = datetime(year, month, 1)
@@ -425,7 +421,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 filepattern = os.path.join(
                     in_dir,
-                    subfolder,
                     var["filename"].format(year=year, month=monstr),
                 )
                 in_files = glob.glob(filepattern)

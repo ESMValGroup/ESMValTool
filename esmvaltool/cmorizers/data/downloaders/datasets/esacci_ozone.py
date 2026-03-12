@@ -2,14 +2,14 @@
 
 import gzip
 import logging
-import os
 import shutil
 import zipfile
 from datetime import datetime
 
 import cdsapi
 from dateutil import relativedelta
-from webdav3.client import Client
+
+from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 logger = logging.getLogger(__name__)
 
@@ -126,49 +126,37 @@ def download_dataset(
                         shutil.copyfileobj(f_in, f_out)
 
         # download IASI data from BIRA WebDAV (IASI data not available on CDS)
-        # all the files will be saved by year (yyyy) in
-        # ${RAWOBS}/Tier2/ESACCI-OZONE/IASI_yyyy
+        # all the files will be saved by in ${RAWOBS}/Tier2/ESACCI-OZONE
 
         if start_date is None:
             start_date = datetime(2008, 1, 1)
         if end_date is None:
             end_date = datetime(2023, 12, 31)
 
-        options = {
-            "webdav_hostname": "https://webdav.aeronomie.be",
-            "webdav_login": "o3_cci_public",
-            "webdav_password": "",
-        }
+        downloader = WGetDownloader(
+            original_data_dir=original_data_dir,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
 
-        wd_client = Client(options)
+        basepath = "https://webdav.aeronomie.be/guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI"
 
-        basepath = "/guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/"
+        wget_options = [
+            "-e robots=off",  # ignore robots.txt
+            "--no-parent",  # don't ascend to the parent directory
+            "--accept=nc",  # download only *.nc files
+            "--user=o3_cci_public",  # user name
+            "--password=",  # empty password (no password needed for public access)
+        ]
 
         loop_date = start_date
         while loop_date <= end_date:
             year = loop_date.year
 
-            # if needed, create local output directory
-            outdir = output_folder / f"IASI_{year}"
-            os.makedirs(outdir, exist_ok=True)
-
-            # directory on WebDAV server to download
+            # directory on server to download
             remotepath = f"{basepath}/{year}"
-            files = wd_client.list(remotepath)
-            info = wd_client.info(remotepath + "/" + files[0])
-            numfiles = len(files)
-            # calculate approx. download volume in Gbytes
-            size = int(info["size"]) * numfiles // 1073741824
-            del files
-
-            loginfo = (
-                f"downloading {numfiles} files for year {year}"
-                f" (approx. {size} Gbytes)"
-            )
-            logger.info(loginfo)
-
-            # synchronize local (output) directory and WebDAV server directory
-            wd_client.pull(remote_directory=remotepath, local_directory=outdir)
+            downloader.download_folder(remotepath, wget_options)
 
             loop_date += relativedelta.relativedelta(years=1)
 
