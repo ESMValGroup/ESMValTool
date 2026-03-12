@@ -342,16 +342,10 @@ def _extract_variable(
     # add mip to attributes for use in cmor table lookup and global attributes
     attrs["mip"] = var_d["mip"]
 
-    # get custom cmor table for the target project if specified
-    if var_d.get("project_id"):
-        cmor_table_b = CMOR_TABLES.get(var_d.get("project_id"))
-        cmor_info = cmor_table_b.get_variable(
-            var_d.get("mip"), var_d.get("short_name")
-        )
-    else:
-        cmor_info = cmor_table.get_variable(
-            var_d.get("mip"), var_d.get("short_name")
-        )
+    # get cmor table for variable
+    cmor_info = cmor_table.get_variable(
+        var_d.get("mip"), var_d.get("short_name")
+    )
 
     # if this variable has a reference specified in the config, use that, otherwise use the one from the cmor table
     if var_d.get("reference"):

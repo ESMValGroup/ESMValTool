@@ -30,14 +30,12 @@ variables:
     frequency: mon
   lwpStderr:
     raw_name: Cloud_Water_Path_Liquid_Mean_Uncertainty
-    mip: Amon
+    mip: custom
     frequency: mon
-    project_id: custom
   iwpStderr:
     raw_name: Cloud_Water_Path_Ice_Mean_Uncertainty
-    mip: Amon
+    mip: custom
     frequency: mon
-    project_id: custom
   od550aer:
     raw_name: AOD_550_Dark_Target_Deep_Blue_Combined_Mean_Mean
     mip: AERmon
