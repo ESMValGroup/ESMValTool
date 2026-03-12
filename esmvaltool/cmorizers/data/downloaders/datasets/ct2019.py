@@ -8,7 +8,12 @@ from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
@@ -42,7 +47,7 @@ def download_dataset(
     )
     downloader.connect()
     downloader.set_cwd(
-        "products/carbontracker/co2/CT2019/molefractions/co2_total_monthly/"
+        "products/carbontracker/co2/CT2019/molefractions/co2_total_monthly/",
     )
 
     while loop_date <= end_date:
@@ -50,6 +55,6 @@ def download_dataset(
         month = loop_date.month
 
         downloader.download_file(
-            f"CT2019.molefrac_glb3x2_{year}-{month:02}.nc"
+            f"CT2019.molefrac_glb3x2_{year}-{month:02}.nc",
         )
         loop_date += relativedelta.relativedelta(months=1)

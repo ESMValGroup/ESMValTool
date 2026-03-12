@@ -21,22 +21,11 @@ def _apply_common_mask(*args):
     ------
         an array with size of nargs x common size of all input arrays
     """
-    nargs = len(args)
-    for arg_ in range(nargs):
-        _dat = args[arg_]
-        vars()["dat_mask" + str(arg_)] = np.ones(np.shape(_dat))
-        vars()["dat_mask_inv" + str(arg_)] = np.ma.masked_invalid(_dat).mask
-        vars()["dat_mask" + str(arg_)][vars()["dat_mask_inv" + str(arg_)]] = 0
-    dat_mask = vars()["dat_mask0"]
-    for arg_ in range(nargs):
-        dat_mask = dat_mask * vars()["dat_mask" + str(arg_)]
-    mask_where = np.ma.getmask(np.ma.masked_less(dat_mask, 1.0))
-    odat = []
-    for arg_ in range(nargs):
-        _dat = args[arg_].astype(np.float64)
-        _dat[mask_where] = np.nan
-        odat = np.append(odat, np.ma.masked_invalid(_dat))
-    odat = odat.reshape(nargs, _dat.shape[0], _dat.shape[1])
+    odat = np.stack(args, axis=0)
+    odat = np.ma.masked_array(odat, dtype=np.float64)
+    odat = np.ma.masked_invalid(odat)
+    mask = np.ma.getmaskarray(odat).any(axis=0, keepdims=True)
+    odat = np.ma.masked_where(np.broadcast_to(mask, odat.shape), odat)
     return odat
 
 
@@ -45,7 +34,7 @@ def _apply_gpp_threshold(gpp_dat, fig_config):
     # converting gC m-2 yr-1 to kgC m-2 s-1
     gpp_thres = fig_config["gpp_threshold"] / (86400.0 * 365 * 1000.0)
     gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(
-        fig_config["fill_value"]
+        fig_config["fill_value"],
     )
     return gpp_dat
 
@@ -65,7 +54,7 @@ def _get_obs_data_zonal(diag_config):
     if not diag_config.get("obs_variable"):
         raise ValueError(
             "The observation variable needs to be specified in "
-            "the recipe (see recipe description for details)"
+            "the recipe (see recipe description for details)",
         )
     obs_dir = os.path.join(
         diag_config["auxiliary_data_dir"],
@@ -82,11 +71,12 @@ def _get_obs_data_zonal(diag_config):
         obs_filename = (
             f"{_var}_{{frequency}}_{{source_label}}_"
             f"{{variant_label}}_{{grid_label}}z.nc".format(
-                **diag_config["obs_info"]
+                **diag_config["obs_info"],
             )
         )
         input_files = np.append(
-            input_files, os.path.join(obs_dir, obs_filename)
+            input_files,
+            os.path.join(obs_dir, obs_filename),
         )
 
     nvars = len(var_list)

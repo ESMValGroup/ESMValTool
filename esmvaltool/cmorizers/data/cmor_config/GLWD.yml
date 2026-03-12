@@ -1,0 +1,23 @@
+---
+# Archive filename
+archive_filename: 'GLWD_v2_0_combined_classes_tif.zip'
+
+# TIF filenames
+area_file: 'GLWD_v2_0_combined_classes/GLWD_v2_0_area_pct.tif'
+main_class_file: 'GLWD_v2_0_combined_classes/GLWD_v2_0_main_class.tif'
+
+# Common global attributes for morizer output
+attributes:
+  dataset_id: GLWD
+  version: '2.0'
+  tier: 2
+  modeling_realm: land
+  project_id: OBS6
+  source: 'https://figshare.com/articles/dataset/Global_Lakes_and_Wetlands_Database_GLWD_version_2_0/28519994'
+  reference: 'glwd_lehner2025essd'
+  comment: 'The dataset is representative of the time period (1984 - 2020) and is thus marked with the timestamp of the year 2002.'
+
+# Variables to cmorize
+variables:
+  wetlandFrac:
+    mip: Emon

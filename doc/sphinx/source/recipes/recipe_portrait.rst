@@ -57,13 +57,12 @@ Variables and Datasets
 
 The following list shows which observational dataset is used as reference for
 each variable in this recipe. All variables are atmospheric monthly means.
-For 3D variables the selected pressure level is specified in parentheses.
+For 3D variables the selected pressure level is specified.
 
 * clt (Ref1: ESACCI-CLOUD, Ref2: PATMOS-x)
 * pr (Ref1: GPCP-V2.2)
 * rlut, rsut (Ref1: CERES-EBAF)
 * tas (Ref1: ERA-Interim, Ref2: NCEP-NCAR-R1)
-* ts (Ref1: ESACCI-SST, Ref2: HadISST)
 * ua (200 hPa, Ref1: ERA-Interim, Ref2: NCEP-NCAR-R1)
 * zg (500 hPa, Ref1: ERA-Interim, Ref2: NCEP-NCAR-R1)
 

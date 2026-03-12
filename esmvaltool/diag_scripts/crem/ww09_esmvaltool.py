@@ -157,7 +157,9 @@ def main(cfg):
 
         for var in ww_vars:
             selection = select_metadata(
-                input_data, dataset=dataset, short_name=var
+                input_data,
+                dataset=dataset,
+                short_name=var,
             )
             alt_var = None
             if not selection:
@@ -165,7 +167,9 @@ def main(cfg):
                 if var in ww_vars_alternative:
                     alt_var = ww_vars_alternative[var]
                     selection = select_metadata(
-                        input_data, dataset=dataset, short_name=alt_var
+                        input_data,
+                        dataset=dataset,
+                        short_name=alt_var,
                     )
             if not selection:
                 missing_vars.append(var)
@@ -184,7 +188,9 @@ def main(cfg):
 
         for var in ww_vars_plus:
             selection = select_metadata(
-                input_data, dataset=dataset, short_name=var
+                input_data,
+                dataset=dataset,
+                short_name=var,
             )
             key_nc = var + "_nc"
             key_var = var
@@ -249,7 +255,7 @@ def main(cfg):
 
     provenance_record = {
         "caption": "Cloud Regime Error Metric (CREM) following Williams "
-        + "and Webb (2009, Clim. Dyn.).",
+        "and Webb (2009, Clim. Dyn.).",
         "statistics": ["other"],
         "domains": ["global"],
         "plot_type": "bar",
@@ -325,7 +331,9 @@ def main(cfg):
     # add provenance data to netcdf and plot
 
     logger.info(
-        "Recording provenance of %s:\n%s", oname, pformat(provenance_record)
+        "Recording provenance of %s:\n%s",
+        oname,
+        pformat(provenance_record),
     )
 
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -362,11 +370,11 @@ def read_and_check(srcfilename, varname, lons2, lats2, time2):
 
     if n_time != time2:
         logger.error(
-            "error: number of time steps in input files are not equal"
+            "error: number of time steps in input files are not equal",
         )
         raise Exception(
             "Variables contain different number of time steps "
-            "(see log file for details)."
+            "(see log file for details).",
         )
 
     grid_mismatch = False
@@ -402,13 +410,13 @@ def read_and_check(srcfilename, varname, lons2, lats2, time2):
         logger.error(
             "error: input data are not on 2.5x2.5 deg ISCCP grid, "
             "longitudes and/or latitudes differ from ISCCP grid by "
-            "more than 1.0e-3"
+            "more than 1.0e-3",
         )
 
     if grid_mismatch or coord_mismatch:
         raise Exception(
             "Input variables are not on 2.5x2.5 deg ISCCP grid "
-            "(see log file for details)."
+            "(see log file for details).",
         )
 
     # read data
@@ -463,7 +471,7 @@ def crem_calc(pointers):
             [0.261, 0.339, 0.211, 0.338, 0.313, 0.532, 0.446],
             [0.286, 0.457, 0.375, 0.325, 0.438, 0.581, 0.220],
             [0.433, 0.510, 0.576, 0.505, 0.343, 0.247, 999.9],
-        ]
+        ],
     )
 
     obs_pct = np.array(
@@ -471,7 +479,7 @@ def crem_calc(pointers):
             [0.652, 0.483, 0.356, 0.784, 0.327, 0.285, 0.722],
             [0.643, 0.607, 0.799, 0.430, 0.723, 0.393, 0.389],
             [0.582, 0.740, 0.620, 0.458, 0.595, 0.452, 999.9],
-        ]
+        ],
     )
 
     obs_clt = np.array(
@@ -479,7 +487,7 @@ def crem_calc(pointers):
             [0.314, 0.813, 0.740, 0.640, 0.944, 0.979, 0.824],
             [0.473, 0.932, 0.802, 0.914, 0.900, 0.978, 0.713],
             [0.356, 0.747, 0.778, 0.884, 0.841, 0.744, 999.9],
-        ]
+        ],
     )
 
     # Observed regime RFO's taken from Table 3 of WW09
@@ -488,7 +496,7 @@ def crem_calc(pointers):
             [0.375, 0.195, 0.119, 0.103, 0.091, 0.064, 0.052],
             [0.354, 0.170, 0.114, 0.104, 0.091, 0.083, 0.083],
             [0.423, 0.191, 0.139, 0.111, 0.094, 0.042, 999.9],
-        ]
+        ],
     )
 
     # Observed regime net cloud forcing (Figure 2f of WW09)
@@ -497,7 +505,7 @@ def crem_calc(pointers):
             [-10.14, -25.45, -5.80, -27.40, -16.83, -48.45, -55.84],
             [-13.67, -58.28, -36.26, -25.34, -64.27, -56.91, -11.63],
             [-3.35, -16.66, -13.76, -8.63, -12.17, 1.45, 999.9],
-        ]
+        ],
     )
 
     # aw in eq 3 of WW09
@@ -534,45 +542,85 @@ def crem_calc(pointers):
     logger.debug("Reading albisccp")
     ntime2 = len(Dataset(pointers["albisccp_nc"], "r").variables["time"][:])
     albisccp_data = read_and_check(
-        pointers["albisccp_nc"], pointers["albisccp"], lons2, lats2, ntime2
+        pointers["albisccp_nc"],
+        pointers["albisccp"],
+        lons2,
+        lats2,
+        ntime2,
     )
     logger.debug("Reading pctisccp")
     pctisccp_data = read_and_check(
-        pointers["pctisccp_nc"], pointers["pctisccp"], lons2, lats2, ntime2
+        pointers["pctisccp_nc"],
+        pointers["pctisccp"],
+        lons2,
+        lats2,
+        ntime2,
     )
     logger.debug("Reading cltisccp")
     cltisccp_data = read_and_check(
-        pointers["cltisccp_nc"], pointers["cltisccp"], lons2, lats2, ntime2
+        pointers["cltisccp_nc"],
+        pointers["cltisccp"],
+        lons2,
+        lats2,
+        ntime2,
     )
     logger.debug("Reading rsut")
     rsut_data = read_and_check(
-        pointers["rsut_nc"], pointers["rsut"], lons2, lats2, ntime2
+        pointers["rsut_nc"],
+        pointers["rsut"],
+        lons2,
+        lats2,
+        ntime2,
     )
     logger.debug("Reading rsutcs")
     rsutcs_data = read_and_check(
-        pointers["rsutcs_nc"], pointers["rsutcs"], lons2, lats2, ntime2
+        pointers["rsutcs_nc"],
+        pointers["rsutcs"],
+        lons2,
+        lats2,
+        ntime2,
     )
     logger.debug("Reading rlut")
     rlut_data = read_and_check(
-        pointers["rlut_nc"], pointers["rlut"], lons2, lats2, ntime2
+        pointers["rlut_nc"],
+        pointers["rlut"],
+        lons2,
+        lats2,
+        ntime2,
     )
     logger.debug("Reading rlutcs")
     rlutcs_data = read_and_check(
-        pointers["rlutcs_nc"], pointers["rlutcs"], lons2, lats2, ntime2
+        pointers["rlutcs_nc"],
+        pointers["rlutcs"],
+        lons2,
+        lats2,
+        ntime2,
     )
     logger.debug("Reading sic")
     sic_data = read_and_check(
-        pointers["sic_nc"], pointers["sic"], lons2, lats2, ntime2
+        pointers["sic_nc"],
+        pointers["sic"],
+        lons2,
+        lats2,
+        ntime2,
     )
     if not pointers["snc_nc"]:
         logger.debug("Reading snw")
         snc_data = read_and_check(
-            pointers["snw_nc"], pointers["snw"], lons2, lats2, ntime2
+            pointers["snw_nc"],
+            pointers["snw"],
+            lons2,
+            lats2,
+            ntime2,
         )
     else:
         logger.debug("Reading snc")
         snc_data = read_and_check(
-            pointers["snc_nc"], pointers["snc"], lons2, lats2, ntime2
+            pointers["snc_nc"],
+            pointers["snc"],
+            lons2,
+            lats2,
+            ntime2,
         )
 
     # -----------------------------------------------------------
@@ -603,15 +651,15 @@ def crem_calc(pointers):
 
         mask = pctisccp_data.copy()
         if region == "tropics":
-            mask[:, (lats2 < -20) | (lats2 > 20), :] = np.NAN
+            mask[:, (lats2 < -20) | (lats2 > 20), :] = np.nan
         elif region == "extra-tropics":
-            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.NAN
-            mask[(snc_data >= 0.1) | (sic_data >= 0.1)] = np.NAN
+            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.nan
+            mask[(snc_data >= 0.1) | (sic_data >= 0.1)] = np.nan
         elif region == "snow-ice":
-            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.NAN
-            mask[(snc_data < 0.1) & (sic_data < 0.1)] = np.NAN
+            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.nan
+            mask[(snc_data < 0.1) & (sic_data < 0.1)] = np.nan
 
-        mask[cltisccp_data == 0.0] = np.NAN
+        mask[cltisccp_data == 0.0] = np.nan
 
         points = np.isfinite(mask)
         npoints = len(mask[points])  # Number of valid data points in region
@@ -641,11 +689,11 @@ def crem_calc(pointers):
             if count > 0:
                 model_rfo[idx_region, i] = float(count) / float(npoints)
                 model_ncf[idx_region, i] = np.average(
-                    swcf_data_pts[mem]
+                    swcf_data_pts[mem],
                 ) * solar_weights[idx_region] + np.average(lwcf_data_pts[mem])
             else:
                 logger.info(
-                    "Model does not reproduce all observed cloud regimes."
+                    "Model does not reproduce all observed cloud regimes.",
                 )
                 logger.info("Cannot calculate CREM. Abort.")
                 sys.exit()

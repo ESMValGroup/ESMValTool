@@ -626,7 +626,7 @@ create_landseamask <-
 
     ## Regridding the topographic map to chosen grid
     cdo(
-      "remapscon2",
+      "remapcon",
       args = paste0("'", regrid, "'"),
       input = ftopo,
       output = regridded_topo
@@ -827,7 +827,7 @@ ncdf_opener_universal <- # nolint
              rotate = "full",
              interp2grid = F,
              grid = "r144x73",
-             remap_method = "remapscon2",
+             remap_method = "remapcon",
              exportlonlat = TRUE,
              verbose = F) {
     # load package
@@ -1090,7 +1090,7 @@ ncdf_opener <- function(namefile,
                         rotate = "full",
                         interp2grid = F,
                         grid = "r144x73",
-                        remap_method = "remapscon2",
+                        remap_method = "remapcon",
                         exportlonlat = T) {
   field <-
     ncdf_opener_universal(
@@ -1123,7 +1123,7 @@ ncdf_opener_time <- # nolint
              rotate = "full",
              interp2grid = F,
              grid = "r144x73",
-             remap_method = "remapscon2") {
+             remap_method = "remapcon") {
     # function to open netcdf files. It uses ncdf4 library
     # time selection of month and years needed automatically rotate matrix
     # to place greenwich at the center (flag "rotate")

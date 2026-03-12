@@ -72,6 +72,8 @@ diagnostics:
       plot:
         script: seaborn_diag.py
         seaborn_func: relplot
+        reset_index: true
+        write_netcdf: true
         seaborn_kwargs:
           x: latitude
           y: zonal_mean_ta
@@ -117,6 +119,8 @@ diagnostics:
       plot:
         script: seaborn_diag.py
         seaborn_func: displot
+        reset_index: true
+        write_netcdf: true
         seaborn_kwargs:
           kind: hist
           stat: density

@@ -104,7 +104,7 @@ def save_n_2d_fields(lats, lons, variab, varname, varunits, ofile):
 
     # -----------------------------------------------------------------------
     print(
-        f"The {variab.shape[0]} 2D fields [num x lat x lon] are saved as \n{ofile}"
+        f"The {variab.shape[0]} 2D fields [num x lat x lon] are saved as \n{ofile}",
     )
     print("__________________________________________________________")
     # -----------------------------------------------------------------------

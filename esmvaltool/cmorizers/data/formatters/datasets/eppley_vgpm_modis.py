@@ -81,18 +81,20 @@ def merge_data(in_dir, out_dir, raw_info):
         )
         # create coordinates
         dataset = dataset.assign_coords(
-            time=pd.to_datetime(filename[-11:-4], format="%Y%j")
+            time=pd.to_datetime(filename[-11:-4], format="%Y%j"),
         )
         dataset = dataset.expand_dims(dim="time", axis=0)
         spacing = 90.0 / dataset.lat.size
         dataset = dataset.assign_coords(
-            lat=np.linspace(-90.0 + spacing, 90.0 - spacing, dataset.lat.size)
+            lat=np.linspace(-90.0 + spacing, 90.0 - spacing, dataset.lat.size),
         )
         dataset.lat.attrs = {"long_name": "Latitude", "units": "degrees_north"}
         dataset = dataset.assign_coords(
             lon=np.linspace(
-                -180.0 + spacing, 180.0 - spacing, dataset.lon.size
-            )
+                -180.0 + spacing,
+                180.0 - spacing,
+                dataset.lon.size,
+            ),
         )
         dataset.lon.attrs = {"long_name": "Longitude", "units": "degrees_east"}
         # get current file data

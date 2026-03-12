@@ -1,0 +1,134 @@
+# ESMValTool
+---
+documentation:
+  description: Reproducing ENSO feedback NHF metrics
+  title: ENSO CLIVAR metrics - ENSO NHF feedback
+  authors:
+    - chun_felicity
+    - planton_yann
+    - beucher_romain
+    - sullivan_arnold
+    - gillet_zoe
+  maintainer:
+    - chun_felicity
+
+
+preprocessors:
+  base_east: &base  # 20sst, 21ssh
+    custom_order: true  # turn off?
+    convert_units:
+      units: degC
+    mask_landsea:
+      mask_out: land
+    anomalies:
+      period: monthly
+    detrend:
+      dimension: time
+      method: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &east
+      start_longitude: 210.
+      end_longitude: 270.
+      start_latitude: -5.
+      end_latitude: 5.
+    area_statistics:
+      operator: mean
+
+  nhf_eqp: &eqp_lv3
+    convert_units:
+      units: W m-2
+    mask_landsea:
+      mask_out: land
+    anomalies:
+      period: monthly
+    detrend:
+      dimension: time
+      method: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &eqp
+      start_longitude: 150.
+      end_longitude: 270.
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+
+  sst_eqp_area:  # lvl3
+    <<: *base
+    extract_region:  # eqp
+      <<: *eqp
+
+  # sst_eqp_merid:
+  #   <<: *eqp_lv3
+  #   convert_units:
+  #     units: degC
+  hf_east:
+    <<: *base
+    convert_units:
+      units: W m-2
+
+diagnostics:
+
+  nhf_metrics:
+    description: run for SST NHF metrics level 1 and 2
+    variables:
+      sst_east:
+        short_name: ts
+        mip: Amon
+        preprocessor: base_east
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, version: 1, start_year: 1979, end_year: 2014}
+
+      nhf_east_mod:
+        short_name: hfns
+        mip: Amon
+        derive: true  # hfls+hfss ..need to make negative for hfds
+        preprocessor: hf_east  # obs separate? hfds not derive
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+      nhf_east_obs:
+        short_name: hfds
+        mip: Omon
+        preprocessor: hf_east
+        additional_datasets:
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, version: v1, start_year: 1979, end_year: 2014}
+
+    scripts:
+      plot_script:
+        script: enso_metrics/feedback/feedback_nhf_metric.py
+
+  nhf_metrics_34:
+    description: run for SST NHF metrics level 3 and 4
+    variables:
+      sst_eqp:
+        short_name: ts
+        mip: Amon
+        preprocessor: sst_eqp_area
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, version: 1, start_year: 1979, end_year: 2014}
+
+      nhf_eqp_mod:
+        short_name: hfns
+        mip: Amon
+        derive: true  # hfls+hfss ..#need to make negative for hfds
+        preprocessor: nhf_eqp  # obs separate- hfds not derive
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+      nhf_eqp_obs:
+        short_name: hfds
+        mip: Omon
+        preprocessor: nhf_eqp
+        additional_datasets:
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, version: v1, start_year: 1979, end_year: 2014}
+
+    scripts:
+      plot_34:
+        script: enso_metrics/feedback/feedback_nhf_lvl3_4.py

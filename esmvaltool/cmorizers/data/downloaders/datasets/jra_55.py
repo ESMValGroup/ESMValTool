@@ -12,7 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
@@ -108,7 +113,8 @@ def download_dataset(
             fname = f"{channel}.{varname}.{year}01_{year}12"
             # download file
             downloader.download_file(
-                url + f"/{channel}/{year}/" + fname, download_options
+                url + f"/{channel}/{year}/" + fname,
+                download_options,
             )
             # add file extension ".grb"
             os.rename(

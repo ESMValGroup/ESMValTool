@@ -32,8 +32,9 @@ read_external_file : str, optional
     relative to this diagnostic script or as absolute path.
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-seaborn_settings : dict, optional
-    Options for :func:`seaborn.set_theme` (affects all plots).
+seaborn_settings: dict, optional
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
+    ``style: ticks``.
 sep_year : int, optional (default: 20)
     Year to separate regressions of complex Gregory plot. Only effective if
     ``complex_gregory_plot`` is ``True``.
@@ -93,7 +94,9 @@ def _get_anomaly_data(input_data):
         grouped_data = group_metadata(var_data, "dataset")
         for dataset_name, datasets in grouped_data.items():
             logger.debug(
-                "Calculating '%s' anomaly for dataset '%s'", var, dataset_name
+                "Calculating '%s' anomaly for dataset '%s'",
+                var,
+                dataset_name,
             )
             data_4x = select_metadata(datasets, exp=EXP_4XCO2[project])
             data_pic = select_metadata(datasets, exp="piControl")
@@ -102,12 +105,12 @@ def _get_anomaly_data(input_data):
             if not data_4x:
                 raise ValueError(
                     f"No '{EXP_4XCO2[project]}' data available for '{var}' of "
-                    f"'{dataset_name}'"
+                    f"'{dataset_name}'",
                 )
             if not data_pic:
                 raise ValueError(
                     f"No 'piControl' data available for '{var}' of "
-                    f"'{dataset_name}'"
+                    f"'{dataset_name}'",
                 )
 
             # Calculate anomaly, extract correct years and save it
@@ -117,7 +120,7 @@ def _get_anomaly_data(input_data):
             if cube.ndim != 1:
                 raise ValueError(
                     f"This diagnostic supports only 1D (time), input data, "
-                    f"got {cube.ndim}D data"
+                    f"got {cube.ndim}D data",
                 )
             new_input_data.append(
                 {
@@ -127,7 +130,7 @@ def _get_anomaly_data(input_data):
                         data_pic[0]["filename"],
                     ],
                     "cube": cube,
-                }
+                },
             )
     return new_input_data
 
@@ -169,13 +172,13 @@ def _get_multi_model_mean(input_data):
             except KeyError as exc:
                 raise KeyError(
                     f"No data for '{var}' of dataset '{dataset['dataset']}' "
-                    f"for multi-model mean calculation"
+                    f"for multi-model mean calculation",
                 ) from exc
             if cube.ndim > 1:
                 raise ValueError(
                     f"Calculation of multi-model mean not supported for input "
                     f"data with more than one dimension (which should be "
-                    f"time), got {cube.ndim:d}-dimensional cube"
+                    f"time), got {cube.ndim:d}-dimensional cube",
                 )
             ancestors.extend(dataset["ancestors"])
             dataset_names.append(dataset["dataset"])
@@ -243,7 +246,10 @@ def _plot_complex_gregroy_plot(cfg, axes, tas_cube, rtnt_cube, reg_all):
         marker="o",
         s=8,
         alpha=0.7,
-        label=f"first {sep:d} years: ECS = {ecs_first:.2f} K",
+        label=(
+            f"first {sep:d} years: ECS = {ecs_first:.2f} K "
+            f"($R^2$ = {reg_first.rvalue**2:.2f})"
+        ),
     )
     axes.scatter(
         tas_cube.data[sep:],
@@ -252,8 +258,10 @@ def _plot_complex_gregroy_plot(cfg, axes, tas_cube, rtnt_cube, reg_all):
         marker="o",
         s=8,
         alpha=0.7,
-        label=f"last {tas_cube.shape[0] - sep:d} years: ECS = "
-        f"{ecs_last:.2f} K",
+        label=(
+            f"last {tas_cube.shape[0] - sep:d} years: ECS = {ecs_last:.2f} K "
+            f"($R^2$ = {reg_last.rvalue**2:.2f})"
+        ),
     )
     axes.plot(x_reg, y_reg_first, color=COLORS[0], linestyle="-", alpha=0.6)
     axes.plot(x_reg, y_reg_last, color=COLORS[1], linestyle="-", alpha=0.6)
@@ -289,7 +297,8 @@ def _write_ecs_regression(cfg, tas_cube, rtnt_cube, reg_stats, dataset_name):
         cube.attributes = attrs
         cubes.append(cube)
     netcdf_path = get_diagnostic_filename(
-        "ecs_regression_" + dataset_name, cfg
+        "ecs_regression_" + dataset_name,
+        cfg,
     )
     io.iris_save(cubes, netcdf_path)
     return netcdf_path
@@ -300,7 +309,7 @@ def check_input_data(cfg):
     if not variables_available(cfg, ["tas"]):
         raise ValueError(
             "This diagnostic needs variable 'tas' if 'read_external_file' is "
-            "not given"
+            "not given",
         )
     if not (
         variables_available(cfg, ["rtnt"])
@@ -308,7 +317,7 @@ def check_input_data(cfg):
     ):
         raise ValueError(
             "This diagnostic needs the variable 'rtnt' or 'rtmt' if "
-            "'read_external_file' is not given"
+            "'read_external_file' is not given",
         )
     input_data = cfg["input_data"].values()
     project_group = group_metadata(input_data, "project")
@@ -316,7 +325,7 @@ def check_input_data(cfg):
     if len(projects) > 1:
         raise ValueError(
             f"This diagnostic supports only unique 'project' attributes, got "
-            f"{projects}"
+            f"{projects}",
         )
     project = projects[0]
     if project not in EXP_4XCO2:
@@ -326,7 +335,7 @@ def check_input_data(cfg):
     if exps != {"piControl", EXP_4XCO2[project]}:
         raise ValueError(
             f"This diagnostic needs 'piControl' and '{EXP_4XCO2[project]}' "
-            f"experiments, got {exps}"
+            f"experiments, got {exps}",
         )
 
 
@@ -344,7 +353,8 @@ def preprocess_data(cfg):
             dataset["short_name"] = "rtnt"
     if RTMT_DATASETS:
         logger.info(
-            "Using 'rtmt' instead of 'rtnt' for datasets '%s'", RTMT_DATASETS
+            "Using 'rtmt' instead of 'rtnt' for datasets '%s'",
+            RTMT_DATASETS,
         )
 
     # Calculate anomalies for every dataset
@@ -379,13 +389,13 @@ def get_provenance_record(caption):
 def read_external_file(cfg):
     """Read external file to get ECS."""
     filepath = os.path.expanduser(
-        os.path.expandvars(cfg["read_external_file"])
+        os.path.expandvars(cfg["read_external_file"]),
     )
     if not os.path.isabs(filepath):
         filepath = os.path.join(os.path.dirname(__file__), filepath)
     if not os.path.isfile(filepath):
         raise FileNotFoundError(
-            f"Desired external file '{filepath}' does not exist"
+            f"Desired external file '{filepath}' does not exist",
         )
     with open(filepath) as infile:
         external_data = yaml.safe_load(infile)
@@ -399,11 +409,16 @@ def read_external_file(cfg):
     return (ecs, feedback_parameter, filepath)
 
 
-def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
+def plot_gregory_plot(cfg, dataset_name, tas_data, rtnt_data, reg_stats):
     """Plot linear regression used to calculate ECS."""
+    tas_cube = tas_data["cube"]
+    rtnt_cube = rtnt_data["cube"]
+    dataset_id = dataset_name
+    if "ensemble" in tas_data:
+        dataset_id += f" (ensemble member {tas_data['ensemble']})"
+
     (_, axes) = plt.subplots()
     ecs = -reg_stats.intercept / (2 * reg_stats.slope)
-    project = tas_cube.attributes["project"]
 
     # Regression line
     x_reg = np.linspace(cfg["x_lim"][0] - 1.0, cfg["x_lim"][1] + 1.0, 2)
@@ -412,7 +427,28 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
     # Plot data
     if cfg.get("complex_gregory_plot"):
         legend = _plot_complex_gregroy_plot(
-            cfg, axes, tas_cube, rtnt_cube, reg_stats
+            cfg,
+            axes,
+            tas_cube,
+            rtnt_cube,
+            reg_stats,
+        )
+        sep = cfg["sep_year"]
+        caption = (
+            f"Global annual mean top of the atmosphere (TOA) net radiation "
+            f"flux anomaly N vs. global annual mean near-surface air "
+            f"temperature anomaly ΔT for the first {sep:d} years (blue "
+            f"circles) and last {tas_cube.shape[0] - sep:d} years (orange "
+            f"circles) of the abrupt 4x CO2 experiment for model "
+            f"{dataset_id}. Anomalies are calculated relative to a "
+            f"pre-industrial control simulation of the same model. The solid "
+            f"lines correspond to ordinary linear regressions between N "
+            f"and ΔT for the different years (the black lines corresponds to "
+            f"all years). In the legend, R2 corresponds to the coefficient "
+            f"of determination of the linear regressions. The equilibrium "
+            f"climate sensitivity (ECS) is estimated as the x-intercept of "
+            f"the linear regressions (interception of the solid and dashed "
+            f"lines) divided by 2."
         )
     else:
         axes.scatter(
@@ -431,10 +467,23 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
             rf"R$^2$ = {reg_stats.rvalue**2:.2f}, ECS = {ecs:.2f} K",
             transform=axes.transAxes,
         )
+        caption = (
+            f"Global annual mean top of the atmosphere (TOA) net radiation "
+            f"flux anomaly N vs. global annual mean near-surface air "
+            f"temperature anomaly ΔT for {tas_cube.shape[0]} years (blue "
+            f"circles) of the abrupt 4x CO2 experiment for model {dataset_id}. "
+            f"Anomalies are calculated relative to a pre-industrial control "
+            f"simulation of the same model. The solid black line corresponds "
+            f"to an ordinary linear regression between N and ΔT. On the top "
+            f"left, R2 corresponds to the coefficient of determination of "
+            f"the linear regression. The equilibrium climate sensitivity "
+            f"(ECS) is estimated as the x-intercept of the linear regression "
+            f"(interception of the solid and dashed black lines) divided by 2."
+        )
     axes.axhline(0.0, color="gray", linestyle=":")
 
     # Plot appearance
-    axes.set_title(f"Gregory regression for {dataset_name} ({project})")
+    axes.set_title(f"Gregory regression for {dataset_id}", pad=15.0)
     axes.set_xlabel("ΔT [K]")
     axes.set_ylabel(r"N [W m$^{-2}$]")
     axes.set_xlim(cfg["x_lim"])
@@ -451,21 +500,16 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
 
     # Write netcdf file for every plot
     netcdf_path = _write_ecs_regression(
-        cfg, tas_cube, rtnt_cube, reg_stats, dataset_name
+        cfg,
+        tas_cube,
+        rtnt_cube,
+        reg_stats,
+        dataset_name,
     )
 
     # Provenance
-    provenance_record = get_provenance_record(
-        f"Scatterplot between TOA radiance and global mean surface "
-        f"temperature anomaly for 150 years of the abrupt 4x CO2 experiment "
-        f"including linear regression to calculate ECS for {dataset_name} "
-        f"({project})."
-    )
-    provenance_record.update(
-        {
-            "plot_types": ["scatter"],
-        }
-    )
+    provenance_record = get_provenance_record(caption)
+    provenance_record["plot_types"] = ["scatter"]
 
     return (netcdf_path, plot_path, provenance_record)
 
@@ -540,7 +584,7 @@ def write_data(cfg, ecs_data, feedback_parameter_data, ancestor_files):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set_theme(**cfg.get("seaborn_settings", {}))
+    sns.set_theme(**cfg.get("seaborn_settings", {"style": "ticks"}))
 
     # Read external file if desired
     if cfg.get("read_external_file"):
@@ -560,7 +604,7 @@ def main(cfg):
         logger.info("Processing '%s'", dataset_name)
         if dataset_name not in rtnt_data:
             raise ValueError(
-                f"No 'rtmt' or 'rtnt' data for '{dataset_name}' available"
+                f"No 'rtmt' or 'rtnt' data for '{dataset_name}' available",
             )
         tas_cube = tas_data[dataset_name][0]["cube"]
         rtnt_cube = rtnt_data[dataset_name][0]["cube"]
@@ -574,7 +618,11 @@ def main(cfg):
 
         # Plot Gregory plots
         (path, plot_path, provenance_record) = plot_gregory_plot(
-            cfg, dataset_name, tas_cube, rtnt_cube, reg
+            cfg,
+            dataset_name,
+            tas_data[dataset_name][0],
+            rtnt_data[dataset_name][0],
+            reg,
         )
 
         # Provenance

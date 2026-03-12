@@ -3,7 +3,6 @@
 import logging
 import os
 import re
-from typing import Optional
 
 import cartopy
 import matplotlib.pyplot as plt
@@ -15,6 +14,11 @@ from matplotlib.axes import Axes
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 logger = logging.getLogger(__name__)
+
+
+def _normalize_facet_value(value: str) -> str:
+    """Normalize facet value to be used in file and folder names."""
+    return re.sub(r"[^\w]+", "-", value)
 
 
 def _replace_tags(paths, variable):
@@ -33,7 +37,7 @@ def _replace_tags(paths, variable):
                 (
                     re.sub(r"(\b{ensemble}\b)", r"{sub_experiment}-\1", path),
                     re.sub(r"({ensemble})", r"{sub_experiment}-\1", path),
-                )
+                ),
             )
             tlist.add("sub_experiment")
         paths = new_paths
@@ -49,7 +53,7 @@ def _replace_tags(paths, variable):
         else:
             raise ValueError(
                 f"Dataset key '{tag}' must be specified for "
-                f"{variable}, check your recipe entry"
+                f"{variable}, check your recipe entry",
             )
         paths = _replace_tag(paths, original_tag, replacewith)
     return paths
@@ -59,12 +63,15 @@ def _replace_tag(paths, tag, replacewith):
     """Replace tag by replacewith in paths."""
     _, lower, upper = _get_caps_options(tag)
     result = []
-    if isinstance(replacewith, (list, tuple)):
+    if isinstance(replacewith, list | tuple):
         for item in replacewith:
             result.extend(_replace_tag(paths, tag, item))
     else:
         text = _apply_caps(str(replacewith), lower, upper)
-        result.extend(p.replace("{" + tag + "}", text) for p in paths)
+        result.extend(
+            p.replace("{" + tag + "}", _normalize_facet_value(text))
+            for p in paths
+        )
     return list(set(result))
 
 
@@ -103,10 +110,11 @@ class MonitorBase:
             "{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}",
         )
         plot_folder = plot_folder.replace(
-            "{plot_dir}", self.cfg[names.PLOT_DIR]
+            "{plot_dir}",
+            self.cfg[names.PLOT_DIR],
         )
         self.plot_folder = os.path.abspath(
-            os.path.expandvars(os.path.expanduser(plot_folder))
+            os.path.expandvars(os.path.expanduser(plot_folder)),
         )
         self.plot_filename = config.get(
             "plot_filename",
@@ -114,7 +122,8 @@ class MonitorBase:
         )
         self.plots = config.get("plots", {})
         default_config = os.path.join(
-            os.path.dirname(__file__), "monitor_config.yml"
+            os.path.dirname(__file__),
+            "monitor_config.yml",
         )
         cartopy_data_dir = config.get("cartopy_data_dir", None)
         if cartopy_data_dir:
@@ -131,7 +140,8 @@ class MonitorBase:
 
     def _get_variable_options(self, variable_group, map_name):
         options = self.config["variables"].get(
-            variable_group, self.config["variables"]["default"]
+            variable_group,
+            self.config["variables"]["default"],
         )
         if "default" not in options:
             variable_options = options
@@ -164,7 +174,9 @@ class MonitorBase:
             cube.coord("year").points.max() - cube.coord("year").points.min()
         )
         filename = self.get_plot_path(
-            f"timeseries{period}", var_info, add_ext=False
+            f"timeseries{period}",
+            var_info,
+            add_ext=False,
         )
         caption = (
             "{} of "
@@ -206,7 +218,7 @@ class MonitorBase:
                 "timeseries",
                 period=period,
                 caption=caption.format(
-                    "Smoothed (12-months running mean) time series"
+                    "Smoothed (12-months running mean) time series",
                 ),
             )
         else:
@@ -222,7 +234,7 @@ class MonitorBase:
                 "timeseries",
                 period=period,
                 caption=caption.format(
-                    "Smoothed (12-months running mean) time series"
+                    "Smoothed (12-months running mean) time series",
                 ),
             )
 
@@ -238,7 +250,7 @@ class MonitorBase:
                 "timeseries",
                 period=period,
                 caption=caption.format(
-                    "Smoothed (10-years running mean) time series"
+                    "Smoothed (10-years running mean) time series",
                 ),
             )
 
@@ -269,7 +281,10 @@ class MonitorBase:
             if cube.coords(region_coord):
                 if cube.coord(region_coord).shape[0] > 1:
                     plotter.multiplot_cube(
-                        cube, "time", region_coord, **kwargs
+                        cube,
+                        "time",
+                        region_coord,
+                        **kwargs,
                     )
                     return
         plotter.plot_cube(cube, "time", linestyle=linestyle, **kwargs)
@@ -351,7 +366,7 @@ class MonitorBase:
         return file_name
 
     @staticmethod
-    def _set_rasterized(axes: Optional[Axes | list[Axes]] = None) -> None:
+    def _set_rasterized(axes: Axes | list[Axes] | None = None) -> None:
         """Rasterize all artists and collection of axes if desired."""
         if axes is None:
             axes = plt.gca()

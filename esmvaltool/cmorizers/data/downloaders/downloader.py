@@ -35,7 +35,9 @@ class BaseDownloader:
             Path to the download folder
         """
         return os.path.join(
-            self.rawobs_folder, f"Tier{self.tier}", self.dataset
+            self.rawobs_folder,
+            f"Tier{self.tier}",
+            self.dataset,
         )
 
     @property

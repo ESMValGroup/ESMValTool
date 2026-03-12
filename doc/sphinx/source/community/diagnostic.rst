@@ -24,20 +24,18 @@ The easiest way to do this is probably to copy the example recipe and diagnostic
 script and adjust those to your needs.
 
 If you have no preferred programming language yet, Python 3 is highly recommended, because it is most well supported.
-However, NCL, R, and Julia scripts are also supported.
+However, NCL, and R scripts are also supported.
 
 Good example recipes for the different languages are:
 
 -  python: `esmvaltool/recipes/examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
 -  R: `esmvaltool/recipes/examples/recipe_r.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_r.yml>`_
--  julia: `esmvaltool/recipes/examples/recipe_julia.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_julia.yml>`_
 -  ncl: `esmvaltool/recipes/examples/recipe_ncl.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_ncl.yml>`_
 
 Good example diagnostics are:
 
 -  python: `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 -  R: `esmvaltool/diag_scripts/examples/diagnostic.R <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.R>`_
--  julia: `esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
 -  ncl: `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 
 For an explanation of the recipe format, you might want to read about the
@@ -104,6 +102,26 @@ and linked from the recipe documentation page.
 A resolution of 150 `dpi <https://en.wikipedia.org/wiki/Dots_per_inch>`_ is
 recommended for these image files, as this is high enough for the images to look
 good on the documentation webpage, but not so high that the files become large.
+
+By default, the first example image will be used for the automatically
+generated gallery. To select a specific image for the gallery, you can use the
+following syntax for an arbitrary amount of images:
+
+.. code-block:: rst
+
+  .. _fig_name:
+  ..
+    gallery
+  .. figure:: /recipes/figure/recipe_name/figure-name.png
+
+To not have any figure appear in the gallery, you can include a
+
+.. code-block:: rst
+
+  ..
+    no-gallery
+
+anywhere in your recipe documentation file.
 
 In the recipe
 -------------
@@ -338,42 +356,6 @@ For example:
 
 Have a look at the example NCL diagnostic in
 `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
-for a complete example.
-
-Recording provenance in a Julia diagnostic script
--------------------------------------------------
-The provenance information is written in a ``diagnostic_provenance.yml`` that will be located in ``run_dir``.
-For example a ``provenance_record`` can be stored in a yaml file as:
-
-.. code-block:: julia
-
-  provenance_file = string(run_dir, "/diagnostic_provenance.yml")
-
-  open(provenance_file, "w") do io
-      JSON.print(io, provenance_records, 4)
-  end
-
-The ``provenance_records`` can be defined as a dictionary of provenance items.
-For example:
-
-.. code-block:: julia
-
-  provenance_records = Dict()
-
-  provenance_record = Dict(
-      "ancestors" => [input_file],
-      "authors" => ["vonhardenberg_jost", "arnone_enrico"],
-      "caption" => "Example diagnostic in Julia",
-      "domains" => ["global"],
-      "projects" => ["crescendo", "c3s-magic"],
-      "references" => ["zhang11wcc"],
-      "statistics" => ["other"],
-  )
-
-  provenance_records[output_file] = provenance_record
-
-Have a look at the example Julia diagnostic in
-`esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
 for a complete example.
 
 Recording provenance in an R diagnostic script

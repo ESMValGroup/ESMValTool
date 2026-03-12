@@ -35,7 +35,7 @@ files that contain pointers to the requested data types, directives for the prep
 will be subject to, and directives for the actual diagnostics that will be run with the now preprocessed data.
 Data preprocessing is done via the [ESMValCore](https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/index.html) package, a pure Python, highly-optimized scientific library, developed by the ESMValTool core developers,
 and that performs a number of common analysis tasks
-such as regridding, masking, levels extraction etc. [Diagnostics](https://docs.esmvaltool.org/en/latest/develop/diagnostic.html) are written in a variety of programming languages (Python, NCL, R, Julia) and are developed by the wider
+such as regridding, masking, levels extraction etc. [Diagnostics](https://docs.esmvaltool.org/en/latest/develop/diagnostic.html) are written in a variety of programming languages (Python, NCL, R) and are developed by the wider
 scientific community, and included after a scientific and technical review process.
 
 # Input data

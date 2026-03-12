@@ -83,7 +83,8 @@ def _download_files(in_dir, cfg):
         ftp_client.login()
         ftp_client.cwd(cfg["data_dir"])
         files_to_download = fnmatch.filter(
-            ftp_client.nlst(), cfg["input_file_pattern"]
+            ftp_client.nlst(),
+            cfg["input_file_pattern"],
         )
         for filename in files_to_download:
             logger.info("Downloading %s", filename)
@@ -181,7 +182,11 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 

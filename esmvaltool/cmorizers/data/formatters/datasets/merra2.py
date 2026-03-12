@@ -51,7 +51,9 @@ def _fix_time_monthly(cube):
         newtime.append(midpoint)
 
     newtime = cf_units.date2num(
-        newtime, dataset_time_unit, dataset_time_calender
+        newtime,
+        dataset_time_unit,
+        dataset_time_calender,
     )
     # Put them on the file
     cube.coord("time").points = newtime
@@ -79,19 +81,21 @@ def _var_pairs(cube_list, var_parts, oper):
         raise ValueError
     if oper == "-":
         selected = [
-            cube_1 - cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
+            cube_1 - cube_2
+            for cube_1, cube_2 in zip(selected_1, selected_2, strict=True)
         ]
         selected = iris.cube.CubeList(selected)
     elif oper == "+":
         selected = [
-            cube_1 + cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
+            cube_1 + cube_2
+            for cube_1, cube_2 in zip(selected_1, selected_2, strict=True)
         ]
         selected = iris.cube.CubeList(selected)
     else:
         raise NotImplementedError(
             f"Pairwise variables operation {oper} "
             "not implemented yet, you can do it "
-            "yourself in the MERRA2 cmorizer."
+            "yourself in the MERRA2 cmorizer.",
         )
 
     return selected
@@ -327,7 +331,11 @@ def _extract_variable(in_files, var, cfg, out_dir):
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     utils.save_variable(
-        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        unlimited_dimensions=["time"],
     )
     logger.info("Finished CMORizing %s", ", ".join(in_files))
 

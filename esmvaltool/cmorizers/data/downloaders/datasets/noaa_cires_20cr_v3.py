@@ -8,7 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
@@ -38,26 +43,34 @@ def download_dataset(
 
     downloader.set_cwd("Datasets/20thC_ReanV3/Monthlies/")
     downloader.download_file(
-        "miscSI-MO/cldwtr.eatm.mon.mean.nc", sub_folder="surface"
+        "miscSI-MO/cldwtr.eatm.mon.mean.nc",
+        sub_folder="surface",
     )
     downloader.download_file(
-        "miscSI-MO/pr_wtr.eatm.mon.mean.nc", sub_folder="surface"
+        "miscSI-MO/pr_wtr.eatm.mon.mean.nc",
+        sub_folder="surface",
     )
     downloader.download_file(
-        "prsSI-MO/shum.mon.mean.nc", sub_folder="pressure"
+        "prsSI-MO/shum.mon.mean.nc",
+        sub_folder="pressure",
     )
     downloader.download_file(
-        "miscMO/tcdc.eatm.mon.mean.nc", sub_folder="surface"
+        "miscMO/tcdc.eatm.mon.mean.nc",
+        sub_folder="surface",
     )
     downloader.download_file(
-        "ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc", sub_folder="surface"
+        "ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc",
+        sub_folder="surface",
     )
     downloader.download_file(
-        "ntatFlxSI-MO/uswrf.ntat.mon.mean.nc", sub_folder="surface"
+        "ntatFlxSI-MO/uswrf.ntat.mon.mean.nc",
+        sub_folder="surface",
     )
     downloader.download_file(
-        "ntatFlxSI-MO/csulf.ntat.mon.mean.nc", sub_folder="surface"
+        "ntatFlxSI-MO/csulf.ntat.mon.mean.nc",
+        sub_folder="surface",
     )
     downloader.download_file(
-        "ntatFlxSI-MO/csusf.ntat.mon.mean.nc", sub_folder="surface"
+        "ntatFlxSI-MO/csusf.ntat.mon.mean.nc",
+        sub_folder="surface",
     )

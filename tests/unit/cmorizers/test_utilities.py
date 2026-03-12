@@ -83,15 +83,21 @@ def cubes_generator(lazy=True):
         for x_val in x_coords:
             x_val = (np_to_da(x_val[0], lazy), np_to_da(x_val[1], lazy))
             x_coord = iris.coords.DimCoord(
-                x_val[0], bounds=x_val[1], var_name="x"
+                x_val[0],
+                bounds=x_val[1],
+                var_name="x",
             )
             for y_val in y_coords:
                 y_val = (np_to_da(y_val[0], lazy), np_to_da(y_val[1], lazy))
                 y_coord = iris.coords.DimCoord(
-                    y_val[0], bounds=y_val[1], var_name="y"
+                    y_val[0],
+                    bounds=y_val[1],
+                    var_name="y",
                 )
                 aux_coord = iris.coords.AuxCoord(
-                    y_val[0], bounds=y_val[1], var_name="aux"
+                    y_val[0],
+                    bounds=y_val[1],
+                    var_name="aux",
                 )
                 cube = iris.cube.Cube(
                     cube_data,
@@ -207,7 +213,7 @@ def test_fix_coords():
     cube = _create_sample_cube()
     cube.coord("time").bounds = None
     cube.coord("time").convert_units(
-        Unit("days since 1850-1-1 00:00:00", calendar="gregorian")
+        Unit("days since 1850-1-1 00:00:00", calendar="gregorian"),
     )
     cube.coord("longitude").bounds = None
     cube.coord("latitude").bounds = None
@@ -343,7 +349,7 @@ def test_set_global_atts_incorrect():
             "global attributes 'dataset_id', ",
             "'version', 'tier', 'source', 'reference', 'comment' and ",
             "'project_id' specified in the configuration file",
-        ]
+        ],
     )
     with pytest.raises(KeyError) as key_err:
         utils.set_global_atts(cube, global_attrs)

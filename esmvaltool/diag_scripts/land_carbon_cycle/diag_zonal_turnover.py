@@ -78,10 +78,14 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
         lat_int = abs(dat_lats[1] - dat_lats[0])
         window_size = int(max(2, np.round(fig_config["bandsize"] / lat_int)))
         gpp_z = gpp_zs.rolling_window(
-            "latitude", iris.analysis.SUM, window_size
+            "latitude",
+            iris.analysis.SUM,
+            window_size,
         )
         ctotal_z = ctotal_zs.rolling_window(
-            "latitude", iris.analysis.SUM, window_size
+            "latitude",
+            iris.analysis.SUM,
+            window_size,
         )
     else:
         gpp_z = gpp_zs
@@ -185,7 +189,8 @@ def main(diag_config):
         diag_config - nested dictionary of metadata
     """
     model_data_dict = group_metadata(
-        diag_config["input_data"].values(), "dataset"
+        diag_config["input_data"].values(),
+        "dataset",
     )
 
     fig_config = _get_fig_config(diag_config)

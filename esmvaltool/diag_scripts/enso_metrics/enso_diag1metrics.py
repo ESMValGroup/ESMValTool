@@ -12,7 +12,9 @@ from esmvalcore.preprocessor import (
     extract_season,
     mask_above_threshold,
     mask_below_threshold,
+    rolling_window_statistics,
 )
+from matplotlib.lines import Line2D
 from scipy.stats import linregress, skew
 
 from esmvaltool.diag_scripts.shared import (
@@ -20,7 +22,6 @@ from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     group_metadata,
     run_diagnostic,
-    save_data,
     save_figure,
     select_metadata,
 )
@@ -33,9 +34,9 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
     figure = plt.figure(figsize=(10, 6), dpi=300)
 
     if title in ["ENSO pattern", "ENSO lifecycle"]:
-        # model first
-        plt.plot(*input_data[0], label=dtls[0])
-        plt.plot(*input_data[1], label=f"ref: {dtls[1]}", color="black")
+        # obs first
+        plt.plot(*input_data[1], label=dtls[1])
+        plt.plot(*input_data[0], label=f"ref: {dtls[0]}", color="black")
         plt.text(
             0.5,
             0.95,
@@ -43,40 +44,28 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
             fontsize=12,
             ha="center",
             transform=plt.gca().transAxes,
-            bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+            backgroundcolor="white",
         )
         plt.legend()
     else:
         plt.scatter(
             range(len(input_data)),
             input_data,
-            c=["black", "blue"],
+            c=["black", "tab:blue"],
             marker="D",
+            linewidth=2,
         )
-        # obs first
+        create_legend(dtls)
         plt.xlim(-0.5, 2)
         plt.xticks([])
-        plt.text(
-            0.75,
-            0.95,
-            f"* {dtls[0]}",
-            color="blue",
-            transform=plt.gca().transAxes,
-        )
-        plt.text(
-            0.75,
-            0.9,
-            f"* ref: {dtls[1]}",
-            color="black",
-            transform=plt.gca().transAxes,
-        )
+
         plt.text(
             0.75,
             0.8,
             f"metric(%): {metricval:.2f}",
             fontsize=12,
             transform=plt.gca().transAxes,
-            bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+            backgroundcolor="white",
         )
 
     plt.title(title)  # metric name
@@ -92,9 +81,34 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
         plt.xticks(xticks, xtick_labels)
         plt.yticks(np.arange(-2, 2.5, step=1))
 
-    logger.info("%s : metric: %f", dtls[0], metricval)
+    logger.info("%s : metric: %f", dtls[1], metricval)
 
     return figure
+
+
+def create_legend(dt_ls):
+    """Create a legend for the scatter plots."""
+    legend_elements = [
+        Line2D(
+            [0],
+            [0],
+            marker="D",
+            color="w",
+            markerfacecolor="black",
+            markersize=8,
+            label=dt_ls[0],
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="D",
+            color="w",
+            markerfacecolor="tab:blue",
+            markersize=8,
+            label=f"Ref: {dt_ls[1]}",
+        ),
+    ]
+    plt.legend(handles=legend_elements)
 
 
 def lin_regress(cube_ssta, cube_nino34):
@@ -197,15 +211,15 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         )
 
         fig = plot_level1(
-            [reg_mod, reg_obs],
+            [reg_obs, reg_mod],
             val,
             "reg(ENSO SSTA, SSTA)",
             "ENSO pattern",
             dt_ls,
         )
 
-        data_to_save.append(data_to_cube(reg_mod[1], model_ssta, metric))
         data_to_save.append(data_to_cube(reg_obs[1], obs_ssta, metric))
+        data_to_save.append(data_to_cube(reg_mod[1], model_ssta, metric))
 
     elif metric == "10lifecycle":
         model = sst_regressed(input_pair[1][var_group[0]])
@@ -214,22 +228,22 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         months = np.arange(1, 73) - 36
 
         fig = plot_level1(
-            [(months, model), (months, obs)],
+            [(months, obs), (months, model)],
             val,
             "Degree C / C",
             "ENSO lifecycle",
             dt_ls,
         )
 
-        data_to_save.append(data_to_cube(model, months, metric))
         data_to_save.append(data_to_cube(obs, months, metric))
+        data_to_save.append(data_to_cube(model, months, metric))
 
     elif metric == "11amplitude":
         data_values = [
-            input_pair[1][var_group[0]].data.item(),
             input_pair[0][var_group[0]].data.item(),
+            input_pair[1][var_group[0]].data.item(),
         ]
-        val = compute(data_values[1], data_values[0])
+        val = compute(data_values[0], data_values[1])
 
         fig = plot_level1(
             data_values,
@@ -253,7 +267,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
 
             data_values.append(preproc["NDJ"] / preproc["MAM"])
 
-        val = compute(data_values[1], data_values[0])
+        val = compute(data_values[0], data_values[1])
         fig = plot_level1(
             data_values,
             val,
@@ -261,15 +275,15 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO seasonality",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(data_values[1], None, metric))
         data_to_save.append(data_to_cube(data_values[0], None, metric))
+        data_to_save.append(data_to_cube(data_values[1], None, metric))
 
     elif metric == "13asymmetry":
         model_skew = skew(input_pair[1][var_group[0]].data, axis=0)
         obs_skew = skew(input_pair[0][var_group[0]].data, axis=0)
-        data_values = [model_skew, obs_skew]
+        data_values = [obs_skew, model_skew]
 
-        val = compute(data_values[1], data_values[0])
+        val = compute(data_values[0], data_values[1])
         fig = plot_level1(
             data_values,
             val,
@@ -277,8 +291,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO skewness",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(model_skew, None, metric))
         data_to_save.append(data_to_cube(obs_skew, None, metric))
+        data_to_save.append(data_to_cube(model_skew, None, metric))
 
     elif metric == "14duration":
         model = sst_regressed(input_pair[1][var_group[0]])
@@ -287,10 +301,10 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         months = np.arange(1, 73) - 36
         # Calculate the number of months where slope > 0.25
         within_range = (months >= -30) & (months <= 30)
-        for slopes in [model, obs]:
+        for slopes in [obs, model]:
             slope_above_025 = slopes[within_range] > 0.25
             data_values.append(np.sum(slope_above_025))
-        val = compute(data_values[1], data_values[0])
+        val = compute(data_values[0], data_values[1])
 
         fig = plot_level1(
             data_values,
@@ -307,8 +321,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             results_lon = diversity(datas[var_group[1]], events)
             results_lon["enso"] = results_lon["nino"] + results_lon["nina"]
             data_values.append(iqr(results_lon["enso"]))
-
-        val = compute(data_values[1], data_values[0])
+        # compute(obs, mod)
+        val = compute(data_values[0], data_values[1])
         fig = plot_level1(
             data_values,
             val,
@@ -316,8 +330,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO diversity",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(data_values[1], None, metric))
         data_to_save.append(data_to_cube(data_values[0], None, metric))
+        data_to_save.append(data_to_cube(data_values[1], None, metric))
 
     return val, fig, data_to_save
 
@@ -349,6 +363,13 @@ def enso_events(cube):
 
 def diversity(ssta_cube, events_dict):
     """Compute diversity from event years."""
+    ssta_cube = extract_month(ssta_cube, 12)  # extra preprocessing
+    ssta_cube = rolling_window_statistics(
+        ssta_cube,
+        coordinate="longitude",
+        operator="mean",
+        window_length=5,
+    )
     res_lon = {}
     for enso, events in events_dict.items():
         year_enso = iris.Constraint(
@@ -412,7 +433,7 @@ def group_obs_models(obs, models, metric, var_preproc, cfg):
             metric,
             dataset,
         )
-        data_labels = [dataset, obs[0]["dataset"]]
+        data_labels = [obs[0]["dataset"], dataset]
         output = compute_enso_metrics(
             [
                 obs_datasets,
@@ -425,9 +446,6 @@ def group_obs_models(obs, models, metric, var_preproc, cfg):
             var_preproc,
             metric,
         )
-        # save returned cubes
-        for i, cube in enumerate(output[2]):
-            save_data(f"{data_labels[i]}_{metric}", prov_record, cfg, cube)
 
         if output[0]:
             with open(metricfile, "a+", encoding="utf-8") as fileo:
@@ -449,37 +467,37 @@ def get_provenance_record(metric, ancestor_files):
     caption = {
         "09pattern": (
             "Zonal structure of sea surface temperature anomalies in the "
-            + "equatorial Pacific (averaged between 5°S and 5°N)."
+            "equatorial Pacific (averaged between 5°S and 5°N)."
         ),
         "10lifecycle": (
             "Temporal evolution of sea surface temperature anomalies in "
-            + "the central equatorial Pacific (Niño 3.4 region average), "
-            + "illustrating the ENSO-associated variability."
+            "the central equatorial Pacific (Niño 3.4 region average), "
+            "illustrating the ENSO-associated variability."
         ),
         "11amplitude": (
             "Standard deviation of sea surface temperature anomalies in "
-            + "the central equatorial Pacific (Niño 3.4 region average), "
-            + "representing the amplitude of variability."
+            "the central equatorial Pacific (Niño 3.4 region average), "
+            "representing the amplitude of variability."
         ),
         "12seasonality": (
             "Ratio of winter to spring standard deviation of sea surface "
-            + "temperature anomalies in the central equatorial Pacific, "
-            + "illustrating the seasonal timing of SSTA."
+            "temperature anomalies in the central equatorial Pacific, "
+            "illustrating the seasonal timing of SSTA."
         ),
         "13asymmetry": (
             "Skewness of sea surface temperature anomalies in the central "
-            + "equatorial Pacific, illustrating the expected asymmetry where "
-            + "positive SSTA values should typically be larger than negative "
-            + "SSTA values (usually close to 0). "
+            "equatorial Pacific, illustrating the expected asymmetry where "
+            "positive SSTA values should typically be larger than negative "
+            "SSTA values (usually close to 0). "
         ),
         "14duration": (
             "Duration of the ENSO life cycle where SSTA exceeds 0.25, "
-            + "illustrating the 'duration' of the SSTA event."
+            "illustrating the 'duration' of the SSTA event."
         ),
         "15diversity": (
             "Width of the zonal location of maximum (minimum) SSTA during "
-            + "all El Niño (La Niña) events, illustrating the 'diversity' "
-            + "of ENSO events."
+            "all El Niño (La Niña) events, illustrating the 'diversity' "
+            "of ENSO events."
         ),
         "values": "List of metric values.",
     }

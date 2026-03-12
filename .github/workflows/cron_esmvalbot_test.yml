@@ -18,7 +18,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Create empty commit on branch
@@ -30,7 +30,7 @@ jobs:
       # as comment in the PR
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Auto PR
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: empty message

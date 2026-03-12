@@ -52,13 +52,13 @@ diagnostics:
         mip: Amon
         preprocessor: single_value
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              start_year: 2000, end_year: 2010, tier: 1}
       rsutcs:
         mip: Amon
         preprocessor: single_value
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              start_year: 2000, end_year: 2010, tier: 1}
       rsds:
         mip: Amon
@@ -70,13 +70,13 @@ diagnostics:
         mip: Amon
         preprocessor: single_value
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              start_year: 2000, end_year: 2010, tier: 1}
       rlutcs:
         mip: Amon
         preprocessor: single_value
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              start_year: 2000, end_year: 2010, tier: 1}
       rlds:
         mip: Amon

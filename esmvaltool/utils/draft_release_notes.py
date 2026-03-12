@@ -36,7 +36,7 @@ except FileNotFoundError:
         "Please create an access token and store it in the file "
         "~/.github_api_key, see:\nhttps://help.github.com/en/github/"
         "authenticating-to-github/creating-a-personal-access-token-"
-        "for-the-command-line"
+        "for-the-command-line",
     )
 
 VERSION = {
@@ -51,8 +51,8 @@ GITHUB_REPO = {
 TIMEZONE = ZoneInfo("CET")
 
 PREVIOUS_RELEASE = {
-    "esmvalcore": datetime.datetime(2025, 2, 27, 0, tzinfo=TIMEZONE),
-    "esmvaltool": datetime.datetime(2025, 3, 5, 0, tzinfo=TIMEZONE),
+    "esmvalcore": datetime.datetime(2025, 10, 16, 0, tzinfo=TIMEZONE),
+    "esmvaltool": datetime.datetime(2025, 10, 20, 0, tzinfo=TIMEZONE),
 }
 
 LABELS = {
@@ -134,11 +134,11 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
     labelless_pulls = []
     print(
         f"The following PRs (updated after {previous_release_date}) are "
-        f"considered in the changelog"
+        f"considered in the changelog",
     )
     print(
         f"Note: Unmerged PRs or PRs that have been merged before "
-        f"{previous_release_date} are not shown\n"
+        f"{previous_release_date} are not shown\n",
     )
     for pull in pulls:
         if pull.updated_at.astimezone(TIMEZONE) < previous_release_date:
@@ -193,7 +193,7 @@ def format_notes(lines, version):
             sections.append("\n".join(["", title, "~" * len(title), ""]))
             if label == "backwards incompatible change":
                 sections.append(
-                    "TODO: add examples of how to deal with these changes\n"
+                    "TODO: add examples of how to deal with these changes\n",
                 )
             sections.append("\n".join(entry for _, entry in entries))
     notes = "\n".join(sections)

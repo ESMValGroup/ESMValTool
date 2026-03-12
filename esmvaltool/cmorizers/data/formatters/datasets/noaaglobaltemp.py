@@ -37,7 +37,7 @@ def _extract_variable(short_name, var, filename, cfg, in_dir, out_dir):
 
     # fix time units
     cube.coord("time").convert_units(
-        Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+        Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
     )
 
     cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
@@ -65,7 +65,11 @@ def _extract_variable(short_name, var, filename, cfg, in_dir, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
