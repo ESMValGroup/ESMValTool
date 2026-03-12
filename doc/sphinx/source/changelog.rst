@@ -11,7 +11,14 @@ v2.14.0
 Highlights
 ~~~~~~~~~~
 
-TODO: add highlights
+- New diagnostics/recipes:
+   - Calculation of Lamb weathertypes (:pull:`4231`)
+   - Histogram plots (:pull:`4329`)
+   - hour of maximum precipitation (:pull:`4334`)
+- Support for new observational datasets:
+   - ESACCI SNOW (:pull:`3542`)
+   - EN4 (:pull:`4193`)
+- We switched from Codacy to `Ruff <https://docs.astral.sh/ruff/>`__ for :ref:`code_quality` checks
 
 This release includes
 
