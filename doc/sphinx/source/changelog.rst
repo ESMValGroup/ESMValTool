@@ -18,10 +18,14 @@ This release includes
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO: add examples of how to deal with these changes
-
--  Fix tests for new esmvalcore config (:pull:`4252`) by :user:`valeriupredoi`
 -  Update the CMORizer command (:pull:`4317`) by :user:`bouweandela`
+   .. admonition:: Upgrade instructions
+
+      The ``--config-file`` argument to the ``esmvaltool data`` commands has
+      been removed. Please use these commands with the ``--config-dir``
+      argument to specify the output directory, custom CMOR tables, or Dask
+      configuration, and with the ``--original-data-dir`` argument to point the
+      tool to the directory where downloaded original data should be saved.
 
 Bug fixes
 ~~~~~~~~~
@@ -93,6 +97,7 @@ Automatic testing
 -  Run Github Action install from conda with Python 3.13 also (:pull:`4229`) by :user:`valeriupredoi`
 -  Fix WOA CMORizer tests (:pull:`4243`) by :user:`valeriupredoi`
 -  Update recipe tests to align with ESMValCore development (:pull:`4268`) by :user:`bouweandela`
+-  Fix tests for new esmvalcore config (:pull:`4252`) by :user:`valeriupredoi`
 -  Clean up OSX Github Action tests (:pull:`4272`) by :user:`valeriupredoi`
 -  Update recipe load test so it works with the latest ESMValCore (:pull:`4294`) by :user:`bouweandela`
 -  Increase CirleCI container resource to medium+ (:pull:`4364`) by :user:`valeriupredoi`
