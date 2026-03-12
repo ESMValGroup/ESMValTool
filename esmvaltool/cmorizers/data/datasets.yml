@@ -339,6 +339,20 @@ datasets:
       Download the ensemble mean files for:
         TG TN TX RR PP
 
+  EN4:
+    tier: 2
+    source: "https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html"
+    last_access: 2025-06-13
+    info: |
+      EN4: quality controlled subsurface ocean temperature and salinity objective analyses.
+      Script tested using analyses with Gouretski and Reseghetti (2010) XBT corrections
+      and Gouretski and Cheng (2020) MBT corrections applied.
+      To download data:
+        - Save this text file in directory for data to be downloaded, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
+        - Edit this .txt. file for your chosen years.
+        - Run 'wget -i EN.4.2.2.analyses.g10.download-list.txt' in the same directory.
+        - Unzip files prior to running the cmorizer script using 'unzip \*.zip'.
+
   Eppley-VGPM-MODIS:
     tier: 2
     source: http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf
@@ -449,13 +463,31 @@ datasets:
   ESACCI-AEROSOL:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
-    last_access: 2019-01-24
+    last_access: 2025-08-11
     info: |
       Download the data from:
-        ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
-        AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
-      Other years are not considered since they are not complete.
-      Put all files in input_dir_path (no subdirectories with years).
+          AATSR/ATSR2
+            ATSR2_SU/L3/v4.3/DAILY/ (1997-2002)
+            AATSR_SU/L3/v4.3/DAILY/ (2003-2011)
+            ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
+            AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
+            Other years are not considered since they are not complete.
+            Put all daily files under 'AATSR-SU-v4.3-daily' (no subdirectories with years)
+            and all monthly files under 'AATSR-SU-v4.3-monthly'.
+          SLSTR
+            Select the following from the CDS:
+            https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties?tab=download
+            Put all files under a single directory (no subdirectories with years).
+            Time aggregation: "Daily average" and "Monthly average"
+            Variable: "Aerosol optical depth" and "Fine-mode aerosol optical depth"
+            Sensor on satellite: "SLSTR on SENTINEL 3A" and "SLSTR on SENTINEL 3B"
+            Algorithm": "SWANSEA (Swansea University)"
+            Year: select all
+            Month: select all
+            Day: select all
+            Version: "SLSTR", "v1.12"
+            Put all daily files under 'SLSTR-SU-v1.12-daily' (no subdirectories with years)
+            and all monthly files under 'SLSTR-SU-v1.12-monthly'.
 
   ESACCI-BIOMASS:
     tier: 2
