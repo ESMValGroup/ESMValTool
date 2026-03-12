@@ -33,7 +33,7 @@ legend.frameon : False
 legend.fancybox : False
 
 # Figure
-figure.dpi : 200
+figure.dpi : 300
 figure.titlesize: 13
 figure.titleweight : bold
 figure.autolayout: True

@@ -3,34 +3,52 @@
 ---
 documentation:
 
-  title: TXx model evaluation
+  title: GEVs 2021 BC heatwave
 
-  description: This is a recipe for do TXx variability model evaluation.
+  description: This is a recipe for doing model evaluation for .
 
   authors:
     - malinina_elizaveta
 
 preprocessors:
-  preproc_txx_map:
+  preproc_model:
     custom_order: True
     regrid:
       target_grid: 0.5x0.5
       lon_offset: 0.25
       lat_offset: 0.25
-      scheme: linear
-    extract_region:
-      start_longitude: 210
-      end_longitude: 335
-      start_latitude: 35
-      end_latitude: 80     
+      scheme: linear    
+    extract_shape:
+      shapefile: Stone_regions_WRAF05_v4_1_Canada.shp
+      method: contains
+      crop: True
+      ids:
+        ID:
+          - Alberta
+    area_statistics:
+      operator: mean
     annual_statistics:
       operator: max
     detrend:
       dimension: time
-      method: linear
-    climate_statistics: 
-      operator: std_dev
-      period: full 
+      method: linear  
+
+  preproc_era:
+    custom_order: True  
+    extract_shape:
+      shapefile: Stone_regions_WRAF05_v4_1_Canada.shp
+      method: contains
+      crop: True
+      ids:
+        ID:
+          - Alberta
+    area_statistics:
+      operator: mean 
+    annual_statistics:
+      operator: max
+    detrend:
+      dimension: time
+      method: linear  
 
 
 datasets_cmip: &datasets_cmip
@@ -78,33 +96,44 @@ datasets_cmip: &datasets_cmip
   - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, start_year: 1950, end_year: 2025, exp: [historical, ssp245]}
   - {dataset: NorESM2-LM, institute: NCC, ensemble: r(2:3)i1p1f1, grid: gn, start_year: 1976, end_year: 2051, exp: [historical, ssp245]}
   - {dataset: NorESM2-MM, institute: NCC, ensemble: r2i1p1f1, grid: gn, start_year: 1966, end_year: 2041, exp: [historical, ssp245]}
-  - {dataset: TaiESM1, institute: AS-RCEC, ensemble: r1i1p1f1, grid: gn, start_year: 1966, end_year: 2041, exp: [historical, ssp245]}  
+  - {dataset: TaiESM1, institute: AS-RCEC, ensemble: r1i1p1f1, grid: gn, start_year: 1966, end_year: 2041, exp: [historical, ssp245]} 
+
 
 dataset_era: &dataset_era
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3, start_year: 1948, end_year: 2024}
+  - {dataset: JRA3Q, project: OBS6, type: reanaly, version: v1, tier: 3, start_year: 1948, end_year: 2024}
 
 diagnostics:
   analytics:
     description: Figure for BC extremes
     variables:
-      txx_all:
+      txnx_all:
         short_name: tasmax
         mip: day
         project: CMIP6
-        preprocessor: preproc_txx_map
+        preprocessor: preproc_model
         additional_datasets: *datasets_cmip
-      obs:
+      reference: 
         short_name: tasmax
         mip: day
-        preprocessor: preproc_txx_map 
-        additional_datasets: *dataset_era     
+        preprocessor: preproc_era
+        additional_datasets: *dataset_era
     scripts:
-      analytics:
-        script: eccc_extremes/extreme_temperature_shape.py
+      timeseries:
+        script: eccc_extremes/simple_timeseries.py
         mpl_style: malinina24
-        shapefile: /space/hall6/sitestore/eccc/crd/ccrn/users/emr001/rapid_aux_data/Stone_regions_WRAF05_v4_1_Canada.shp
-        cbar_label: standard deviation
-        cbar_units: C
-        cbar_positive: True
-        ratio: True
-        title_var_label: St. dev. in TXx(d) for 77 years
+        color_style: malinina24
+        model_weighting: False
+        units: C
+        region: Alberta # needed for the figure title
+        var_label: TXx # needed for axis name
+        # figure_caption: '' 
+      variability:
+        script: eccc_extremes/variability_evaluation.py
+        mpl_style: malinina24
+        color_style: malinina24
+        model_weighting: False
+        units: C
+        region: Alberta # needed for the figure title
+        var_label: TXx # needed for axis name
+        # figure_caption: '' 
