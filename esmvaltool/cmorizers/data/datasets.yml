@@ -585,10 +585,10 @@ datasets:
 
             IASI (variables o3, toz)
             Download from BIRA WebDAV server: https://webdav.aeronomie.be
-            Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/
+            Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/<yyyy>
             Username: o3_cci_public
             No password (leave empty)
-            Download each year (yyyy) into separate folders named "IASI_yyyy"
+            Download each year <yyyy> into the same folder
 
   ESACCI-SEAICE:
     tier: 2
