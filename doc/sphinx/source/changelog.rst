@@ -27,6 +27,7 @@ Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Update the CMORizer command (:pull:`4317`, :pull:`4326`) by :user:`bouweandela`
+
    .. admonition:: Upgrade instructions
 
       The ``--config-file`` argument to the ``esmvaltool data`` commands has
