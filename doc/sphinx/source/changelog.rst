@@ -92,6 +92,7 @@ Observational and re-analysis dataset support
 -  Fix JRA-55 downloader (:pull:`4191`) by :user:`LisaBock`
 -  EN4 cmorizer (:pull:`4193`) by :user:`hanellis`
 -  New ESACCI AEROSOL CMORizer (Python version) (:pull:`3629`) by :user:`axel-lauer`
+-  Extension of ESA CCI OZONE CMORizer (:pull:`4125`) by :user:`axel-lauer`
 
 Release
 ~~~~~~~
