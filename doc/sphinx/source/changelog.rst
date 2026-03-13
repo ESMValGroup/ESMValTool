@@ -17,6 +17,7 @@ Highlights
    - hour of maximum precipitation (:pull:`4334`)
 - Support for new observational datasets:
    - ESACCI SNOW (:pull:`3542`)
+   - Improved support for ESACCI AEROSOL (:pull:3629)
    - EN4 (:pull:`4193`)
 - We switched from Codacy to `Ruff <https://docs.astral.sh/ruff/>`__ for :ref:`code_quality` checks
 
