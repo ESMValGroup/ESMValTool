@@ -3,6 +3,137 @@
 Changelog
 =========
 
+.. _changelog-v2-14-0:
+
+v2.14.0
+-------
+
+Highlights
+~~~~~~~~~~
+
+- New diagnostics/recipes:
+   - Calculation of Lamb weathertypes (:pull:`4231`)
+   - Histogram plots (:pull:`4329`)
+   - Hour of maximum precipitation (:pull:`4334`)
+- Support for new observational datasets:
+   - ESACCI SNOW (:pull:`3542`)
+   - Improved support for ESACCI AEROSOL (:pull:`3629`)
+   - EN4 (:pull:`4193`)
+- We modernized our development set-up and are now using `Ruff <https://docs.astral.sh/ruff/>`__ for :ref:`code_quality` checks and formatting.
+
+This release includes
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Update the CMORizer command (:pull:`4317`, :pull:`4326`) by :user:`bouweandela`
+
+   .. admonition:: Upgrade instructions
+
+      The ``--config-file`` argument to the ``esmvaltool data`` commands has
+      been removed. Please use these commands with the ``--config-dir``
+      argument to specify the output directory, custom CMOR tables, or Dask
+      configuration, and with the ``--original-data-dir`` argument to point the
+      tool to the directory where downloaded original data should be saved.
+
+Bug fixes
+~~~~~~~~~
+
+-  Fix recipe_enso_climatology1 - remove collect diagnostic (:pull:`4221`) by :user:`flicj191`
+-  Rename ``modeling_realm`` to ``type`` in CMORizers (:pull:`4319`) by :user:`bouweandela`
+-  Fix ``multi_datasets.py`` so it can handle different projections (:pull:`4358`) by :user:`schlunma`
+
+Broken or retired recipes
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Remove ``recipe_russel18jgr.yml`` from list of broken recipes (:pull:`4351`) by :user:`schlunma`
+-  Retire ``recipe_climwip_brunner2019_med.yml`` (:pull:`4350`) by :user:`schlunma`
+-  Add ``recipe_kcs.yml`` to list of broken recipes (:pull:`4354`) by :user:`schlunma`
+-  Retire Wenzel recipes (:pull:`4357`) by :user:`schlunma`
+-  Remove ``recipe_check_obs.yml`` from list of broken recipes (:pull:`4376`) by :user:`schlunma`
+-  Retire ``recipe_eyring*jgr.yml`` (:pull:`4379`) by :user:`schlunma`
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Separate ESMValTool and ESMValCore documentation (:pull:`3914`) by :user:`flicj191`
+-  Fix PDF documentation build (:pull:`4236`) by :user:`bouweandela`
+-  Update links to ESMValCore configuration (:pull:`4249`) by :user:`bouweandela`
+-  Document that we follow SPEC 0 (:pull:`4246`) by :user:`bouweandela`
+-  Fix stable documentation build (:pull:`4253`) by :user:`bouweandela`
+-  Update some easy to fix links in documentation (:pull:`4256`) by :user:`katjaweigel`
+-  Add link checker github action for documentation (:pull:`4251`) by :user:`flicj191`
+-  Add ENES-RI Zenodo community (:pull:`4254`) by :user:`bouweandela`
+-  Schedule for link checker and update for recent report (:pull:`4305`) by :user:`flicj191`
+-  Pin sphinx<9 (:pull:`4315`) by :user:`valeriupredoi`
+-  Add Matomo page view tracking for the documentation (:pull:`4320`) by :user:`bouweandela`
+-  Fix matomo integration (:pull:`4322`) by :user:`bouweandela`
+-  Remove mentions of the deprecated config-developer.yml file from the documentation (:pull:`4335`) by :user:`bouweandela`
+-  Documentation update -remove gensidebar (:pull:`4345`) by :user:`flicj191`
+-  Update documentation on defining custom variables (:pull:`4349`) by :user:`bouweandela`
+-  Update contact info (:pull:`4348`) by :user:`axel-lauer`
+-  Remove mention of deprecated ``esmvaltool config get_config_user`` command (:pull:`4366`) by :user:`schlunma`
+-  Update contact email in documentation (:pull:`4383`) by :user:`axel-lauer`
+
+Diagnostics
+~~~~~~~~~~~
+
+-  Calculating Lamb weathertypes for CMIP5, CMIP6, SMILES and EURO-CORDEX (:pull:`4231`) by :user:`thomaskroi1996`
+-  Add diagnostic to plot a histogram (:pull:`4329`) by :user:`LisaBock`
+-  Add diagnostic to calculate hour of maximum precipitation (:pull:`4334`) by :user:`schlunma`
+-  Make emergent constraints diagnostics compatible with Pandas>=3 (:pull:`4356`) by :user:`schlunma`
+-  Allow specifying ``axes_kwargs`` in ``monitor/multi_datasets.py`` (:pull:`4365`) by :user:`schlunma`
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ESACCI SNOW CMORizer (:pull:`3542`) by :user:`axel-lauer`
+-  Update CMORizer CERES-EBAF to v4.2 (:pull:`3360`) by :user:`axel-lauer`
+-  Fix JRA-55 downloader (:pull:`4191`) by :user:`LisaBock`
+-  EN4 cmorizer (:pull:`4193`) by :user:`hanellis`
+-  New ESACCI AEROSOL CMORizer (Python version) (:pull:`3629`) by :user:`axel-lauer`
+
+Release
+~~~~~~~
+
+-  Modernize release notes script (:pull:`4336`) by :user:`schlunma`
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Run Github Action install from conda with Python 3.13 also (:pull:`4229`) by :user:`valeriupredoi`
+-  Fix WOA CMORizer tests (:pull:`4243`) by :user:`valeriupredoi`
+-  Update recipe tests to align with ESMValCore development (:pull:`4268`) by :user:`bouweandela`
+-  Fix tests for new esmvalcore config (:pull:`4252`) by :user:`valeriupredoi`
+-  Clean up OSX Github Action tests (:pull:`4272`) by :user:`valeriupredoi`
+-  Update recipe load test so it works with the latest ESMValCore (:pull:`4294`) by :user:`bouweandela`
+-  Increase CirleCI container resource to medium+ (:pull:`4364`) by :user:`valeriupredoi`
+-  Update batch job generation script with experiences from latest tests (:pull:`4378`) by :user:`schlunma`
+
+Installation
+~~~~~~~~~~~~
+
+-  Use ``pip install --no-deps`` to avoid overwiting packages from the conda environment (:pull:`4182`) by :user:`bouweandela`
+-  Drop support for Python 3.11 (:pull:`4273`) by :user:`bouweandela`
+-  Pin iris <3.14.1 to comply with iris-esmf-regrid 0.13 (:pull:`4284`) by :user:`valeriupredoi`
+-  Update package build and deploy (:pull:`4289`) by :user:`bouweandela`
+-  Drop ``ruamel.yaml`` as a dependency (:pull:`4295`) by :user:`bouweandela`
+-  Unpin iris (:pull:`4304`) by :user:`valeriupredoi`
+-  Remove R development dependencies (:pull:`4306`) by :user:`valeriupredoi`
+-  Update environment.yml with R dependency r-r.utils for recipe_martin18grl and recipe_spei (:pull:`4355`) by :user:`katjaweigel`
+-  Pin numpy >=2 (:pull:`4375`) by :user:`valeriupredoi`
+
+Improvements
+~~~~~~~~~~~~
+
+-  Switch from Prospector to ruff (:pull:`4209`) by :user:`bouweandela`
+-  Fix Codacy configuration (:pull:`4262`) by :user:`bouweandela`
+-  Apply automatic fixes for style issues (:pull:`4263`) by :user:`bouweandela`
+-  Update obs4MIPs dataset names (:pull:`4321`, :pull:`4377`) by :user:`bouweandela` and :user:`valeriupredoi`
+-  Add ``keep_group_coordinates: true`` to recipes that fail without it (:pull:`4352`) by :user:`schlunma`
+-  Load configuration before accessing CMOR tables (:pull:`4363`) by :user:`bouweandela`
+-  Avoid failing tests on coverage upload from forks (:pull:`4371`) by :user:`bouweandela`
+
 .. _changelog-v2-13-0:
 
 v2.13.0
