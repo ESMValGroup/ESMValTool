@@ -14,7 +14,7 @@ Highlights
 - New diagnostics/recipes:
    - Calculation of Lamb weathertypes (:pull:`4231`)
    - Histogram plots (:pull:`4329`)
-   - hour of maximum precipitation (:pull:`4334`)
+   - Hour of maximum precipitation (:pull:`4334`)
 - Support for new observational datasets:
    - ESACCI SNOW (:pull:`3542`)
    - Improved support for ESACCI AEROSOL (:pull:3629)
