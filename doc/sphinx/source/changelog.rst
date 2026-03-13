@@ -19,7 +19,7 @@ Highlights
    - ESACCI SNOW (:pull:`3542`)
    - Improved support for ESACCI AEROSOL (:pull:3629)
    - EN4 (:pull:`4193`)
-- We switched from Codacy to `Ruff <https://docs.astral.sh/ruff/>`__ for :ref:`code_quality` checks
+- We modernized our development set-up and are now using `Ruff <https://docs.astral.sh/ruff/>`__ for :ref:`code_quality` checks and formatting.
 
 This release includes
 
