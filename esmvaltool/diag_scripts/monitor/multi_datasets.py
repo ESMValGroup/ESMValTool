@@ -418,7 +418,6 @@ from iris.coords import AuxCoord, Coord
 from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
-from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import (
     AutoMinorLocator,
     FormatStrFormatter,
@@ -1787,35 +1786,47 @@ class MultiDatasets(MonitorBase):
         dataset_right: dict,
     ) -> Figure:
         """Plot 2D data (three panels)."""
-        # Create single figure with multiple axes
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        gridspec = GridSpec(
-            5,
-            4,
-            figure=fig,
-            height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0],
-        )
         subplot_kwargs = {}
         if self.plots[plot_type]["projection"] is not None:
             subplot_kwargs["projection"] = self._get_projection(plot_type)
 
-        # Plot top left panel
-        axes_left = fig.add_subplot(gridspec[0:2, 0:2], **subplot_kwargs)
+        # Define layout
+        layout = [
+            ["left", "left", "right", "right"],
+            #            [".", ".", ".", "."],
+            [".", "bias", "bias", "."],
+        ]
+
+        self.cfg["figure_kwargs"] = {"figsize": (10, 8)}
+
+        fig, axd = plt.subplot_mosaic(
+            layout,
+            subplot_kw=subplot_kwargs,
+            #            gridspec_kw={
+            #                "height_ratios": [2, 2],
+            #            },
+            **self.cfg["figure_kwargs"],
+        )
+
+        axes_left = axd["left"]
+        axes_right = axd["right"]
+        axes_bottom = axd["bias"]
+
+        # Share axes
+        axes_right.sharex(axes_left)
+        axes_right.sharey(axes_left)
+        axes_bottom.sharex(axes_left)
+        axes_bottom.sharey(axes_left)
+
+        # --- Top left plot ---
         plot_left = self._plot_2d_data(plot_type, dataset_left, axes_left)
 
-        # Plot top right panel
-        # Note: make sure to use the same vmin and vmax than the top left plot
-        # if a common colorbar is desired
-        axes_right = fig.add_subplot(
-            gridspec[0:2, 2:4],
-            sharex=axes_left,
-            sharey=axes_left,
-            **subplot_kwargs,
-        )
+        # --- Top right plot ---
         additional_plot_kwargs = {}
         if self.plots[plot_type]["common_cbar"]:
             additional_plot_kwargs.setdefault("vmin", plot_left.get_clim()[0])
             additional_plot_kwargs.setdefault("vmax", plot_left.get_clim()[1])
+
         plot_right = self._plot_2d_data(
             plot_type,
             dataset_right,
@@ -1834,20 +1845,16 @@ class MultiDatasets(MonitorBase):
             dataset_right,
         )
 
-        # Plot bottom panel (bias) including colorbar
-        axes_bottom = fig.add_subplot(
-            gridspec[3:5, 1:3],
-            sharex=axes_left,
-            sharey=axes_left,
-            **subplot_kwargs,
-        )
+        # --- Bottom bias plot ---
         dataset_bottom = self._get_bias_dataset(dataset_left, dataset_right)
+
         plot_bottom = self._plot_2d_data(
             plot_type,
             dataset_bottom,
             axes_bottom,
             bias=True,
         )
+
         self._add_colorbar(
             plot_type,
             plot_bottom,
@@ -1856,7 +1863,7 @@ class MultiDatasets(MonitorBase):
             bias=True,
         )
 
-        # Show statistics if desired
+        # Statistics
         if self.plots[plot_type]["show_stats"]:
             self._add_stats(plot_type, axes_left, dataset_left)
             self._add_stats(plot_type, axes_right, dataset_right)
@@ -1867,7 +1874,7 @@ class MultiDatasets(MonitorBase):
                 dataset_right,
             )
 
-        # Hide superfluous axis labels
+        # Hide redundant labels
         plt.setp(axes_right.get_yticklabels(which="both"), visible=False)
         axes_left.set_xlabel("")
         axes_right.set_xlabel("")

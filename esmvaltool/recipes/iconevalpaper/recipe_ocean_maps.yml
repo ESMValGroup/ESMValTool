@@ -59,6 +59,7 @@ datasets:
   - short_name: sftof
     skip: true
   dataset: ICON-XPP
+  alias: ICON-XPP
   exp: historical-202510p1
   project: ICON
   timerange: 19810101/20101231
@@ -66,7 +67,7 @@ preprocessors:
   create_map:
     custom_order: true
     regrid:
-      target_grid: 2x2
+      target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
     climate_statistics:
@@ -79,7 +80,7 @@ preprocessors:
       levels: 0
       scheme: nearest_extrapolate
     regrid:
-      target_grid: 2x2
+      target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
     climate_statistics:
