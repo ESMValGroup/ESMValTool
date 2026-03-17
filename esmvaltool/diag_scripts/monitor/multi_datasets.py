@@ -1793,18 +1793,14 @@ class MultiDatasets(MonitorBase):
         # Define layout
         layout = [
             ["left", "left", "right", "right"],
-            #            [".", ".", ".", "."],
             [".", "bias", "bias", "."],
         ]
 
-        self.cfg["figure_kwargs"] = {"figsize": (10, 8)}
+        self.cfg["figure_kwargs"] = {"figsize": (8, 6.5)}
 
         fig, axd = plt.subplot_mosaic(
             layout,
             subplot_kw=subplot_kwargs,
-            #            gridspec_kw={
-            #                "height_ratios": [2, 2],
-            #            },
             **self.cfg["figure_kwargs"],
         )
 

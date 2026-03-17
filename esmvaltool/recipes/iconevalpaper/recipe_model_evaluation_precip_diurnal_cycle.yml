@@ -24,7 +24,7 @@ preprocessors:
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
     extract_season:
-      season: JJA
+      season: DJF
     extract_region:
       start_latitude: -30
       end_latitude: 30
