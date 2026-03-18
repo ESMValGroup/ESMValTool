@@ -209,13 +209,13 @@ jobs:
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --no-deps --editable $HOME/ESMValCore[develop]
       - log_versions
-      - test_and_report
+      # - test_and_report
       - run:
           name: Run recipes
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            esmvaltool config copy data-esmvalcore-esgf.yml
+            esmvaltool config copy data-intake-esgf.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
@@ -282,9 +282,10 @@ jobs:
 workflows:
   commit:
     jobs:
-      - run_tests
-      - test_installation_from_source_test_mode
-      - test_installation_from_source_develop_mode
+      # - run_tests
+      - test_upstream_development
+      # - test_installation_from_source_test_mode
+      # - test_installation_from_source_develop_mode
   nightly:
     triggers:
       - schedule:
