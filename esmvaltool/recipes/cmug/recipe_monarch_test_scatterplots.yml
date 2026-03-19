@@ -1,0 +1,105 @@
+# ESMValTool
+---
+documentation:
+  title: MONARCH test
+  description: >
+    Test processing of MONARCH model data.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+#datasets:
+#  - {project: MONARCH, dataset: MONARCH, exp: control, frequency: 1hr, alias: 'MONARCH (control)'}
+#  - {project: MONARCH, dataset: MONARCH, exp: od550du_av, frequency: 1hr, alias: 'MONARCH (od550du_av)'}
+#  - {project: MONARCH, dataset: MONARCH, exp: od550du_av_an, frequency: 1hr, alias: 'MONARCH (od550du_av_an)'}
+#  - {dataset: ESACCI-AEROSOL, project: OBS6, tier: 2, frequency: day,
+#     type: sat, version: SLSTR-SU-v1.12-DAILY, reference_for_monitor_diags: true,
+#     alias: 'ESACCI-AEROSOL'}
+
+
+preprocessors:
+
+  monthly_climatology:
+    custom_order: true
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    daily_statistics:
+    mask_multimodel:
+    climate_statistics:
+      period: full
+
+  all_days:
+    custom_order: true
+    daily_statistics:
+    regrid_time:
+      frequency: day
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_multimodel:
+#    mask_below_threshold:
+#      threshold: 0.05
+
+
+diagnostics:
+
+  scatterplots:
+    description: Scatterplots.
+    variables:
+      esacci:
+        short_name: od550dust
+        timerange: '20200601/20200630'
+        mip: AERmon
+        preprocessor: all_days
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS6, tier: 2, frequency: day,
+             type: sat, version: SLSTR-SU-v1.12-DAILY, reference_for_monitor_diags: true,
+             alias: 'ESACCI-AEROSOL'}
+      monarch:
+        short_name: od550dust
+        timerange: '20200601/20200630'
+        mip: AERmon
+        preprocessor: all_days
+        additional_datasets:
+#          - {project: MONARCH, dataset: MONARCH, exp: control, frequency: 1hr, alias: 'MONARCH (control)'}
+          - {project: MONARCH, dataset: MONARCH, exp: od550du_av, frequency: 1hr, alias: 'MONARCH (od550du_av)'}
+#          - {project: MONARCH, dataset: MONARCH, exp: od550du_av_an, frequency: 1hr, alias: 'MONARCH (od550du_av_an)'}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: histplot
+        reset_index: true
+        write_netcdf: true
+        groupby_facet: short_name
+        dropna: true
+#        plot_filename: 'histplot_od550dust_monarch_control'
+        plot_filename: 'histplot_od550dust_monarch_od550du_av'
+#        plot_filename: 'histplot_od550dust_monarch_od550du_av_an'
+        seaborn_kwargs:
+          x: esacci
+          y: monarch
+          binwidth: [0.01, 0.02]
+          binrange: [[0.0, 1.0], [0.0, 2.0]]
+          stat: density
+          cbar: true
+          norm: log
+          vmin: 0.01
+          vmax: 2.0
+          cmap: YlOrRd
+          cbar_kws:
+            label: density
+          label: [xtest, ytest]
+        seaborn_settings:
+          style: ticks
+        plot_object_methods:
+          set:
+            xlabel: 'ESACCI-AEROSOL'
+#            ylabel: 'MONARCH (control)'
+            ylabel: 'MONARCH (od550du_av)'
+#            ylabel: 'MONARCH (od550du_av_an)'
+        suptitle: 'AOD550dust'
