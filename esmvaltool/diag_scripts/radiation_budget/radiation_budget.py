@@ -292,8 +292,8 @@ def load_obs_data():
 
 def plot_data(
     model_data,
-    model_period,
     model_label,
+    model_period,
     obs_names,
     obs_unit,
     stephens_data,
@@ -310,6 +310,8 @@ def plot_data(
     model_data : list
         Data values from the model for which this comparison plot is being
         generated.
+    model_label : string
+        An identifier for the model dataset to be used in the plot legend.
     model_period : string
         The start and end years of the model dataset.
     obs_names : list
