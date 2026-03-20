@@ -210,7 +210,7 @@ jobs:
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --no-deps --editable $HOME/ESMValCore[develop]
       - log_versions
-      # - test_and_report
+      - test_and_report
       - run:
           name: Run recipes
           command: |
