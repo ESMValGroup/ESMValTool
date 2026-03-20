@@ -200,10 +200,11 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            # Temporarily install intake-esgf here until it is an ESMValCore dependency in v2.14.
-            echo "  - intake-esgf" >> environment.yml
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
+            # Temporarily install intake-esgf here until there is a new release
+            # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
+            pip install git+https://github.com/esgf2-us/intake-esgf@main
             mamba list >> /logs/conda.txt
             pip install --no-deps --editable .[develop]
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
@@ -215,7 +216,13 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            esmvaltool config copy data-esmvalcore-esgf.yml
+            esmvaltool config copy data-intake-esgf.yml
+            python -c '
+            import intake_esgf
+            intake_esgf.conf["solr_indices"]["esgf.ceda.ac.uk"] = True
+            intake_esgf.conf["solr_indices"]["esgf-data.dkrz.de"] = True
+            intake_esgf.conf.save()
+            '
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
