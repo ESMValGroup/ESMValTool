@@ -12,34 +12,26 @@ https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batc
 4. Copy/paste the text in https://api.ecmwf.int/v1/key/ into a blank text file
 and save it as $HOME/.ecmwfapirc
 
-5. Copy the default configuration file with
-
-```bash
-esmvaltool config get_config_user --path=config-user.yml
-```
-
-and set the ``rootpath`` for the RAWOBS project.
-
-6. Check the description of the variables at
+5. Check the description of the variables at
 https://apps.ecmwf.int/codes/grib/param-db
 
-7. Check the invariant variables at
+6. Check the invariant variables at
 https://apps.ecmwf.int/datasets/data/interim-full-invariant
 
 ```bash
-python download_era_interim.py --config_file config-user.yml --start_year 2000
---end_year 2000
+python download_era_interim.py --original-data-dir /path/to/save/data
+--start_year 2000 --end_year 2000
 ```
 
-This will download and save the data in the RAWOBS directory,
+This will download and save the data in the /path/to/save/data directory,
 under Tier3/ERA-Interim.
 
 """
 
 import argparse
 import os
+from pathlib import Path
 
-import yaml
 from ecmwfapi import ECMWFDataServer
 
 DAY_TIMESTEPS = {
@@ -249,13 +241,14 @@ def _get_invariant_data(params, server, era_interim_dir):
         )
 
 
-def cli():
+def cli() -> None:
     """Download ERA-Interim variables from ECMWF data server."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--config_file",
-        "-c",
-        default=os.path.join(os.path.dirname(__file__), "config-user.yml"),
+        "--original-data-dir",
+        "-o",
+        type=Path,
+        default=Path.cwd(),
         help="Config file",
     )
     parser.add_argument(
@@ -267,20 +260,9 @@ def cli():
     parser.add_argument("--end_year", type=int, default=2019, help="End year")
     args = parser.parse_args()
 
-    # get and read config file
-    config_file_name = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(args.config_file)),
-    )
-
-    with open(config_file_name) as config_file:
-        config = yaml.safe_load(config_file)
-
-    rawobs_dir = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(config["rootpath"]["RAWOBS"])),
-    )
-    era_interim_dir = f"{rawobs_dir}/Tier3/ERA-Interim"
+    era_interim_dir = f"{args.original_data_dir}/Tier3/ERA-Interim"
     os.makedirs(era_interim_dir, exist_ok=True)
-    era_interim_land_dir = f"{rawobs_dir}/Tier3/ERA-Interim-Land"
+    era_interim_land_dir = f"{args.original_data_dir}/Tier3/ERA-Interim-Land"
     os.makedirs(era_interim_land_dir, exist_ok=True)
 
     years = range(args.start_year, args.end_year + 1)

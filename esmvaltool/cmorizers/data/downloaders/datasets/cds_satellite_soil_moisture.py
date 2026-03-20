@@ -10,7 +10,7 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(
-    config,
+    original_data_dir,
     dataset,
     dataset_info,
     start_date,
@@ -21,8 +21,8 @@ def download_dataset(
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -51,7 +51,7 @@ def download_dataset(
             "time_aggregation": "month_average",
             "day": ["01"],
         },
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -62,7 +62,7 @@ def download_dataset(
 
     for sensor in ["combined_passive_and_active", "passive", "active"]:
         monthly_downloaders[sensor] = get_downloader(
-            config,
+            original_data_dir,
             dataset,
             dataset_info,
             overwrite,
@@ -70,7 +70,7 @@ def download_dataset(
             "month",
         )
         daily_downloaders[sensor] = get_downloader(
-            config,
+            original_data_dir,
             dataset,
             dataset_info,
             overwrite,
@@ -108,7 +108,7 @@ def download_dataset(
 
 
 def get_downloader(
-    config,
+    original_data_dir,
     dataset,
     dataset_info,
     overwrite,
@@ -119,8 +119,8 @@ def get_downloader(
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -147,7 +147,7 @@ def get_downloader(
             "version": "v201912.0.0",
             "time_aggregation": f"{frequency}_average",
         },
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,

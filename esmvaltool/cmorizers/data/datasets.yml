@@ -151,7 +151,7 @@ datasets:
         - Tick all available months
         - Tick Nominal day 20
       - Click 'submit form'
-      - According to ESMValTool practice, put them in the right rawobsdir folder
+      - According to ESMValTool practice, put them in the Tier3/CDS-SATELLITE-LAI-FAPAR folder
       - Request might need to be split into chunks to not exceed download limit
       - Fails setting standard name for variable FAPAR
 
@@ -200,10 +200,10 @@ datasets:
 
   CERES-EBAF:
     tier: 2
-    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
-    last_access: 2022-07-01
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
+    last_access: 2026-02-06
     info: |
-      Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+      Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly Mean", "Regional" (0-360, -90-90)
       Enter "Email Address" and click on "Get Data"
       Wait for the processing to be finished and click on "Download"
 
@@ -316,8 +316,7 @@ datasets:
     source: https://www.esrl.noaa.gov/gmd/ccgg/carbontracker/index.php
     last_access: 2020-03-23
     info: |
-      Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-      ``$RAWOBSPATH`` is given by your configuration) where the raw
+      Create a new empty directory ``Tier2/CT2019`` where the original
       data will be stored. The download of the data is automatically handled by
       this script. If data is already present in this directory, the download is
       skipped (to force a new download delete your old files).
@@ -340,13 +339,27 @@ datasets:
       Download the ensemble mean files for:
         TG TN TX RR PP
 
+  EN4:
+    tier: 2
+    source: "https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html"
+    last_access: 2025-06-13
+    info: |
+      EN4: quality controlled subsurface ocean temperature and salinity objective analyses.
+      Script tested using analyses with Gouretski and Reseghetti (2010) XBT corrections
+      and Gouretski and Cheng (2020) MBT corrections applied.
+      To download data:
+        - Save this text file in directory for data to be downloaded, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
+        - Edit this .txt. file for your chosen years.
+        - Run 'wget -i EN.4.2.2.analyses.g10.download-list.txt' in the same directory.
+        - Unzip files prior to running the cmorizer script using 'unzip \*.zip'.
+
   Eppley-VGPM-MODIS:
     tier: 2
     source: http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf
     last_access: 2019-05-15
     info: |
       Download and unpack all the *.tar files under a single directory
-      (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
+      (no subdirectories with years) in Tier2/Eppley-VGPM-MODIS
 
   ERA-Interim-Land:
     tier: 3
@@ -450,26 +463,44 @@ datasets:
   ESACCI-AEROSOL:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
-    last_access: 2019-01-24
+    last_access: 2025-08-11
     info: |
       Download the data from:
-        ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
-        AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
-      Other years are not considered since they are not complete.
-      Put all files in input_dir_path (no subdirectories with years).
+          AATSR/ATSR2
+            ATSR2_SU/L3/v4.3/DAILY/ (1997-2002)
+            AATSR_SU/L3/v4.3/DAILY/ (2003-2011)
+            ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
+            AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
+            Other years are not considered since they are not complete.
+            Put all daily files under 'AATSR-SU-v4.3-daily' (no subdirectories with years)
+            and all monthly files under 'AATSR-SU-v4.3-monthly'.
+          SLSTR
+            Select the following from the CDS:
+            https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties?tab=download
+            Put all files under a single directory (no subdirectories with years).
+            Time aggregation: "Daily average" and "Monthly average"
+            Variable: "Aerosol optical depth" and "Fine-mode aerosol optical depth"
+            Sensor on satellite: "SLSTR on SENTINEL 3A" and "SLSTR on SENTINEL 3B"
+            Algorithm": "SWANSEA (Swansea University)"
+            Year: select all
+            Month: select all
+            Day: select all
+            Version: "SLSTR", "v1.12"
+            Put all daily files under 'SLSTR-SU-v1.12-daily' (no subdirectories with years)
+            and all monthly files under 'SLSTR-SU-v1.12-monthly'.
 
   ESACCI-BIOMASS:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v6.0/netcdf
     last_access: 2025-07-16
     info: |
-        Download and processing instructions:
-        Use the following CLI to download all the files:
-        esmvaltool data download ESACCI-BIOMASS
-        The underlying downloader is located here:
-        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
-        and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
-        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-BIOMASS
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-BIOMASS
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
+      and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
+      under a single directory as follow: Tier2/ESACCI-BIOMASS
 
   ESACCI-CLOUD:
     tier: 2
@@ -505,13 +536,13 @@ datasets:
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
     last_access: 2024-07-11
     info: |
-        Download and processing instructions:
-        Use the following CLI to download all the files:
-        esmvaltool data download ESACCI-LANDCOVER
-        The underlying downloader is located here:
-        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
-        and it will download all the files currently available on CEDA (1992-2020)
-        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-LANDCOVER
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+      and it will download all the files currently available on CEDA (1992-2020)
+      under a single directory as follow: Tier2/ESACCI-LANDCOVER
 
   ESACCI-LST:
     tier: 2
@@ -522,7 +553,7 @@ datasets:
         https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
       Download and processing instructions:
         Put all files under a single directory (no subdirectories with years)
-        in ${RAWOBS}/Tier2/ESACCI-LST
+        in Tier2/ESACCI-LST
         BOTH DAY and NIGHT files are needed for each month
 
       Caveats
@@ -537,22 +568,23 @@ datasets:
         OceanColour webpage https://esa-oceancolour-cci.org/
       Username and password are provided on this website
       Put all files under a single directory (no subdirectories with years)
-      in ${RAWOBS}/Tier2/ESACCI-OC
+      in Tier2/ESACCI-OC
 
   ESACCI-OZONE:
     tier: 2
     source: https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
-    last_access: 2025-02-11
+    last_access: 2026-02-12
     info: |
       Download the data from:
             GTO-ECV total column (variable toz)
             Select the following from the CDS:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Atm. mole content of ozone"
-            Vertical aggregation = "Total column"
-            Sensor = "MERGED-UV"
+            Vertical aggregation = "Total columns UV"
+            Sensor = "GTO-ECV"
             Year = select all (1995-2023)
             Month = select all (1-12)
             Version = "v2000"
@@ -560,16 +592,35 @@ datasets:
             SAGE-CCI-OMPS (variable o3)
             Select the following options from the same link:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
-            Vertical aggregation = " Vertical profiles from limb sensors"
-            Sensor = " CMZM (Monthly zonal mean merged concentration product from limb
-            sensors ACE, GOMOS, MIPAS, OMPS, OSIRIS, SAGE-2 and SCIAMACHY)"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "SAGE-CCI-OMPS_CONC"
             Year = select all (1984-2022)
             Month = select all (1-12)
             Version = "v0008"
-      Put all files under a single directory (no subdirectories with years).
+
+            MEGRIDOP (variable o3)
+            Select the following options from the same link:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
+
+            Processing Level = "Level 3"
+            Variable = "Mole concentration of ozone in air"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "MEGRIDOP_CONC"
+            Year = select all (2001-2022)
+            Month = select all (1-12)
+            Version = "v0004"
+
+            IASI (variables o3, toz)
+            Download from BIRA WebDAV server: https://webdav.aeronomie.be
+            Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/<yyyy>
+            Username: o3_cci_public
+            No password (leave empty)
+            Download each year <yyyy> into the same folder
 
   ESACCI-SEAICE:
     tier: 2
@@ -599,6 +650,19 @@ datasets:
         v01.8/30days/
         v02.31/30days/
       Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-SNOW:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow/data
+    last_access: 2024-02-14
+    info: |
+      Download the data from:
+        scfg/AVHRR-MERGED/v2.0/
+        swe/MERGED/v2.0/
+      Put all scfg files in a single directory called 'scfg'
+      (no subdirectories with years or months).
+      Put all swe files in a single directory called 'swe'
+      (no subdirectories with years or months).
 
   ESACCI-SST:
     tier: 2
@@ -765,7 +829,7 @@ datasets:
           - GRCTellus.JPL.200204_202004.GLO.RL06M.MSCNv02CRI.nc
           - LAND_MASK.CRI.nc
       - Download the grace months table  which holds important information
-        on data coverage. Save it in the RAWOBSDIR.
+        on data coverage. Save it in the Tier3/GRACE directory.
             https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
       - Manually inspect and check the months table
 
@@ -998,8 +1062,7 @@ datasets:
     info: |
       Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
       "Instructions for downloading". All *.he5 files need to be saved in the
-      $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-      directory defined in the configuration. Apply this procedure to both
+      Tier3/MLS-AURA directory. Apply this procedure to both
       links provided above. The temperature fields are necessary for quality
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
@@ -1068,7 +1131,6 @@ datasets:
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface
         pr_wtr.eatm.mon.mean.nc
-
 
   NCEP-NCAR-R1:
     tier: 2

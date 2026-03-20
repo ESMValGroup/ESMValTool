@@ -557,7 +557,7 @@ diagnostics:
       hus:
         <<: *perf_var
         preprocessor: pp400_1x1
-        reference_dataset: AIRS
+        reference_dataset: AIRS-2-1
         alternative_dataset: ERA5
     additional_datasets:
       - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
@@ -577,8 +577,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: AIRS, project: obs4MIPs, level: L3,
-         version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
+      - {dataset: AIRS-2-1, project: obs4MIPs, tier: 1, start_year: 2003, end_year: 2010}
       - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
 
 

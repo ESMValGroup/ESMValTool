@@ -13,8 +13,7 @@ Last access
 Download and processing instructions
     Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
     "Instructions for downloading". All *.he5 files need to be saved in the
-    $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-    directory defined in the configuration. Apply this procedure to
+    Tier3/MLS-AURA directory. Apply this procedure to
     both links provided above. The temperature fields are necessary for quality
     control of the RHI data (see Data Quality Document for MLS-AURA for more
     information).

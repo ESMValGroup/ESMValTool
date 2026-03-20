@@ -46,7 +46,7 @@ def test_formatters_have_required_interface():
 def test_downloaders_have_required_interface():
     formatters_folder = os.path.dirname(ddt.__file__)
     arg_names = (
-        "config",
+        "original_data_dir",
         "dataset",
         "dataset_info",
         "start_date",

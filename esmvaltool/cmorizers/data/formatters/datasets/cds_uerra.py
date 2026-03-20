@@ -18,7 +18,7 @@ Download and processing instructions
       - Tick all available days
       - Tick all available timesteps
    - Click 'submit form'
-   - According to ESMValTool practice, put them in the right rawobsdir folder
+   - According to ESMValTool practice, put them in the right Tier3/CDS-UERRA folder
 
 Notes
 -----

@@ -1,10 +1,16 @@
 """wget based downloader."""
 
+from __future__ import annotations
+
 import logging
 import subprocess
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from .downloader import BaseDownloader
+
+if TYPE_CHECKING:
+    from esmvaltool.cmorizers.data.typing import DatasetInfo
 
 logger = logging.getLogger(__name__)
 
@@ -109,8 +115,20 @@ class WGetDownloader(BaseDownloader):
 class NASADownloader(WGetDownloader):
     """Downloader for the NASA repository."""
 
-    def __init__(self, config, dataset, dataset_info, overwrite):
-        super().__init__(config, dataset, dataset_info, overwrite)
+    def __init__(
+        self,
+        original_data_dir: Path,
+        dataset: str,
+        dataset_info: DatasetInfo,
+        *,
+        overwrite: bool,
+    ) -> None:
+        super().__init__(
+            original_data_dir=original_data_dir,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
 
         self._wget_common_options = [
             "--load-cookies=~/.urs_cookies",

@@ -48,7 +48,6 @@ from pathlib import Path
 
 import cf_units
 import iris
-from esmvalcore.cmor.table import CMOR_TABLES
 from iris import NameConstraint
 from iris.util import equalise_attributes
 
@@ -92,12 +91,10 @@ def _fix_coordinates(cube, definition):
 def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip"]
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip"], short_name)
-    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
+    definition = cfg["cmor_table"].get_variable(var["mip"], short_name)
 
-    if cmor_info.positive != "":
-        attributes["positive"] = cmor_info.positive
+    if definition.positive != "":
+        attributes["positive"] = definition.positive
 
     # load data
     raw_var = var.get("raw", short_name)
@@ -114,7 +111,7 @@ def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
         cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
-    utils.fix_var_metadata(cube, cmor_info)
+    utils.fix_var_metadata(cube, definition)
 
     # fix time units
     cube.coord("time").convert_units(

@@ -24,13 +24,13 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.13.*
+  - esmvalcore >=2.14.0
   - fiona
   - fire
   - fsspec
   - gdal >=3.9.0
   - ipython
-  - iris >=3.11,<3.14.1
+  - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib
@@ -41,7 +41,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy !=1.24.3  # severe masking bug
+  - numpy >=2
   - openpyxl
   - packaging
   - pandas
@@ -56,7 +56,6 @@ dependencies:
   - pyyaml
   - rasterio >=1.3.10
   - requests
-  - ruamel.yaml
   - scikit-image
   - scikit-learn >=1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
   - scipy
@@ -80,7 +79,7 @@ dependencies:
   # Python packages needed for building docs
   - autodocsumm >=0.2.2
   - myst-nb
-  - sphinx >=6.1.3
+  - sphinx >=6.1.3,<9  # github.com/ESMValGroup/ESMValTool/issues/4316
   - pydata-sphinx-theme
   # Python packages needed for development
   - codespell ==2.3.0
@@ -97,7 +96,7 @@ dependencies:
 
   # R and dependencies
   - cdo
-  - r-base >=3.5
+  - r-base >=4.4
   - r-abind
   - r-akima
   - r-climdex.pcic
@@ -115,6 +114,7 @@ dependencies:
   - r-ncdf4.helpers
   - r-pcict
   - r-plyr
+  - r-r.utils
   - r-rcolorbrewer
   - r-rcpp
   - r-s2dverification
@@ -122,7 +122,3 @@ dependencies:
   - r-spei
   - r-udunits2
   - r-yaml
-  # R packages needed for development
-  - r-git2r  # dependency of lintr
-  - r-lintr ==3.1.2
-  - r-styler ==1.10.3

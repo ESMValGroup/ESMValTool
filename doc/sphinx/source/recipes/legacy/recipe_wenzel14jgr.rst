@@ -1,7 +1,13 @@
 .. _recipe_wenzel14jgr:
 
-Emergent constraints on carbon cycle feedbacks
-==============================================
+Legacy recipe: Emergent constraints on carbon cycle feedbacks
+=============================================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe
+   is only included for documentation purposes and not maintained any more. The
+   last known ESMValTool version supporting this recipe is version 2.13.0.
 
 Overview
 --------
@@ -12,11 +18,11 @@ Figures from Wenzel et al. (2014) are reproduced with recipe_wenzel14jgr.yml. Va
 Available recipes and diagnostics
 -----------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in archive/legacy_recipes
 
 * recipe_wenzel14jgr.yml
 
-Diagnostics are stored in diag_scripts/
+Diagnostics are stored in archive/legacy_diag_scripts/carbon_ec
 
 * carbon_tsline.ncl: time line plots of annual means for spatial averages
 * carbon_gammaHist.ncl: scatter plot of annual mean anomalies of two different variables; diagnosing and saving GammaIAV

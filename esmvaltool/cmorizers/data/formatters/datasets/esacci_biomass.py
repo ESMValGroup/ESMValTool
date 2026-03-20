@@ -12,7 +12,7 @@ Last access
 Download and processing instructions
     Download 10 km file:
       v6.0/netcd/ESACCI-BIOMASS-L4-AGB-MERGED-10000m-fv6.0.nc
-    Put file in ${RAWOBS}/Tier2/ESACCI-BIOMASS
+    Put file in Tier2/ESACCI-BIOMASS
     Or use automatic download script:
       esmvaltool data download ESACCI-BIOMASS
 """
@@ -26,7 +26,6 @@ from copy import deepcopy
 import iris
 import numpy as np
 from dask import array as da
-from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import extract_time
 
 from esmvaltool.cmorizers.data.utilities import (
@@ -49,8 +48,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     attributes["mip"] = var["mip"]
     attributes["raw"] = var["raw"]
     attributes["frequency"] = var["frequency"]
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip"], var["short_name"])
+    definition = cfg["cmor_table"].get_variable(var["mip"], var["short_name"])
 
     # load all input files (1 year) into 1 cube
     cube_list = iris.load(in_files, var["raw"])

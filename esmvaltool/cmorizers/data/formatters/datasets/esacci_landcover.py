@@ -13,7 +13,7 @@ Download and processing instructions
     Download the data from:
       pft/v2.0.8/
     Put all files under a single directory (no subdirectories with years).
-    in ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+    in Tier2/ESACCI-LANDCOVER
 
 """
 
