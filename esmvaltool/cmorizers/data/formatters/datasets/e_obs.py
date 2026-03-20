@@ -126,8 +126,6 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
 
             # Calc monthly
             cube = monthly_statistics(cube)
-            cube.remove_coord("month_number")
-            cube.remove_coord("year")
 
             # Fix metadata
             attrs["mip"] = "Amon"
