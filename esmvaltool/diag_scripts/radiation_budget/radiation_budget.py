@@ -443,7 +443,7 @@ def main(config):
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
-        # 'group' is a list of dictionaries containing metadata.
+        # 'group' is a list of dictionaries containing metadata for each variable.
         logger.info("Processing data for %s", model_dataset)
         filenames = [item["filename"] for item in group]
         unordered_model_data = iris.load(filenames)
