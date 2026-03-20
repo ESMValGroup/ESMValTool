@@ -291,7 +291,6 @@ def load_obs_data():
 
 
 def plot_data(
-    model_dataset,
     model_data,
     model_period,
     model_label,
@@ -308,8 +307,6 @@ def plot_data(
 
     Parameters
     ----------
-    model_dataset : string
-        The name of the model.
     model_data : list
         Data values from the model for which this comparison plot is being
         generated.
