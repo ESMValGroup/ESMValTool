@@ -216,6 +216,12 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             esmvaltool config copy data-intake-esgf.yml
+            python -c '
+            import intake_esgf
+            intake_esgf.conf["solr_indices"]["esgf.ceda.ac.uk"] = True
+            intake_esgf.conf["solr_indices"]["esgf-data.dkrz.de"] = True
+            intake_esgf.conf.save()
+            '
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
