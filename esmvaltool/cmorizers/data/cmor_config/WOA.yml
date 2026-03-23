@@ -16,16 +16,16 @@ attributes:
   # reference: 'woa2013v2'
 
   # WOA18
-  short_name: woa18
-  version: 'v2018'
-  source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
-  reference: 'woa2018'
+  # short_name: woa18
+  # version: 'v2018'
+  # source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
+  # reference: 'woa2018'
 
   # WOA23
-  # short_name: woa23
-  # version: 'v2023'
-  # source: 'https://www.ncei.noaa.gov/data/oceans/woa/woa23/DATA/'
-  # reference: 'woa2023'
+  short_name: woa23
+  version: 'v2023'
+  source: 'https://www.ncei.noaa.gov/data/oceans/woa/woa23/DATA/'
+  reference: 'woa2023'
 
   comment: ''
 
@@ -59,17 +59,6 @@ variables:
     - name: salinity
       raw_var: s_an
 
-  thetao_yr: # same for all versions
-    raw_var: t_an # in-situ temperature
-    name: temperature
-    short_name: thetao
-    mip: Oyr
-    frequency: yr
-    files: [decav71A0,decav81B0,decav91C0]
-    supplimentary_vars:
-    - name: salinity
-      raw_var: s_an
-
   # annual climatology cmorized to Omon standard
   thetao_yr_Omon: # same for all versions
     raw_var: t_an # in-situ temperature
@@ -90,20 +79,6 @@ variables:
     short_name: bigthetao
     mip: Omon
     frequency: mon
-    srf_var: tos # tos = bigthetao(depth=0)
-    files: [decav71A0,decav81B0,decav91C0]
-    supplimentary_vars:
-    - name: salinity
-      raw_var: s_an
-
-  # three decades for yr: decav71A0, decav81B0, decav91C0
-  bigthetao_yr: # same for all versions
-    raw_var: t_an # in-situ temperature
-    name: temperature
-    short_name: bigthetao
-    mip: Oyr
-    frequency: yr
-    file: decav81B0
     srf_var: tos # tos = bigthetao(depth=0)
     files: [decav71A0,decav81B0,decav91C0]
     supplimentary_vars:
@@ -139,20 +114,6 @@ variables:
     - raw_var: t_an # in-situ temperature
       name: temperature
 
-  so_yr:
-    versions: ['v2018','v2023']
-    short_name: so
-    mip: Oyr
-    frequency: yr
-    raw_var: s_an # practical salinity. dims are (depth, lat, lon)
-    name: salinity
-    srf_var: sos # sos = so(depth=0)
-    units: 1 # force units to be 1 (despite being labelled 1e-3 in 2018)
-    files: [decav71A0,decav81B0,decav91C0]
-    supplimentary_vars:
-    - raw_var: t_an # in-situ temperature
-      name: temperature  
-  
   # annual climatology cmorized to Omon standard
   so_yr_Omon:
     versions: ['v2018','v2023']
@@ -166,7 +127,7 @@ variables:
     files: [decav71A0,decav81B0,decav91C0]
     supplimentary_vars:
     - raw_var: t_an # in-situ temperature
-      name: temperature 
+      name: temperature
 
   o2:
     versions: ['v2018','v2023']
