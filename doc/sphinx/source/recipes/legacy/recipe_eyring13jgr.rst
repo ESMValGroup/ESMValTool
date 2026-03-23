@@ -1,7 +1,13 @@
 .. _recipe_eyring13jgr:
 
-Ozone and associated climate impacts
-====================================
+Legacy recipe: Ozone and associated climate impacts
+===================================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe
+   is only included for documentation purposes and not maintained any more. The
+   last known ESMValTool version supporting this recipe is version 2.13.0.
 
 Overview
 --------
@@ -17,11 +23,11 @@ The following plots are reproduced:
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
+Recipes are stored in archive/legacy_recipes
 
 * recipe_eyring13jgr_12.yml
 
-Diagnostics are stored in esmvaltool/diag_scripts/eyring13jgr/
+Diagnostics are stored in archive/legacy_diag_scripts/eyring13jgr/
 
 * eyring13jgr_fig12.ncl
 

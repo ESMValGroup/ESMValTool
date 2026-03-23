@@ -33,8 +33,6 @@
    "recipe_ensclus.yml",
    "recipe_extreme_events.yml",
    "recipe_extreme_index.yml",
-   "recipe_eyring06jgr.yml",
-   "recipe_eyring13jgr_12.yml",
    "recipe_flato13ipcc.yml",
    "recipe_gier2020bg.yml",
    "recipe_heatwaves_coldwaves.yml",

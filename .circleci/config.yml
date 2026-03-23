@@ -1,9 +1,6 @@
 ---
 version: 2.1
 
-orbs:
-  coverage-reporter: codacy/coverage-reporter@13.13.0
-
 commands:
   check_changes:
     steps:
@@ -146,15 +143,15 @@ jobs:
           name: Remove source code to test the installed software
           command: rm -r esmvaltool
       - test_and_report
+      - run:
+          # Documentation available at https://docs.codacy.com/coverage-reporter/
+          name: Upload coverage report to Codacy
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -s -r test-reports/coverage.xml
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - /root/.cache/pip
             - .pytest_cache
-      - coverage-reporter/send_report:
-          coverage-reports: "test-reports/coverage.xml"
-          project-token: $CODACY_PROJECT_TOKEN
-          skip: true # skip if project-token is not defined (i.e. on a fork)
 
   test_installation_from_source_test_mode:
     # Test installation from source
@@ -203,10 +200,11 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            # Temporarily install intake-esgf here until it is an ESMValCore dependency in v2.14.
-            echo "  - intake-esgf" >> environment.yml
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
+            # Temporarily install intake-esgf here until there is a new release
+            # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
+            pip install git+https://github.com/esgf2-us/intake-esgf@main
             mamba list >> /logs/conda.txt
             pip install --no-deps --editable .[develop]
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
@@ -218,7 +216,13 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            esmvaltool config copy data-esmvalcore-esgf.yml
+            esmvaltool config copy data-intake-esgf.yml
+            python -c '
+            import intake_esgf
+            intake_esgf.conf["solr_indices"]["esgf.ceda.ac.uk"] = True
+            intake_esgf.conf["solr_indices"]["esgf-data.dkrz.de"] = True
+            intake_esgf.conf.save()
+            '
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
