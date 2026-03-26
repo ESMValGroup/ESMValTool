@@ -9,3 +9,7 @@ Source
 Modification history:
     20260226-Fruttarol_Noah: Written
 """
+
+import logging
+
+logger = logging.getLogger(__name__)
