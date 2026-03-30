@@ -1,0 +1,113 @@
+# ESMValTool
+---
+documentation:
+  title: IFW test
+  description: >
+    Test processing of IFW model data.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+#datasets:
+#  - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)', activity: 'CMUG', exp: 'step0'}
+
+
+preprocessors:
+
+  monthly_climatology:
+    custom_order: true
+    daily_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_multimodel:
+    climate_statistics:
+      period: full
+
+  all_days:
+    custom_order: true
+    daily_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_multimodel:
+
+  ma_season_mean:
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: nearest
+    climate_statistics:
+      operator: mean
+      period: season
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+  aeronet_model:
+    climate_statistics:
+      operator: mean
+      period: season
+
+
+diagnostics:
+
+  maps:
+    description: Plot monthly mean maps.
+    variables:
+#      od550aer:
+#        timerange: '20200601/20200630'
+#        mip: aero
+#        preprocessor: monthly_climatology
+#        additional_datasets:
+#          - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, frequency: day,
+#             type: sat, version: SLSTR-SU-v1.12-DAILY, reference_for_monitor_diags: true,
+#             alias: 'ESACCI-AEROSOL'}
+#      prw:
+#        timerange: '20200601/20200630'
+##        mip: 3hr
+#        mip: Eday
+#        preprocessor: monthly_climatology
+#        additional_datasets:
+##          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, tier: 3, frequency: day,
+##             type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, reference_for_monitor_diags: true,
+##             alias: 'ESACCI-WATERVAPOUR'}
+#          - {dataset: ERA5, project: native6, tier: 3, frequency: 1hr,
+#             type: reanaly, version: 'v1', reference_for_monitor_diags: true, alias: 'ERA5'}
+      clivi:
+        timerange: '20200601/20200630'
+        mip: CFday
+        preprocessor: monthly_climatology
+        additional_datasets:
+          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
+             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
+      lwp:
+        timerange: '20200601/20200630'
+        mip: CFday
+        preprocessor: monthly_climatology
+        additional_datasets:
+          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
+             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
+    additional_datasets:
+      - {project: IFW, dataset: ifwf, fstep: '96', frequency: 12hr, alias: 'IFWf (step 96)'}
+#      - {project: IFW, dataset: ifwg, fstep: '0', frequency: 12hr, alias: 'IFWg (step 0)'}
+    scripts:
+      plot:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+            plot_kwargs:
+              default:
+                extend: max
+                cmap: YlOrRd
+                levels: [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+            plot_kwargs_bias:
+              levels: [-0.1, -0.08, -0.06, -0.04, -0.02, 0.0, 0.02, 0.04, 0.06, 0.08, 0.1]
+              extend: both

@@ -143,7 +143,37 @@ diagnostics:
         suptitle: 'LWP vs AOD550'
         plot_filename: 'jointplot_lwp_od550aer'
 
-  maps:
+  maps_prw:
+    description: Plot monthly mean maps.
+    variables:
+      prw:
+        timerange: '20200601/20200630'
+        mip: Eday
+        preprocessor: monthly_climatology
+        additional_datasets:
+          - {dataset: ERA5, project: native6, tier: 3, frequency: 1hr,
+             type: reanaly, version: 'v1', reference_for_monitor_diags: true, alias: 'ERA5'}
+    additional_datasets:
+#      - {project: IFW, dataset: ifwf, fstep: '96', frequency: 12hr, alias: 'IFWf (step 0)'}
+      - {project: IFW, dataset: ifwg, fstep: '96', frequency: 12hr, alias: 'IFWg (step 0)'}
+    scripts:
+      plot:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+            plot_kwargs:
+              default:
+                extend: max
+                cmap: YlOrRd
+                levels: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+            plot_kwargs_bias:
+              levels: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+              extend: both
+
+  maps_aod:
     description: Plot monthly mean maps.
     variables:
       od550aer:
@@ -154,34 +184,9 @@ diagnostics:
           - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, frequency: day,
              type: sat, version: SLSTR-SU-v1.12-DAILY, reference_for_monitor_diags: true,
              alias: 'ESACCI-AEROSOL'}
-      prw:
-        timerange: '20200601/20200630'
-#        mip: 3hr
-        mip: Eday
-        preprocessor: monthly_climatology
-        additional_datasets:
-#          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, tier: 3, frequency: day,
-#             type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, reference_for_monitor_diags: true,
-#             alias: 'ESACCI-WATERVAPOUR'}
-          - {dataset: ERA5, project: native6, tier: 3, frequency: 1hr,
-             type: reanaly, version: 'v1', reference_for_monitor_diags: true, alias: 'ERA5'}
-      clivi:
-        timerange: '20200601/20200630'
-        mip: CFday
-        preprocessor: monthly_climatology
-        additional_datasets:
-          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
-             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
-      lwp:
-        timerange: '20200601/20200630'
-        mip: CFday
-        preprocessor: monthly_climatology
-        additional_datasets:
-          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
-             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
     additional_datasets:
-#      - {project: IFW, dataset: ifwf, fstep: '96', frequency: 12hr, alias: 'IFWf (step 96)'}
-      - {project: IFW, dataset: ifwg, fstep: '96', frequency: 12hr, alias: 'IFWg (step 96)'}
+#      - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)'}
+      - {project: IFW, dataset: ifwg, fstep: '0', frequency: 12hr, alias: 'IFWg (step 0)'}
     scripts:
       plot:
         plot_folder: '{plot_dir}'
@@ -190,6 +195,14 @@ diagnostics:
         plots:
           map:
             common_cbar: true
+            plot_kwargs:
+              default:
+                extend: max
+                cmap: YlOrRd
+                levels: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+            plot_kwargs_bias:
+              levels: [-0.25, -0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.1, 0.15, 0.2, 0.25]
+              extend: both
 
   histograms:
     description: Plot PDFs from daily values.
