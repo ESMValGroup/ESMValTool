@@ -22,16 +22,21 @@ Recipes are stored in `recipes/model_evaluation`
 * recipe_model_evaluation_basics.yml
 * recipe_model_evaluation_clouds_clim.yml
 * recipe_model_evaluation_clouds_cycles.yml
-* recipe_model_evaluation_precip_zonal.yml
+* recipe_model_evaluation_precip_diurnal_cycle.yml
 * recipe_model_evaluation_precip_hist.yml
+* recipe_model_evaluation_precip_zonal.yml
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
 * :ref:`multi_datasets.py
   <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
   Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
-* :ref:`plot_histogram.py <api.esmvaltool.diag_scripts.plot_histogram>`
-  Plotting of 1d histograms with precomputed histogram data ('histogram' preprocessor).
+* :ref:`plot_histogram.py <api.esmvaltool.diag_scripts.plot_histogram>`:
+  Plotting of 1D histograms with precomputed histogram data (``histogram``
+  preprocessor).
+* :ref:`hydrology/hour_of_max_precipitation.py
+  <api.esmvaltool.diag_scripts.hydrology.hour_of_max_precipitation>`:
+  Calculating and plotting hour of maximum precipitation.
 
 
 User settings
@@ -105,5 +110,12 @@ Example plots
    :align: center
    :width: 50%
 
-   Hisotgram of precipitation rates from MPI-ESM1-2-HR and ERA5 reanalysis 3-hourly
+   Histogram of precipitation rates from MPI-ESM1-2-HR and ERA5 reanalysis 3-hourly
    data over the Tropics (30°S-30°N) for the years 1979-1980.
+
+.. figure:: /recipes/figures/model_evaluation/hr_max_pr.png
+   :align: center
+   :width: 14cm
+
+   Hour of maximum precipitation from ERA5 in the tropics (30°S-30°N) for the
+   months June, July, August 2000.

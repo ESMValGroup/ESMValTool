@@ -11,13 +11,13 @@ An overview of all configuration options can be found
 :ref:`here <esmvalcore:config_options>`.
 In particular, it is recommended to read the section on how to :ref:`specify
 configuration options  <esmvalcore:config_for_cli>` and the section on
-:ref:`Finding data <esmvalcore:findingdata>`.
+:ref:`data sources <esmvalcore:config-data-sources>`.
 
 To install the default configuration in the default location, run
 
- .. code:: bash
+.. code:: bash
 
-	  esmvaltool config get_config_user
+   esmvaltool config copy defaults/config-user.yml
 
 Note that this needs to be customized using the instructions above, so
 the ``esmvaltool`` command can find the data on your system, before it can run

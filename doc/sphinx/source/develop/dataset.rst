@@ -32,32 +32,38 @@ data set for the use in ESMValTool.
 ==========================================
 
 Most variables are defined in the CMIP data request and can be found in the
-CMOR tables in the folder `/esmvalcore/cmor/tables/cmip6/Tables/
-<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables/cmip6/Tables>`_,
-differentiated according to the ``MIP`` they belong to. The tables are a
-copy of the `PCMDI <https://github.com/PCMDI>`_ guidelines. If you find the
+CMOR tables in the folder `/esmvalcore/cmor/tables
+<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables>`_,
+differentiated according to the ``MIP`` they belong to. A more extensive
+introduction is available in :ref:`esmvalcore:cmor_tables`. If you find the
 variable in one of these tables, you can proceed to the next section.
 
 If your variable is not available in the standard CMOR tables,
 you need to write a custom CMOR table entry for the variable
-as outlined below and add it to `/esmvalcore/cmor/tables/custom/
-<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables/custom>`_.
+as outlined below and add it to `/esmvalcore/cmor/tables/cmip6-custom/
+<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables/cmip6-custom>`_.
 
 To create a new custom CMOR table you need to follow these
 guidelines:
 
-- Provide the ``variable_entry``;
+- Provide the ``variable_entry`` (for CMIP5-style tables) or the variable name
+  (``short_name``) followed by an optional underscore and branding suffix
+  as the key for the variable definition (for CMIP6-style tables);
 - Provide the ``modeling_realm``;
-- Provide the variable attributes, but leave ``standard_name`` blank. Necessary
+- Provide the variable attributes, but leave ``standard_name`` blank unless
+  the variable has a valid standard name. Necessary
   variable attributes are: ``units``, ``cell_methods``, ``cell_measures``,
   ``long_name``, ``comment``.
 - Provide some additional variable attributes. Necessary additional variable
-  attributes are: ``dimensions``, ``out_name``, ``type``. There are also
-  additional variable attributes that can be defined here (see the already
-  available cmorizers).
+  attributes are: ``dimensions``, ``out_name`` (usually equal to ``short_name``).
+  There are also additional variable attributes that can be defined here (see
+  the already available custom variables).
 
-It is recommended to use an existing custom table as a template, to edit the
-content and save it as ``CMOR_<short_name>.dat``.
+It is recommended to extend the file
+`esmvalcore/cmor/tables/cmip6-custom/CMIP6_custom.json <https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/cmor/tables/cmip6-custom/CMIP6_custom.json>`__
+for CMIP6-style tables. For CMIP5-style projects, use an existing custom table from
+`esmvalcore/cmor/tables/cmip5-custom/ <https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/cmor/tables/cmip5-custom>`__
+as a template, edit the content and save it in the same directory as ``CMOR_<short_name>.dat``.
 
 2. Store your dataset in the right place
 ========================================
