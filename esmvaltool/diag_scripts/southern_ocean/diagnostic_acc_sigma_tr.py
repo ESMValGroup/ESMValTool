@@ -33,11 +33,29 @@ import matplotlib.pyplot as plt
 from esmvalcore.preprocessor import area_statistics
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic, ProvenanceLogger
+
+# reuse tools already developed for ocean diagnostics
+# from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
+
+class TransectDiagnostic:
+    '''
+        Class used to compute a transect of a velocity with
+            a sigma2 contour overlaid.
+    '''
+    def __init__(self, config):
+        self.config = config
+
+    def compute_sigma(self, ds):
+        ''' 
+            Compute the sigma2 contour from the input dataset.
+        '''
+
 
 # my functions
 def _plot_transect():
@@ -54,8 +72,8 @@ def _extract_transect():
 def main(cfg):
 
     # # assemble the data dictionary keyed by dataset name
-    # input_data = cfg["input_data"].values()
-    # my_files_dict = group_metadata(input_data, "dataset")
+    input_data = cfg["input_data"]
+    grouped = group_metadata(input_data, "dataset")
 
     # logger.info('my_files_dict: %s', my_files_dict)
 
