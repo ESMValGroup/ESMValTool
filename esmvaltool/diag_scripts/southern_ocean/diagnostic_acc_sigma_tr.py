@@ -42,6 +42,8 @@ from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic, Prove
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
+# uses a class style following the example of eady_growth_rate.py.
+
 
 class TransectDiagnostic:
     '''
