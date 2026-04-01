@@ -60,14 +60,14 @@ diagnostics:
         project: CMIP6
         timerange: 2000/2001
         preprocessor: drakepassage_transect
-      uo:   # Zonal velocity ocean
-        ensemble: r1i1p1f3
-        exp: historical
-        grid: gn
-        mip: Omon
-        project: CMIP6
-        timerange: 2000/2001
-        preprocessor: drakepassage_transect
+      # uo:   # Zonal velocity ocean
+      #   ensemble: r1i1p1f3
+      #   exp: historical
+      #   grid: gn
+      #   mip: Omon
+      #   project: CMIP6
+      #   timerange: 2000/2001
+      #   preprocessor: drakepassage_transect
 
     scripts:
       script1:
