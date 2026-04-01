@@ -3,14 +3,20 @@
 from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -23,7 +29,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     downloader = NASADownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -206,4 +212,4 @@ FILES = f"""{SERVER}005/2018.01.17/TES-Aura_L3-O3-M2018m01_C01_F01_11.he5
 {SERVER}004/2004.11.04/TES-Aura_L3-O3-M2004m11_F01_10.he5
 {SERVER}004/2004.10.09/TES-Aura_L3-O3-M2004m10_F01_10.he5
 {SERVER}004/2004.09.03/TES-Aura_L3-O3-M2004m09_F01_10.he5
-{SERVER}004/2004.08.22/TES-Aura_L3-O3-M2004m08_F01_10.he5""".split('\n')
+{SERVER}004/2004.08.22/TES-Aura_L3-O3-M2004m08_F01_10.he5""".split("\n")

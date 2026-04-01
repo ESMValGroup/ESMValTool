@@ -1,4 +1,5 @@
 """Script to download ESACCI-SOILMOISTURE."""
+
 from datetime import datetime
 
 from dateutil import relativedelta
@@ -6,14 +7,20 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -33,17 +40,17 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     loop_date = start_date
 
     downloader = CCIDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.ftp_name = 'soil_moisture'
+    downloader.ftp_name = "soil_moisture"
     downloader.connect()
-    downloader.set_cwd('ancillary/v08.1/')
-    downloader.download_folder('.')
-    downloader.set_cwd('daily_files/COMBINED/v08.1/')
+    downloader.set_cwd("ancillary/v08.1/")
+    downloader.download_folder(".")
+    downloader.set_cwd("daily_files/COMBINED/v08.1/")
     while loop_date <= end_date:
         year = loop_date.year
-        downloader.download_year(f'{year}')
+        downloader.download_year(f"{year}")
         loop_date += relativedelta.relativedelta(years=1)

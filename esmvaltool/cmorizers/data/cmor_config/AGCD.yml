@@ -7,7 +7,7 @@ attributes:
   dataset_id: AGCD
   version: 'v2-0-1'
   tier: 2
-  modeling_realm: ground
+  type: ground
   resolution: '005'  # '001' available for v2
   source: 'https://dx.doi.org/10.25914/rses-zh67 Australian Bureau of Meteorology (2023),
            \Australian Gridded Climate Data ( AGCD ) ; v2.0.1 Snapshot (1900-01-01 to 2022-12-31)'

@@ -107,7 +107,7 @@ User settings in recipe
    * time_avg: time_avg: time averaging ("annualclim", "seasonalclim")
 
    *Optional settings for script*
-   
+
    * percent: determines if difference expressed in percent (0, 1, default= 0)
 
 #. Script calc_IAV_hatching.ncl
@@ -151,8 +151,8 @@ User settings in recipe
 
    * seasons: list with season index if time_avg is "seasonalclim" (then seasons
      is required),  DJF:0, MAM:1, JJA:2, SON:3
-   * iavmode: calculate IAV from multi-model mean or save individual models 
-     ("each": save individual models, "mmm": multi-model mean, default), 
+   * iavmode: calculate IAV from multi-model mean or save individual models
+     ("each": save individual models, "mmm": multi-model mean, default),
      needs to be consistent with calc_IAV_hatching.ncl
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 

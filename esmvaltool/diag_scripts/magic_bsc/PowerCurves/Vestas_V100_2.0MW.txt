@@ -1,6 +1,6 @@
-#--------------------------- 
+#---------------------------
 # TURBINE CHARACTERISTICS
-#--------------------------- 
+#---------------------------
 # Name: Vestas_V100_2.0MW [string]
 # Manufacturer: Vestas [string]
 # Diameter: 100 m
@@ -12,11 +12,11 @@
 # IECClass: IIa/IIIa [Ia/IIa/IIIa/S]
 # Control: pitch [pitch/stall/active_stall/flaps]
 #
-#--------------------------- 
+#---------------------------
 # POWER CURVE
 # Density: 1.225 kg/m^3
 # noise_mode: 0
-#--------------------------- 
+#---------------------------
 WindSpeed	Power
 2.5	0
 3	13

@@ -8,14 +8,20 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -34,17 +40,17 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     loop_date = start_date
 
     base_path = (
-        "https://www.ncei.noaa.gov/data/precipitation-persiann/access/"
-        "{year}/")
+        "https://www.ncei.noaa.gov/data/precipitation-persiann/access/{year}/"
+    )
     while loop_date <= end_date:
         print(base_path.format(year=loop_date.year))
         print(base_path)
         downloader = WGetDownloader(
-            config=config,
+            original_data_dir=original_data_dir,
             dataset=dataset,
             dataset_info=dataset_info,
             overwrite=overwrite,
         )
         downloader.download_folder(base_path.format(year=loop_date.year), [])
-        os.remove(os.path.join(downloader.local_folder, 'index.html'))
+        os.remove(os.path.join(downloader.local_folder, "index.html"))
         loop_date += relativedelta.relativedelta(years=1)

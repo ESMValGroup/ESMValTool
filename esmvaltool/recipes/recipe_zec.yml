@@ -1,0 +1,90 @@
+# ESMValTool
+# recipe_zec.yml
+---
+documentation:
+  title: >
+    Zero Emission Commitment (ZEC)
+
+  description: >
+    Calculate Zero Emission Commitment (ZEC) temperature.
+
+  authors:
+    - gier_bettina
+  maintainer:
+    - gier_bettina
+  references:
+    - macdougall20
+  domains:
+    - global
+  realms:
+    - atmos
+
+preprocessors:
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+  anomaly_base:
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: full
+
+
+diagnostics:
+
+  zec:
+    description: Calculate ZEC for all available models.
+    variables:
+      tas_base:
+        short_name: tas
+        preprocessor: anomaly_base
+        exp: 1pctCO2
+        project: CMIP6
+        ensemble: r1i1p1f1
+        grid: gn
+        mip: Amon
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, start_year: 158, end_year: 177}
+          - {dataset: CanESM5, ensemble: r1i1p2f1, start_year: 1901,
+             end_year: 1920}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, start_year: 1906,
+             end_year: 1925}
+          - {dataset: UKESM1-0-LL, ensemble: r2i1p1f2, start_year: 1906,
+             end_year: 1925}
+          - {dataset: UKESM1-0-LL, ensemble: r3i1p1f2, start_year: 1906,
+             end_year: 1925}
+          - {dataset: UKESM1-0-LL, ensemble: r4i1p1f2, start_year: 1906,
+             end_year: 1925}
+          - {dataset: MPI-ESM1-2-LR, start_year: 1905, end_year: 1924}
+          - {dataset: CESM2, start_year: 58, end_year: 77}
+      tas:
+        short_name: tas
+        preprocessor: spatial_mean
+        exp: esm-1pct-brch-1000PgC
+        project: CMIP6
+        ensemble: r1i1p1f1
+        grid: gn
+        mip: Amon
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, start_year: 168, end_year: 267}
+          - {dataset: CanESM5, ensemble: r1i1p2f1, start_year: 1911,
+             end_year: 2010}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, start_year: 1916,
+             end_year: 2015}
+          - {dataset: UKESM1-0-LL, ensemble: r2i1p1f2, start_year: 1916,
+             end_year: 2015}
+          - {dataset: UKESM1-0-LL, ensemble: r3i1p1f2, start_year: 1916,
+             end_year: 2015}
+          - {dataset: UKESM1-0-LL, ensemble: r4i1p1f2, start_year: 1916,
+             end_year: 2015}
+          - {dataset: MPI-ESM1-2-LR, start_year: 1915, end_year: 2014}
+          - {dataset: CESM2, start_year: 68, end_year: 167}
+    scripts:
+      zec:
+        script: climate_metrics/zec.py
+        zec_year: 50

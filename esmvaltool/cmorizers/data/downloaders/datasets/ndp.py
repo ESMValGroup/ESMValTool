@@ -1,4 +1,5 @@
 """Script to download NDP from its webpage."""
+
 import logging
 import os
 
@@ -8,14 +9,20 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -28,7 +35,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -39,6 +46,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.download_file(
         "https://data.ess-dive.lbl.gov/catalog/d1/mn/v2/object/"
         "ess-dive-ec4f4b7097524f6-20180621T213642471",
-        ["-O", os.path.join(downloader.local_folder, "ndp017b.tar.gz")])
+        ["-O", os.path.join(downloader.local_folder, "ndp017b.tar.gz")],
+    )
 
     unpack_files_in_folder(downloader.local_folder)

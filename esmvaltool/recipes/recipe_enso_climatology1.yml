@@ -1,0 +1,152 @@
+# ESMValTool
+---
+documentation:
+  description: ENSO CLIVAR metrics, background climatology
+  title: Reproducing ENSO CLIVAR metrics - background climatology
+  authors:
+    - chun_felicity
+    - planton_yann
+    - beucher_romain
+  maintainer:
+    - chun_felicity
+
+datasets:
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: AWI-CM-1-1-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CAS-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CESM2-FV2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CESM2-WACCM-FV2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CESM2-WACCM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CMCC-CM2-HR4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CMCC-CM2-SR5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CMCC-ESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: FIO-ESM-2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: GISS-E2-1-G-CC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # # - {dataset: IITM-ESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014} # searching esgf
+  # - {dataset: MCM-UA-1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: NESM3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: NorCPM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: NorESM2-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+preprocessors:
+  base_bias: &base_bias
+    custom_order: true
+    # mask_landsea:
+    #   mask_out: land
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &double
+      start_longitude: 210.
+      end_longitude: 270.
+      start_latitude: -15.
+      end_latitude: 15.
+
+  ITCZ_bias:
+    <<: *base_bias
+    convert_units:
+      units: mm/day
+    zonal_statistics:
+      operator: mean
+
+  eq_bias:
+    <<: *base_bias
+    extract_region: &eq_region
+      start_longitude: 150.
+      end_longitude: 270.
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+
+  base_cycle: &base_cycle
+    <<: *base_bias
+    climate_statistics:
+      operator: mean
+      period: monthly
+
+  ITCZ_sea_cycle:
+    <<: *base_cycle
+    convert_units:
+      units: mm/day
+
+  eq_sea_cycle:
+    <<: *base_cycle
+    extract_region:
+      <<: *eq_region
+
+diagnostics:
+  diagnostic_metrics:
+    description: run preprocessors on variables for background climatology metrics
+    variables:
+      pr_double:
+        short_name: pr
+        preprocessor: ITCZ_bias
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+      eq_pr_bias:
+        short_name: pr
+        preprocessor: eq_bias
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+      eq_sst_bias:
+        short_name: tos
+        preprocessor: eq_bias
+        mip: Omon
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+      eq_tauu_bias:
+        short_name: tauu
+        preprocessor: eq_bias
+        mip: Amon
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+      pr_double_seacycle:
+        short_name: pr
+        preprocessor: ITCZ_sea_cycle
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+      eq_pr_seacycle:
+        short_name: pr
+        preprocessor: eq_sea_cycle
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+      eq_sst_seacycle:
+        short_name: tos
+        preprocessor: eq_sea_cycle
+        mip: Omon
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+      eq_tauu_seacycle:
+        short_name: tauu
+        preprocessor: eq_sea_cycle
+        mip: Amon
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+    scripts:
+      plot_script:
+        script: enso_metrics/climatology_diagnostic1.py

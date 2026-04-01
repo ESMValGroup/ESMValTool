@@ -1,5 +1,5 @@
 .. _recipes_esaccioc:
-   
+
 Ocean chlorophyll in ESMs compared to ESA-CCI observations.
 ===========================================================
 

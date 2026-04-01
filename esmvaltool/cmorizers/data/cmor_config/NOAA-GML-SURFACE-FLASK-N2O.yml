@@ -1,0 +1,25 @@
+---
+# Filename
+filename: 'n2o_surface-flask_ccgg_text.tar.gz'
+
+# Trace gas
+trace_gas: n2o
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NOAA-GML-SURFACE-FLASK-N2O
+  version: '1.0'
+  tier: 2
+  type: ground
+  project_id: OBS6
+  source: 'https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz'
+  reference: 'noaa-gml-surface-flask-n2o'
+
+# Variables to cmorize
+variables:
+  n2os:
+    mip: Amon
+    raw_name: n2os
+    raw_units: 'mol mol-1'
+    standard_name: mole_fraction_of_nitrous_oxide_in_air
+    long_name: 'Mole Fraction of N2O'

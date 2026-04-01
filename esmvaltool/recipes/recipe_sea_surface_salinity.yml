@@ -20,8 +20,7 @@ documentation:
 preprocessors:
   timeseries:
     extract_shape:
-      # Relative paths are relative to 'auxiliary_data_dir' as configured in
-      # the config-user.yml file.
+      # Relative paths are relative to the configuration option 'auxiliary_data_dir'.
       # The example shapefile can be downloaded from
       # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
       # but any shapefile can be used
@@ -50,7 +49,7 @@ datasets:
   - {<<: *cmip6, dataset: MPI-ESM1-2-HR, alias: MPI-ESM1-2-HR}
   - {<<: *cmip6, dataset: NorESM2-MM, alias: NorESM2-MM}
   - {<<: *cmip6, dataset: GISS-E2-2-H, alias: GISS-E2-2-H, institute: NASA-GISS}
-          
+
 
 diagnostics:
   compare_salinity:

@@ -7,7 +7,7 @@ attributes:
   dataset_id: WFDE5
   version: 'v1.1'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'https://doi.org/10.24381/cds.20d54e34'
   reference: 'wfde5'

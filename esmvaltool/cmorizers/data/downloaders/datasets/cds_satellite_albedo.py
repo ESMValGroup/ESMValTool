@@ -8,14 +8,20 @@ from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -33,20 +39,20 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         end_date = datetime.datetime(2013, 5, 1)
 
     downloader = CDSDownloader(
-        product_name='satellite-albedo',
+        product_name="satellite-albedo",
         request_dictionary={
-            'format': 'tgz',
-            'satellite': 'spot',
-            'sensor': 'vgt',
-            'product_version': 'v1',
-            'horizontal_resolution': '1km',
-            'variable': [
-                'albb_bh',
-                'albb_dh',
+            "format": "tgz",
+            "satellite": "spot",
+            "sensor": "vgt",
+            "product_version": "v1",
+            "horizontal_resolution": "1km",
+            "variable": [
+                "albb_bh",
+                "albb_dh",
             ],
-            'nominal_day': '20',
+            "nominal_day": "20",
         },
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,

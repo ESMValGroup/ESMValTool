@@ -9,7 +9,7 @@ documentation:
     used to:
 
     1. Plot a timeseries of the raw daily data
-    2. Plot monthly aggregrated data over a certain period
+    2. Plot monthly aggregated data over a certain period
     3. Plot the monthly climate statistics over a certain period
 
   authors:
@@ -33,7 +33,7 @@ datasets:
 preprocessors:
   daily:
     extract_shape: &extract_shape
-      # In aux (config-user.yml)
+      # Relative to auxiliary_data_dir defined in configuration
       shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp
       method: contains
       crop: true

@@ -4,7 +4,7 @@ attributes:
   dataset_id: GLODAP
   version: 'v2.2016b'
   tier: 2
-  modeling_realm: clim
+  type: clim
   project_id: OBS6
   source: 'https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0162565/mapped/GLODAPv2.2016b_MappedClimatologies.tar.gz'
   reference: 'glodap'

@@ -7,7 +7,7 @@ Source
    http://osisaf.met.no/p/ice/
 
 Last access
-   20190502
+   20250314
 
 Download and processing instructions
     Download the desired years from the following ftp:
@@ -21,10 +21,11 @@ Download and processing instructions
     for OSI-450-sh pointing to the data folder. Both cmorizers will ignore
     files belonging to the other hemisphere
 """
+
 from esmvaltool.cmorizers.data.formatters.osi_common import OSICmorizer
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmorizer = OSICmorizer(in_dir, out_dir, cfg, 'nh')
+    cmorizer = OSICmorizer(in_dir, out_dir, cfg, "nh")
     cmorizer.cmorize()

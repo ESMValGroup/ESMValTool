@@ -24,9 +24,6 @@ Some example shapefiles for use with this recipe are available
 `here <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts/shapeselect/testdata>`__,
 make sure to download all files with the same name but different extensions.
 
-The recipe ``examples/recipe_julia.yml`` produces a map plot with the mean temperature
-over the year 1997 plus a number that is configurable from the recipe.
-
 The recipe ``examples/recipe_decadal.yml`` showcases how the ``timerange`` tag
 can be used to load datasets belonging to the DCPP activity. Produces timeseries
 plots comparing the global mean temperature of a DCPP dataset with an observational
@@ -39,13 +36,11 @@ Recipes are stored in `esmvaltool/recipes/ <https://github.com/ESMValGroup/ESMVa
     * examples/recipe_python.yml
     * examples/recipe_easy_ipcc.yml
     * examples/recipe_extract_shape.yml
-    * examples/recipe_julia.yml
     * examples/recipe_decadal.yml
 
 Diagnostics are stored in `esmvaltool/diag_scripts/ <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts>`__:
     * examples/diagnostic.py: visualize results and store provenance information
     * examples/make_plot.py: Create a timeseries plot with likely ranges
-    * examples/diagnostic.jl: visualize results and store provenance information
     * examples/decadal_example.py: visualize results and store provenance information
 
 User settings in recipe
@@ -58,12 +53,6 @@ User settings in recipe
    * ``quickplot: plot_type``: which of the :py:mod:`iris.quickplot` functions to use.
      Arguments that are accepted by these functions can also be specified here, e.g. ``cmap``.
      Preprocessors need to be configured such that the resulting data matches the plot type, e.g. a timeseries or a map.
-
-#. Script ``examples/diagnostic.jl``
-
-   *Required settings for script*
-
-   * ``parameter1``: example parameter, this number will be added to the mean (over time) value of the input data.
 
 Variables
 ---------

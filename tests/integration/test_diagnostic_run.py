@@ -1,4 +1,5 @@
 """Test diagnostic script runs."""
+
 import contextlib
 import shutil
 import sys
@@ -10,17 +11,17 @@ import yaml
 from esmvalcore._main import run
 
 
-def write_config_user_file(dirname):
-    config_file = dirname / 'config-user.yml'
+def write_config_file(dirname):
+    config_file = dirname / "config-user.yml"
     cfg = {
-        'output_dir': str(dirname / 'output_dir'),
-        'rootpath': {
-            'default': str(dirname / 'input_dir'),
+        "output_dir": str(dirname / "output_dir"),
+        "rootpath": {
+            "default": str(dirname / "input_dir"),
         },
-        'drs': {
-            'CMIP5': 'BADC',
+        "drs": {
+            "CMIP5": "BADC",
         },
-        'log_level': 'debug',
+        "log_level": "debug",
     }
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
     return str(config_file)
@@ -41,47 +42,50 @@ def check(result_file):
     print(result)
 
     required_keys = {
-        'input_files',
-        'log_level',
-        'plot_dir',
-        'run_dir',
-        'work_dir',
+        "input_files",
+        "log_level",
+        "plot_dir",
+        "run_dir",
+        "work_dir",
     }
     missing = required_keys - set(result)
     assert not missing
 
 
 SCRIPTS = [
-    'diagnostic.py',
-    pytest.param('diagnostic.ncl',
-                 marks=pytest.mark.skipif(
-                     sys.platform == 'darwin',
-                     reason="ESMValTool ncl not supported on OSX")),
-    pytest.param('diagnostic.R',
-                 marks=pytest.mark.skipif(
-                     sys.platform == 'darwin',
-                     reason="ESMValTool R not supported on OSX")),
-    pytest.param('diagnostic.jl',
-                 marks=pytest.mark.skipif(
-                     sys.platform == 'darwin',
-                     reason="ESMValTool Julia not supported on OSX"))
+    "diagnostic.py",
+    pytest.param(
+        "diagnostic.ncl",
+        marks=pytest.mark.skipif(
+            sys.platform == "darwin",
+            reason="ESMValTool ncl not supported on OSX",
+        ),
+    ),
+    pytest.param(
+        "diagnostic.R",
+        marks=pytest.mark.skipif(
+            sys.platform == "darwin",
+            reason="ESMValTool R not supported on OSX",
+        ),
+    ),
 ]
 
 
 @pytest.mark.installation
-@pytest.mark.parametrize('script_file', SCRIPTS)
+@pytest.mark.parametrize("script_file", SCRIPTS)
 def test_diagnostic_run(tmp_path, script_file):
-
     local_script_file = Path(__file__).parent / script_file
 
-    recipe_file = tmp_path / 'recipe_test.yml'
+    recipe_file = tmp_path / "recipe_test.yml"
     script_file = tmp_path / script_file
-    result_file = tmp_path / 'result.yml'
+    result_file = tmp_path / "result.yml"
+    config_dir = tmp_path / "config"
+    config_dir.mkdir(exist_ok=True, parents=True)
 
     shutil.copy(local_script_file, script_file)
 
     # Create recipe
-    recipe = dedent("""
+    recipe = dedent(f"""
         documentation:
           title: Test recipe
           description: Recipe with no data.
@@ -91,18 +95,18 @@ def test_diagnostic_run(tmp_path, script_file):
           diagnostic_name:
             scripts:
               script_name:
-                script: {}
-                setting_name: {}
-        """.format(script_file, result_file))
+                script: {script_file}
+                setting_name: {result_file}
+        """)
     recipe_file.write_text(str(recipe))
 
-    config_user_file = write_config_user_file(tmp_path)
+    write_config_file(config_dir)
     with arguments(
-            'esmvaltool',
-            'run',
-            '--config_file',
-            config_user_file,
-            str(recipe_file),
+        "esmvaltool",
+        "run",
+        "--config_dir",
+        str(config_dir),
+        str(recipe_file),
     ):
         run()
 

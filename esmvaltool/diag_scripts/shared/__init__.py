@@ -1,4 +1,5 @@
 """Code that is shared between multiple diagnostic scripts."""
+
 from . import io, iris_helpers, names, plot
 from ._base import (
     ProvenanceLogger,
@@ -20,33 +21,33 @@ from ._validation import apply_supermeans, get_control_exper_obs
 
 __all__ = [
     # Main entry point for diagnostics
-    'run_diagnostic',
+    "run_diagnostic",
     # Define and write output files
-    'save_figure',
-    'save_data',
-    'get_plot_filename',
-    'get_diagnostic_filename',
+    "save_figure",
+    "save_data",
+    "get_plot_filename",
+    "get_diagnostic_filename",
     # Log provenance
-    'ProvenanceLogger',
+    "ProvenanceLogger",
     # Select and sort input metadata
-    'select_metadata',
-    'sorted_metadata',
-    'group_metadata',
-    'sorted_group_metadata',
-    'extract_variables',
-    'variables_available',
-    'names',
-    'Variable',
-    'Variables',
-    'Datasets',
-    'get_cfg',
+    "select_metadata",
+    "sorted_metadata",
+    "group_metadata",
+    "sorted_group_metadata",
+    "extract_variables",
+    "variables_available",
+    "names",
+    "Variable",
+    "Variables",
+    "Datasets",
+    "get_cfg",
     # IO module
-    'io',
+    "io",
     # Iris helpers module
-    'iris_helpers',
+    "iris_helpers",
     # Plotting module
-    'plot',
+    "plot",
     # Validation module
-    'get_control_exper_obs',
-    'apply_supermeans',
+    "get_control_exper_obs",
+    "apply_supermeans",
 ]

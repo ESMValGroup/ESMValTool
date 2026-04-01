@@ -1,6 +1,6 @@
-#--------------------------- 
+#---------------------------
 # TURBINE CHARACTERISTICS
-#--------------------------- 
+#---------------------------
 # Name: Gamesa_G87_2.0MW [string]
 # Manufacturer: Gamesa [string]
 # Diameter: 87 m
@@ -13,7 +13,7 @@
 # Control: pitch [pitch/stall/active_stall/flaps]
 # HubHeights: 67,78,90,100 m
 #
-#--------------------------- 
+#---------------------------
 # POWER CURVE
 # Density: 1.225 kg/m^3
 #---------------------------

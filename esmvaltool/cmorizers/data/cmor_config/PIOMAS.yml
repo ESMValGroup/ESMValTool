@@ -4,7 +4,7 @@ attributes:
   dataset_id: PIOMAS
   version: '2.1'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'http://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/data/model_grid'
   reference: 'piomas'

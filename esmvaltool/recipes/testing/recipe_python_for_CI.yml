@@ -1,6 +1,6 @@
 # ESMValTool
 # recipe_python_for_CI.yml
-# 
+#
 # This recipe is identical to recipe_python.yml bar the extract_location
 # preprocessor which is replaced here with extract_point. The reason for this
 # is that this recipe is used solely for CI tests, and the geolocator/Nominatim
