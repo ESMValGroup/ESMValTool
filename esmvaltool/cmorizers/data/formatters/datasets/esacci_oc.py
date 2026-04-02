@@ -14,7 +14,7 @@ Download and processing instructions
    In case of issues with data download, check also the information provided at
        OceanColour webpage https://esa-oceancolour-cci.org/
    Put all files under a single directory (no subdirectories with years)
-   in ${RAWOBS}/Tier2/ESACCI-OC
+   in Tier2/ESACCI-OC
 
 Modification history
    20190227-lovato_tomas: written.
@@ -106,12 +106,14 @@ def _fix_time(cube, frequency):
                         datetime(d.year, d.month, 1),
                         datetime(d.year, d.month, 15),
                         datetime(
-                            d.year + (d.month // 12), (d.month % 12) + 1, 1
+                            d.year + (d.month // 12),
+                            (d.month % 12) + 1,
+                            1,
                         ),
                     ]
                     for d in units.num2date(time.points)
-                ]
-            )
+                ],
+            ),
         )
         np.savetxt("time.txt", new_dates)
         time.points = new_dates[:, 1]
@@ -180,7 +182,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
                         "by",
                         f"{bins}",
                         "cells average",
-                    ]
+                    ],
                 )
             else:
                 dsmeta["BINNING"] = ""
@@ -225,7 +227,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         # merge yearly data and apply binning
         inpfile, addinfo = merge_data(
-            in_dir, out_dir, raw_info, cfg["custom"]["bin_size"]
+            in_dir,
+            out_dir,
+            raw_info,
+            cfg["custom"]["bin_size"],
         )
 
         logger.info("CMORizing var %s from file %s", var, inpfile)

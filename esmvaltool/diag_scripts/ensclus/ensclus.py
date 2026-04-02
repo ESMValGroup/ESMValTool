@@ -36,10 +36,10 @@ def get_provenance_record(gatt, vatt, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     caption = (
         "Ensemble Clustering Diagnostics of extreme {extreme} of ".format(
-            **gatt
+            **gatt,
         )
         + "variable {long_name} between {start_year} and {end_year} ".format(
-            **vatt
+            **vatt,
         )
     )
     print(gatt)
@@ -81,7 +81,8 @@ def main(cfg):
         + element["exp"]
     )
     logger.info(
-        "The name of the output files will be <variable>_%s.txt", name_outputs
+        "The name of the output files will be <variable>_%s.txt",
+        name_outputs,
     )
     variable_name = element["short_name"]
     max_plot_panels = cfg.get("max_plot_panels", 72)
@@ -129,12 +130,19 @@ def main(cfg):
 
     # ###################### EOF AND K-MEANS ANALYSES #######################
     outfiles2 = ens_eof_kmeans(
-        out_dir, name_outputs, numens, numpcs, perc, cfg["numclus"]
+        out_dir,
+        name_outputs,
+        numens,
+        numpcs,
+        perc,
+        cfg["numclus"],
     )
 
     outfiles = outfiles + outfiles2
     provenance_record = get_provenance_record(
-        cfg, list(files_dict.values())[0][0], ancestor_files=filenames_cat
+        cfg,
+        list(files_dict.values())[0][0],
+        ancestor_files=filenames_cat,
     )
 
     # ###################### PLOT AND SAVE FIGURES ##########################

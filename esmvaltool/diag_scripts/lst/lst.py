@@ -82,7 +82,7 @@ def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
     # make X ticks
     x_tick_list = []
     time_list = lst_diff_data.coord("time").units.num2date(
-        lst_diff_data.coord("time").points
+        lst_diff_data.coord("time").points,
     )
     for item in time_list:
         if item.month == 1:
@@ -132,9 +132,9 @@ def _get_provenance_record(attributes, ancestor_files):
     """
     caption = (
         "Timeseries of ESA CCI LST difference to mean of "
-        + "model ensembles calculated over region bounded by latitude "
-        + "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "
-        + "and for model/ensembles {ensembles}. "
+        "model ensembles calculated over region bounded by latitude "
+        "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "
+        "and for model/ensembles {ensembles}. "
         + "Shown for years {start_year} to {end_year}.".format(**attributes)
     )
 
@@ -187,11 +187,13 @@ def _diagnostic(config):
     # Assume the loaded data is all the same shape
     loaded_data["MultiModelMean"]["ts"].remove_coord("time")
     loaded_data["MultiModelMean"]["ts"].add_dim_coord(
-        loaded_data["ESACCI-LST"]["ts"].coord("time"), 0
+        loaded_data["ESACCI-LST"]["ts"].coord("time"),
+        0,
     )
     loaded_data["MultiModelStd_Dev"]["ts"].remove_coord("time")
     loaded_data["MultiModelStd_Dev"]["ts"].add_dim_coord(
-        loaded_data["ESACCI-LST"]["ts"].coord("time"), 0
+        loaded_data["ESACCI-LST"]["ts"].coord("time"),
+        0,
     )
 
     # Make a cube of the LST difference, and with +/- std of model variation

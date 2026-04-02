@@ -24,7 +24,6 @@ from datetime import datetime
 import cf_units
 import iris
 from dask import array as da
-from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -51,7 +50,9 @@ def _fix_time_monthly(cube):
         newtime.append(midpoint)
 
     newtime = cf_units.date2num(
-        newtime, dataset_time_unit, dataset_time_calender
+        newtime,
+        dataset_time_unit,
+        dataset_time_calender,
     )
     # Put them on the file
     cube.coord("time").points = newtime
@@ -93,7 +94,7 @@ def _var_pairs(cube_list, var_parts, oper):
         raise NotImplementedError(
             f"Pairwise variables operation {oper} "
             "not implemented yet, you can do it "
-            "yourself in the MERRA2 cmorizer."
+            "yourself in the MERRA2 cmorizer.",
         )
 
     return selected
@@ -245,8 +246,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
                 attributes["component_raw_2"] = components[1]
                 attributes["component_operation"] = oper
                 break
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip"], var["short_name"])
+    definition = cfg["cmor_table"].get_variable(var["mip"], var["short_name"])
 
     cube = _load_cube(in_files, var)
 
@@ -329,14 +329,17 @@ def _extract_variable(in_files, var, cfg, out_dir):
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     utils.save_variable(
-        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        unlimited_dimensions=["time"],
     )
     logger.info("Finished CMORizing %s", ", ".join(in_files))
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Run CMORizer for MERRA2."""
-    cfg.pop("cmor_table")
     if start_date is None:
         start_date = 1980
     else:

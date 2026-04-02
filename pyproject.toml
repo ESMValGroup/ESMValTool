@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools >= 40.6.0",
-    "setuptools_scm>=6.2",
+    "setuptools>=80",
+    "setuptools_scm>=8",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -14,11 +14,9 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
@@ -62,7 +60,7 @@ dependencies = [
     "nc-time-axis",
     "netCDF4",
     "numba",
-    "numpy!=1.24.3",  # severe masking bug
+    "numpy>=2",
     "openpyxl",
     "packaging",
     "pandas",
@@ -73,7 +71,6 @@ dependencies = [
     "pyyaml",
     "rasterio>=1.3.10",
     "requests",
-    "ruamel.yaml",
     "scikit-image",
     "scikit-learn>=1.4.0",  # github.com/ESMValGroup/ESMValTool/issues/3504
     "scipy",
@@ -88,9 +85,10 @@ dependencies = [
     "zarr",
 ]
 description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
-license = {text = "Apache License, Version 2.0"}
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 name = "ESMValTool"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [project.optional-dependencies]
 # Execute `pip install .[test]` once and then use `pytest` to run tests
@@ -107,7 +105,7 @@ test = [
 doc = [
     "autodocsumm>=0.2.2",
     "myst-nb",
-    "sphinx>=6.1.3",
+    "sphinx>=6.1.3,<9",  # <9 due to ESMValTool/issues/4316
     "pydata_sphinx_theme",
 ]
 develop = [
@@ -137,7 +135,6 @@ Issues = "https://github.com/ESMValGroup/ESMValTool/issues"
 
 [tool.setuptools]
 include-package-data = true
-license-files = ["LICENSE"]
 packages = ["esmvaltool"]
 zip-safe = false
 
@@ -188,7 +185,6 @@ exclude_lines = [
 ignore-words-list = "emac,hist,oce,pres,vas,runn"
 
 [tool.ruff]
-fix = true
 line-length = 79
 show-fixes = true
 

@@ -71,10 +71,11 @@ SPECIAL_RECIPES = {
     "recipe_bock20jgr_fig_8-10": {
         "partition": "#SBATCH --partition=shared \n",
         "time": "#SBATCH --time=48:00:00 \n",
-        "memory": "#SBATCH --mem=50G \n",
+        "memory": "#SBATCH --mem=150G \n",
     },
     "recipe_check_obs": {
         "partition": "#SBATCH --partition=compute \n",
+        "time": "#SBATCH --time=8:00:00 \n",
         "memory": "#SBATCH --constraint=512G \n",
     },
     "recipe_climate_change_hotspot": {
@@ -96,12 +97,6 @@ SPECIAL_RECIPES = {
         "partition": "#SBATCH --partition=compute \n",
     },
     "recipe_extreme_index": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_eyring06jgr": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_eyring13jgr_12": {
         "partition": "#SBATCH --partition=compute \n",
     },
     "recipe_flato13ipcc_figures_938_941_cmip6": {
@@ -163,15 +158,6 @@ SPECIAL_RECIPES = {
         "time": "#SBATCH --time=08:00:00 \n",
         "memory": "#SBATCH --constraint=512G \n",
     },
-    "recipe_schlund20jgr_gpp_abs_rcp85": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_schlund20jgr_gpp_change_1pct": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_schlund20jgr_gpp_change_rcp85": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
     "recipe_sea_surface_salinity": {
         "partition": "#SBATCH --partition=compute \n",
     },
@@ -191,12 +177,6 @@ SPECIAL_RECIPES = {
     "recipe_wflow": {
         "partition": "#SBATCH --partition=compute \n",
     },
-    "recipe_wenzel16jclim": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
-    "recipe_wenzel16nat": {
-        "partition": "#SBATCH --partition=compute \n",
-    },
 }
 
 # These recipes cannot be run with the default number of parallel
@@ -213,6 +193,7 @@ MAX_PARALLEL_TASKS = {
     "recipe_climate_change_hotspot": 1,
     "recipe_flato13ipcc_figure_96": 1,
     "recipe_flato13ipcc_figures_938_941_cmip3": 1,
+    "recipe_ipccwg1ar6ch3_fig_3_19": 1,
     "recipe_ipccwg1ar6ch3_fig_3_9": 1,
     "recipe_ipccwg1ar6ch3_fig_3_42_a": 1,
     "recipe_ipccwg1ar6ch3_fig_3_43": 1,
@@ -220,9 +201,9 @@ MAX_PARALLEL_TASKS = {
     "recipe_collins13ipcc": 1,
     "recipe_lauer22jclim_fig3-4_zonal": 1,
     "recipe_lauer22jclim_fig5_lifrac": 1,
+    "recipe_ref_timeseries_region": 2,
     "recipe_smpi": 1,
     "recipe_smpi_4cds": 1,
-    "recipe_wenzel14jgr": 1,
 }
 
 DISTRIBUTED_RECIPES = [
@@ -237,7 +218,7 @@ def generate_submit():
     """Generate and submit scripts."""
     print(
         "It is recommended that you run the following recipes with the "
-        "configuration in dask.yml in ~/.esmvaltool/dask.yml:"
+        "configuration in dask.yml in ~/.esmvaltool/dask.yml:",
     )
     default_dask_config_file = textwrap.dedent(f"""
     cluster:
@@ -276,10 +257,10 @@ def generate_submit():
             file.write("\n")
             file.write(f"#SBATCH --job-name={recipe.stem}.%J\n")
             file.write(
-                f"#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n"
+                f"#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n",
             )
             file.write(
-                f"#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n"
+                f"#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n",
             )
             file.write(f"#SBATCH --account={account}\n")
             if not SPECIAL_RECIPES.get(recipe.stem, None):
@@ -304,13 +285,12 @@ def generate_submit():
                     if "memory" in SPECIAL_RECIPES[recipe.stem]:
                         file.write(SPECIAL_RECIPES[recipe.stem]["memory"])
                 # Shared nodes (other partitions)
+                # Special memory requirements
+                elif "memory" in SPECIAL_RECIPES[recipe.stem]:
+                    file.write(SPECIAL_RECIPES[recipe.stem]["memory"])
+                # Default
                 else:
-                    # Special memory requirements
-                    if "memory" in SPECIAL_RECIPES[recipe.stem]:
-                        file.write(SPECIAL_RECIPES[recipe.stem]["memory"])
-                    # Default
-                    else:
-                        file.write(f"#SBATCH --mem={memory}\n")
+                    file.write(f"#SBATCH --mem={memory}\n")
             if mail:
                 file.write("#SBATCH --mail-type=FAIL,END \n")
             file.write("\n")
@@ -321,11 +301,10 @@ def generate_submit():
             file.write(f"conda activate {env}\n")
             file.write("\n")
             if not config_dir:
-                file.write(f"esmvaltool run {str(recipe)}")
+                file.write(f"esmvaltool run {recipe!s}")
             else:
                 file.write(
-                    f"esmvaltool run --config_dir "
-                    f"{str(config_dir)} {str(recipe)}"
+                    f"esmvaltool run --config_dir {config_dir!s} {recipe!s}",
                 )
             # set max_parallel_tasks
             max_parallel_tasks = MAX_PARALLEL_TASKS.get(

@@ -50,7 +50,7 @@ def get_input_cubes(metadata):
         short_name = attributes["short_name"]
         if short_name in all_vars:
             raise ValueError(
-                f"Multiple input files found for variable '{short_name}'."
+                f"Multiple input files found for variable '{short_name}'.",
             )
         filename = attributes["filename"]
         logger.info("Loading variable %s", short_name)
@@ -77,7 +77,7 @@ def save(cubes, dataset, provenance, cfg):
             cfg["basin"],
             str(start_year),
             str(end_year),
-        ]
+        ],
     )
     output_file = get_diagnostic_filename(basename, cfg)
     logger.info("Saving cubes to file %s", output_file)
@@ -91,7 +91,9 @@ def save(cubes, dataset, provenance, cfg):
 def lapse_rate_correction(height):
     """Temperature correction over a given height interval."""
     gamma = iris.coords.AuxCoord(
-        np.float32(0.0065), long_name="Environmental lapse rate", units="K m-1"
+        np.float32(0.0065),
+        long_name="Environmental lapse rate",
+        units="K m-1",
     )
     return height * gamma
 
@@ -123,7 +125,7 @@ def load_dem(filename):
     else:
         raise ValueError(
             f"Unknown file format {filename}. Supported formats "
-            "are '.nc' and '.map'."
+            "are '.nc' and '.map'.",
         )
     for coord in "longitude", "latitude":
         if not cube.coord(coord).has_bounds():

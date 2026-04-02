@@ -1,11 +1,7 @@
 ---
 version: 2.1
 
-orbs:
-  coverage-reporter: codacy/coverage-reporter@13.13.0
-
 commands:
-
   check_changes:
     steps:
       - run:
@@ -41,6 +37,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
+            pip check
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
@@ -75,7 +72,7 @@ commands:
       - run:
           name: Install git+ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - check_changes
@@ -95,7 +92,7 @@ commands:
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
-            pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
+            pip install --no-deps << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
               rm -r esmvaltool
@@ -135,7 +132,7 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir /logs
-            pip install .[test] > /logs/install.txt 2>&1
+            pip install --no-deps .[test] > /logs/install.txt 2>&1
       - run:
           name: Check Python code style and mistakes
           command: |
@@ -146,15 +143,15 @@ jobs:
           name: Remove source code to test the installed software
           command: rm -r esmvaltool
       - test_and_report
+      - run:
+          # Documentation available at https://docs.codacy.com/coverage-reporter/
+          name: Upload coverage report to Codacy
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -s -r test-reports/coverage.xml
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - /root/.cache/pip
             - .pytest_cache
-      - coverage-reporter/send_report:
-          coverage-reports: 'test-reports/coverage.xml'
-          project-token: $CODACY_PROJECT_TOKEN
-          skip: true  # skip if project-token is not defined (i.e. on a fork)
 
   test_installation_from_source_test_mode:
     # Test installation from source
@@ -186,7 +183,7 @@ jobs:
       - run:
           name: Install git and ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - run:
@@ -205,10 +202,13 @@ jobs:
             mkdir /logs
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
+            # Temporarily install intake-esgf here until there is a new release
+            # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
+            pip install git+https://github.com/esgf2-us/intake-esgf@main
             mamba list >> /logs/conda.txt
-            pip install --editable .[develop]
+            pip install --no-deps --editable .[develop]
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
-            pip install --editable $HOME/ESMValCore[develop]
+            pip install --no-deps --editable $HOME/ESMValCore[develop]
       - log_versions
       - test_and_report
       - run:
@@ -216,12 +216,15 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            mkdir -p ~/climate_data
-            esmvaltool config get_config_user
-            echo "search_esgf: when_missing" >> ~/.config/esmvaltool/config-user.yml
-            cat ~/.config/esmvaltool/config-user.yml
+            esmvaltool config copy data-intake-esgf.yml
+            python -c '
+            import intake_esgf
+            intake_esgf.conf["solr_indices"]["esgf.ceda.ac.uk"] = True
+            intake_esgf.conf["solr_indices"]["esgf-data.dkrz.de"] = True
+            intake_esgf.conf.save()
+            '
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
-              esmvaltool run "$recipe"
+              esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
       - store_artifacts:
           path: /root/esmvaltool_output
@@ -236,7 +239,7 @@ jobs:
     # Test building documentation
     docker:
       - image: condaforge/miniforge3:latest
-    resource_class: medium
+    resource_class: medium+
     steps:
       - checkout
       - run:
@@ -246,7 +249,8 @@ jobs:
             # Install
             conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
-            pip install .[doc]
+            pip install --no-deps .[doc]
+            pip check
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -269,7 +273,7 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.11' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.12' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # Log versions

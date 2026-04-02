@@ -78,7 +78,9 @@ def area_weighted_mean(cube):
     logger.debug("Computing field mean")
     grid_areas = iris.analysis.cartography.area_weights(cube)
     mean = cube.collapsed(
-        ["longitude", "latitude"], iris.analysis.MEAN, weights=grid_areas
+        ["longitude", "latitude"],
+        iris.analysis.MEAN,
+        weights=grid_areas,
     )
     return mean
 
@@ -124,10 +126,10 @@ def plot_model(cube, attributes, cfg):
     if attributes["short_name"] == "clt":
         levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
         cmap = "viridis"
-    elif attributes["short_name"] == "clivi":
-        levels = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
-        cmap = "viridis"
-    elif attributes["short_name"] == "lwp":
+    elif (
+        attributes["short_name"] == "clivi"
+        or attributes["short_name"] == "lwp"
+    ):
         levels = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
         cmap = "viridis"
     elif attributes["short_name"] == "netcre":
@@ -148,9 +150,10 @@ def plot_model(cube, attributes, cfg):
     colorbar.set_label(cube.var_name + "/" + cube.units.origin)
     if attributes["short_name"] == "clt":
         ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
-    elif attributes["short_name"] == "clivi":
-        ticks = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
-    elif attributes["short_name"] == "lwp":
+    elif (
+        attributes["short_name"] == "clivi"
+        or attributes["short_name"] == "lwp"
+    ):
         ticks = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
     elif attributes["short_name"] == "netcre":
         ticks = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
@@ -202,9 +205,8 @@ def read_data(groups, cfg):
                 or group_name == "OBS"
             ):
                 cubes_out.append(cube)
-            else:
-                if cfg["plot_each_model"]:
-                    plot_model(cube, attributes, cfg)
+            elif cfg["plot_each_model"]:
+                plot_model(cube, attributes, cfg)
 
     return cubes, cubes_out
 
@@ -240,10 +242,10 @@ def plot_diagnostic(cubes, attributes, input_data, cfg):
     if attributes["short_name"] == "clt":
         levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
         cmap = "viridis"
-    elif attributes["short_name"] == "clivi":
-        levels = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
-        cmap = "viridis"
-    elif attributes["short_name"] == "lwp":
+    elif (
+        attributes["short_name"] == "clivi"
+        or attributes["short_name"] == "lwp"
+    ):
         levels = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
         cmap = "viridis"
     elif attributes["short_name"] == "netcre":
@@ -257,9 +259,10 @@ def plot_diagnostic(cubes, attributes, input_data, cfg):
         cmap = "Blues_r"
     elif attributes["short_name"] == "clt_diff":
         levels = list(np.arange(-30, 31, 2.5))
-    elif attributes["short_name"] == "clivi_diff":
-        levels = list(np.arange(-0.1, 0.105, 0.01))
-    elif attributes["short_name"] == "lwp_diff":
+    elif (
+        attributes["short_name"] == "clivi_diff"
+        or attributes["short_name"] == "lwp_diff"
+    ):
         levels = list(np.arange(-0.1, 0.105, 0.01))
     elif attributes["short_name"] in [
         "netcre_diff",
@@ -282,9 +285,9 @@ def plot_diagnostic(cubes, attributes, input_data, cfg):
         legend = cube.attributes["variable_group"]
 
         if cfg["reference"]:
-            ipanel = PANEL.get(legend, None)
+            ipanel = PANEL.get(legend)
         else:
-            ipanel = PANEL_woOBS.get(legend, None)
+            ipanel = PANEL_woOBS.get(legend)
 
         plt.subplot(ipanel, projection=ccrs.Robinson())
 
@@ -294,29 +297,37 @@ def plot_diagnostic(cubes, attributes, input_data, cfg):
 
         if cfg["reference"]:
             plt.title(legend, fontsize=18)
-            ipanel_label = PANEL_LABELS.get(legend, None)
+            ipanel_label = PANEL_LABELS.get(legend)
             plt.title(ipanel_label, fontsize=22, loc="left")
             fsize = 14
         else:
             plt.title(legend, fontsize=9)
-            ipanel_label = PANEL_LABELS_woOBS.get(legend, None)
+            ipanel_label = PANEL_LABELS_woOBS.get(legend)
             plt.title(ipanel_label, fontsize=12, loc="left")
             fsize = 8
         if attributes["short_name"] in ["clt", "netcre"]:
             plt.title(
-                f"mean = {mean.data:.1f}      ", fontsize=fsize, loc="right"
+                f"mean = {mean.data:.1f}      ",
+                fontsize=fsize,
+                loc="right",
             )
         elif attributes["short_name"] in ["clivi", "lwp"]:
             plt.title(
-                f"mean = {mean.data:.3f}      ", fontsize=fsize, loc="right"
+                f"mean = {mean.data:.3f}      ",
+                fontsize=fsize,
+                loc="right",
             )
         elif attributes["short_name"] in ["clivi_diff", "lwp_diff"]:
             plt.title(
-                f"bias = {mean.data:.3f}      ", fontsize=fsize, loc="right"
+                f"bias = {mean.data:.3f}      ",
+                fontsize=fsize,
+                loc="right",
             )
         elif attributes["short_name"] in ["clt_diff", "netcre_diff"]:
             plt.title(
-                f"bias = {mean.data:.1f}      ", fontsize=fsize, loc="right"
+                f"bias = {mean.data:.1f}      ",
+                fontsize=fsize,
+                loc="right",
             )
         else:
             plt.title(f"{mean.data:.1f}      ", fontsize=fsize, loc="right")
@@ -334,9 +345,10 @@ def plot_diagnostic(cubes, attributes, input_data, cfg):
         colorbar.set_label(cubes[0].var_name + " / " + cubes[0].units.origin)
     if attributes["short_name"] == "clt":
         ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
-    elif attributes["short_name"] == "clivi":
-        ticks = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
-    elif attributes["short_name"] == "lwp":
+    elif (
+        attributes["short_name"] == "clivi"
+        or attributes["short_name"] == "lwp"
+    ):
         ticks = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
     elif attributes["short_name"] == "netcre":
         ticks = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
@@ -347,21 +359,10 @@ def plot_diagnostic(cubes, attributes, input_data, cfg):
 
     elif attributes["short_name"] == "clt_diff":
         ticks = list(np.arange(-30, 31, 5))
-    elif attributes["short_name"] == "clivi_diff":
-        ticks = [
-            -0.1,
-            -0.08,
-            -0.06,
-            -0.04,
-            -0.02,
-            0.0,
-            0.02,
-            0.04,
-            0.06,
-            0.08,
-            0.1,
-        ]
-    elif attributes["short_name"] == "lwp_diff":
+    elif (
+        attributes["short_name"] == "clivi_diff"
+        or attributes["short_name"] == "lwp_diff"
+    ):
         ticks = [
             -0.1,
             -0.08,
@@ -389,7 +390,8 @@ def plot_diagnostic(cubes, attributes, input_data, cfg):
 
     # Save the data and the plot
     provenance_record = get_provenance_record(
-        attributes, ancestor_files=[d["filename"] for d in input_data]
+        attributes,
+        ancestor_files=[d["filename"] for d in input_data],
     )
     basename = "map_" + attributes["short_name"]
 
@@ -457,12 +459,12 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
 
             nsample = 1000
             sample_stat = pd.DataFrame(
-                columns=["Mean", "Bias", "RMSD", "Corr"]
+                columns=["Mean", "Bias", "RMSD", "Corr"],
             )
 
             ncubes = len(cubes_part)
             array = list(np.arange(0, ncubes))
-            for iboot in range(0, nsample):
+            for iboot in range(nsample):
                 cube = cubes_part[datasets[0]].copy()
                 ires = [secrets.choice(array) for _ in range(len(array))]
                 for i, icube in enumerate(ires):
@@ -482,7 +484,8 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
             stat = sample_stat.describe()
             basename = f"bootstrapping_{attributes['short_name']}_{group}"
             csv_path = get_diagnostic_filename(basename, cfg).replace(
-                ".nc", ".csv"
+                ".nc",
+                ".csv",
             )
             stat.to_csv(csv_path)
             logger.info("Wrote %s", csv_path)
@@ -511,8 +514,8 @@ def main(cfg):
         cube_obs = cubes_out.extract_cube(
             iris.Constraint(
                 cube_func=lambda cube: cube.attributes["variable_group"]
-                == "OBS"
-            )
+                == "OBS",
+            ),
         )
 
         # Bootstrapping

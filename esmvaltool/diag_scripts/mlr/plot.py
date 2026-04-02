@@ -129,7 +129,7 @@ def _add_correlation_information(cfg, title, cube):
         return
     if not ALL_CUBES.empty and len(ALL_CUBES.index) != cube.data.size:
         raise ValueError(
-            "Expected datasets with identical shapes when 'print_corr' is set"
+            "Expected datasets with identical shapes when 'print_corr' is set",
         )
     ALL_CUBES[title] = np.ma.filled(cube.data.ravel(), np.nan)
 
@@ -154,7 +154,8 @@ def _get_cube(var_type, group_by_attribute, attr, datasets):
     )
     if "error" in var_type:
         logger.debug(
-            "Calculating cube for '%s' by squared error aggregation", key
+            "Calculating cube for '%s' by squared error aggregation",
+            key,
         )
         ref_cube = iris.load_cube(datasets[0]["filename"])
         cube = mlr.get_squared_error_cube(ref_cube, datasets)
@@ -165,7 +166,7 @@ def _get_cube(var_type, group_by_attribute, attr, datasets):
             raise ValueError(
                 f"Expected exactly one dataset for '{key}' got "
                 f"{len(datasets):d}:\n"
-                f"{pformat([d['filename'] for d in datasets])}"
+                f"{pformat([d['filename'] for d in datasets])}",
             )
         cube = iris.load_cube(datasets[0]["filename"])
     dataset_names = sorted(list({d["dataset"] for d in datasets}))
@@ -182,7 +183,7 @@ def _get_cube(var_type, group_by_attribute, attr, datasets):
             "start_year": min(start_years),
             "tag": datasets[0]["tag"],
             "var_type": var_type,
-        }
+        },
     )
     if attr is not None:
         cube.attributes[group_by_attribute] = attr
@@ -207,7 +208,7 @@ def _get_map_plot_func(cfg):
     if cfg["map_plot_type"] not in allowed_funcs:
         raise ValueError(
             f"Expected one of {list(allowed_funcs.keys())} for "
-            f"'map_plot_type', got '{cfg['map_plot_type']}'"
+            f"'map_plot_type', got '{cfg['map_plot_type']}'",
         )
     return allowed_funcs[cfg["map_plot_type"]]
 
@@ -221,7 +222,7 @@ def _get_title(cfg, alias_1, attrs_1, alias_2=None, attrs_2=None, op_type="-"):
         return title
     if attrs_2 is None:
         raise ValueError(
-            "'attrs_2' needs to be given when 'alias_2' is not None"
+            "'attrs_2' needs to be given when 'alias_2' is not None",
         )
     if op_type == "rel_bias":
         if not cfg["years_in_title"]:
@@ -390,7 +391,7 @@ def _xy_plot_with_errors(cfg, cube_dict, split_key, **plot_kwargs):
         error_key = SEP.join([error_key, *split_key[1:]])
     if error_key not in cube_dict:
         raise ValueError(
-            f"Corresponding error '{error_key}' for '{key}' not available"
+            f"Corresponding error '{error_key}' for '{key}' not available",
         )
     x_coord = cfg["plot_xy_with_errors"].get("x_coord")
 
@@ -402,7 +403,7 @@ def _xy_plot_with_errors(cfg, cube_dict, split_key, **plot_kwargs):
     if cube.ndim != 1 or error_cube.ndim != 1:
         raise ValueError(
             f"Expected 1D cube for X-Y plots with error range, got "
-            f"{cube.ndim:d}D and {error_cube.ndim:d} (error) cubes"
+            f"{cube.ndim:d}D and {error_cube.ndim:d} (error) cubes",
         )
     if x_coord is not None:
         coord = cube.coord(x_coord)
@@ -417,7 +418,7 @@ def _xy_plot_with_errors(cfg, cube_dict, split_key, **plot_kwargs):
         if not error_cube.coord(coord):
             raise iris.exceptions.CoordinateNotFoundError(
                 f"Coordinate '{coord.name()}' of '{key}' not found in "
-                f"corresponding error '{error_key}'"
+                f"corresponding error '{error_key}'",
             )
 
     # Plot
@@ -457,7 +458,7 @@ def get_cube_dict(cfg, group_by_attribute):
             if new_mask.shape != mask.shape:
                 raise ValueError(
                     "Expected datasets with identical shapes when "
-                    "'apply_common_mask' is set"
+                    "'apply_common_mask' is set",
                 )
             mask |= new_mask
         for cube in cube_dict.values():
@@ -468,13 +469,15 @@ def get_cube_dict(cfg, group_by_attribute):
 def get_input_datasets(cfg):
     """Get grouped datasets (by tag)."""
     input_data = mlr.get_input_data(
-        cfg, pattern=cfg.get("pattern"), ignore=cfg.get("ignore")
+        cfg,
+        pattern=cfg.get("pattern"),
+        ignore=cfg.get("ignore"),
     )
     tags = list(group_metadata(input_data, "tag").keys())
     if len(tags) != 1:
         raise ValueError(
             f"Expected unique 'tag' for all input datasets, got {len(tags):d} "
-            f"different ones ({tags})"
+            f"different ones ({tags})",
         )
     return input_data
 
@@ -574,7 +577,12 @@ def plot_map_abs_biases(cfg, cube_dict):
 
         # Plot appearance
         title = _get_title(
-            cfg, alias_1, attrs_1, alias_2, attrs_2, op_type="-"
+            cfg,
+            alias_1,
+            attrs_1,
+            alias_2,
+            attrs_2,
+            op_type="-",
         )
         plt.title(title)
         process_pyplot_kwargs(cfg, "plot_map_abs_biases")
@@ -591,7 +599,12 @@ def plot_map_abs_biases(cfg, cube_dict):
 
         # Provenance
         _write_map_provenance(
-            cfg, bias_cube, plot_path, title, attrs_1, attrs_2
+            cfg,
+            bias_cube,
+            plot_path,
+            title,
+            attrs_1,
+            attrs_2,
         )
 
         # Add to global DataFrame
@@ -625,7 +638,12 @@ def plot_map_ratios(cfg, cube_dict):
 
         # Plot appearance
         title = _get_title(
-            cfg, alias_1, attrs_1, alias_2, attrs_2, op_type="/"
+            cfg,
+            alias_1,
+            attrs_1,
+            alias_2,
+            attrs_2,
+            op_type="/",
         )
         plt.title(title)
         process_pyplot_kwargs(cfg, "plot_map_ratios")
@@ -642,7 +660,12 @@ def plot_map_ratios(cfg, cube_dict):
 
         # Provenance
         _write_map_provenance(
-            cfg, ratio_cube, plot_path, title, attrs_1, attrs_2
+            cfg,
+            ratio_cube,
+            plot_path,
+            title,
+            attrs_1,
+            attrs_2,
         )
 
         # Add to global DataFrame
@@ -654,7 +677,10 @@ def plot_map_rel_biases(cfg, cube_dict):
     logger.info("Creating relative bias map plots")
     for key_1, key_2 in itertools.permutations(cube_dict, 2):
         logger.debug(
-            "Plotting relative bias ('%s' - '%s') / '%s'", key_1, key_2, key_2
+            "Plotting relative bias ('%s' - '%s') / '%s'",
+            key_1,
+            key_2,
+            key_2,
         )
         cube_1 = cube_dict[key_1]
         cube_2 = cube_dict[key_2]
@@ -678,7 +704,12 @@ def plot_map_rel_biases(cfg, cube_dict):
 
         # Plot appearance
         title = _get_title(
-            cfg, alias_1, attrs_1, alias_2, attrs_2, op_type="rel_bias"
+            cfg,
+            alias_1,
+            attrs_1,
+            alias_2,
+            attrs_2,
+            op_type="rel_bias",
         )
         plt.title(title)
         process_pyplot_kwargs(cfg, "plot_map_rel_biases")
@@ -695,7 +726,12 @@ def plot_map_rel_biases(cfg, cube_dict):
 
         # Provenance
         _write_map_provenance(
-            cfg, bias_cube, plot_path, title, attrs_1, attrs_2
+            cfg,
+            bias_cube,
+            plot_path,
+            title,
+            attrs_1,
+            attrs_2,
         )
 
         # Add to global DataFrame
@@ -713,7 +749,7 @@ def plot_xy(cfg, cube_dict):
         logger.debug("Plotting '%s'", key)
         if cube.ndim != 1:
             raise ValueError(
-                f"Expected 1D cube for X-Y plots, got {cube.ndim:d}D cube"
+                f"Expected 1D cube for X-Y plots, got {cube.ndim:d}D cube",
             )
         alias = _get_alias(cfg, key)
         plot_kwargs = get_plot_kwargs(cfg, "plot_xy", key=key)
@@ -789,7 +825,10 @@ def plot_xy_with_errors(cfg, cube_dict):
         logger.debug("Plotting '%s'", key)
         plot_kwargs = get_plot_kwargs(cfg, "plot_xy_with_errors", key=key)
         (cube, error_cube, coord, ancestors) = _xy_plot_with_errors(
-            cfg, cube_dict, split_key, **plot_kwargs
+            cfg,
+            cube_dict,
+            split_key,
+            **plot_kwargs,
         )
 
         # Plot appearance
@@ -832,7 +871,10 @@ def plot_xy_with_errors(cfg, cube_dict):
         plot_kwargs = get_plot_kwargs(cfg, "plot_xy_with_errors", key=key)
         plot_kwargs["color"] = COLORS[idx]
         (cube, error_cube, _, ancestors) = _xy_plot_with_errors(
-            cfg, cube_dict, split_key, **plot_kwargs
+            cfg,
+            cube_dict,
+            split_key,
+            **plot_kwargs,
         )
         all_ancestors.extend(ancestors)
         cube = cube.copy()

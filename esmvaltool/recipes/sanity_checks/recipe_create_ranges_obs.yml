@@ -456,7 +456,7 @@ diagnostics:
     additional_datasets:
       - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
         start_year: 1980, end_year: 2021}
-      - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+      - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2,
         start_year: 1979, end_year: 2022}
       - {dataset: ERA5, project: native6, type: reanaly, version: v1,
         tier: 3, start_year: 1979, end_year: 2021}

@@ -143,14 +143,20 @@ def calculate_diurnal_range(clim_list, ts_list):
 
     # append diurnal range to lists
     clim_list_final, ts_list_final = append_diurnal_range(
-        derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list
+        derived_diurnal_clim,
+        derived_diurnal_ts,
+        clim_list,
+        ts_list,
     )
 
     return clim_list_final, ts_list_final
 
 
 def append_diurnal_range(
-    derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list
+    derived_diurnal_clim,
+    derived_diurnal_ts,
+    clim_list,
+    ts_list,
 ):
     """Append diurnal range to cubelists.
 
@@ -210,7 +216,8 @@ def calculate_anomaly(clim_list, ts_list):
     """
     # calculate diurnal temperature range cube
     clim_list_final, ts_list_final = calculate_diurnal_range(
-        clim_list, ts_list
+        clim_list,
+        ts_list,
     )
 
     anom_list_final = ts_list_final.copy()
@@ -251,7 +258,11 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
     if area == "land":
         # calculate average warming over land
         tas_data = sf.area_avg_landsea(
-            tas, ocean_frac, land_frac, land=True, return_cube=False
+            tas,
+            ocean_frac,
+            land_frac,
+            land=True,
+            return_cube=False,
         )
     else:
         # calculate global average warming
@@ -262,7 +273,8 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
 
     # Perform linear regression on valid values
     model = sklearn.linear_model.LinearRegression(
-        fit_intercept=False, copy_X=True
+        fit_intercept=False,
+        copy_X=True,
     )
     model.fit(tas_data.reshape(-1, 1), cube_reshaped)
 
@@ -322,7 +334,11 @@ def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
 
 
 def calculate_regressions(
-    anom_list, area, ocean_frac=None, land_frac=None, yrs=86
+    anom_list,
+    area,
+    ocean_frac=None,
+    land_frac=None,
+    yrs=86,
 ):
     """Facilitate the calculation of regression coeffs (climate patterns).
 
@@ -384,7 +400,7 @@ def calculate_regressions(
 
             # create, and append cube of regression values
             month_list.append(
-                create_cube(tas, cube.copy(), regr_array, i, units=units)
+                create_cube(tas, cube.copy(), regr_array, i, units=units),
             )
 
         month_list = month_list.merge_cube()
@@ -412,14 +428,16 @@ def cube_saver(list_of_cubelists, work_path, name_list, jules_mode):
     None
     """
     if jules_mode:
-        for i in range(0, 3):
+        for i in range(3):
             iris.save(
-                list_of_cubelists[i], os.path.join(work_path, name_list[i])
+                list_of_cubelists[i],
+                os.path.join(work_path, name_list[i]),
             )
     else:
         for i, cube in enumerate(list_of_cubelists[2]):
             list_of_cubelists[2][i] = sf.rename_variables(
-                cube, has_orig_vars=False
+                cube,
+                has_orig_vars=False,
             )
         iris.save(list_of_cubelists[2], os.path.join(work_path, name_list[2]))
 
@@ -574,10 +592,14 @@ def patterns(model, cfg):
 
     for i, cube in enumerate(clim_list_final):
         clim_list_final[i] = sf.rename_variables(
-            cube, has_orig_vars=True, new_extension="_clim"
+            cube,
+            has_orig_vars=True,
+            new_extension="_clim",
         )
         anom_list_final[i] = sf.rename_variables(
-            anom_list_final[i], has_orig_vars=True, new_extension="_anom"
+            anom_list_final[i],
+            has_orig_vars=True,
+            new_extension="_anom",
         )
 
     if cfg["area"] == "land":
