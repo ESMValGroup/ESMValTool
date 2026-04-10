@@ -4,6 +4,7 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import pandas as pd
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata, save_figure
@@ -80,6 +81,39 @@ def create_provenance(caption: str):
     return provenance_dic
 
 
+def save_ratios(data_dic, reference_dic, cfg):
+
+    percentiles = cfg.get('percentiles', [5, 95])
+    region = cfg.get('region', 'region')
+    variable = cfg.get('var_label')
+
+    ratios_info = []
+
+    for ref_dataset in reference_dic.keys():
+        ref_boot_values = reference_dic[ref_dataset]['bootstrap']
+        self_ratios = ref_boot_values[:, None] / ref_boot_values[None, :]
+        # remove self-division (i == j)
+        mask = ~np.eye(len(ref_boot_values), dtype=bool)
+        self_ratios = self_ratios[mask]
+        ref_perc_vals = np.nanpercentile(self_ratios, percentiles).tolist()
+        dataset_dic = {'region': region, 'dataset': ref_dataset, 'reference': ref_dataset, 
+                       'range_start': ref_perc_vals[0], 'range_end': ref_perc_vals[1]}
+        ratios_info.append(dataset_dic)
+        for model in data_dic.keys():
+            mod_vals = data_dic[model]['bootstrap']/reference_dic[ref_dataset]['bootstrap']
+            perc_vals = np.nanpercentile(mod_vals, percentiles).tolist()
+            dataset_dic = {'region': region,'dataset': model, 'reference': ref_dataset, 
+                       'range_start': perc_vals[0], 'range_end': perc_vals[1]}
+            ratios_info.append(dataset_dic)
+
+    ratios_df = pd.DataFrame(ratios_info)
+
+    ratios_df.to_csv(os.path.join(cfg['work_dir'], 
+                    f'variability_ratio_bootstrap_{variable}_{region}.csv'), index=False)
+   
+    return
+
+
 def plot_stdevs(data_dic, reference_dic, cfg):
     '''
     This function plots timeseries and the max/min values
@@ -106,31 +140,40 @@ def plot_stdevs(data_dic, reference_dic, cfg):
 
     y_ticks = np.arange(0, len(data_dic.keys()))
     y_labs = np.zeros(len(data_dic.keys()), dtype='<U30')
-
-    for nm, model in enumerate(data_dic.keys()):
-        color_st = eplot.get_dataset_style(model, cfg.get('color_style'))
-        single_dot = ax_stds.scatter(data_dic[model]['best'], nm, marker='o',
-                            c='#1A0F50', zorder=2, 
-                            label='individual member')
-        perc_vals = np.percentile(data_dic[model]['bootstrap'], percentiles)
-        ax_stds.hlines(nm, perc_vals[0], perc_vals[1], colors='#1A0F50', zorder=2)
-        y_labs[nm] = model
+    for nr, ref_dataset in enumerate(reference_dic.keys()):
+        ref_color_st = eplot.get_dataset_style(ref_dataset, cfg.get('color_style'))
+        for nm, model in enumerate(data_dic.keys()):
+            mod_vals = data_dic[model]['bootstrap']/reference_dic[ref_dataset]['bootstrap']
+            single_dot = ax_stds.scatter(data_dic[model]['best']/reference_dic[ref_dataset]['best'], 
+                                         nm-0.1 + nr*0.2, marker='o', c=ref_color_st['color'], zorder=2, 
+                                         label=f"model/{ref_dataset}")
+            perc_vals = np.percentile(mod_vals, percentiles)
+            ax_stds.hlines(nm-0.1 + nr*0.2, perc_vals[0], perc_vals[1], 
+                           colors=ref_color_st['color'], zorder=2)
+            y_labs[nm] = model
     
     legend_handles = [single_dot]
 
     for ref_dataset in reference_dic.keys():
         ref_color_st = eplot.get_dataset_style(ref_dataset, cfg.get('color_style'))
-        ref_line = ax_stds.axvline(reference_dic[ref_dataset]['best'], c=ref_color_st['color'], zorder=2, 
-                                                        label=ref_dataset)
-        ref_perc_vals = np.percentile(reference_dic[ref_dataset]['bootstrap'], percentiles)
-        ax_stds.fill_betweenx([len(data_dic.keys()) -0.8, -0.2], 
+        ref_boot_values = reference_dic[ref_dataset]['bootstrap']
+        self_ratios = ref_boot_values[:, None] / ref_boot_values[None, :]
+        # remove self-division (i == j)
+        mask = ~np.eye(len(ref_boot_values), dtype=bool)
+        self_ratios = self_ratios[mask]
+        # remove inf / nan (e.g., division by zero)
+        self_ratios = self_ratios[np.isfinite(self_ratios)]
+        ref_perc_vals = np.percentile(self_ratios, percentiles)
+        ax_stds.fill_betweenx([len(data_dic.keys()) -0.5, -0.5], 
                                  ref_perc_vals[0], ref_perc_vals[1],
                                  alpha=0.15, color=ref_color_st['color'], lw=0)
-        legend_handles.append(ref_line)
-    ax_stds.set_ylim(len(data_dic.keys()) -0.8, -0.2)
+   
+    ax_stds.set_ylim(len(data_dic.keys()) -0.5, -0.5)
 
     ax_stds.set_yticks(y_ticks, labels=y_labs)
     ax_stds.grid(which='both', c='silver', zorder=1)
+
+    ax_stds.set_xscale('log')
 
     variable = cfg.get('var_label')
     exp_variable = variable.replace('_', ' ')
@@ -139,7 +182,7 @@ def plot_stdevs(data_dic, reference_dic, cfg):
 
     ax_stds.set_xlabel(f'StD of {exp_variable}, {units}')
 
-    default_caption = f'{variable} variability in {region}'
+    default_caption = f'{variable} variability ratio in {region}'
 
     caption = cfg['figure_caption'] if cfg.get('figure_caption') else default_caption
     fig_stds.suptitle(caption)
@@ -151,7 +194,7 @@ def plot_stdevs(data_dic, reference_dic, cfg):
     
     plt.tight_layout()
 
-    fig_path = os.path.join(cfg['plot_dir'], f'variability_bootstrap_{variable}_{region}')
+    fig_path = os.path.join(cfg['plot_dir'], f'variability_ratio_bootstrap_{variable}_{region}')
 
     save_figure(fig_path, prov_dic, cfg, fig_stds, close=True)        
 
@@ -190,7 +233,7 @@ def main(cfg):
         data_dic[dataset]['best'] = mod_data.std(axis=1, ddof=1).mean()
         data_dic[dataset]['bootstrap'] = bootstrap_stdev(mod_data, block_size)
 
-
+    save_ratios(data_dic, reference_dic, cfg)
     plot_stdevs(data_dic, reference_dic, cfg)
 
     logger.info('Success')

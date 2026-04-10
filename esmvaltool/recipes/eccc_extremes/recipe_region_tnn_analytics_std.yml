@@ -35,6 +35,9 @@ preprocessors:
     detrend:
       dimension: time
       method: linear
+    climate_statistics:
+      operator: std_dev
+      period: full  
 
   preproc_era:
     custom_order: True  
@@ -55,6 +58,9 @@ preprocessors:
     detrend:
       dimension: time
       method: linear
+    climate_statistics:
+      operator: std_dev
+      period: full  
 
 datasets_cmip: &datasets_cmip
   - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r(1:10)i1p1f1, grid: gn, start_year: 1956, end_year: 2032, exp: [historical, ssp245]}
@@ -124,22 +130,13 @@ diagnostics:
         mip: day
         preprocessor: preproc_era
         additional_datasets: *dataset_era
-    scripts:
-      timeseries:
-        script: eccc_extremes/simple_timeseries.py
-        mpl_style: malinina24
-        color_style: malinina24
-        model_weighting: False
-        units: C
-        region: Alberta # needed for the figure title
-        var_label: TNn # needed for axis name
-        # figure_caption: '' 
+    scripts: 
       variability:
-        script: eccc_extremes/variability_evaluation.py
+        script: eccc_extremes/variability_evaluation_dots.py
         mpl_style: malinina24
         color_style: malinina24
         model_weighting: False
         units: C
         region: Alberta # needed for the figure title
         var_label: TNn # needed for axis name
-        # figure_caption: '' 
+        figure_caption: '' 

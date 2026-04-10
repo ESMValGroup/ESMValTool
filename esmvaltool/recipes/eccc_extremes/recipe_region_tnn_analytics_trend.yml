@@ -1,0 +1,140 @@
+# ESMValTool
+# recipe_bc_extremes_txx.yml
+---
+documentation:
+
+  title: GEVs 2021 BC heatwave
+
+  description: This is a recipe for doing model evaluation for .
+
+  authors:
+    - malinina_elizaveta
+
+preprocessors:
+  preproc_model:
+    custom_order: True
+    regrid:
+      target_grid: 0.5x0.5
+      lon_offset: 0.25
+      lat_offset: 0.25
+      scheme: linear    
+    extract_shape:
+      shapefile: Stone_regions_WRAF05_v4_1_Canada.shp
+      method: contains
+      crop: True
+      ids:
+        ID:
+          - Alberta
+    area_statistics:
+      operator: mean
+    extract_season:
+      season: SONDJFMAM
+    seasonal_statistics:
+      seasons: [SONDJFMAM]
+      operator: min
+    rolling_window_statistics:
+      coordinate: time
+      operator: mean
+      window_length: 5
+    linear_trend:
+      coordinate: time
+
+  preproc_era:
+    custom_order: True  
+    extract_shape:
+      shapefile: Stone_regions_WRAF05_v4_1_Canada.shp
+      method: contains
+      crop: True
+      ids:
+        ID:
+          - Alberta
+    area_statistics:
+      operator: mean 
+    extract_season:
+      season: SONDJFMAM
+    seasonal_statistics:
+      seasons: [SONDJFMAM]
+      operator: min
+    rolling_window_statistics:
+      coordinate: time
+      operator: mean
+      window_length: 5
+
+datasets_cmip: &datasets_cmip
+  - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r(1:10)i1p1f1, grid: gn, start_year: 1994 , end_year: 2024, exp: [historical, ssp245]}
+  - {dataset: ACCESS-ESM1-5, institute: CSIRO, ensemble: r(1:40)i1p1f1, grid: gn, start_year: 1996, end_year: 2026, exp: [historical, ssp245]}
+  - {dataset: AWI-CM-1-1-MR, institute: AWI, ensemble: r1i1p1f1, grid: gn, start_year: 1983 , end_year: 2013, exp: historical}
+  - {dataset: BCC-CSM2-MR, institute: BCC, ensemble: r1i1p1f1, grid: gn, start_year: 1998, end_year: 2028, exp: [historical, ssp245]}
+  - {dataset: CanESM5, institute: CCCma, ensemble: r(1:25)i1p1f1, grid: gn, start_year: 1979, end_year: 2009, exp: historical}
+  - {dataset: CanESM5, institute: CCCma, ensemble: r(1:25)i1p2f1, grid: gn, start_year: 1979, end_year: 2009, exp: historical}
+  - {dataset: CanESM5-1, institute: CCCma, ensemble: r1i1p(1:2)f1, grid: gn, start_year: 1981, end_year: 2011, exp: historical}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, start_year: 1992, end_year: 2022, exp: [historical, ssp245]}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, start_year: 1997, end_year: 2027, exp: [historical, ssp245]}
+  - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, start_year: 1983, end_year: 2013, exp: historical}
+  - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, start_year: 1986, end_year: 2016, exp: [historical, ssp245]}
+  - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gr, start_year: 1986, end_year: 2016, exp: [historical, ssp245]}
+  - {dataset: EC-Earth3, ensemble: r(6:7)i1p1f1, grid: gr, start_year: 1986, end_year: 2016, exp: [historical, ssp245]}
+  - {dataset: EC-Earth3, ensemble: r(9:10)i1p1f1, grid: gr, start_year: 1986, end_year: 2016, exp: [historical, ssp245]}
+  - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, start_year: 1988, end_year: 2018, exp: [historical, ssp245]}
+  - {dataset: EC-Earth3-CC, ensemble: r(6:11)i1p1f1, grid: gr, start_year: 1988, end_year: 2018, exp: [historical, ssp245]}
+  - {dataset: EC-Earth3-CC, ensemble: r13i1p1f1, grid: gr, start_year: 1988, end_year: 2018, exp: [historical, ssp245]}
+  - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, start_year: 1980, end_year: 2010, exp: historical}
+  - {dataset: EC-Earth3-Veg, ensemble: r3i1p1f1, grid: gr, start_year: 1980, end_year: 2010, exp: historical}
+  - {dataset: EC-Earth3-Veg, ensemble: r5i1p1f1, grid: gr, start_year: 1980, end_year: 2010, exp: historical}
+  - {dataset: EC-Earth3-Veg-LR, ensemble: r(1:3)i1p1f1, grid: gr, start_year: 1992, end_year: 2022, exp: [historical, ssp245]}
+  - {dataset: FGOALS-g3, institute: CAS, ensemble: r1i1p1f1, grid: gn, start_year: 1985, end_year: 2015, exp: [historical, ssp245]}
+  - {dataset: FGOALS-g3, institute: CAS, ensemble: r3i1p1f1, grid: gn, start_year: 1985, end_year: 2015, exp: [historical, ssp245]}
+  - {dataset: GFDL-ESM4, institute: NOAA-GFDL, ensemble: r1i1p1f1, grid: gr1, start_year: 1999, end_year: 2029, exp: [historical, ssp245]}
+  - {dataset: GFDL-CM4, institute: NOAA-GFDL, ensemble: r1i1p1f1, grid: gr1, start_year: 1995, end_year: 2025, exp: [historical, ssp245]}
+  - {dataset: HadGEM3-GC31-LL, institution: MOHC, ensemble: r(1:5)i1p1f3, grid: gn, start_year: 1995, end_year: 2025, exp: [historical, ssp245]} 
+  - {dataset: INM-CM4-8, institute: INM, ensemble: r1i1p1f1, grid: gr1, start_year: 1993, end_year: 2023, exp: [historical, ssp245]}
+  - {dataset: INM-CM5-0, institute: INM, ensemble: r1i1p1f1, grid: gr1, start_year: 1995, end_year: 2025, exp: [historical, ssp245]}
+  - {dataset: IPSL-CM6A-LR, institute: IPSL, ensemble: r(1:6)i1p1f1, grid: gr, start_year: 1984, end_year: 2014, exp: historical}
+  - {dataset: IPSL-CM6A-LR, institute: IPSL, ensemble: r(10:11)i1p1f1, grid: gr, start_year: 1984, end_year: 2014, exp: historical}
+  - {dataset: IPSL-CM6A-LR, institute: IPSL, ensemble: r14i1p1f1, grid: gr, start_year: 1984, end_year: 2014, exp: historical}
+  - {dataset: IPSL-CM6A-LR, institute: IPSL, ensemble: r22i1p1f1, grid: gr, start_year: 1984, end_year: 2014, exp: historical}
+  - {dataset: IPSL-CM6A-LR, institute: IPSL, ensemble: r25i1p1f1, grid: gr, start_year: 1984, end_year: 2014, exp: historical}
+  - {dataset: KACE-1-0-G, ensemble: r(1:3)i1p1f1, grid: gr, start_year: 1978, end_year: 2008, exp: historical}
+  - {dataset: MIROC6, institute: MIROC, ensemble: r(1:50)i1p1f1, grid: gn, start_year: 2003, end_year: 2033, exp: [historical, ssp245]}
+  - {dataset: MIROC-ES2L, institute: MIROC, ensemble: r1i1p1f2, grid: gn, start_year: 1999, end_year: 2029, exp: [historical, ssp245]}
+  - {dataset: MPI-ESM1-2-LR, institute: MPI-M, ensemble: r(1:49)i1p1f1, grid: gn, start_year: 1990, end_year: 2020, exp: [historical, ssp245]} 
+  - {dataset: MPI-ESM1-2-HR, ensemble: r(1:2)i1p1f1, grid: gn, start_year: 1989, end_year: 2019, exp: [historical, ssp245]} 
+  - {dataset: MRI-ESM2-0, institute: MRI, ensemble: r(1:5)i1p1f1, grid: gn, start_year: 1994, end_year: 2024, exp: [historical, ssp245]}
+  - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, start_year: 1991, end_year: 2021, exp: [historical, ssp245]}
+  - {dataset: NorESM2-LM, institute: NCC, ensemble: r(2:3)i1p1f1, grid: gn, start_year: 2013, end_year: 2043, exp: [historical, ssp245]}
+  - {dataset: NorESM2-MM, institute: NCC, ensemble: r(1:2)i1p1f1, grid: gn, start_year: 2004, end_year: 2034, exp: [historical, ssp245]}
+  - {dataset: TaiESM1, institute: AS-RCEC, ensemble: r1i1p1f1, grid: gn, start_year: 2001, end_year: 2031, exp: [historical, ssp245]}  
+  - {dataset: UKESM1-0-LL, ensemble: r(1:4)i1p1f2, grid: gn, start_year: 1995, end_year: 2025, exp: [historical, ssp245]}  
+  - {dataset: UKESM1-0-LL, ensemble: r(9:12)i1p1f2, grid: gn, start_year: 1995, end_year: 2025, exp: [historical, ssp245]}  
+  - {dataset: UKESM1-0-LL, ensemble: r(16:19)i1p1f2, grid: gn, start_year: 1995, end_year: 2025, exp: [historical, ssp245]}  
+
+
+dataset_era: &dataset_era
+  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3, start_year: 1990, end_year: 2020}
+  - {dataset: JRA3Q, project: OBS6, type: reanaly, version: v1, tier: 3, start_year: 1990, end_year: 2020}
+
+diagnostics:
+  analytics:
+    description: Figure for BC extremes
+    variables:
+      txnx_all:
+        short_name: tasmin
+        mip: day
+        project: CMIP6
+        preprocessor: preproc_model
+        additional_datasets: *datasets_cmip
+      reference: 
+        short_name: tasmin
+        mip: day
+        preprocessor: preproc_era
+        additional_datasets: *dataset_era 
+    scripts:
+      variability:
+        script: eccc_extremes/trend_evaluation.py
+        mpl_style: malinina24
+        color_style: malinina24
+        model_weighting: False
+        units: K/y
+        region: Alberta # needed for the figure title
+        var_label: TNn # needed for axis name
+        figure_caption: '' 

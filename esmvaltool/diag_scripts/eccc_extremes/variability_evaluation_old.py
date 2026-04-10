@@ -13,30 +13,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 # logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def bootstrap_stdev(data: np.ndarray, block_size: int, n_bootstrap: int = 2500):
-
-    nens, nyears = data.shape
-    n_blocks = int(np.ceil(nyears/block_size))
-
-    boot_list = []
-
-    # Create overlapping blocks
-    blocks = np.array([data[:,i:i+block_size]
-               for i in range(nyears - block_size + 1)])
-    
-    rng = np.random.default_rng(501)
-    
-    for _ in range(n_bootstrap):
-        # Sample blocks with replacement
-        sampled_blocks = blocks[rng.integers(0, len(blocks), size=n_blocks)]
-        sampled_blocks = sampled_blocks.transpose(1, 0, 2).reshape(nens, n_blocks*block_size)
-        # Flatten the sampled blocks and calculate the standard deviation
-        boot_sample = sampled_blocks[:, :nyears]
-        boot_list.append(boot_sample.std(axis=1, ddof=1).mean())
-
-    return np.asarray(boot_list)
-
-def obtain_reference(data_group: list, block_size: int = 10):
+def obtain_reference(data_group: list):
     '''
     This function cretes a dictionary with reference data.
 
@@ -62,10 +39,7 @@ def obtain_reference(data_group: list, block_size: int = 10):
         else: 
             key = dataset_n
         ref_cb = iris.load_cube(dataset_f)
-        ref_data = ref_cb.data.reshape(-1, ref_cb.data.shape[0])
-        reference_dic[key] = {}
-        reference_dic[key]['best'] = ref_data.std(ddof=1)
-        reference_dic[key]['bootstrap'] = bootstrap_stdev(ref_data, block_size)
+        reference_dic[key] = ref_cb.data.std()
 
     return reference_dic
 
@@ -79,6 +53,42 @@ def create_provenance(caption: str):
 
     return provenance_dic
 
+
+def calculate_ensemble_stdev(ens_cubelist: iris.cube.CubeList, 
+                                                    weight_flag: bool):
+    '''
+    This function calculates standard deviation of multi model ensemble
+
+    Parameters:
+    -----------
+    ens_cubelist: 
+        CubeList with the ensemble timeseries
+    weight_flag:
+        flag for weighting or not the data
+    
+    Returns:
+    --------
+    ens_std: float
+        standard deviation for the ensemble
+    '''
+
+    wghts , wdata = [], []
+    for i in range(0, len(ens_cubelist)):
+        cb = ens_cubelist[i]
+        cb_wght = cb.attributes['ensemble_weight']*cb.attributes['reverse_dtsts_n']
+        wghts.append(np.full(cb.shape, cb_wght))
+        wdata.append(ens_cubelist[i].data)
+
+    wghts = np.asarray(wghts).flatten()
+    wdata = np.asarray(wdata).flatten()
+
+    if weight_flag:
+        mmm = np.average(wdata, weights=wghts)
+        ens_std = np.sqrt(np.average((wdata - mmm)**2, weights=wghts))
+    else: 
+        ens_std = wdata.std()
+
+    return ens_std
 
 def plot_stdevs(data_dic, reference_dic, cfg):
     '''
@@ -94,11 +104,10 @@ def plot_stdevs(data_dic, reference_dic, cfg):
         config dictionary, comes from ESMValCore
     '''
 
+    
     mpl_st_file = eplot.get_path_to_mpl_style(cfg.get('mpl_style'))
     plt.style.use(mpl_st_file)
     
-    percentiles = cfg.get('percentiles', [5, 95])
-
     fig_stds, ax_stds = plt.subplots(nrows=1, ncols=1)
 
     fig_stds.set_size_inches(8., 9.)
@@ -109,23 +118,23 @@ def plot_stdevs(data_dic, reference_dic, cfg):
 
     for nm, model in enumerate(data_dic.keys()):
         color_st = eplot.get_dataset_style(model, cfg.get('color_style'))
-        single_dot = ax_stds.scatter(data_dic[model]['best'], nm, marker='o',
-                            c='#1A0F50', zorder=2, 
-                            label='individual member')
-        perc_vals = np.percentile(data_dic[model]['bootstrap'], percentiles)
-        ax_stds.hlines(nm, perc_vals[0], perc_vals[1], colors='#1A0F50', zorder=2)
-        y_labs[nm] = model
+        if model != 'Multi-Model':
+            for i in range(0, len(data_dic[model])):
+                single_dot = ax_stds.scatter(data_dic[model][i], nm+1, marker='o',
+                                    c=color_st['color'], zorder=2, 
+                                    label='individual member')
+            y_labs[nm+1] = model
+        else:
+            square = ax_stds.scatter(data_dic[model], 0, c=color_st['color'], s=70, 
+                                     marker='s', zorder=3, label='full ensemble')
+            y_labs[0] = 'ALL'
     
-    legend_handles = [single_dot]
+    legend_handles = [square, single_dot]
 
     for ref_dataset in reference_dic.keys():
         ref_color_st = eplot.get_dataset_style(ref_dataset, cfg.get('color_style'))
-        ref_line = ax_stds.axvline(reference_dic[ref_dataset]['best'], c=ref_color_st['color'], zorder=2, 
+        ref_line = ax_stds.axvline(reference_dic[ref_dataset], c=ref_color_st['color'], zorder=2, 
                                                         label=ref_dataset)
-        ref_perc_vals = np.percentile(reference_dic[ref_dataset]['bootstrap'], percentiles)
-        ax_stds.fill_betweenx([len(data_dic.keys()) -0.8, -0.2], 
-                                 ref_perc_vals[0], ref_perc_vals[1],
-                                 alpha=0.15, color=ref_color_st['color'], lw=0)
         legend_handles.append(ref_line)
     ax_stds.set_ylim(len(data_dic.keys()) -0.8, -0.2)
 
@@ -135,7 +144,7 @@ def plot_stdevs(data_dic, reference_dic, cfg):
     variable = cfg.get('var_label')
     exp_variable = variable.replace('_', ' ')
     units = cfg.get('units')
-    region = cfg.get('region', 'region')
+    region = cfg['region'] if cfg.get('units') else 'region'
 
     ax_stds.set_xlabel(f'StD of {exp_variable}, {units}')
 
@@ -151,7 +160,7 @@ def plot_stdevs(data_dic, reference_dic, cfg):
     
     plt.tight_layout()
 
-    fig_path = os.path.join(cfg['plot_dir'], f'variability_bootstrap_{variable}_{region}')
+    fig_path = os.path.join(cfg['plot_dir'], f'variability_{variable}_{region}')
 
     save_figure(fig_path, prov_dic, cfg, fig_stds, close=True)        
 
@@ -161,8 +170,6 @@ def plot_stdevs(data_dic, reference_dic, cfg):
 def main(cfg):
 
     input_data = cfg['input_data']
-
-    block_size = cfg.get('block_size', 10)
 
     groups = group_metadata(input_data.values(), 'variable_group', sort=True)
 
@@ -177,19 +184,20 @@ def main(cfg):
     datasets = group_metadata(remaining_metadata, 'dataset')
     ens_var_cubelist = iris.cube.CubeList()
     for dataset in datasets.keys():
-        data_dic[dataset] ={}
         filepaths = list(group_metadata(datasets[dataset], 'filename').keys())
+        n_real = len(filepaths)
         mod_var_list = []
         for filepath in filepaths:
             mod_cb = iris.load_cube(filepath)
+            # adding weights to the data cubes 
+            mod_cb.attributes['ensemble_weight'] = 1 / n_real
+            mod_cb.attributes['reverse_dtsts_n'] = 1/ len(datasets)
             ens_var_cubelist.append(mod_cb)
-            mod_var_list.append(mod_cb.data)
-        mod_data = np.asarray(mod_var_list)
-        if mod_data.ndim == 1:
-            mod_data = mod_data.reshape(-1, mod_data.shape[0])
-        data_dic[dataset]['best'] = mod_data.std(axis=1, ddof=1).mean()
-        data_dic[dataset]['bootstrap'] = bootstrap_stdev(mod_data, block_size)
-
+            mod_var_list.append(mod_cb.data.std())
+        data_dic[dataset] = mod_var_list
+    multi_model_std = calculate_ensemble_stdev(ens_var_cubelist, 
+                                               cfg.get('model_weighting'))
+    data_dic['Multi-Model'] = multi_model_std
 
     plot_stdevs(data_dic, reference_dic, cfg)
 
