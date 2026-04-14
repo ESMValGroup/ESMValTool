@@ -68,6 +68,8 @@ preprocessors:
       end_longitude: 360
       start_latitude: 45
       end_latitude: 90
+    mask_glaciated:
+      mask_out: glaciated
     area_statistics:
       operator: sum
 
@@ -77,6 +79,8 @@ preprocessors:
       end_longitude: 360
       start_latitude: 45
       end_latitude: 90
+    mask_glaciated:
+      mask_out: glaciated
     mask_below_threshold:
       threshold: 0.1
 
@@ -86,6 +90,8 @@ preprocessors:
       end_longitude: 360
       start_latitude: 45
       end_latitude: 90
+    mask_glaciated:
+      mask_out: glaciated
     extract_levels:
       levels:  [2., ]
       scheme: linear_extrapolate
