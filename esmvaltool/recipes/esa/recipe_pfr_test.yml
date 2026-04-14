@@ -13,33 +13,33 @@ documentation:
   maintainer:
     - lauer_axel
 
-datasets:
-    - {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1}
+#datasets:
+#    - {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: CAS-ESM2-0, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: FGOALS-f3-L, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: FGOALS-g3, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: CanESM5, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: CMCC-CM2-HR4, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: CMCC-CM2-SR5, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CanESM5, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CMCC-CM2-HR4, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CMCC-CM2-SR5, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: CMCC-ESM2, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: E3SM-1-0, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: E3SM-1-0, grid: gr, ensemble: r1i1p1f1}
 #    - {dataset: E3SM-1-1-ECA, grid: gr, ensemble: r1i1p1f1}
 #    - {dataset: E3SM-1-1, grid: gr, ensemble: r1i1p1f1}
 #    - {dataset: EC-Earth3-AerChem, grid: gr, ensemble: r1i1p1f1}
 #    - {dataset: EC-Earth3-CC, grid: gr, ensemble: r1i1p1f1}
-    - {dataset: EC-Earth3, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3, grid: gr, ensemble: r1i1p1f1}
 #    - {dataset: EC-Earth3-Veg, grid: gr, ensemble: r1i1p1f1}
 #    - {dataset: EC-Earth3-Veg-LR, grid: gr, ensemble: r1i1p1f1}
 #    - {dataset: FIO-ESM-2-0, grid: gn, ensemble: r1i1p1f1}
-    - {dataset: MPI-ESM-1-2-HAM, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: MPI-ESM-1-2-HAM, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: IPSL-CM5A2-INCA, grid: gr, ensemble: r1i1p1f1}
 ###    - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
-    - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+#  - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: ICON-ESM-LR, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: MPI-ESM1-2-HR, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: MPI-ESM1-2-LR, grid: gn, ensemble: r1i1p1f1}
@@ -71,11 +71,30 @@ preprocessors:
     area_statistics:
       operator: sum
 
+  pp_pfr_map:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 90
+    mask_below_threshold:
+      threshold: 0.1
+
+  pp_tsl_2m:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 90
+    extract_levels:
+      levels:  [2., ]
+      scheme: linear_extrapolate
+
 
 diagnostics:
-  permafrost:
-    title: permafrost extent
-    description: test calculation of permafrost extent
+  permafrost_timeseries:
+    title: NH permafrost extent
+    description: NH permafrost extent
     variables:
       pfr:
         mip: Lyr
@@ -86,7 +105,8 @@ diagnostics:
         exp: historical
         preprocessor: pp_pfr
         additional_datasets:
-          - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v3.0, start_year: 1997, end_year: 2019}
+          - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v5.0NH, start_year: 1997, end_year: 2023}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -96,24 +116,26 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: False
             plot_kwargs:
-              ACCESS-CM2:
+              MIROC6:
                 color: C0
               ESACCI-PERMAFROST:
                 color: black
 
-  permafrost2:
-    title: permafrost extent 2
-    description: test calculation of permafrost extent
+  permafrost_map:
+    title: maps of NH permafrost extent
+    description: maps of NH permafrost extent
     variables:
       pfr:
+        preprocessor: pp_pfr_map
         mip: Lyr
-        start_year: 2010
+        start_year: 2005
         end_year: 2014
         derive: true
         project: CMIP6
         exp: historical
         additional_datasets:
-          - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v3.0}
+          - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v5.0NH}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
     scripts:
       plot:
         script: clouds/clouds.ncl
@@ -122,3 +144,47 @@ diagnostics:
         showdiff: false
         region: [45, 90, 0, 360]
         explicit_cn_levels: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+
+  permafrost_tsl2m_model:
+    title: maps of NH soil temperature in 2m depth
+    description: maps of NH soild temperature in 2m depth
+    variables:
+      tsl:
+        preprocessor: pp_tsl_2m
+        mip: Lmon
+        start_year: 2005
+        end_year: 2014
+        project: CMIP6
+        exp: historical
+        additional_datasets:
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+    scripts:
+      plot:
+        script: clouds/clouds.ncl
+        projection: PolarStereographic
+        timemean: annualclim
+        showdiff: false
+        region: [45, 90, 0, 360]
+        explicit_cn_levels: [240, 250, 260, 262, 264, 266, 268, 270, 271, 272, 273]
+
+  permafrost_tsl2m_cci:
+    title: maps of NH soil temperature in 2m depth
+    description: maps of NH soild temperature in 2m depth
+    variables:
+      gtd:
+        preprocessor: pp_tsl_2m
+        mip: Lmon
+        start_year: 2005
+        end_year: 2014
+        project: CMIP6
+        exp: historical
+        additional_datasets:
+          - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v5.0NH}
+    scripts:
+      plot:
+        script: clouds/clouds.ncl
+        projection: PolarStereographic
+        timemean: annualclim
+        showdiff: false
+        region: [45, 90, 0, 360]
+        explicit_cn_levels: [240, 250, 260, 262, 264, 266, 268, 270, 271, 272, 273]

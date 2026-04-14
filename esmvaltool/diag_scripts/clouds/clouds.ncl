@@ -514,6 +514,11 @@ begin
       data1@units = "degC"
     end if
 
+    if ((var0.eq."tsl") .or. (var0.eq."gtd")) then
+      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/ipcc-tas.rgb")
+      res@cnFillColors        = pal
+    end if
+
     if ((var0.eq."clt") .or. (var0.eq."cltisccp")) then
       res@cnLevels            = fspan(5, 100, 20)
     end if
@@ -781,7 +786,7 @@ begin
     ; mandatory netcdf output
 
     data1@var = var0 + "_mean_" + names(imod)
-    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+;    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     ; =======================================================================
     ; Create difference plots (if requested)
@@ -1337,8 +1342,8 @@ begin
   do is = 0, numseas - 1
     caption = "Mean values for variable " + var0 \
               + " (" + allseas + ")."
-    log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
-                   domain, plottype, "", "", climofiles)
+;    log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
+;                   domain, plottype, "", "", climofiles)
   end do
 
   ; ========================================================================
