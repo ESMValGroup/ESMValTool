@@ -13,8 +13,8 @@ documentation:
   maintainer:
     - lauer_axel
 
-#datasets:
-#    - {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1}
+datasets:
+#  - {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
@@ -39,7 +39,7 @@ documentation:
 #    - {dataset: MPI-ESM-1-2-HAM, grid: gn, ensemble: r1i1p1f1}
 #    - {dataset: IPSL-CM5A2-INCA, grid: gr, ensemble: r1i1p1f1}
 ###    - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+  - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: ICON-ESM-LR, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: MPI-ESM1-2-HR, grid: gn, ensemble: r1i1p1f1}
 ###    - {dataset: MPI-ESM1-2-LR, grid: gn, ensemble: r1i1p1f1}
@@ -62,43 +62,87 @@ documentation:
 preprocessors:
   pp_snw:
     regrid:
-      target_grid: 0.5x0.5
+      target_grid: 1x1
       scheme: linear
     monthly_statistics:
+      operator: mean
+    mask_glaciated:
+      mask_out: glaciated
+
+  pp_snw_sum:
+    custom_order: true
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 90
+    mask_glaciated:
+      mask_out: glaciated
+    monthly_statistics:
+      operator: mean
+    area_statistics:
+      operator: sum
+
+  pp_snw_daily:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 90
+    mask_glaciated:
+      mask_out: glaciated
+
+  pp_snw_seascyc:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 90
+    mask_glaciated:
+      mask_out: glaciated
+    climate_statistics:
+      period: month
+    area_statistics:
       operator: mean
 
 
 diagnostics:
-#  snow:
-#    title: snow water equivalent
-#    description: test snow water equivalent
-#    variables:
-#      snw:
-#        mip: day
-#        start_year: 1982
-#        end_year: 2014
-#        project: CMIP6
-#        exp: historical
-#        preprocessor: pp_pfr
-#        additional_datasets:
-#          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0, start_year: 1982, end_year: 2019}
-#    scripts:
-#      plot:
-#        script: monitor/multi_datasets.py
-#        plot_folder: '{plot_dir}'
-#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
-#        plots:
-#          timeseries:
-#            annual_mean_kwargs: False
-#            plot_kwargs:
-#              ACCESS-CM2:
-#                color: C0
-#              ESACCI-SNOW:
-#                color: black
+  snow_sum:
+    title: NH total snow water equivalent
+    description: NH total snow water equivalent
+    variables:
+      snw:
+        mip: day
+        start_year: 1979
+        end_year: 2014
+        project: CMIP6
+        exp: historical
+        preprocessor: pp_snw_sum
+        additional_datasets:
+          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0, start_year: 1979, end_year 2019}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          timeseries:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              MIROC6:
+                color: C0
+              ESACCI-SNOW:
+                color: black
 
-  snow2:
-    title: snow water equivalent 2
-    description: test snow water equivalent
+  snow_maps:
+    title: seasonal mean snow water equivalent
+    description: seasonal mean snow water equivalent
     variables:
       snw:
         mip: day
@@ -117,3 +161,76 @@ diagnostics:
         showdiff: false
         explicit_cn_levels: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
         region: [30, 90, 0, 360]
+
+  snow_pdf:
+    description: Plot PDF of NH daily snw.
+    variables:
+      snw:
+        preprocessor: pp_snw_daily
+        mip: day
+        start_year: 2010
+        end_year: 2014
+        project: CMIP6
+        exp: historical
+        additional_datasets:
+          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: displot
+        reset_index: true
+        write_netcdf: true
+        seaborn_kwargs:
+          kind: hist
+          stat: density
+          binwidth: 10
+          x: snw
+          hue: alias
+          facet_kws:
+            sharey: false
+        add_aux_coords: true
+        dropna_kwargs:
+          axis: 0
+          how: any
+        legend_title: Dataset
+        plot_object_methods:
+          set:
+            xlabel: 'snw [kg/m2]'
+            xlim: [10, 250]
+            ylim: [0, 0.004]
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: 'PDF of daily snow water equivalent'
+
+  snow_seascyc:
+    title: NH average snow water equivalent (seasonal cycle)
+    description: NH average snow water equivalent (seasonal cycle)
+    variables:
+      snw:
+        mip: day
+        start_year: 2010
+        end_year: 2014
+        project: CMIP6
+        exp: historical
+        preprocessor: pp_snw_seascyc
+        additional_datasets:
+          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          annual_cycle:
+            caption: '5-year average seasonal cycle of the NH snow water equivalent in kg/m2 [dataset] compared with ESACCI-SNOW.'
+            pyplot_kwargs:
+              title: 'NH average snow water equivalent (kg/m2)'
+            plot_kwargs:
+              MIROC6:
+                color: C0
+              ESACCI-SNOW:
+                color: black
