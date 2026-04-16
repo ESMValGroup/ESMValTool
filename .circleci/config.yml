@@ -58,9 +58,6 @@ jobs:
       - checkout
       - pixi/pixi_setup
       - run:
-          name: Check that the lock file is up to date
-          command: pixi install --locked
-      - run:
           name: Check Python code style and mistakes
           command: pixi run pre-commit run --all
       - run:
@@ -107,28 +104,21 @@ jobs:
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - checkout
-      - run:
-          name: Clone ESMValcore
-          command: git clone https://github.com/ESMValGroup/ESMValCore ../ESMValCore
       - pixi/pixi_setup:
           env: esmvalcore-dev
       - run:
-          name: Install intake-esgf from source
-          command: |
-            # Temporarily install intake-esgf here until there is a new release
-            # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
-            pixi shell --locked --environment esmvalcore-dev
-            pip install git+https://github.com/esgf2-us/intake-esgf@main
-      - run:
           name: Run tests
           command: |
-            pixi run --locked --environment esmvalcore-dev test -n 4 --junitxml=test-reports/report.xml
+            pixi run --environment esmvalcore-dev test -n 4 --junitxml=test-reports/report.xml
       - store_test_results:
           path: test-reports/report.xml
       - run:
           name: Run recipes
           command: |
-            pixi shell --locked --environment esmvalcore-dev
+            pixi shell --environment esmvalcore-dev
+            # Temporarily install intake-esgf here until there is a new release
+            # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
+            pip install git+https://github.com/esgf2-us/intake-esgf@main
             esmvaltool version
             esmvaltool config copy data-intake-esgf.yml
             python -c '

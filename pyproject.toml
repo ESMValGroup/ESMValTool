@@ -290,9 +290,11 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "py313"
 [tool.pixi.feature.esmvalcore.dependencies]
 esmvalcore = ">=2.14.0"
 
-# Use the local ESMValCore repository for ESMValCore development.
+# Use the development version of ESMValCore to test new features and bug fixes.
 [tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
-ESMValCore = { path = "../ESMValCore", editable = true }
+ESMValCore = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
+# Replace line the above with the following to use the local ESMValCore repository instead.
+# ESMValCore = { path = "../ESMValCore", editable = true }
 
 # Tools for development.
 [tool.pixi.feature.dev.dependencies]
