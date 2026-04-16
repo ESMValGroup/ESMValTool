@@ -318,10 +318,15 @@ dependencies for NCL and R diagnostics by running
 
 .. code-block:: bash
 
-    pixi shell -e esmvaltool
+    pixi shell -e esmvaltool-dev
 
-or just the dependencies for NCL diagnostics with ``pixi shell -e esmvaltool-ncl``
-and for R diagnostics with ``pixi shell -e esmvaltool-r``.
+or just the dependencies for NCL diagnostics with ``pixi shell -e esmvaltool-ncl-dev``
+and for R diagnostics with ``pixi shell -e esmvaltool-r-dev``. There are also
+environments with the dependencies for running diagnostics in specific languages
+without the development dependencies, i.e. ``pixi shell -e esmvaltool-python``
+for running Python diagnostics, ``pixi shell -e esmvaltool-ncl`` for running
+NCL diagnostics, ``pixi shell -e esmvaltool-r`` for running R diagnostics, and
+``pixi shell -e esmvaltool`` for running any diagnostic.
 
 If you are planning to do any coding, install the :ref:`pre-commit`
 hooks by running:

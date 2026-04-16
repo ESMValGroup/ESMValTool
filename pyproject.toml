@@ -276,18 +276,25 @@ platforms = ["linux-64", "osx-arm64"]
 ESMValTool = { path = ".", editable = true }
 
 [tool.pixi.environments]
-# The default development environment.
-default = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
-# Environment with the development version of ESMValCore for testing new features and bug fixes.
-esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
+# The environments below correspond to the different packages we have on
+# conda-forge: esmvaltool-python, esmvaltool-ncl, esmvaltool-r, and esmvaltool.
+# For each package, we have a development environment (with the `dev`, `doc`,
+# and `test` features) and a regular environment without these features.
+#
 # Environment for running diagnostics that only require Python.
+default = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
 esmvaltool-python = { features = ["esmvalcore"], solve-group = "default" }
 # Environment for running diagnostics that also require NCL.
+esmvaltool-ncl-dev = { features = ["esmvalcore", "ncl", "dev", "doc", "test"], solve-group = "ncl" }
 esmvaltool-ncl = { features = ["esmvalcore", "ncl"], solve-group = "ncl" }
 # Environment for running diagnostics that also require R.
+esmvaltool-r-dev = { features = ["esmvalcore", "r", "dev", "doc", "test"], solve-group = "r" }
 esmvaltool-r = { features = ["esmvalcore", "r"], solve-group = "r" }
 # Environment for running any diagnostic.
+esmvaltool-dev = { features = ["esmvalcore", "ncl", "r", "dev", "doc", "test"], solve-group = "esmvaltool" }
 esmvaltool = { features = ["esmvalcore", "ncl", "r"], solve-group = "esmvaltool" }
+# Environment with the development version of ESMValCore for testing new features and bug fixes.
+esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
 test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "py313" }
@@ -297,25 +304,10 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "py313"
 esmvalcore = ">=2.14.0"
 
 # Use the development version of ESMValCore to test new features and bug fixes.
-[tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
+[tool.pixi.feature.esmvalcore-dev.pypi-options.dependency-overrides]
 ESMValCore = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
 # Replace the line above with the following to use a local ESMValCore repository instead.
 # ESMValCore = { path = "../ESMValCore", editable = true }
-
-# Tools for development.
-[tool.pixi.feature.dev.dependencies]
-codespell = "*"
-imagehash = "*"
-pre-commit = "*"
-ruff = "==0.14.5" # keep in sync with .pre-commit-config.yaml
-yamllint = "*"
-
-# Tools for building the documentation.
-[tool.pixi.feature.doc.dependencies]
-autodocsumm = ">=0.2.2"
-myst-nb = "*"
-sphinx = ">=6.1.3,<9"     # <9 due to ESMValTool/issues/4316
-pydata-sphinx-theme = "*"
 
 # Tools for running the tests.
 [tool.pixi.feature.test.dependencies]
@@ -326,6 +318,21 @@ pytest-html = "!=2.1.0"
 pytest-metadata = ">=1.5.1"
 pytest-mock = "*"
 pytest-xdist = "*"
+
+# Tools for building the documentation.
+[tool.pixi.feature.doc.dependencies]
+autodocsumm = ">=0.2.2"
+myst-nb = "*"
+pydata-sphinx-theme = "*"
+sphinx = ">=6.1.3,<9"     # <9 due to ESMValTool/issues/4316
+
+# Other development tools.
+[tool.pixi.feature.dev.dependencies]
+codespell = "*"
+imagehash = "*"
+pre-commit = "*"
+ruff = "==0.14.5" # keep in sync with .pre-commit-config.yaml
+yamllint = "*"
 
 # Feature for running tests with Python 3.12.
 [tool.pixi.feature.py312.dependencies]
@@ -380,5 +387,5 @@ platforms = ["linux-64"]
 
 # Tasks for use with `pixi run <task>`.
 [tool.pixi.tasks]
-test = "pytest"
-doc = "sphinx-build doc/sphinx/source doc/sphinx/build"
+test = {cmd = "pytest", description = "Run the tests"}
+doc = {cmd = "sphinx-build doc/sphinx/source doc/sphinx/build", description = "Build the documentation"}
