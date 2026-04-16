@@ -19,7 +19,7 @@ on:
 # Required shell entrypoint to have properly configured bash shell
 defaults:
   run:
-    shell: bash -l {0}
+    shell: pixi run bash -e {0}
 
 jobs:
   linux:
