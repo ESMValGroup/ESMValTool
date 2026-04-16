@@ -16,24 +16,42 @@ defaults:
     shell: bash -l {0}
 
 jobs:
-  linux:
-    runs-on: "ubuntu-latest"
+  esmvaltool-python:
+    runs-on: ${{ matrix.os }}
     if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ["3.12", "3.13"]
-    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    name: Install esmvaltool-python with Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    steps:
+      - name: Install Micromamba
+        run: |
+          "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+      - name: Install ESMValTool with only Python dependencies
+        run: micromamba create -n esmvaltool esmvaltool-python python=${{ matrix.python-version }}
+      - name: Verify installation
+        run: |
+          source <(micromamba shell activate esmvaltool)
+          pip check
+          esmvaltool --help
+          esmvaltool version
+          esmvaltool recipes list
+  esmvaltool:
+    runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
+    name: Install esmvaltool on Linux
     steps:
       - name: Install Micromamba
         run: |
           "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
       - name: Install ESMValTool
-        run: micromamba create -n esmvaltool esmvaltool-python python=${{ matrix.python-version }}
+        run: micromamba create -n esmvaltool esmvaltool
       - name: Verify installation
         run: |
-          micromamba shell esmvaltool
+          source <(micromamba shell activate esmvaltool)
           pip check
           esmvaltool --help
           esmvaltool version
+          esmvaltool recipes list
