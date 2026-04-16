@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: Test_reports_${{ matrix.os }}_${{ matrix.environment }}
-          path: test_reports
+          path: test-reports
       - name: Check the command line interface
         run: |
           source <(pixi shell-hook --as-is)

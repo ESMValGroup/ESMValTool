@@ -27,22 +27,12 @@ build:
     #   - git stash pop
     build:
       html:
-        - pixi run sphinx-build -T -W --keep-going -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+        - pixi run sphinx-build -T -W --keep-going -b html -d _build/doctrees -D language=en doc/sphinx/source $READTHEDOCS_OUTPUT/html
       pdf:
-        - pixi run sphinx-build -T -b latex -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/pdf
+        - pixi run sphinx-build -T -b latex -d _build/doctrees -D language=en doc/sphinx/source $READTHEDOCS_OUTPUT/pdf
         - cd $READTHEDOCS_OUTPUT/pdf
         - cat latexmkrc
         - latexmk -r latexmkrc -pdf -f -dvi- -ps- -jobname=esmvaltool -interaction=nonstopmode
-
-# Build documentation in the doc directory with Sphinx
-sphinx:
-  configuration: doc/sphinx/source/conf.py
-  fail_on_warning: true
-
-python:
-  install:
-    - method: pip
-      path: .
 
 # If using Sphinx, optionally build your docs in additional formats such as PDF
 formats:
