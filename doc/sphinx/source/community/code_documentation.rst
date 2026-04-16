@@ -370,7 +370,8 @@ How to build and view the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whenever you make a pull request or push new commits to an existing pull
-request, readthedocs will automatically build the documentation.
+request, `readthedocs <https://app.readthedocs.org/projects/esmvaltool/>`_ will
+automatically build the documentation.
 The link to the documentation will be shown in the list of checks below your
 pull request, click 'Details' behind the check
 ``docs/readthedocs.org:esmvaltool`` to preview the documentation.
@@ -391,9 +392,16 @@ or
    sphinx-build -Ea doc/sphinx/source/ doc/sphinx/build/
 
 to build it from scratch.
+
+Alternatively, the pixi task ``doc`` can be used:
+
+.. code-block:: bash
+
+   pixi run doc
+
 Make sure that your newly added documentation builds without warnings or
 errors and looks correctly formatted.
-CircleCI_ will build the documentation with the command
+readthedocs_ will build the documentation with the command
 
 .. code-block:: bash
 
@@ -441,7 +449,7 @@ To see some of the results on CircleCI, you may need to log in.
 You can do so using your GitHub account.
 
 To run the tests on your own computer, go to the directory where the repository
-is cloned and run the command ``pytest``.
+is cloned and run the command ``pytest`` or ``pixi run test``.
 
 Have a look at :ref:`testing_recipes` for information on testing recipes.
 
@@ -519,20 +527,17 @@ the following locations in ``pyproject.toml``:
   contains dependencies that can be installed from `conda-forge <https://conda-forge.org/>`__
 
 it is strongly preferred that those two lists are kept in sync, apart from
-differences in how packages are named.
-
-.. tip::
-
-   When reviewing a pull request where dependencies are added or removed, always
-   check that the changes have been applied to both the PyPI and the conda-forge
-   dependencies and that the ``pixi.lock`` file has been updated by running
-   ``pixi lock`` after the changes were made.
+differences in how packages are named. Run the command ``pixi lock`` after
+making changes to the dependencies to update the ``pixi.lock`` file, which
+is used to make sure that the same versions of packages are installed for
+all ESMValTool developers.
 
 In addition to these core dependencies, there are also optional dependencies
 for diagnostics that need R or NCL. These are listed in the sections
 ``[tool.pixi.feature.r]`` and ``[tool.pixi.feature.ncl]`` in respectively.
 
 There are also three feature groups for development dependencies:
+
 - ``[tool.pixi.feature.dev]`` contains tools that are useful for development
 - ``[tool.pixi.feature.doc]`` contains tools that are needed to build the documentation
 - ``[tool.pixi.feature.test]`` contains tools that are needed to run the tests
@@ -540,6 +545,12 @@ There are also three feature groups for development dependencies:
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
 
+.. tip::
+
+   When reviewing a pull request where dependencies are added or removed, always
+   check that the changes have been applied to both the PyPI and the conda-forge
+   dependencies and that the ``pixi.lock`` file has been updated by running
+   ``pixi lock`` after the changes were made.
 
 .. _pull_request_checks:
 
