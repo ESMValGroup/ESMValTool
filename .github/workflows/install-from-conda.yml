@@ -24,17 +24,16 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ["3.12", "3.13"]
-    name: ${{ matrix.os }} Python ${{ matrix.python-version }}
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
     steps:
       - name: Install Micromamba
         run: |
           "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
-          micromamba shell init --shell bash --root-prefix=~/.local/share/mamba
       - name: Install ESMValTool
-        run: micromamba create -n esmvaltool esmvaltool python=${{ matrix.python-version }}
+        run: micromamba create -n esmvaltool esmvaltool-python python=${{ matrix.python-version }}
       - name: Verify installation
         run: |
-          micromamba activate esmvaltool
+          micromamba shell esmvaltool
           pip check
           esmvaltool --help
           esmvaltool version
