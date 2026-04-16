@@ -7,7 +7,8 @@ exclude: |
   ^doc/sphinx/source/conf.py|
   ^esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf/|
   ^esmvaltool/diag_scripts/cvdp/|
-  ^esmvaltool/utils/nclcodestyle/
+  ^esmvaltool/utils/nclcodestyle/|
+  ^pixi.lock
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -28,7 +29,7 @@ repos:
           - "--fix"
           # Do not use the configuration file but configure here so we can
           # enable more rules that are not mandatory in the configuration file.
-          - "--select=B,E,F,I,ISC001,UP,W"  # TODO: select D
+          - "--select=B,E,F,I,ISC001,UP,W" # TODO: select D
           - "--ignore=E501"
       - id: ruff-format
   # - repo: https://github.com/adrienverge/yamllint

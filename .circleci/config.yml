@@ -1,6 +1,9 @@
 ---
 version: 2.1
 
+orbs:
+  pixi: prefix-dev/pixi@0.1.0
+
 commands:
   check_changes:
     steps:
@@ -17,37 +20,21 @@ commands:
               circleci step halt
             fi
 
-  log_versions:
-    steps:
-      - run:
-          name: Log versions
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda env export --name base > /logs/base_environment.yml
-            conda activate esmvaltool
-            esmvaltool version
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
-
   test_and_report:
     steps:
       - run:
           name: Run tests
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            pip check
-            pytest -n 4 --junitxml=test-reports/report.xml
+            pixi run test -n 4 --junitxml=test-reports/report.xml
+      - run:
+          name: Check that the command line interface works
+          command: |
+            pixi shell
             esmvaltool version
             esmvaltool -- --help
             esmvaltool develop compare -- --help
-            ncl -V
-            cdo --version
       - store_test_results:
           path: test-reports/report.xml
-      - store_artifacts:
-          path: /logs
       - run:
           name: Compress pytest artifacts
           command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
@@ -61,161 +48,88 @@ commands:
       - store_artifacts:
           path: test-reports.tar.gz
 
-  test_installation_from_source:
-    parameters:
-      extra:
-        type: string
-      flags:
-        type: string
-        default: ""
-    steps:
-      - run:
-          name: Install git+ssh
-          environment:
-            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
-          command: apt update && apt install -y git ssh
-      - checkout
-      - check_changes
-      - run:
-          name: Generate cache key
-          command: date '+%Y-%V' | tee cache_key.txt
-      - restore_cache:
-          key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - run:
-          name: Install dependencies
-          no_output_timeout: 30m
-          command: |
-            # Install
-            . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
-            mamba --version
-            conda env create -n esmvaltool -f environment.yml --verbose
-            conda activate esmvaltool
-            mamba list >> /logs/conda.txt
-            pip install --no-deps << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
-            if [[ "<<parameters.flags>>" != *'--editable'* ]]
-            then
-              rm -r esmvaltool
-            fi
-      - log_versions
-      - run:
-          name: Lint source code
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            pre-commit run --all
-      - test_and_report
-      - save_cache:
-          key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-          paths:
-            - /opt/conda/pkgs
-            - /root/.cache/pip
-            - .pytest_cache
-
 jobs:
-  run_tests:
+  tests:
     # Run tests
     docker:
-      - image: esmvalgroup/esmvaltool:development
+      - image: cimg/base:current
     resource_class: large
     steps:
       - checkout
+      - pixi/pixi_setup
       - run:
-          name: Generate cache key
-          command: date '+%Y-%V' | tee cache_key.txt
-      - restore_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - run:
-          name: Install dependencies
-          command: |
-            set -x
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            mkdir /logs
-            pip install --no-deps .[test] > /logs/install.txt 2>&1
+          name: Check that the lock file is up to date
+          command: pixi install --locked
       - run:
           name: Check Python code style and mistakes
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            pre-commit run --all
+          command: pixi run pre-commit run --all
       - run:
-          name: Remove source code to test the installed software
-          command: rm -r esmvaltool
-      - test_and_report
+          name: Run tests
+          command: |
+            pixi run test -n 4 --junitxml=test-reports/report.xml
+      - run:
+          name: Check the command line interface
+          command: |
+            pixi shell
+            esmvaltool version
+            esmvaltool -- --help
+            esmvaltool develop compare -- --help
+      - store_test_results:
+          path: test-reports/report.xml
       - run:
           # Documentation available at https://docs.codacy.com/coverage-reporter/
           name: Upload coverage report to Codacy
           command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -s -r test-reports/coverage.xml
-      - save_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-          paths:
-            - /root/.cache/pip
-            - .pytest_cache
-
-  test_installation_from_source_test_mode:
-    # Test installation from source
-    docker:
-      - image: condaforge/miniforge3:latest
-    resource_class: large
-    steps:
-      - test_installation_from_source:
-          extra: test
-
-  test_installation_from_source_develop_mode:
-    # Test development installation
-    docker:
-      - image: condaforge/miniforge3:latest
-    resource_class: large
-    steps:
-      - test_installation_from_source:
-          extra: develop
-          flags: "--editable"
+      - run:
+          name: Compress pytest artifacts
+          command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
+          when: always
+      - store_artifacts:
+          path: pytest.tar.gz
+      - run:
+          name: Compress test-report artifacts
+          command: tar -cvzf test-reports.tar.gz test-reports/
+          when: always
+      - store_artifacts:
+          path: test-reports.tar.gz
 
   test_upstream_development:
     # Test running recipes with the development version of ESMValCore. The
     # purpose of this test to discover backward-incompatible changes early on in
     # the development cycle.
     docker:
-      - image: condaforge/miniforge3:latest
+      - image: cimg/base:current
     resource_class: large
     steps:
-      - run:
-          name: Install git and ssh
-          environment:
-            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
-          command: apt update && apt install -y git ssh
-      - checkout
       - run:
           name: Generate cache key
           command: echo $(date '+%Y')-$(expr $(date '+%V') / 2) | tee cache_key.txt
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+      - checkout
       - run:
-          name: Install
-          no_output_timeout: 30m
+          name: Clone ESMValcore
+          command: git clone https://github.com/ESMValGroup/ESMValCore ../ESMValCore
+      - pixi/pixi_setup:
+          env: esmvalcore-dev
+      - run:
+          name: Install intake-esgf from source
           command: |
-            # Install according to instructions on readthedocs with the
-            # development version of ESMValTool and ESMValCore:
-            # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
-            . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
-            conda env create -n esmvaltool -f environment.yml --verbose
-            conda activate esmvaltool
             # Temporarily install intake-esgf here until there is a new release
             # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
+            pixi shell --locked --environment esmvalcore-dev
             pip install git+https://github.com/esgf2-us/intake-esgf@main
-            mamba list >> /logs/conda.txt
-            pip install --no-deps --editable .[develop]
-            git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
-            pip install --no-deps --editable $HOME/ESMValCore[develop]
-      - log_versions
-      - test_and_report
+      - run:
+          name: Run tests
+          command: |
+            pixi run --locked --environment esmvalcore-dev test -n 4 --junitxml=test-reports/report.xml
+      - store_test_results:
+          path: test-reports/report.xml
       - run:
           name: Run recipes
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
+            pixi shell --locked --environment esmvalcore-dev
+            esmvaltool version
             esmvaltool config copy data-intake-esgf.yml
             python -c '
             import intake_esgf
@@ -231,34 +145,19 @@ jobs:
       - save_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
-            - /opt/conda/pkgs
-            - /root/.cache/pip
             - /root/climate_data
 
   build_documentation:
     # Test building documentation
     docker:
-      - image: condaforge/miniforge3:latest
+      - image: cimg/base:current
     resource_class: medium+
     steps:
       - checkout
+      - pixi/pixi_setup
       - run:
-          command: |
-            mkdir /logs
-            . /opt/conda/etc/profile.d/conda.sh
-            # Install
-            conda env create -n esmvaltool -f environment_python.yml
-            conda activate esmvaltool
-            pip install --no-deps .[doc]
-            pip check
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
-            # Test building documentation
-            MPLBACKEND=Agg sphinx-build -W doc/sphinx/source doc/spinx/build
-      - store_artifacts:
-          path: /logs
+          name: Build documentation
+          command: pixi run docs
 
   test_installation_from_conda:
     # Test conda package installation
@@ -273,7 +172,7 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.12' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.13' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # Log versions
@@ -289,9 +188,10 @@ jobs:
 workflows:
   commit:
     jobs:
-      - run_tests
-      - test_installation_from_source_test_mode
-      - test_installation_from_source_develop_mode
+      - tests
+      - test_upstream_development
+      - build_documentation
+      - test_installation_from_conda
   nightly:
     triggers:
       - schedule:
@@ -301,9 +201,7 @@ workflows:
               only:
                 - main
     jobs:
-      - run_tests
-      - test_installation_from_source_test_mode
-      - test_installation_from_source_develop_mode
+      - tests
       - test_upstream_development
       - build_documentation
       - test_installation_from_conda
