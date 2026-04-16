@@ -4,22 +4,6 @@ version: 2.1
 orbs:
   pixi: prefix-dev/pixi@0.1.0
 
-commands:
-  check_changes:
-    steps:
-      - run:
-          name: Check whether or not installation tests are needed
-          command: |
-            if (test "$CIRCLE_BRANCH" = main ||
-              git --no-pager diff --name-only origin/main... |
-              grep -q -E -f .circleci/install_triggers)
-            then
-              echo Running installation tests
-            else
-              echo Skipping installation tests
-              circleci step halt
-            fi
-
 jobs:
   tests:
     # Run tests
