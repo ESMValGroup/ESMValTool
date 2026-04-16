@@ -98,12 +98,12 @@ jobs:
       - image: cimg/base:current
     resource_class: large
     steps:
+      - checkout
       - run:
           name: Generate cache key
           command: echo $(date '+%Y')-$(expr $(date '+%V') / 2) | tee cache_key.txt
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - checkout
       - pixi/pixi_setup:
           env: esmvalcore-dev
       - run:
