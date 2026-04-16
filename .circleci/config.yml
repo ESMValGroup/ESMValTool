@@ -20,34 +20,6 @@ commands:
               circleci step halt
             fi
 
-  test_and_report:
-    steps:
-      - run:
-          name: Run tests
-          command: |
-            pixi run test -n 4 --junitxml=test-reports/report.xml
-      - run:
-          name: Check that the command line interface works
-          command: |
-            pixi shell
-            esmvaltool version
-            esmvaltool -- --help
-            esmvaltool develop compare -- --help
-      - store_test_results:
-          path: test-reports/report.xml
-      - run:
-          name: Compress pytest artifacts
-          command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
-          when: always
-      - store_artifacts:
-          path: pytest.tar.gz
-      - run:
-          name: Compress test-report artifacts
-          command: tar -cvzf test-reports.tar.gz test-reports/
-          when: always
-      - store_artifacts:
-          path: test-reports.tar.gz
-
 jobs:
   tests:
     # Run tests
