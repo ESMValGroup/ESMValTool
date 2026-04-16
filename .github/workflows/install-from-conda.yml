@@ -33,7 +33,7 @@ jobs:
         run: micromamba create -n esmvaltool esmvaltool-python python=${{ matrix.python-version }}
       - name: Verify installation
         run: |
-          source <(micromamba shell activate esmvaltool)
+          eval "$(micromamba shell activate esmvaltool)"
           pip check
           esmvaltool --help
           esmvaltool version
@@ -50,7 +50,7 @@ jobs:
         run: micromamba create -n esmvaltool esmvaltool
       - name: Verify installation
         run: |
-          source <(micromamba shell activate esmvaltool)
+          eval "$(micromamba shell activate esmvaltool)"
           pip check
           esmvaltool --help
           esmvaltool version
