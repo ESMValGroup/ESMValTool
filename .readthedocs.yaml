@@ -19,12 +19,12 @@ build:
       # to allow setuptools-scm to correctly auto-discover the version.
       - git fetch --unshallow
       - git fetch --all
-    pre_install:
-      - git stash
+    # pre_install:
+    #   - git stash
     install:
       - pixi install --frozen
-    post_install:
-      - git stash pop
+    # post_install:
+    #   - git stash pop
     build:
       html:
         - pixi run sphinx-build -T -W --keep-going -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
