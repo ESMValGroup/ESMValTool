@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - pixi
   schedule:
     - cron: "0 4 * * *"
 
@@ -21,70 +22,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.12", "3.13"]
-    name: Linux Python ${{ matrix.python-version }}
+    name: ${{ matrix.os }} Python ${{ matrix.python-version }}
     steps:
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-          miniforge-version: "latest"
-          use-mamba: true
-      - run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
-      - name: Record versions
-        run: |
-          mamba --version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
-          which conda 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
-          which mamba 2>&1 | tee -a conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
-          python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Install Micromamba
+        run: "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
       - name: Install ESMValTool
-        run: mamba install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: micromamba create -n esmvaltool esmvaltool python=${{ matrix.python-version }}
       - name: Verify installation
         run: |
+          micromamba activate esmvaltool
           pip check
           esmvaltool --help
-          esmvaltool version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
-      - name: Upload artifacts
-        if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v7
-        with:
-          name: Conda_Install_Linux_python_${{ matrix.python-version }}
-          path: conda_install_linux_artifacts_python_${{ matrix.python-version }}
-
-# uncomment from here when we have a testing environment on an OSX machine
-# and we know that this should work
-#
-#  osx:
-#    runs-on: "macos-latest"
-#    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
-#    strategy:
-#      matrix:
-#        python-version: ["3.11"]
-#      fail-fast: false
-#    name: OSX Python ${{ matrix.python-version }}
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: conda-incubator/setup-miniconda@v3
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#          miniconda-version: "latest"
-#          channels: conda-forge
-#      - run: mkdir -p conda_install_osx_artifacts_python_${{ matrix.python-version }}
-#      - run: conda --version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
-#      - run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
-#      - run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
-#      # ncurses needs to be from conda-forge and not main channel
-#      # for now it's turned off since we're not testing R installs
-#      # - run: conda uninstall -y ncurses
-#      # - run: conda list ncurses
-#      # - run: conda install -y conda-forge::ncurses
-#      # - run: conda list ncurses
-#      - run: conda install esmvaltool --no-update-deps 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
-#      - run: conda install esmvaltool-python esmvaltool-ncl 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
-#      - run: esmvaltool --help
-#      - run: esmvaltool version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
-#      - name: Upload artifacts
-#        if: ${{ always() }}  # upload artifacts even if fail
-#        uses: actions/upload-artifact@v7
-#        with:
-#          name: Conda_Install_OSX_python_${{ matrix.python-version }}
-#          path: conda_install_osx_artifacts_python_${{ matrix.python-version }}
+          esmvaltool version
