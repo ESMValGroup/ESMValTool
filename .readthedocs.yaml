@@ -2,17 +2,17 @@
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
-# Required
 version: 2
 
-# Set the version of Python and other tools you might need
 build:
   os: ubuntu-lts-latest
   tools:
-    # try miniforge3 when available? see github.com/ESMValGroup/ESMValTool/issues/3779
-    # DO NOT use mambaforge-*; that is currently sunsetted
-    python: "miniconda-latest"
+    python: "latest"
   jobs:
+    create_environment:
+      - asdf plugin add pixi
+      - asdf install pixi latest
+      - asdf global pixi latest
     post_checkout:
       # The ESMValTool repository is shallow i.e., has a .git/shallow,
       # therefore complete the repository with a full history in order
@@ -21,13 +21,18 @@ build:
       - git fetch --all
     pre_install:
       - git stash
+    install:
+      - pixi install --as-is
     post_install:
       - git stash pop
-
-# Declare the requirements required to build your docs
-conda:
-  environment:
-    environment_python.yml
+    build:
+      html:
+        - pixi run sphinx-build -T -W --keep-going -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+      pdf:
+        - pixi run sphinx-build -T -b latex -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/pdf
+        - cd $READTHEDOCS_OUTPUT/pdf
+        - cat latexmkrc
+        - latexmk -r latexmkrc -pdf -f -dvi- -ps- -jobname=esmvaltool -interaction=nonstopmode
 
 # Build documentation in the doc directory with Sphinx
 sphinx:

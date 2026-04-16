@@ -103,7 +103,7 @@ jobs:
       - pixi/pixi_setup
       - run:
           name: Build documentation
-          command: pixi run --as-is docs
+          command: pixi run --as-is doc
 
   test_installation_from_conda:
     # Test conda package installation

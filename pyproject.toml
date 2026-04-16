@@ -375,4 +375,4 @@ platforms = ["linux-64"]
 # Tasks for use with `pixi run <task>`.
 [tool.pixi.tasks]
 test = "pytest"
-docs = "sphinx-build doc/sphinx/source doc/sphinx/build"
+doc = "sphinx-build doc/sphinx/source doc/sphinx/build"
