@@ -32,10 +32,10 @@ jobs:
       - run:
           name: Check code formatting and mistakes
           command: pixi run --as-is pre-commit run --all
-      # - run:
-      #     name: Run tests
-      #     command: |
-      #       pixi run --as-is test -n 4 --junitxml=test-reports/report.xml
+      - run:
+          name: Run tests
+          command: |
+            pixi run --as-is test -n 4 --junitxml=test-reports/report.xml
       - run:
           name: Check the command line interface
           command: |
@@ -151,8 +151,6 @@ workflows:
   commit:
     jobs:
       - tests
-      - test_upstream_development
-      - build_documentation
   nightly:
     triggers:
       - schedule:
