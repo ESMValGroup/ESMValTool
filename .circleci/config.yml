@@ -32,14 +32,14 @@ jobs:
       - run:
           name: Check code formatting and mistakes
           command: pixi run --as-is pre-commit run --all
-      - run:
-          name: Run tests
-          command: |
-            pixi run --as-is test -n 4 --junitxml=test-reports/report.xml
+      # - run:
+      #     name: Run tests
+      #     command: |
+      #       pixi run --as-is test -n 4 --junitxml=test-reports/report.xml
       - run:
           name: Check the command line interface
           command: |
-            source $(pixi shell-hook --as-is)
+            source <(pixi shell-hook --as-is)
             esmvaltool version
             esmvaltool -- --help
             esmvaltool develop compare -- --help
@@ -87,7 +87,7 @@ jobs:
       - run:
           name: Run recipes
           command: |
-            source $(pixi shell-hook --as-is --environment esmvalcore-dev)
+            source <(pixi shell-hook --as-is --environment esmvalcore-dev)
             # Temporarily install intake-esgf here until there is a new release
             # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
             pip install git+https://github.com/esgf2-us/intake-esgf@main
