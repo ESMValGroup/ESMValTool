@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        environment: [test-py312, test-py312]
+        environment: [test-py312, test-py313]
     name: ${{ matrix.os }} ${{ matrix.environment }}
     steps:
       - uses: actions/checkout@v6
