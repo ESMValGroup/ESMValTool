@@ -265,7 +265,11 @@ convention = "numpy"
 "zarr" = "*"
 
 [tool.pixi.workspace]
-channels = ["conda-forge", "nodefaults"]
+channels = [
+    "conda-forge",
+    # "conda-forge/label/esmvalcore_rc",  # Uncomment to use ESMValCore release candidates.
+    "nodefaults",
+]
 platforms = ["linux-64", "osx-arm64"]
 
 [tool.pixi.pypi-dependencies]
@@ -277,11 +281,13 @@ default = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "defa
 # Environment with the development version of ESMValCore for testing new features and bug fixes.
 esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
 # Environment for running diagnostics that only require Python.
-esmvaltool = { features = ["esmvalcore"], solve-group = "default" }
+esmvaltool-python = { features = ["esmvalcore"], solve-group = "default" }
 # Environment for running diagnostics that also require NCL.
-ncl = { features = ["esmvalcore", "ncl"], solve-group = "ncl" }
+esmvaltool-ncl = { features = ["esmvalcore", "ncl"], solve-group = "ncl" }
 # Environment for running diagnostics that also require R.
-r = { features = ["esmvalcore", "r"], solve-group = "r" }
+esmvaltool-r = { features = ["esmvalcore", "r"], solve-group = "r" }
+# Environment for running any diagnostic.
+esmvaltool = { features = ["esmvalcore", "ncl", "r"], solve-group = "esmvaltool" }
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
 test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "py313" }

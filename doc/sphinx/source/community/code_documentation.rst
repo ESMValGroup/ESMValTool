@@ -511,26 +511,35 @@ See this `statement <https://www.apache.org/licenses/GPL-compatibility.html>`__
 by the authors of the Apache 2.0 license for more information.
 
 When adding or removing dependencies, please consider applying the changes in
-the following files:
+the following locations in ``pyproject.toml``:
 
-- ``environment.yml``
-  contains dependencies that cannot be installed from
-  `PyPI <https://pypi.org/>`__
-- ``environment_osx.yml``
-  contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
-  but currently without multi language support.
-- ``pyproject.toml``
-  contains all Python dependencies, regardless of their installation source
+- ``dependencies``
+  contains dependencies that can be installed from `PyPI <https://pypi.org/>`__
+- ``[tool.pixi.dependencies]``
+  contains dependencies that can be installed from `conda-forge <https://conda-forge.org/>`__
+
+it is strongly preferred that those two lists are kept in sync, apart from
+differences in how packages are named.
+
+.. tip::
+
+   When reviewing a pull request where dependencies are added or removed, always
+   check that the changes have been applied to both the PyPI and the conda-forge
+   dependencies and that the ``pixi.lock`` file has been updated by running
+   ``pixi lock`` after the changes were made.
+
+In addition to these core dependencies, there are also optional dependencies
+for diagnostics that need R or NCL. These are listed in the sections
+``[tool.pixi.feature.r]`` and ``[tool.pixi.feature.ncl]`` in respectively.
+
+There are also three feature groups for development dependencies:
+- ``[tool.pixi.feature.dev]`` contains tools that are useful for development
+- ``[tool.pixi.feature.doc]`` contains tools that are needed to build the documentation
+- ``[tool.pixi.feature.test]`` contains tools that are needed to run the tests
 
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
 
-Several test jobs on CircleCI_ related to the installation of the tool will only
-run if you change the dependencies.
-These will be skipped for most pull requests.
-
-When reviewing a pull request where dependencies are added or removed, always
-check that the changes have been applied in all relevant files.
 
 .. _pull_request_checks:
 
