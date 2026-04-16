@@ -7,6 +7,7 @@ IGNORE = {
     ".git",
     ".github",
     ".eggs",
+    ".pixi",
     "ESMValTool.egg-info",
     "__pycache__",
     "test-reports",

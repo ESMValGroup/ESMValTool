@@ -274,7 +274,7 @@ ESMValTool = { path = ".", editable = true }
 [tool.pixi.environments]
 # The default development environment.
 default = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
-# Environment for ESMValCore development that uses the local ESMValCore repository.
+# Environment with the development version of ESMValCore for testing new features and bug fixes.
 esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
 # Environment for running diagnostics that only require Python.
 esmvaltool = { features = ["esmvalcore"], solve-group = "default" }
@@ -293,7 +293,7 @@ esmvalcore = ">=2.14.0"
 # Use the development version of ESMValCore to test new features and bug fixes.
 [tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
 ESMValCore = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
-# Replace line the above with the following to use the local ESMValCore repository instead.
+# Replace the line above with the following to use a local ESMValCore repository instead.
 # ESMValCore = { path = "../ESMValCore", editable = true }
 
 # Tools for development.

@@ -9846,8 +9846,8 @@ packages:
   timestamp: 1773221341802
 - pypi: ./
   name: esmvaltool
-  version: 2.15.0.dev8+g55218175e.d20260416
-  sha256: 7d366a28103f8c45050bd9292ca187fd44ec74cd328086ccc165bbc234b8d565
+  version: 2.15.0.dev10+gc1512a9b4.d20260416
+  sha256: 616cc358c203d4e1bf80b21e07bbe5f7c7e61c0c43235eb491389a9720bf67cf
   requires_dist:
   - aiohttp
   - arviz
