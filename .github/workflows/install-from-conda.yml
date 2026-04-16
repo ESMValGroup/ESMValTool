@@ -27,7 +27,8 @@ jobs:
     name: ${{ matrix.os }} Python ${{ matrix.python-version }}
     steps:
       - name: Install Micromamba
-        run: "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+        run: |
+          "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
       - name: Install ESMValTool
         run: micromamba create -n esmvaltool esmvaltool python=${{ matrix.python-version }}
       - name: Verify installation
