@@ -22,7 +22,7 @@ build:
     pre_install:
       - git stash
     install:
-      - pixi install --as-is
+      - pixi install --frozen
     post_install:
       - git stash pop
     build:

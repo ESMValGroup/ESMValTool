@@ -31,6 +31,7 @@ jobs:
           fetch-depth: 0
       - uses: prefix-dev/setup-pixi@v0.9.5
         with:
+          frozen: true
           environments: ${{ matrix.environment }}
       - name: Check dependencies are compatible
         run: pip check
