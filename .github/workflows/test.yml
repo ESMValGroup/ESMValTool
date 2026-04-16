@@ -47,7 +47,6 @@ jobs:
           path: test-reports
       - name: Check the command line interface
         run: |
-          source <(pixi shell-hook --as-is)
           esmvaltool version
           esmvaltool -- --help
           esmvaltool develop compare -- --help
