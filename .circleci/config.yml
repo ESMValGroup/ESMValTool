@@ -35,7 +35,7 @@ jobs:
           command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -s -r test-reports/coverage.xml
       - run:
           name: Compress pytest artifacts
-          command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
+          command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-$(whoami)/ .
           when: always
       - store_artifacts:
           path: pytest.tar.gz
