@@ -312,9 +312,15 @@ and run the command:
 
     pixi shell
 
-This will install all of the required development dependencies for running
-Python diagnostics. If you are on Linux, it is also possible to install the
-dependencies for NCL and R diagnostics by running
+This will install all of the required dependencies for running and developing
+Python diagnostics.
+
+.. tip::
+
+    To exit the pixi environment, run ``exit`` or press ``Ctrl+D``.
+
+If you are on Linux, it is also possible to install the dependencies for NCL
+and R diagnostics by running
 
 .. code-block:: bash
 
@@ -326,7 +332,23 @@ environments with the dependencies for running diagnostics in specific languages
 without the development dependencies, i.e. ``pixi shell -e esmvaltool-python``
 for running Python diagnostics, ``pixi shell -e esmvaltool-ncl`` for running
 NCL diagnostics, ``pixi shell -e esmvaltool-r`` for running R diagnostics, and
-``pixi shell -e esmvaltool`` for running any diagnostic.
+``pixi shell -e esmvaltool`` for running any diagnostic. The environment names
+correspond to the ESMValTool subpackages described in :ref:`conda subpackages`
+and the ``-dev`` suffix indicates that the development dependencies are included.
+
+.. tip::
+
+    If you find that solving the environments (i.e. finding out which
+    combination of package versions is compatible and can be installed) is
+    slow, you can add the ``--frozen`` flag to the commands above to skip the
+    solve step. Add ``export PIXI_FROZEN=true`` to your ``~/.bashrc`` file to
+    make this the default behavior.
+
+.. tip::
+
+    If you find that solving the environments uses too much memory, you can
+    `set the number of parallel solves to one <https://pixi.prefix.dev/latest/reference/pixi_configuration/#concurrency>`__
+    by running ``pixi config set concurrency.solves 1``.
 
 If you are planning to do any coding, install the :ref:`pre-commit`
 hooks by running:
@@ -434,8 +456,8 @@ Edit the ``pyproject.toml`` file in the ESMValTool source code and remove
 this line:
 
 .. literalinclude:: ../../../../pyproject.toml
-   :start-after: [tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
-   :end-before: # Replace the line above with the following to use a local ESMValCore repository instead.
+   :start-at: ESMValCore = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
+   :end-at: ESMValCore = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
 
 and uncomment this line:
 
@@ -446,7 +468,8 @@ and uncomment this line:
 Make sure the path in the line you just uncommented points to the ESMValCore
 repository you just cloned.
 
-Finally, also install the :ref:`pre-commit` hooks by running:
+Finally, also install the ESMValCore :ref:`pre-commit` hooks by going into the
+directory containing the ESMValCore source code and running:
 
 .. code-block:: bash
 
