@@ -22,4 +22,3 @@ COPY --from=build /app/esmvaltool /app/esmvaltool
 COPY --from=build --chmod=0755 /app/entrypoint.sh /app/entrypoint.sh
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "esmvaltool" ]
