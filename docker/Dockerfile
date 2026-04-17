@@ -5,7 +5,7 @@ FROM ghcr.io/prefix-dev/pixi:0.67.0 AS build
 
 WORKDIR /app
 COPY . .
-RUN apt-get update && apt-get install git -y --no-install-recommends
+RUN pixi global install git
 RUN pixi install --frozen -e esmvaltool
 RUN pixi shell-hook -e esmvaltool -s bash > /shell-hook
 RUN echo "#!/bin/bash" > /app/entrypoint.sh

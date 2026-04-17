@@ -298,7 +298,7 @@ esmvaltool = { features = ["esmvalcore", "ncl", "r"], solve-group = "esmvaltool"
 esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
-test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "py313" }
+test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "default" }
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
