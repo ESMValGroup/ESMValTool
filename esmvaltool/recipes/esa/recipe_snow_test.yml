@@ -68,6 +68,8 @@ preprocessors:
       operator: mean
     mask_glaciated:
       mask_out: glaciated
+    mask_below_threshold:
+      threshold: 0.01
 
   pp_snw_sum:
     custom_order: true
@@ -180,6 +182,7 @@ diagnostics:
         seaborn_func: displot
         reset_index: true
         write_netcdf: true
+        facet_used_for_labels: dataset
         seaborn_kwargs:
           kind: hist
           stat: density
