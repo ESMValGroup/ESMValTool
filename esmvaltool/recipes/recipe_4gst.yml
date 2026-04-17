@@ -1,0 +1,39 @@
+# Recipe for 4GST Phenology
+documentation:
+  title: 4 Growing Season Types Phenology
+  description: |
+    TO DO
+  authors:
+    - king_robert
+
+  maintainer:
+    - king_robert
+
+  references:
+#    - esacci_lst
+
+  projects:
+    - cmug
+
+datasets:
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f2, start_year: 2004, end_year: 2005, grid: gn}
+
+
+
+diagnostics:
+
+   testing:
+      description: First look at LAI and 4GST
+      themes:
+        - phys
+      realms:
+        - land
+      variables:
+        lai:
+          mip: Lmon
+          # preprocessor: lst_preprocessor
+
+      scripts:
+         script1:
+           script: phenology/4gst.py
