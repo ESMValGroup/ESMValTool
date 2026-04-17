@@ -457,14 +457,14 @@ Edit the ``pyproject.toml`` file in the ESMValTool source code and remove
 this line:
 
 .. literalinclude:: ../../../../pyproject.toml
-   :start-at: ESMValCore = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
-   :end-at: ESMValCore = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
+   :start-at: "ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
+   :end-at: "ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
 
 and uncomment this line:
 
 .. literalinclude:: ../../../../pyproject.toml
-   :start-at: # ESMValCore = { path = "../ESMValCore", editable = true }
-   :end-at: # ESMValCore = { path = "../ESMValCore", editable = true }
+   :start-at: # "ESMValCore" = { path = "../ESMValCore", editable = true }
+   :end-at: # "ESMValCore" = { path = "../ESMValCore", editable = true }
 
 Make sure the path in the line you just uncommented points to the ESMValCore
 repository you just cloned.
