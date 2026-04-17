@@ -334,7 +334,8 @@ for running Python diagnostics, ``pixi shell -e esmvaltool-ncl`` for running
 NCL diagnostics, ``pixi shell -e esmvaltool-r`` for running R diagnostics, and
 ``pixi shell -e esmvaltool`` for running any diagnostic. The environment names
 correspond to the ESMValTool subpackages described in :ref:`conda subpackages`
-and the ``-dev`` suffix indicates that the development dependencies are included.
+(except that ``esmvaltool-python-dev`` is called ``default``) and the ``-dev``
+suffix indicates that additional development dependencies are included.
 
 .. tip::
 
