@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pixi run --as-is test -n 4 --junitxml=test-reports/report.xml
+            pixi run --as-is test -n 4 --durations=10 --junitxml=test-reports/report.xml
       - run:
           name: Check the command line interface
           command: |
