@@ -51,31 +51,31 @@ def create_category_dict(cfg):
     input_data = cfg["input_data"].values()
 
     # Iterate over the datasets to add to the dictionary
-    for input in input_data:
+    for section in input_data:
         # Check for tasa observations
-        if input["variable_group"] == "tasa_obs":
-            category_dict["tasa_obs"][input["dataset"]] = {}
+        if section["variable_group"] == "tasa_obs":
+            category_dict["tasa_obs"][section["dataset"]] = {}
 
         # Check for siconc observations
-        elif input["variable_group"] == "siconc_obs":
-            category_dict["siconc_obs"][input["dataset"]] = {}
+        elif section["variable_group"] == "siconc_obs":
+            category_dict["siconc_obs"][section["dataset"]] = {}
 
         # Everything else should be a model
         else:
             # Add the model dataset if not already present (appears twice, for tas and siconc)
-            if input["dataset"] not in category_dict["models"]:
-                category_dict["models"][input["dataset"]] = {}
+            if section["dataset"] not in category_dict["models"]:
+                category_dict["models"][section["dataset"]] = {}
 
             # Add labelling info
-            if "label_dataset" in input and input["label_dataset"]:
-                category_dict["models"][input["dataset"]]["label"] = "to_label"
-                logger.info("Dataset %s will be labelled", input["dataset"])
+            if "label_dataset" in section and section["label_dataset"]:
+                category_dict["models"][section["dataset"]]["label"] = "to_label"
+                logger.info("Dataset %s will be labelled", section["dataset"])
             else:
-                category_dict["models"][input["dataset"]]["label"] = (
+                category_dict["models"][section["dataset"]]["label"] = (
                     "unlabelled"
                 )
                 logger.info(
-                    "Not labelling dataset %s in plots", input["dataset"]
+                    "Not labelling dataset %s in plots", section["dataset"]
                 )
 
     return category_dict
@@ -91,12 +91,12 @@ def fetch_cube(dataset, variable, cfg):
     input_data = cfg["input_data"].values()
 
     # Find the correct filepath for the dataset
-    for input in input_data:
-        if input["dataset"] == dataset:
+    for section in input_data:
+        if section["dataset"] == dataset:
             # Also check the variable matches as models have two entries
             # Only matching the first three letters to avoid issues with sic vs siconc
-            if input["short_name"][:3] == variable[:3]:
-                filepath = input["filename"]
+            if section["short_name"][:3] == variable[:3]:
+                filepath = section["filename"]
                 break
 
     # Load the cube using iris
@@ -160,7 +160,7 @@ def write_values_to_dict(data_dict, cfg):
     logger.debug("Writing values to dictionary.")
 
     # Calculate all the values for the models
-    for model_dataset in data_dict["models"].keys():
+    for model_dataset in data_dict["models"]:
         # Calculate annual tas trend
         tas_cube = fetch_cube(model_dataset, "tas", cfg)
         ann_tas_trend = calculate_annual_trend(tas_cube)
@@ -192,7 +192,7 @@ def write_values_to_dict(data_dict, cfg):
         )
 
     # Calculate just the tasa trend for the tasa observations
-    for obs_dataset in data_dict["tasa_obs"].keys():
+    for obs_dataset in data_dict["tasa_obs"]:
         # Calculate annual tas trend
         tasa_cube = fetch_cube(obs_dataset, "tasa", cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
@@ -202,7 +202,7 @@ def write_values_to_dict(data_dict, cfg):
         )
 
     # Calculate the siconc slope and p value  for the siconc observations
-    for obs_dataset in data_dict["siconc_obs"].keys():
+    for obs_dataset in data_dict["siconc_obs"]:
         # Calculate annual siconc trend
         siconc_cube = fetch_cube(obs_dataset, "siconc", cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
@@ -216,8 +216,8 @@ def write_values_to_dict(data_dict, cfg):
         )
 
     # Calculate cross-dataset statistics between tasa and siconc observations
-    for tasa_dataset in data_dict["tasa_obs"].keys():
-        for siconc_dataset in data_dict["siconc_obs"].keys():
+    for tasa_dataset in data_dict["tasa_obs"]:
+        for siconc_dataset in data_dict["siconc_obs"]:
             # Determine structure of dictionary to store values
             key_name = f"{siconc_dataset}_to_{tasa_dataset}"
             data_dict["cross-dataset-obs"][key_name] = {}
@@ -511,7 +511,7 @@ def main(cfg):
     write_dictionary_to_csv(data_dict["siconc_obs"], "siconc_obs_values", cfg)
 
     # Write the cross-dataset obs dictionary to csv files (separately for each pair)
-    for pair in data_dict["cross-dataset-obs"].keys():
+    for pair in data_dict["cross-dataset-obs"]:
         data_dict["cross-dataset-obs"][pair] = data_dict["cross-dataset-obs"][
             pair
         ]
