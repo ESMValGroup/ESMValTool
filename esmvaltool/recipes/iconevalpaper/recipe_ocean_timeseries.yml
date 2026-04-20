@@ -1,3 +1,5 @@
+# requires ESMValCore branch 'expand_icon_xpp_ocean'
+
 documentation:
   title: Ocean Evaluation (Time Series).
   description: Time series of ocean variables.
