@@ -171,18 +171,22 @@ def write_values_to_dict(data_dict, cfg):
         # Calculate annual siconc trend
         siconc_cube = fetch_cube(model_dataset, "siconc", cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        # Add the slope for 2D positioning
         data_dict["models"][model_dataset]["annual_siconc_trend"] = (
             ann_siconc_trend.slope
         )
+        # Add the p-value for hatching in 2D plot
         data_dict["models"][model_dataset]["annual_siconc_p-value"] = (
             ann_siconc_trend.pvalue
         )
 
         # Calculate direct sensitivity of siconc to tas
         direct_sensitivity = calculate_direct_stats(model_dataset, cfg)
+        # Add the slope for sensitivity plot
         data_dict["models"][model_dataset]["direct_sensitivity"] = (
             direct_sensitivity.slope
         )
+        # Add the r-value for colouring in 2D plot
         data_dict["models"][model_dataset]["direct_r-value"] = (
             direct_sensitivity.rvalue
         )
@@ -192,7 +196,7 @@ def write_values_to_dict(data_dict, cfg):
         # Calculate annual tas trend
         tasa_cube = fetch_cube(obs_dataset, "tasa", cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
-        # Still labelling in final dictionary as tas for consistency with models
+        # Add the slope for 2D positioning
         data_dict["tasa_obs"][obs_dataset]["annual_tas_trend"] = (
             ann_tasa_trend.slope
         )
@@ -202,9 +206,11 @@ def write_values_to_dict(data_dict, cfg):
         # Calculate annual siconc trend
         siconc_cube = fetch_cube(obs_dataset, "siconc", cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        # Add the slope for 2D positioning
         data_dict["siconc_obs"][obs_dataset]["annual_siconc_trend"] = (
             ann_siconc_trend.slope
         )
+        # Add the p-value for hatching in 2D plot
         data_dict["siconc_obs"][obs_dataset]["annual_siconc_p-value"] = (
             ann_siconc_trend.pvalue
         )
@@ -212,17 +218,19 @@ def write_values_to_dict(data_dict, cfg):
     # Calculate cross-dataset statistics between tasa and siconc observations
     for tasa_dataset in data_dict["tasa_obs"].keys():
         for siconc_dataset in data_dict["siconc_obs"].keys():
-            # Calculate cross-dataset sensitivity of siconc to tasa
-            cross_sensitivity = calculate_cross_dataset_stats(
-                tasa_dataset, siconc_dataset, cfg
-            )
             # Determine structure of dictionary to store values
             key_name = f"{siconc_dataset}_to_{tasa_dataset}"
             data_dict["cross-dataset-obs"][key_name] = {}
             inner_dict = data_dict["cross-dataset-obs"][key_name]
-            # Store the values
-            inner_dict["direct_sensitivity"] = cross_sensitivity.slope
+
+            # Calculate cross-dataset sensitivity of siconc to tasa
+            cross_sensitivity = calculate_cross_dataset_stats(
+                tasa_dataset, siconc_dataset, cfg
+            )
+            # Add the r-value for colouring in 2D plot
             inner_dict["direct_r-value"] = cross_sensitivity.rvalue
+            # Store the direct sensitivity as the calculation was run anyway
+            inner_dict["direct_sensitivity"] = cross_sensitivity.slope
 
     return data_dict
 
@@ -325,7 +333,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             markersize=20,
         )
 
-        # Label with the dataset if specified
+        # Label with the dataset if specified, offset correct by eye
         if inner_dict["label"] == "to_label":
             plt.annotate(
                 dataset,
@@ -368,7 +376,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     ax.set_xticks([])
     ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
 
-    # Create caption based on whether observation mean is presnt
+    # Create caption based on whether observation mean is present
     if isinstance(obs_mean, int | float):
         caption = (
             "Sensitivity of sea ice area to annual mean global warming."
