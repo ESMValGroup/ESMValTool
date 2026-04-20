@@ -405,6 +405,9 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     norm = Normalize(vmin=-1, vmax=1)
     cmap = plt.get_cmap("PiYG_r")
 
+    # Choose p-value to hatch
+    min_p_to_hatch = 0.05
+
     # Set up the axes
     ax.axhline(color="black", alpha=0.5)
     ax.axvline(color="black", alpha=0.5)
@@ -423,7 +426,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         r_corr = inner_dict["direct_r-value"]
 
         # Decide if the point should be hatched
-        if inner_dict["annual_siconc_p-value"] >= 0.05:
+        if inner_dict["annual_siconc_p-value"] >= min_p_to_hatch:
             h = 5 * "/"  # This is a hatch pattern
         else:
             h = None
@@ -463,7 +466,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         r_corr = inner_dict["direct_r-value"]
 
         # Decide if the point should be hatched
-        if siconc_dict[siconc_ds]["annual_siconc_p-value"] >= 0.05:
+        if siconc_dict[siconc_ds]["annual_siconc_p-value"] >= min_p_to_hatch:
             h = 5 * "/"
         else:
             h = None
