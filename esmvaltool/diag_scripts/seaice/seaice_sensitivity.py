@@ -67,15 +67,18 @@ def create_category_dict(cfg):
                 category_dict["models"][section["dataset"]] = {}
 
             # Add labelling info
-            if "label_dataset" in section and section["label_dataset"]:
-                category_dict["models"][section["dataset"]]["label"] = "to_label"
+            if section.get("label_dataset"):
+                category_dict["models"][section["dataset"]]["label"] = (
+                    "to_label"
+                )
                 logger.info("Dataset %s will be labelled", section["dataset"])
             else:
                 category_dict["models"][section["dataset"]]["label"] = (
                     "unlabelled"
                 )
                 logger.info(
-                    "Not labelling dataset %s in plots", section["dataset"]
+                    "Not labelling dataset %s in plots",
+                    section["dataset"],
                 )
 
     return category_dict
@@ -84,7 +87,9 @@ def create_category_dict(cfg):
 def fetch_cube(dataset, variable, cfg):
     """Fetch a data cube for a dataset and variable using info from the config."""
     logger.debug(
-        "Fetching cube for dataset: %s, variable: %s", dataset, variable
+        "Fetching cube for dataset: %s, variable: %s",
+        dataset,
+        variable,
     )
 
     # Read the data from the config object
@@ -92,12 +97,14 @@ def fetch_cube(dataset, variable, cfg):
 
     # Find the correct filepath for the dataset
     for section in input_data:
-        if section["dataset"] == dataset:
-            # Also check the variable matches as models have two entries
-            # Only matching the first three letters to avoid issues with sic vs siconc
-            if section["short_name"][:3] == variable[:3]:
-                filepath = section["filename"]
-                break
+        # Check the dataset AND variable matches as models have two entries
+        # Only matching the first three letters to avoid issues with sic vs siconc
+        if (
+            section["dataset"] == dataset
+            and section["short_name"][:3] == variable[:3]
+        ):
+            filepath = section["filename"]
+            break
 
     # Load the cube using iris
     cube = iris.load_cube(filepath, variable)
@@ -105,7 +112,7 @@ def fetch_cube(dataset, variable, cfg):
 
 
 def calculate_annual_trend(cube):
-    """Calculate the linear trend of a cube over time using scipy.stats.linregress"""
+    """Calculate the linear trend of a cube over time using scipy.stats.linregress."""
     logger.debug("Calculating annual trend for cube %s.", cube.name())
 
     # Depending on preprocessor, coord may be 'year' or 'time'
@@ -114,11 +121,8 @@ def calculate_annual_trend(cube):
     else:
         no_years = list(range(len(cube.coord("time").points)))
 
-    # slope, intercept, rvalue, pvalue, stderr = linregress(independent, dependent)
-    trend = linregress(no_years, cube.data)
-
-    # Sometimes more than the slope is needed
-    return trend
+    # Return all of slope, intercept, rvalue, pvalue, stderr as hatching needs p
+    return linregress(no_years, cube.data)
 
 
 def calculate_direct_stats(dataset, cfg):
@@ -129,11 +133,8 @@ def calculate_direct_stats(dataset, cfg):
     siconc_cube = fetch_cube(dataset, "siconc", cfg)
     tas_cube = fetch_cube(dataset, "tas", cfg)
 
-    # Calculate direct regression (tas as independent)
-    direct_sensitivity = linregress(tas_cube.data, siconc_cube.data)
-
-    # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
-    return direct_sensitivity
+    # regression (tas as independent) gives slope, intercept, rvalue, pvalue, stderr
+    return linregress(tas_cube.data, siconc_cube.data)
 
 
 def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
@@ -148,11 +149,8 @@ def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
     siconc_cube = fetch_cube(siconc_dataset, "siconc", cfg)
     tasa_cube = fetch_cube(tasa_dataset, "tasa", cfg)
 
-    # Calculate direct regression (tasa as independent)
-    direct_sensitivity = linregress(tasa_cube.data, siconc_cube.data)
-
-    # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
-    return direct_sensitivity
+    # regression (tasa as independent) gives slope, intercept, rvalue, pvalue, stderr
+    return linregress(tasa_cube.data, siconc_cube.data)
 
 
 def write_values_to_dict(data_dict, cfg):
@@ -225,7 +223,9 @@ def write_values_to_dict(data_dict, cfg):
 
             # Calculate cross-dataset sensitivity of siconc to tasa
             cross_sensitivity = calculate_cross_dataset_stats(
-                tasa_dataset, siconc_dataset, cfg
+                tasa_dataset,
+                siconc_dataset,
+                cfg,
             )
             # Add the r-value for colouring in 2D plot
             inner_dict["direct_r-value"] = cross_sensitivity.rvalue
@@ -516,7 +516,9 @@ def main(cfg):
             pair
         ]
         write_dictionary_to_csv(
-            data_dict["cross-dataset-obs"][pair], f"{pair}", cfg
+            data_dict["cross-dataset-obs"][pair],
+            f"{pair}",
+            cfg,
         )
 
     # Create a single provenance record for the csv files
