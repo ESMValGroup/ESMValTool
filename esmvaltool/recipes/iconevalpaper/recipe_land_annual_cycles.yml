@@ -1,0 +1,184 @@
+# ESMValTool
+#TAGS ocean
+#TAGS maps
+#TAGS annual-cycles
+---
+documentation:
+  title: Land Evaluation (Annual Cycles)
+  description: Annual cycles of land variables. (ongoing) model simulations.
+  authors:
+  - bock_lisa
+  - weigel_katja
+
+plot_script:
+  script: monitor/multi_datasets.py
+  facet_used_for_labels: alias
+  figure_kwargs:
+    figsize:
+    - 7
+    - 5
+  group_variables_by: variable_group
+  plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+  plot_folder: '{plot_dir}'
+
+annual_cycle_plot:
+  aspect_ratio: 0.5
+  gridline_kwargs:
+    color: darkgray
+    linewidth: 0.5
+    alpha: 0.3
+  legend_kwargs:
+    loc: upper center
+    bbox_to_anchor:
+    - 0.5
+    - -0.4
+    borderaxespad: 0.0
+  pyplot_kwargs:
+    title: 'Leaf Area Index'
+  plot_kwargs:
+    ICON-XPP:
+      label: '{dataset}'
+      linewidth: 1.25
+      zorder: 2.5
+      color: C0
+    default:
+      color: lightgray
+      label: null
+      linewidth: 0.75
+      zorder: 1.0
+    CMIP6:
+      label: '{project}'
+    CMIP6_CESM2:
+      label: '{project}'
+    OBS:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+    OBS6:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dashdot
+    native6:
+      color: black
+      label: '{dataset}'
+      linewidth: 1.0
+      zorder: 2.4
+      linestyle: dotted
+datasets:
+- supplementary_variables:
+  - short_name: areacella
+    skip: true
+  - short_name: areacello
+    skip: true
+  - short_name: sftlf
+    skip: true
+  - short_name: sftof
+    skip: true
+  dataset: ICON-XPP
+  exp: historical-202510p1
+  project: ICON
+  timerange: 1995/2004
+  alias: ICON-XPP
+  frequency: mon
+  alias: 'ICON-XPP'
+  var_type: jsb_2d
+
+preprocessors:
+  create_monthly_climatology:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+
+diagnostics:
+  annual_cycles:
+    description: Annual cycle plots.
+    themes:
+    - phys
+    realms:
+    - ocean
+    variables:
+      lai:
+        timerange: '1995/2004'  # can be specified, this is just an example
+        mip: Lmon
+        preprocessor: create_monthly_climatology
+        additional_datasets:
+          - {project: OBS, dataset: LAI3g, type: reanaly, version: 1-regridded, tier: 3, reference_for_monitor_diags: true}
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        - short_name: areacello
+          skip: true
+        - short_name: sftlf
+          skip: true
+        - short_name: sftof
+          skip: true
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        figure_kwargs:
+          figsize:
+          - 7
+          - 5
+        group_variables_by: variable_group
+        plot_filename: '{plot_type}_{exp}_{real_name}_{dataset}_{mip}'
+        plot_folder: '{plot_dir}'
+        plots:
+          annual_cycle:
+            aspect_ratio: 0.5
+            gridline_kwargs:
+              color: darkgray
+              linewidth: 0.5
+              alpha: 0.3
+            legend_kwargs:
+              loc: upper center
+              bbox_to_anchor:
+              - 0.5
+              - -0.4
+              borderaxespad: 0.0
+            pyplot_kwargs:
+              title: 'Leaf Area Index'
+            plot_kwargs:
+              ICON-XPP:
+                label: '{dataset}'
+                linewidth: 1.25
+                zorder: 2.5
+                color: C0
+              default:
+                color: lightgray
+                label: null
+                linewidth: 0.75
+                zorder: 1.0
+              CMIP6:
+                label: '{project}'
+              OBS:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+              OBS6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dashdot
+              native6:
+                color: black
+                label: '{dataset}'
+                linewidth: 1.0
+                zorder: 2.4
+                linestyle: dotted
