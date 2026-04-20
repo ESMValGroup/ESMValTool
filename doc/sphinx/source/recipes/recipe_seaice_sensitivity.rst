@@ -89,4 +89,4 @@ plausible  1.28 million km2 K-1
 
    Plot of the trend of annually averaged southern hemisphere sea ice area (millions of square kilometres) over time against the trend of annually and globally averaged air temperature near the surface (degrees Kelvin) over time. The values plotted are 10 times the annual trend, which was calculated using :func:`scipy.stats.linregress`, for consistency with the decadal values used in the published plot.
 
-   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.
+   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates that the sea ice area trend has a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.

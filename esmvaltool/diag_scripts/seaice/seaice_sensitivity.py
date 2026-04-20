@@ -117,8 +117,8 @@ def calculate_annual_trend(cube):
     # slope, intercept, rvalue, pvalue, stderr = linregress(independent, dependent)
     trend = linregress(no_years, cube.data)
 
-    # Only the slope is needed in this code
-    return trend.slope
+    # Sometimes more than the slope is needed
+    return trend
 
 
 def calculate_direct_stats(dataset, cfg):
@@ -164,13 +164,18 @@ def write_values_to_dict(data_dict, cfg):
         # Calculate annual tas trend
         tas_cube = fetch_cube(model_dataset, "tas", cfg)
         ann_tas_trend = calculate_annual_trend(tas_cube)
-        data_dict["models"][model_dataset]["annual_tas_trend"] = ann_tas_trend
+        data_dict["models"][model_dataset]["annual_tas_trend"] = (
+            ann_tas_trend.slope
+        )
 
         # Calculate annual siconc trend
         siconc_cube = fetch_cube(model_dataset, "siconc", cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         data_dict["models"][model_dataset]["annual_siconc_trend"] = (
-            ann_siconc_trend
+            ann_siconc_trend.slope
+        )
+        data_dict["models"][model_dataset]["annual_siconc_p-value"] = (
+            ann_siconc_trend.pvalue
         )
 
         # Calculate direct sensitivity of siconc to tas
@@ -178,11 +183,8 @@ def write_values_to_dict(data_dict, cfg):
         data_dict["models"][model_dataset]["direct_sensitivity"] = (
             direct_sensitivity.slope
         )
-        data_dict["models"][model_dataset]["direct_r_value"] = (
+        data_dict["models"][model_dataset]["direct_r-value"] = (
             direct_sensitivity.rvalue
-        )
-        data_dict["models"][model_dataset]["direct_p_value"] = (
-            direct_sensitivity.pvalue
         )
 
     # Calculate just the tasa trend for the tasa observations
@@ -191,15 +193,20 @@ def write_values_to_dict(data_dict, cfg):
         tasa_cube = fetch_cube(obs_dataset, "tasa", cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
         # Still labelling in final dictionary as tas for consistency with models
-        data_dict["tasa_obs"][obs_dataset]["annual_tas_trend"] = ann_tasa_trend
+        data_dict["tasa_obs"][obs_dataset]["annual_tas_trend"] = (
+            ann_tasa_trend.slope
+        )
 
-    # Calculate just the siconc trend for the siconc observations
+    # Calculate the siconc slope and p value  for the siconc observations
     for obs_dataset in data_dict["siconc_obs"].keys():
         # Calculate annual siconc trend
         siconc_cube = fetch_cube(obs_dataset, "siconc", cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         data_dict["siconc_obs"][obs_dataset]["annual_siconc_trend"] = (
-            ann_siconc_trend
+            ann_siconc_trend.slope
+        )
+        data_dict["siconc_obs"][obs_dataset]["annual_siconc_p-value"] = (
+            ann_siconc_trend.pvalue
         )
 
     # Calculate cross-dataset statistics between tasa and siconc observations
@@ -215,8 +222,7 @@ def write_values_to_dict(data_dict, cfg):
             inner_dict = data_dict["cross-dataset-obs"][key_name]
             # Store the values
             inner_dict["direct_sensitivity"] = cross_sensitivity.slope
-            inner_dict["direct_r_value"] = cross_sensitivity.rvalue
-            inner_dict["direct_p_value"] = cross_sensitivity.pvalue
+            inner_dict["direct_r-value"] = cross_sensitivity.rvalue
 
     return data_dict
 
@@ -406,10 +412,10 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         )  # for equivalence to decades
 
         # Determine the colour of the point
-        r_corr = inner_dict["direct_r_value"]
+        r_corr = inner_dict["direct_r-value"]
 
         # Decide if the point should be hatched
-        if inner_dict["direct_p_value"] >= 0.05:
+        if inner_dict["annual_siconc_p-value"] >= 0.05:
             h = 5 * "/"  # This is a hatch pattern
         else:
             h = None
@@ -446,10 +452,10 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         y = 10 * siconc_dict[siconc_ds]["annual_siconc_trend"]
 
         # Determine the colour of the point from the inner dictionary
-        r_corr = inner_dict["direct_r_value"]
+        r_corr = inner_dict["direct_r-value"]
 
         # Decide if the point should be hatched
-        if inner_dict["direct_p_value"] >= 0.05:
+        if siconc_dict[siconc_ds]["annual_siconc_p-value"] >= 0.05:
             h = 5 * "/"
         else:
             h = None

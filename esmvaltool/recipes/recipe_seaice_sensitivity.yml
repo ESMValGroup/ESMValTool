@@ -42,8 +42,7 @@ model_datasets: &model_datasets
 
 obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2}
 tasa_obs: &tasa_obs
-  - { <<: *obs_defaults, dataset: GISTEMP, type: ground, version: v4 }  # Doesn't match Roach obs
-  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }  # Doesn't match Roach obs
+  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }
   - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
 
 arctic_siconc_obs: &arctic_siconc_obs
@@ -101,7 +100,6 @@ preprocessors:
     &annual_mean
     annual_statistics:
       operator: mean
-      keep_group_coordinates: true
 
   pp_arctic_sept_sea_ice:
     <<: *extract_test_period
