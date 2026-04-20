@@ -1,0 +1,89 @@
+# ESMValTool
+#TAGS land
+---
+
+# requires ESMValCore branch 'icon-xpp-landfrac'
+
+documentation:
+  title: Landcover diagnostics
+
+  description: |
+    Recipe for plotting the accumulated area, average fraction
+    and bias of landcover classes in comparison to ESA_CCI_LC data
+    for the full globe and large scale regions.
+
+  authors:
+    - hagemann_stefan
+    - loew_alexander
+    - mueller_benjamin
+    - stacke_tobias
+
+  maintainer:
+    - righi_mattia
+
+  references:
+    - georgievski18tac
+
+  observation references:
+    - esacci-landcover
+
+  projects:
+    - crescendo
+
+datasets:
+#  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,  grid: gn, ensemble: r1i1p1f2}
+#  - {dataset: ICON-ESM-LR, project: CMIP6, exp: historical,  grid: gn, ensemble: r1i1p1f1} # baresoilfrac missing past 1859
+  - {dataset: ESACCI-LANDCOVER, project: OBS,   type: sat,   version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, tier: 2}
+  - {dataset: ICON-XPP, project: ICON, exp: historical-202510p1, alias: 'ICON-XPP'}
+#component: atm, var_type: atm_3d_ml,
+
+preprocessors:
+  prep0:
+    regrid:
+      target_grid: ESACCI-LANDCOVER
+      scheme: area_weighted
+
+
+diagnostics:
+  landcover:
+    description: Doing ESACCI land cover analysis.
+    variables:
+#      baresoilFrac:
+#        timerange: 2008/2012
+#        preprocessor: prep0
+#        reference_dataset: ESACCI-LANDCOVER
+#        mip: Lmon
+#      grassFrac:
+#        timerange: 2008/2012
+#        preprocessor: prep0
+#        reference_dataset: ESACCI-LANDCOVER
+#        mip: Lmon
+#      treeFrac:
+#        timerange: 2008/2012
+#        preprocessor: prep0
+#        reference_dataset: ESACCI-LANDCOVER
+#        mip: Lmon
+#      shrubFrac:
+#        timerange: 2008/2012
+#        preprocessor: prep0
+#        reference_dataset: ESACCI-LANDCOVER
+#        mip: Lmon
+      cropFrac:
+        timerange: 2008/2012
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: Lmon
+        supplementary_variables:
+          - short_name: areacella
+            skip: true
+          - short_name: areacello
+            skip: true
+          - short_name: sftlf
+            skip: true
+          - short_name: sftof
+            skip: true
+    scripts:
+      landcover:
+        script: landcover/landcover.py
+        comparison: variable
+        colorscheme: seaborn-v0_8-darkgrid

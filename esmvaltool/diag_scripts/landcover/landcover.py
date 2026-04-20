@@ -304,8 +304,8 @@ def get_timmeans(attr, cubes, refset, prov_rec):
             [
                 attr.get("cmor_table", ""),
                 attr.get("dataset", ""),
-                attr.get("exp", ""),
-                attr.get("ensemble", ""),
+                # attr.get("exp", ""),
+                # attr.get("ensemble", ""),
             ],
         )
         .replace("__", "_")
