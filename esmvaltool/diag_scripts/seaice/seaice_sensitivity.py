@@ -110,9 +110,9 @@ def calculate_annual_trend(cube):
 
     # Depending on preprocessor, coord may be 'year' or 'time'
     if "year" in cube.coords():
-        no_years = [i for i in range(len(cube.coord("years").points))]
+        no_years = list(range(len(cube.coord("years").points)))
     else:
-        no_years = [i for i in range(len(cube.coord("time").points))]
+        no_years = list(range(len(cube.coord("time").points)))
 
     # slope, intercept, rvalue, pvalue, stderr = linregress(independent, dependent)
     trend = linregress(no_years, cube.data)
