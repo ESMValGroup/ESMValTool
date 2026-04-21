@@ -83,11 +83,13 @@ LABELS = {
         "backwards incompatible change",  # important, keep at the top
         "deprecated feature",  # important, keep at the top
         "bug",  # important, keep at the top
+        "broken recipe",  # important, keep at the top
         "community",
         "documentation",
         "diagnostic",
         "preprocessor",
         "observations",
+        "release",
         "testing",
         "installation",
         "enhancement",  # uncategorized, keep at the bottom
@@ -97,6 +99,7 @@ LABELS = {
 TITLES = {
     "backwards incompatible change": "Backwards incompatible changes",
     "deprecated feature": "Deprecations",
+    "broken recipe": "Broken or retired recipes",
     "bug": "Bug fixes",
     "cmor": "CMOR standard",
     "config": "Configuration",

@@ -33,7 +33,7 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python3 -m build
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: python-package-distributions
           path: dist/
@@ -53,9 +53,9 @@ jobs:
 
     steps:
       - name: Download all the dists
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: python-package-distributions
           path: dist/
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.13.0
+        uses: pypa/gh-action-pypi-publish@v1.14.0
