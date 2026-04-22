@@ -34,7 +34,13 @@ Diagnostics are stored in esmvaltool/diag_scripts/radiation_budget/
 User settings in recipe
 -----------------------
 
-None
+Users may specify the label to appear in the plot legend for each model, using the keyword ``alias`` in the dataset.
+For example, the following dataset entry would label the model as "HadGEM3-GC3.1 N96ORCA1" in the plot legend:
+
+.. code-block:: yaml
+
+    {dataset: HadGEM3-GC31-LL, alias: HadGEM3-GC3.1 N96ORCA1, project: ... }
+
 
 
 Variables
