@@ -10,7 +10,6 @@ channels:
 
 dependencies:
   - aiohttp
-  - arviz
   - cartopy
   - cdo >=2.3.0
   - cdsapi
