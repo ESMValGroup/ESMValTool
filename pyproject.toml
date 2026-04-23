@@ -25,7 +25,6 @@ classifiers = [
 dynamic = ["readme", "version"]
 dependencies = [
     "aiohttp",
-    "arviz",
     "cartopy",
     "cdo",
     "cdsapi",
@@ -207,7 +206,6 @@ convention = "numpy"
 
 [tool.pixi.dependencies]
 "aiohttp" = "*"
-"arviz" = "*"
 "cartopy" = "*"
 "cdo" = ">=2.3.0"
 "cdsapi" = "*"

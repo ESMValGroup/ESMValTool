@@ -27,11 +27,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-25.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/argon2-cffi-bindings-25.1.0-py313h07c4f96_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/arrow-1.4.0-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/async-lru-2.3.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
@@ -551,7 +546,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/websocket-client-1.9.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py313h07c4f96_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.3.0-hd9031aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -608,11 +602,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-25.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/argon2-cffi-bindings-25.1.0-py313h6535dbc_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/arrow-1.4.0-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/async-lru-2.3.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/atk-1.0-2.38.0-hd03087b_2.conda
@@ -1110,7 +1099,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/websocket-client-1.9.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/wrapt-2.1.2-py313h0997733_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/xerces-c-3.3.0-h25f632f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -2290,11 +2278,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.0.0-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/apswutils-0.1.2-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-core-2.40.3-h0630a04_0.tar.bz2
@@ -2885,7 +2868,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x265-3.5-h924138e_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.2.5-h988505b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -2956,11 +2938,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-25.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/argon2-cffi-bindings-25.1.0-py312h4c3975b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/arrow-1.4.0-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/async-lru-2.3.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
@@ -3647,7 +3624,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x265-3.5-h924138e_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.2.5-h988505b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -3714,11 +3690,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.0.0-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/apswutils-0.1.2-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-core-2.40.3-h0630a04_0.tar.bz2
@@ -4204,7 +4175,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x265-3.5-h924138e_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.2.5-h988505b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -4274,11 +4244,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-25.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/argon2-cffi-bindings-25.1.0-py312h4c3975b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/arrow-1.4.0-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/async-lru-2.3.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
@@ -4860,7 +4825,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x265-3.5-h924138e_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.2.5-h988505b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -4927,11 +4891,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.0.0-py313h07c4f96_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/apswutils-0.1.2-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-core-2.40.3-h0630a04_0.tar.bz2
@@ -5355,7 +5314,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/webob-1.8.9-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py313h07c4f96_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.3.0-hd9031aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -5404,11 +5362,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aom-3.9.1-h7bae524_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/apsw-3.53.0.0-py313h0997733_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/apswutils-0.1.2-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/atk-1.0-2.38.0-hd03087b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-26.1.0-pyhcf101f3_0.conda
@@ -5809,7 +5762,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/webob-1.8.9-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/wrapt-2.1.2-py313h0997733_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/xerces-c-3.3.0-h25f632f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -5853,11 +5805,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.0.0-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/apswutils-0.1.2-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-core-2.40.3-h0630a04_0.tar.bz2
@@ -6391,7 +6338,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.3.0-hd9031aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -6456,11 +6402,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-25.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/argon2-cffi-bindings-25.1.0-py312h4c3975b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/arrow-1.4.0-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/async-lru-2.3.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
@@ -7090,7 +7031,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.3.0-hd9031aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -8097,11 +8037,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.0.0-py313h07c4f96_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/apswutils-0.1.2-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-core-2.40.3-h0630a04_0.tar.bz2
@@ -8534,7 +8469,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/webob-1.8.9-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py313h07c4f96_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xerces-c-3.3.0-hd9031aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -8583,11 +8517,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aom-3.9.1-h7bae524_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/apsw-3.53.0.0-py313h0997733_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/apswutils-0.1.2-pyhcf101f3_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-1.0.0-pyhc364b38_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-base-1.0.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-plots-1.0.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-1.0.0-pyh5442c79_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/arviz-stats-core-1.0.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/atk-1.0-2.38.0-hd03087b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-26.1.0-pyhcf101f3_0.conda
@@ -8997,7 +8926,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/webob-1.8.9-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/wrapt-2.1.2-py313h0997733_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/xarray-einstats-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/xerces-c-3.3.0-h25f632f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xesmf-0.9.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/xgboost-3.2.0-cpu_pyhb39878e_1.conda
@@ -12779,11 +12707,10 @@ packages:
   timestamp: 1773221341802
 - pypi: ./
   name: esmvaltool
-  version: 2.15.0.dev51+g3d4af9e33.d20260422
-  sha256: aacbf320a679a24db22a53dd0c6fb3a6d75686f3be521c65fe5971e3b15f2758
+  version: 2.15.0.dev53+g67525dd9d.d20260423
+  sha256: f375b86305de96d0139b07ec1f5d25399bc44c7e8984da8bd0d8472279885b2d
   requires_dist:
   - aiohttp
-  - arviz
   - cartopy
   - cdo
   - cdsapi
