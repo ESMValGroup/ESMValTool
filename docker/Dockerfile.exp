@@ -1,7 +1,7 @@
 # Recipe from: https://tech.quantco.com/blog/pixi-production
 # To build this container, go to ESMValTool root folder and execute:
-# docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
-FROM ghcr.io/prefix-dev/pixi:0.67.0 AS build
+# docker build --pull -t esmvaltool:experimental . -f docker/Dockerfile.exp
+FROM ghcr.io/prefix-dev/pixi:latest AS build
 
 WORKDIR /app
 COPY . .
@@ -12,7 +12,7 @@ RUN echo "#!/bin/bash" > /app/entrypoint.sh
 RUN cat /shell-hook >> /app/entrypoint.sh
 RUN echo 'esmvaltool "$@"' >> /app/entrypoint.sh
 
-FROM ubuntu:24.04 AS production
+FROM ubuntu:latest AS production
 WORKDIR /app
 # Copy the environment:
 COPY --from=build /app/.pixi/envs/esmvalcore-dev /app/.pixi/envs/esmvalcore-dev
