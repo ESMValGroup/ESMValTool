@@ -17,8 +17,10 @@ documentation:
 
 datasets:
   - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
-     ensemble: r1i1p1f2, start_year: 2004, end_year: 2005, grid: gn}
+     ensemble: r1i1p1f2, start_year: 2000, end_year: 2000, grid: gn, mip: Lmon}
 
+  - {dataset: CDS-SATELLITE-LAI-FAPAR, project: OBS, type: sat, version: V3, tier: 3,
+     start_year: 2000, end_year: 2000, mip: Eday}
 
 
 diagnostics:
@@ -30,10 +32,14 @@ diagnostics:
       realms:
         - land
       variables:
-        lai:
-          mip: Lmon
-          # preprocessor: lst_preprocessor
+        lai_lmon:
+          short_name: lai
+          project: CMIP6
+        lai_eday:
+          short_name: lai
+          project: OBS
 
+          
       scripts:
          script1:
            script: phenology/4gst.py
