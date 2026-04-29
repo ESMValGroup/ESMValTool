@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - pixi
   schedule:
     - cron: "0 4 * * *"
 
@@ -21,18 +22,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: ["3.12", "3.13"]
+        os:
+          - ubuntu-latest
+          - macos-latest
+        python-version:
+          - "3.12"
+          - "3.13"
     name: Install esmvaltool-python with Python ${{ matrix.python-version }} on ${{ matrix.os }}
     steps:
-      - name: Install Micromamba
-        run: |
-          "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
-      - name: Install ESMValTool with only Python dependencies
-        run: micromamba create -n esmvaltool esmvaltool-python python=${{ matrix.python-version }}
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+        with:
+          environment-name: esmvaltool-python
+          create-args: >-
+            python=${{ matrix.python-version }}
+            esmvaltool-python
       - name: Verify installation
         run: |
-          eval "$(micromamba shell activate esmvaltool)"
           pip check
           esmvaltool --help
           esmvaltool version
@@ -42,14 +47,12 @@ jobs:
     if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
     name: Install esmvaltool on Linux
     steps:
-      - name: Install Micromamba
-        run: |
-          "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
-      - name: Install ESMValTool
-        run: micromamba create -n esmvaltool esmvaltool
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+        with:
+          environment-name: esmvaltool
+          create-args: esmvaltool
       - name: Verify installation
         run: |
-          eval "$(micromamba shell activate esmvaltool)"
           pip check
           esmvaltool --help
           esmvaltool version
