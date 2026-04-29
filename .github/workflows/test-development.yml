@@ -18,49 +18,33 @@ on:
 # Required shell entrypoint to have properly configured bash shell
 defaults:
   run:
-    shell: bash -l {0}
+    shell: pixi run bash -e {0}
 
 jobs:
   linux:
     runs-on: "ubuntu-latest"
-    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.12", "3.13"]
+    if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
-          activate-environment: esmvaltool
-          environment-file: environment.yml
-          python-version: ${{ matrix.python-version }}
-          miniforge-version: "latest"
-          use-mamba: true
-          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
-      - run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
-      - name: Record versions
-        run: |
-          mamba --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
-          python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
-      - name: Install ESMValTool
-        run: pip install --no-deps -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install development version of ESMValCore
-        run: |
-          cd ..
-          git clone https://github.com/ESMValGroup/ESMValCore.git
-          cd ESMValCore
-          pip install --no-deps -e .[develop]
+          frozen: true
+          environments: esmvalcore-dev
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
-        run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
+        run: pytest -n 2 -m "not installation"
       - name: Upload artifacts
-        if: ${{ always() }}  # upload artifacts even if fail
+        if: ${{ always() }} # upload artifacts even if fail
         uses: actions/upload-artifact@v7
         with:
-          name: Develop_Test_Linux_python_${{ matrix.python-version }}
-          path: develop_test_linux_artifacts_python_${{ matrix.python-version }}
+          name: Development_installation_test_reports
+          path: test-reports
+      - name: Check the command line interface
+        run: |
+          esmvaltool version
+          esmvaltool -- --help
+          esmvaltool develop compare -- --help

@@ -1,15 +1,24 @@
+# Recipe from: https://tech.quantco.com/blog/pixi-production
 # To build this container, go to ESMValTool root folder and execute:
-# docker build -t esmvaltool:latest . -f docker/Dockerfile
-FROM condaforge/miniforge3
+# docker build --pull -t esmvaltool:latest . -f docker/Dockerfile
+FROM ghcr.io/prefix-dev/pixi:latest AS build
 
-WORKDIR /src/ESMValTool
-COPY environment.yml .
-RUN mamba update -y conda mamba pip && mamba env create --name esmvaltool --file environment.yml && conda clean --all -y
-
-# Make RUN commands use the new environment:
-SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
-
+WORKDIR /app
 COPY . .
-RUN pip install --no-cache .
+RUN pixi global install git
+RUN pixi install --frozen -e esmvaltool
+RUN pixi shell-hook -e esmvaltool -s bash > /shell-hook
+RUN echo "#!/bin/bash" > /app/entrypoint.sh
+RUN cat /shell-hook >> /app/entrypoint.sh
+RUN echo 'esmvaltool "$@"' >> /app/entrypoint.sh
 
-ENTRYPOINT ["conda", "run", "--name", "esmvaltool", "esmvaltool"]
+FROM ubuntu:latest AS production
+WORKDIR /app
+# Copy the environment:
+COPY --from=build /app/.pixi/envs/esmvaltool /app/.pixi/envs/esmvaltool
+# Copy the source code because esmvaltool is installed in editable mode:
+COPY --from=build /app/esmvaltool /app/esmvaltool
+# Copy the entrypoint script and make it executable:
+COPY --from=build --chmod=0755 /app/entrypoint.sh /app/entrypoint.sh
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]

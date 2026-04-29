@@ -1,13 +1,10 @@
 [build-system]
-requires = [
-    "setuptools>=80",
-    "setuptools_scm>=8",
-]
+requires = ["setuptools>=80", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 authors = [
-    {name = "ESMValTool Development Team", email = "esmvaltool-dev@listserv.dfn.de"}
+    { name = "ESMValTool Development Team", email = "esmvaltool-dev@listserv.dfn.de" },
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -25,10 +22,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Hydrology",
     "Topic :: Scientific/Engineering :: Physics",
 ]
-dynamic = [
-    "readme",
-    "version",
-]
+dynamic = ["readme", "version"]
 dependencies = [
     "aiohttp",
     "cartopy",
@@ -38,13 +32,13 @@ dependencies = [
     "cfgrib",
     "cftime",
     "cmocean",
-    "dask!=2024.8.0",  # https://github.com/dask/dask/issues/11296
+    "dask!=2024.8.0",   # https://github.com/dask/dask/issues/11296
     "distributed",
     "ecmwf-api-client",
     "eofs",
-    "ESMPy",  # not on PyPI
+    # "ESMPy",               # not on PyPI
     "esmvalcore",
-    "esmf-regrid>=0.10.0",  # iris-esmf-regrid #342
+    "esmf-regrid>=0.10.0", # iris-esmf-regrid #342
     "fiona",
     "fire",
     "fsspec",
@@ -71,7 +65,7 @@ dependencies = [
     "rasterio>=1.3.10",
     "requests",
     "scikit-image",
-    "scikit-learn>=1.4.0",  # github.com/ESMValGroup/ESMValTool/issues/3504
+    "scikit-learn>=1.4.0", # github.com/ESMValGroup/ESMValTool/issues/3504
     "scipy",
     "scitools-iris>=3.11",
     "seaborn",
@@ -79,7 +73,7 @@ dependencies = [
     "shapely>=2",
     "xarray>=0.12.0",
     "xesmf>=0.7.1",
-    "xgboost>1.6.1",  # github.com/ESMValGroup/ESMValTool/issues/2779
+    "xgboost>1.6.1",       # github.com/ESMValGroup/ESMValTool/issues/2779
     "xlsxwriter",
     "zarr",
 ]
@@ -87,35 +81,7 @@ description = "A community tool for pre-processing data from Earth system models
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 name = "ESMValTool"
-requires-python = ">=3.12"
-
-[project.optional-dependencies]
-# Execute `pip install .[test]` once and then use `pytest` to run tests
-test = [
-    "pre-commit",
-    "pytest>6.0.0",
-    "pytest-cov>=2.10.1",
-    "pytest-env",
-    "pytest-html!=2.1.0",
-    "pytest-metadata>=1.5.1",
-    "pytest-mock",
-    "pytest-xdist",
-]
-doc = [
-    "autodocsumm>=0.2.2",
-    "myst-nb",
-    "sphinx>=6.1.3,<9",  # <9 due to ESMValTool/issues/4316
-    "pydata_sphinx_theme",
-]
-develop = [
-    "esmvaltool[test,doc]",
-    "codespell",
-    "imagehash",
-    "pre-commit",
-    "ruff==0.14.5", # keep in sync with .pre-commit-config.yaml
-    "vprof",
-    "yamllint",
-]
+requires-python = ">=3.12,<3.14"
 
 [project.entry-points."console_scripts"]
 nclcodestyle = "esmvaltool.utils.nclcodestyle.nclcodestyle:_main"
@@ -138,7 +104,7 @@ packages = ["esmvaltool"]
 zip-safe = false
 
 [tool.setuptools.dynamic]
-readme = {file = "README.md", content-type = "text/markdown"}
+readme = { file = "README.md", content-type = "text/markdown" }
 
 [tool.setuptools_scm]
 version_scheme = "release-branch-semver"
@@ -157,7 +123,7 @@ addopts = [
     "--html=test-reports/report.html",
 ]
 log_cli_level = "INFO"
-env = {MPLBACKEND = "Agg"}
+env = { MPLBACKEND = "Agg" }
 log_level = "WARNING"
 minversion = "6"
 markers = [
@@ -190,37 +156,37 @@ show-fixes = true
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN",      # Type hints are not required for diagnostic scripts.
-    "D105",     # Disable missing docstring in magic method as these are well defined.
-    'D107',     # __init__ docstring is usually part of the class docstring.
-    "E501",     # Disable line-too-long as this is taken care of by the formatter.
-    "FIX002",   # TODOs can be useful when something cannot be done immediately.
-    "T20",      # Allow printing things in diagnostic scripts.
-    "TD",       # Do not impose a specific format on TODOs.
-    "S603",     # Uncheckable
-    "TRY003",   # Fixing this would require many exceptions
+    "ANN",    # Type hints are not required for diagnostic scripts.
+    "D105",   # Disable missing docstring in magic method as these are well defined.
+    'D107',   # __init__ docstring is usually part of the class docstring.
+    "E501",   # Disable line-too-long as this is taken care of by the formatter.
+    "FIX002", # TODOs can be useful when something cannot be done immediately.
+    "T20",    # Allow printing things in diagnostic scripts.
+    "TD",     # Do not impose a specific format on TODOs.
+    "S603",   # Uncheckable
+    "TRY003", # Fixing this would require many exceptions
 ]
 exclude = [
-    "archive/*",  # No longer maintained code.
-    "doc/sphinx/source/conf.py",  # Partly automatically generated.
-    "esmvaltool/utils/nclcodestyle/*.py",  # This is a slightly modified copy of pycodestyle.
+    "archive/*",                          # No longer maintained code.
+    "doc/sphinx/source/conf.py",          # Partly automatically generated.
+    "esmvaltool/utils/nclcodestyle/*.py", # This is a slightly modified copy of pycodestyle.
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "esmvaltool/cmorizers/**.py" = [
-    "ARG001",   # Ignore unused function argument for CMORizers because these are caused by implementing the interface.
+    "ARG001", # Ignore unused function argument for CMORizers because these are caused by implementing the interface.
 ]
 "tests/**.py" = [
-    "B011",     # `assert False` is valid test code.
-    "S101",     # Use of assert in tests code is required.
-    "SLF001",   # Testing private members is ok
-    "PLR2004",  # Magic values in tests are fine.
+    "B011",    # `assert False` is valid test code.
+    "S101",    # Use of assert in tests code is required.
+    "SLF001",  # Testing private members is ok
+    "PLR2004", # Magic values in tests are fine.
     # Docstrings in tests are only needed if the code is not self-explanatory.
-    "D100",     # Missing docstring in public module
-    "D101",     # Missing docstring in public class
-    "D102",     # Missing docstring in public method
-    "D103",     # Missing docstring in public function
-    "D104",     # Missing docstring in public package
+    "D100", # Missing docstring in public module
+    "D101", # Missing docstring in public class
+    "D102", # Missing docstring in public method
+    "D103", # Missing docstring in public function
+    "D104", # Missing docstring in public package
 ]
 
 [tool.ruff.lint.isort]
@@ -230,10 +196,196 @@ known-first-party = ["esmvaltool"]
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-max-args = 7  # Use a more relaxed value than the default.
+max-args = 7 # Use a more relaxed value than the default.
 
 [tool.ruff.lint.mccabe]
-max-complexity = 15  # Use a more relaxed value than the default.
+max-complexity = 15 # Use a more relaxed value than the default.
 
 [tool.pydocstyle]
 convention = "numpy"
+
+[tool.pixi.dependencies]
+"aiohttp" = "*"
+"cartopy" = "*"
+"cdo" = ">=2.3.0"
+"cdsapi" = "*"
+"cf-units" = "*"
+"cfgrib" = "*"
+"cftime" = "*"
+"cmocean" = "*"
+"cython" = "*"
+"dask" = "!=2024.8.0"  # https://github.com/dask/dask/issues/11296
+"distributed" = "*"
+"ecmwf-api-client" = "*"
+"eofs" = "*"
+"esmpy" = "*"
+"fiona" = "*"
+"fire" = "*"
+"fsspec" = "*"
+"gdal" = ">=3.9.0"
+"ipython" = "*"
+"imagehash" = "*"
+"iris" = ">=3.11"
+"iris-esmf-regrid" = ">=0.10.0"  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+"jinja2" = "*"
+"joblib" = "*"
+"lime" = "*"
+"mapgenerator" = ">=1.0.5"
+"matplotlib-base" = "*"
+"natsort" = "*"
+"nc-time-axis" = "*"
+"netCDF4" = "*"
+"numba" = "*"
+"numpy" = ">=2"
+"openpyxl" = "*"
+"packaging" = "*"
+"pandas" = "*"
+"pip" = "!=21.3"
+"progressbar2" = "*"
+"prov" = "*"
+"pyproj" = ">=2.1"
+"pys2index" = "*"
+"python" = ">=3.12"
+"python-cdo" = "*"
+"python-dateutil" = "*"
+"pyyaml" = "*"
+"rasterio" = ">=1.3.10"
+"requests" = "*"
+"scikit-image" = "*"
+"scikit-learn" = ">=1.4.0"  # github.com/ESMValGroup/ESMValTool/issues/3504
+"scipy" = "*"
+"seaborn" = "*"
+"seawater" = "*"
+"shapely" = ">=2.0.2"
+"xarray" = ">=0.12.0"
+"xesmf" = ">=0.7.1"
+"xgboost" = ">1.6.1"  # github.com/ESMValGroup/ESMValTool/issues/2779
+"xlsxwriter" = "*"
+"zarr" = "*"
+
+[tool.pixi.workspace]
+channels = [
+    "conda-forge",
+    # "conda-forge/label/esmvalcore_rc",  # Uncomment to use ESMValCore release candidates.
+    "nodefaults",
+]
+platforms = ["linux-64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+"ESMValTool" = { path = "." , editable = true }
+
+[tool.pixi.environments]
+# The environments below correspond to the different packages we have on conda-forge:
+# esmvaltool-python (default), esmvaltool-ncl, esmvaltool-r, and esmvaltool.
+# For each package, we have a development environment (with the `dev`, `doc`,
+# and `test` features) and a regular environment without these features.
+#
+# Environment for running diagnostics that only require Python.
+default = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
+esmvaltool-python = { features = ["esmvalcore"], solve-group = "default" }
+# Environment for running diagnostics that also require NCL.
+esmvaltool-ncl-dev = { features = ["esmvalcore", "ncl", "dev", "doc", "test"], solve-group = "ncl" }
+esmvaltool-ncl = { features = ["esmvalcore", "ncl"], solve-group = "ncl" }
+# Environment for running diagnostics that also require R.
+esmvaltool-r-dev = { features = ["esmvalcore", "r", "dev", "doc", "test"], solve-group = "r" }
+esmvaltool-r = { features = ["esmvalcore", "r"], solve-group = "r" }
+# Environment for running any diagnostic.
+esmvaltool-dev = { features = ["esmvalcore", "ncl", "r", "dev", "doc", "test"], solve-group = "esmvaltool" }
+esmvaltool = { features = ["esmvalcore", "ncl", "r"], solve-group = "esmvaltool" }
+# Environment with the development version of ESMValCore for testing new features and bug fixes.
+esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
+# Environments for running tests with specific Python versions.
+test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
+test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "default" }
+
+# Default ESMValCore version.
+[tool.pixi.feature.esmvalcore.dependencies]
+"ESMValCore" = ">=2.14.0"
+
+# Use the development version of ESMValCore to test new features and bug fixes.
+[tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
+"ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
+# Replace the line above with the following to use a local ESMValCore repository instead.
+# "ESMValCore" = { path = "../ESMValCore", editable = true }
+
+# Tools for running the tests.
+[tool.pixi.feature.test.dependencies]
+"pytest" = ">=6.0.0"
+"pytest-cov" = ">=2.10.1"
+"pytest-env" = "*"
+"pytest-html" = "!=2.1.0"
+"pytest-metadata" = ">=1.5.1"
+"pytest-mock" = "*"
+"pytest-xdist" = "*"
+
+# Tools for building the documentation.
+[tool.pixi.feature.doc.dependencies]
+"autodocsumm" = ">=0.2.2"
+"myst-nb" = "*"
+"pydata-sphinx-theme" = "*"
+"sphinx" = ">=6.1.3,<9"     # <9 due to ESMValTool/issues/4316
+
+# Other development tools.
+[tool.pixi.feature.dev.dependencies]
+codespell = "*"
+jupyterlab = "*"
+pre-commit = "*"
+py-spy = "*"
+ruff = "==0.14.5" # keep in sync with .pre-commit-config.yaml
+yamllint = "*"
+
+# Feature for running tests with Python 3.12.
+[tool.pixi.feature.py312.dependencies]
+"python" = "3.12.*"
+
+# Feature for running tests with Python 3.13.
+[tool.pixi.feature.py313.dependencies]
+"python" = "3.13.*"
+
+# Feature for running diagnostics that also require NCL.
+[tool.pixi.feature.ncl]
+platforms = ["linux-64"]
+
+[tool.pixi.feature.ncl.dependencies]
+"ncl" = ">=6.6.2"
+"cdo" = "*"
+"nco" = "*"
+"imagemagick" = "*"
+
+# Feature for running diagnostics that also require R.
+[tool.pixi.feature.r]
+platforms = ["linux-64"]
+
+[tool.pixi.feature.r.dependencies]
+"cdo" = "*"
+"r-base" = ">=4.4"
+"r-abind" = "*"
+"r-akima" = "*"
+"r-climdex.pcic" = "*"
+"r-climprojdiags" = "*"
+"r-docopt" = "*"
+"r-dotcall64" = "*"
+"r-functional" = "*"
+"r-ggplot2" = "*"
+"r-gridextra" = "*"
+"r-logging" = "*"
+"r-mapproj" = "*"
+"r-maps" = "*"
+"r-multiapply" = "*"
+"r-ncdf4" = "*"
+"r-ncdf4.helpers" = "*"
+"r-pcict" = "*"
+"r-plyr" = "*"
+"r-r.utils" = "*"
+"r-rcolorbrewer" = "*"
+"r-rcpp" = "*"
+"r-s2dverification" = "*"
+"r-snow" = "*"
+"r-spei" = "*"
+"r-udunits2" = "*"
+"r-yaml" = "*"
+
+# Tasks for use with `pixi run <task>`.
+[tool.pixi.tasks]
+test = {cmd = "pytest", description = "Run the tests"}
+doc = {cmd = "sphinx-build doc/sphinx/source doc/sphinx/build", description = "Build the documentation"}

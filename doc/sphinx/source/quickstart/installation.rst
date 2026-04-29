@@ -4,10 +4,6 @@
 Installation
 ************
 
-.. note::
-   ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
-   For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
-
 ESMValTool supports Python 3.12 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
@@ -31,7 +27,6 @@ Further options for installation are:
 * :ref:`Deployment through a Docker container<install_with_docker>` (see https://www.docker.com);
 * :ref:`Deployment through a Singularity container<install_with_singularity>` (see https://sylabs.io/guides/latest/user-guide/);
 * :ref:`Installation with pip <install_with_pip>` (see https://pypi.org);
-* :ref:`installation_from_the_conda_lock_file`.
 
 The next sections will detail the procedure to install ESMValTool through each
 of these methods.
@@ -54,8 +49,7 @@ In order to install ESMValTool and its dependencies from
 `mamba package manager <https://mamba.readthedocs.io>`__.
 We recommend using `mamba <https://mamba.readthedocs.io>`__ as a package manager
 for your conda environments instead of
-`conda <https://docs.conda.io/projects/conda/en/stable/>`__ because it is
-much faster, see `move-to-mamba`_ for more information.
+`conda <https://docs.conda.io/projects/conda/en/stable/>`__ because it is faster.
 
 For a minimal mamba installation (recommended) go to
 https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html.
@@ -298,86 +292,64 @@ file.
 If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
-*Install dependencies*
+*Install ESMValTool*
 
-It is recommended to use mamba to manage ESMValTool dependencies.
-See the :ref:`mamba installation instructions <install_with_mamba>` at the top
-of this page for instructions on installing mamba.
-To simplify the installation process, an environment definition file is provided
-in the repository (``environment.yml`` in the root folder).
+It is recommended to use `pixi <https://pixi.prefix.dev>`__ to manage ESMValTool dependencies.
+Follow the `pixi installation instructions <https://pixi.prefix.dev/latest/installation/>`__
+to install it.
 
-The ESMValTool conda environment file can also be used as a requirements list
-for those cases in which a mamba installation is not possible or advisable.
-From now on, we will assume that the installation is going to be done through
-mamba.
-
-Ideally, you should create a separate conda environment for ESMValTool, so it is
-independent from any other Python tools present in the system.
-
-To create an environment, go to the directory containing the ESMValTool source
-code that you just downloaded. It is called ``ESMValTool`` if you did not
-choose a different name.
+To create and activate a software environment to develop ESMValTool, go to the directory
+containing the ESMValTool source code that you just downloaded. It is called
+``ESMValTool`` if you did not choose a different name.
 
 .. code-block:: bash
 
     cd ESMValTool
 
-and create a new environment called ``esmvaltool`` with the command (when on
-Linux):
+and run the command:
 
 .. code-block:: bash
 
-    mamba env create --name esmvaltool --file environment.yml
+    pixi shell
 
-or (when on MacOS)
+This will install all of the required dependencies for running and developing
+Python diagnostics.
 
-.. code-block:: bash
+.. tip::
 
-    mamba env create --name esmvaltool --file environment_osx.yml
+    To exit the pixi environment, run ``exit`` or press ``Ctrl+D``.
 
-This will install all of the required development dependencies.
-Note that the MacOS environment file contains only Python dependencies,
-so you will not be able to run NCL, or R diagnostics with it.
-
-.. note::
-    The environment is called ``esmvaltool`` in the example above, but it is
-    possible to use the option ``--name some_environment_name`` to define a
-    different name.
-    This can be useful when you have an older ESMValTool installation that you
-    would like to keep.
-    It is recommended that you create a new environment when updating ESMValTool.
-
-.. note::
-    There is also a pure-Python environment file ``esmvaltool_python.yml``
-    which is a softlink of the ``environment_osx.yml`` file; this one is used
-    by any build that needs only Python packages (i.e. no NCL and R), currently
-    this is used by our documentation builds, but it could be used by anyone
-    needing just the Python dependencies.
-
-Next, activate the environment by using the command:
+If you are on Linux, it is also possible to install the dependencies for NCL
+and R diagnostics by running
 
 .. code-block:: bash
 
-    conda activate esmvaltool
+    pixi shell -e esmvaltool-dev
 
-.. attention::
-    From now on, we assume that the conda environment containing the
-    development dependencies for ESMValTool is activated.
+or just the dependencies for NCL diagnostics with ``pixi shell -e esmvaltool-ncl-dev``
+and for R diagnostics with ``pixi shell -e esmvaltool-r-dev``. There are also
+environments with the dependencies for running diagnostics in specific languages
+without the development dependencies, i.e. ``pixi shell -e esmvaltool-python``
+for running Python diagnostics, ``pixi shell -e esmvaltool-ncl`` for running
+NCL diagnostics, ``pixi shell -e esmvaltool-r`` for running R diagnostics, and
+``pixi shell -e esmvaltool`` for running any diagnostic. The environment names
+correspond to the ESMValTool subpackages described in :ref:`conda subpackages`
+(except that ``esmvaltool-python-dev`` is called ``default``) and the ``-dev``
+suffix indicates that additional development dependencies are included.
 
-*Install ESMValTool*
+.. tip::
 
-Once all dependencies have been installed, ESMValTool itself can be installed by
-running the following command in the directory containing the ESMValTool source
-code (called ``ESMValTool`` if you did not choose a different name):
+    If you find that solving the environments (i.e. finding out which
+    combination of package versions is compatible and can be installed) is
+    slow, you can add the ``--frozen`` flag to the commands above to skip the
+    solve step. Add ``export PIXI_FROZEN=true`` to your ``~/.bashrc`` file to
+    make this the default behavior.
 
-.. code-block:: bash
+.. tip::
 
-    pip install --no-deps --editable '.[develop]'
-
-Using the ``--editable`` flag will cause the installer to create a symbolic link
-from the installation location to your source code, so any changes you make to
-the source code will immediately be available in the installed version of the
-tool.
+    If you find that solving the environments uses too much memory, you can
+    `set the number of parallel solves to one <https://pixi.prefix.dev/latest/reference/pixi_configuration/#concurrency>`__
+    by running ``pixi config set concurrency.solves 1``.
 
 If you are planning to do any coding, install the :ref:`pre-commit`
 hooks by running:
@@ -388,6 +360,8 @@ hooks by running:
 
 these will make sure that when you commit your changes, they will be formatted
 correctly.
+
+*Check your ESMValTool installation*
 
 The next step is to check that the installation works properly.
 To do this, run the tool with:
@@ -434,7 +408,7 @@ Using the development version of the ESMValCore package
 -------------------------------------------------------
 
 If you need the latest developments of the ESMValCore package, you
-can install it from source into the same conda environment.
+can install it from source into the same pixi environment.
 
 .. attention::
     The recipes and diagnostics in the ESMValTool repository are compatible
@@ -445,8 +419,26 @@ can install it from source into the same conda environment.
 
 First follow the steps in the section above to
 :ref:`install ESMValTool from source <install_from_source>`.
-Next, go to the place where you would like to keep the source code and clone the
-ESMValCore github repository:
+
+If you just want to use the latest features of ESMValCore, you can create a
+new pixi environment with the command:
+
+.. code-block:: bash
+
+    pixi shell -e esmvalcore-dev
+
+and verify that you now have a development version of ESMValCore installed by
+running
+
+.. code-block:: bash
+
+    esmvaltool version
+
+If you are planning to do development work on ESMValCore, you will need to
+clone the ESMValCore repository and tell pixi to use it.
+
+Go to the place where you would like to keep the ESMValCore source code and
+clone the ESMValCore github repository:
 
 .. code-block:: bash
 
@@ -461,32 +453,24 @@ or
 The command above will create a folder called ``ESMValCore``
 containing the source code of the tool in the current working directory.
 
-Go into the folder you just downloaded
+Edit the ``pyproject.toml`` file in the ESMValTool source code and remove
+this line:
 
-.. code-block:: bash
+.. literalinclude:: ../../../../pyproject.toml
+   :start-at: "ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
+   :end-at: "ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
 
-    cd ESMValCore
+and uncomment this line:
 
-and then install ESMValCore in development mode
+.. literalinclude:: ../../../../pyproject.toml
+   :start-at: # "ESMValCore" = { path = "../ESMValCore", editable = true }
+   :end-at: # "ESMValCore" = { path = "../ESMValCore", editable = true }
 
-.. code-block:: bash
+Make sure the path in the line you just uncommented points to the ESMValCore
+repository you just cloned.
 
-    pip install --no-deps --editable '.[develop]'
-
-To check that the installation was successful, run
-
-.. code-block:: bash
-
-    python -c 'import esmvalcore; print(esmvalcore.__path__[0])'
-
-this should show the directory of the source code that you just downloaded.
-
-If the command above shows a directory inside your conda environment instead,
-e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.13/site-packages/esmvalcore``,
-you may need to manually remove that directory and run
-``pip install --no-deps --editable '.[develop]'`` again.
-
-Finally, also install the :ref:`pre-commit` hooks by running:
+Finally, also install the ESMValCore :ref:`pre-commit` hooks by going into the
+directory containing the ESMValCore source code and running:
 
 .. code-block:: bash
 
@@ -626,7 +610,7 @@ It is also possible to install ESMValTool from
 However, this requires first installing dependencies that are not available
 on PyPI in some other way.
 The list of required dependencies can be found in
-:download:`environment.yml <../../../../environment.yml>`.
+:download:`pyproject.toml <../../../../pyproject.toml>`.
 
 .. warning::
 
@@ -639,41 +623,6 @@ ESMValTool and any remaining Python dependencies with the command:
 .. code-block:: bash
 
     pip install esmvaltool
-
-.. _installation_from_the_conda_lock_file:
-
-Installation from the conda lock file
-=====================================
-
-The conda lock file is an alternative to the ``environment.yml`` file used in
-the :ref:`installation from source instructions <install_from_source>`.
-All other steps in those installation instructions are the same.
-
-The conda lock file can be used to install the dependencies of ESMValTool
-whenever the conda environment defined by ``environment.yml`` can not be solved
-for some reason.
-A conda lock file is a reproducible environment file that contains links to
-dependency packages as they are hosted on the Anaconda cloud;
-these have frozen version numbers, build hashes, and channel names.
-These parameters are established at the time of the conda lock file creation, so
-may be outdated after a while.
-Therefore, we regenerate these lock files every 10 days through automatic
-Pull Requests (or more frequently, since the automatic generator runs on merges
-on the ``main`` branch too), to minimize the risk of dependencies becoming
-outdated.
-
-Conda environment creation from a lock file is done with the following command:
-
-.. code-block:: bash
-
-   conda create --name esmvaltool --file conda-linux-64.lock
-
-The latest, most up-to-date file can always be downloaded directly from the source code
-repository, a direct download link can be found `here <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/conda-linux-64.lock>`__.
-
-.. note::
-   For instructions on how to manually create the lock file, see
-   :ref:`these instructions <esmvalcore:condalock-installation-creation>`.
 
 .. _common installation issues:
 
@@ -745,20 +694,3 @@ does not work.
 Do not run ``mamba update --update-all`` in the ``esmvaltool``
 environment since that will update some packages that are pinned to
 specific versions for the correct functionality of the tool.
-
-
-.. _move-to-mamba:
-
-Move to Mamba
-=============
-
-Mamba is a much faster alternative to `conda`, and environment creation and updating
-benefits from the use of a much faster (C++ backend) dependency solver; tests have been performed
-to verify the integrity of the `esmvaltool` environment built with `mamba`, and we are
-now confident that the change will not affect the way ESMValTool is installed and run, whether it be on a Linux or OS platform.
-From the user's perspective, it is a straightforward use change: the CLI (command line
-interface) of `mamba` is identical to `conda`: any command that was run with `conda` before
-will now be run with `mamba` instead, keeping all the other command line arguments and
-flags as they were before. The only place where `conda` should not be replaced with `mamba`
-at command line level is at the environment activation point: `conda activate` will still
-have to be used.
