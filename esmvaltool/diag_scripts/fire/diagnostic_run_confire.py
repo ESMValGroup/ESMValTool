@@ -458,9 +458,11 @@ def _read_variable_from_netcdf(
             callback=_sort_time,
         )
     else:
+        # Fallback for CMIP7 data for tasmax
+        var = "tas" if "tasmax/tas_tmaxavg" in filename[0] else filename[1]
         dataset = iris.load_raw(
             Path(directory) / filename[0],
-            filename[1],
+            var,
             callback=_sort_time,
         )
     dataset = dataset[0]
