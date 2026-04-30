@@ -1,6 +1,8 @@
 # This workflow performs various validation steps for Cylc and Rose.
 name: Check Recipe Test Workflow (RTW)
 
+permissions: {}
+
 # Controls when the action will run
 on:
   # Triggers the workflow on push events
@@ -36,10 +38,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job
       # can access it
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Setup Cylc
-        uses: cylc/setup-cylc@v1
+        uses: cylc/setup-cylc@99ce72c7841aa3f222420d2df16fa31a31f76fde # v1.0.1
         with:
           cylc_rose: true
 
