@@ -24,7 +24,7 @@ jobs:
         python-version: ["3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: conda-incubator/setup-miniconda@v4
         with:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
@@ -63,7 +63,7 @@ jobs:
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:
 #      - uses: actions/checkout@v2
-#      - uses: conda-incubator/setup-miniconda@v3
+#      - uses: conda-incubator/setup-miniconda@v4
 #        with:
 #          python-version: ${{ matrix.python-version }}
 #          miniconda-version: "latest"
