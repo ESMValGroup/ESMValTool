@@ -109,7 +109,7 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: /home/b/b383904/recipe_development_esmvaltool/diagnostic_draft3.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -137,7 +137,7 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: /home/b/b383904/recipe_development_esmvaltool/diagnostic_draft3.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -166,7 +166,7 @@ diagnostics:
         preprocessor: precipitation_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: /home/b/b383904/recipe_development_esmvaltool/diagnostic_draft3.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -196,7 +196,7 @@ diagnostics:
         preprocessor: precipitation_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: /home/b/b383904/recipe_development_esmvaltool/diagnostic_draft3.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -228,7 +228,7 @@ diagnostics:
         preprocessor: snow_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: /home/b/b383904/recipe_development_esmvaltool/diagnostic_draft3.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -258,7 +258,7 @@ diagnostics:
         preprocessor: ocean_preproc
     scripts:
       plot:
-        script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+        script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -282,7 +282,7 @@ diagnostics:
         preprocessor: ocean_preproc
     scripts:
       plot:
-        script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+        script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -307,7 +307,7 @@ diagnostics:
         preprocessor: ocean_preproc
     scripts:
       plot:
-        script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+        script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -332,7 +332,7 @@ diagnostics:
         preprocessor: radiation_preproc
     scripts:
       plot:
-        script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+        script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -356,7 +356,7 @@ diagnostics:
   #       preprocessor: ocean_preproc_timeline
   #   scripts:
   #     plot:
-  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+  #       script: impact/multi_datasets.py
   #       plot_folder: '{plot_dir}'
   #       plot_filename: '{plot_type}_{real_name}_{mip}'
   #       facet_used_for_labels: dataset
@@ -374,7 +374,7 @@ diagnostics:
   #       preprocessor: ocean_preproc_timeline
   #   scripts:
   #     plot:
-  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+  #       script: impact/multi_datasets.py
   #       plot_folder: '{plot_dir}'
   #       plot_filename: '{plot_type}_{real_name}_{mip}'
   #       facet_used_for_labels: dataset
@@ -390,7 +390,7 @@ diagnostics:
   #       preprocessor: radiation_preproc_timeline
   #   scripts:
   #     plot:
-  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+  #       script: impact/multi_datasets.py
   #       plot_folder: '{plot_dir}'
   #       plot_filename: '{plot_type}_{real_name}_{mip}'
   #       facet_used_for_labels: dataset
