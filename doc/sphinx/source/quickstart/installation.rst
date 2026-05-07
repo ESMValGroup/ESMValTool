@@ -412,9 +412,9 @@ can install it from source into the same pixi environment.
 
 .. attention::
     The recipes and diagnostics in the ESMValTool repository are compatible
-    with the latest released version of the ESMValCore.
+    with the latest released version of ESMValCore.
     Using the development version of the ESMValCore package is only recommended
-    if you are planning to develop new features for the ESMValCore, e.g.
+    if you are planning to develop new features for ESMValCore, e.g.
     you want to implement a new preprocessor function.
 
 First follow the steps in the section above to
