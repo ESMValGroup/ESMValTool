@@ -31,7 +31,6 @@ dynamic = [
 ]
 dependencies = [
     "aiohttp",
-    "arviz",
     "cartopy",
     "cdo",
     "cdsapi",
