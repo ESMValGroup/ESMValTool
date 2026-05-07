@@ -327,12 +327,12 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "defaul
 
 # Other development tools.
 [tool.pixi.feature.dev.dependencies]
-codespell = "*"
-jupyterlab = "*"
-pre-commit = "*"
-py-spy = "*"
-ruff = "==0.14.5" # keep in sync with .pre-commit-config.yaml
-yamllint = "*"
+"codespell "= "*"
+"jupyterlab" = "*"
+"pre-commit" = "*"
+"py-spy" = "*"
+"ruff" = "==0.14.5" # keep in sync with .pre-commit-config.yaml
+"yamllint" = "*"
 
 # Feature for running tests with Python 3.12.
 [tool.pixi.feature.py312.dependencies]
