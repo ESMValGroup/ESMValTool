@@ -310,10 +310,22 @@ and run the command:
 
 .. code-block:: bash
 
-    pixi shell
+    pixi shell --frozen
 
 This will install all of the required dependencies for running and developing
 Python diagnostics.
+
+.. tip::
+
+    We recommend running all pixi commands with the ``--frozen`` flag. This
+    flag instructs pixi to use the versions of the packages listed in the pixi
+    lock file (``pixi.lock``). Using this option makes all pixi commands run
+    faster because they do not need to "solve" the environment (i.e. find out
+    which combination of package versions is compatible and can be installed)
+    and makes your analyses more reproducible because you know exactly which
+    version of which software package was used. We recommend adding
+    ``export PIXI_FROZEN=true`` to your ``~/.bashrc`` file to make this the
+    default behavior.
 
 .. tip::
 
@@ -336,14 +348,6 @@ NCL diagnostics, ``pixi shell -e esmvaltool-r`` for running R diagnostics, and
 correspond to the ESMValTool subpackages described in :ref:`conda subpackages`
 (except that ``esmvaltool-python-dev`` is called ``default``) and the ``-dev``
 suffix indicates that additional development dependencies are included.
-
-.. tip::
-
-    If you find that solving the environments (i.e. finding out which
-    combination of package versions is compatible and can be installed) is
-    slow, you can add the ``--frozen`` flag to the commands above to skip the
-    solve step. Add ``export PIXI_FROZEN=true`` to your ``~/.bashrc`` file to
-    make this the default behavior.
 
 .. tip::
 
