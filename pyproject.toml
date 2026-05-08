@@ -327,7 +327,7 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "defaul
 
 # Other development tools.
 [tool.pixi.feature.dev.dependencies]
-"codespell "= "*"
+"codespell" = "*"
 "jupyterlab" = "*"
 "pre-commit" = "*"
 "py-spy" = "*"
