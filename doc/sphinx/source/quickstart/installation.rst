@@ -473,6 +473,18 @@ and uncomment this line:
 Make sure the path in the line you just uncommented points to the ESMValCore
 repository you just cloned.
 
+.. tip::
+
+    Do not forget to update the pixi lock file by running ``pixi lock`` after
+    making changes to pyproject.toml if you are running the pixi commands with
+    the ``--frozen`` flag or have set ``export PIXI_FROZEN=true``.
+
+The environment can now be activated by running
+
+.. code-block:: bash
+
+    pixi shell -e esmvalcore-dev
+
 Finally, also install the ESMValCore :ref:`pre-commit` hooks by going into the
 directory containing the ESMValCore source code and running:
 
