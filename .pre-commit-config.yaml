@@ -16,6 +16,7 @@ repos:
       - id: check-added-large-files
       - id: check-ast
       - id: check-case-conflict
+      - id: check-illegal-windows-names
       - id: check-merge-conflict
       - id: debug-statements
       - id: end-of-file-fixer

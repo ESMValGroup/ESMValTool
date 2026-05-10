@@ -526,7 +526,7 @@ the following locations in ``pyproject.toml``:
 - ``[tool.pixi.dependencies]``
   contains dependencies that can be installed from `conda-forge <https://conda-forge.org/>`__
 
-it is strongly preferred that those two lists are kept in sync, apart from
+It is strongly preferred that those two lists are kept in sync, apart from
 differences in how packages are named. Run the command ``pixi lock --no-install``
 after making changes to the dependencies to update the ``pixi.lock`` file, which
 is used to make sure that the same versions of packages are installed for
