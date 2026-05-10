@@ -12609,7 +12609,7 @@ packages:
   timestamp: 1773221341802
 - pypi: ./
   name: esmvaltool
-  version: 2.15.0.dev65+g9975f5e47.d20260510
+  version: 2.15.0.dev72+g02f2d91c5
   sha256: 1f671492d83335cabf3d7d6ad712ea67ae3c7791351bf2b147e6ff5bf83e3aa7
   requires_dist:
   - aiohttp
