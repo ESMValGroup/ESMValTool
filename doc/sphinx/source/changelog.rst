@@ -1371,7 +1371,7 @@ Highlights
 
 - ESMValTool is moving from Conda to Mamba as the preferred installation method. This will speed up the
   installation and comes with some improvements behind the scenes.
-  Read more about it at :ref:`Move to Mamba<move-to-mamba>` and in :ref:`the installation guide<install>`.
+  Read more about it in :ref:`the installation guide<install>`.
 
 Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-4-0>`.
 Thanks to that ESMValTool has gained the following features:
