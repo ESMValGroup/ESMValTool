@@ -1,0 +1,66 @@
+# ESMValTool
+# recipe_python.yml
+#
+# See https://docs.esmvaltool.org/en/latest/recipes/recipe_examples.html
+# for a description of this recipe.
+#
+# See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/overview.html
+# for a description of the recipe format.
+---
+documentation:
+  description: |
+    Example recipe that plots a map.
+
+  title: Recipe that runs an example diagnostic written in Python.
+
+  authors:
+    - andela_bouwe
+    - righi_mattia
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - dataset: "ESACCI-WATERVAPOUR-L3C-TCWV-meris-005deg-2002-2017-fv3.2.zarr"
+
+preprocessors:
+  regrid:
+    regrid:
+      target_grid: "1x1"
+      scheme: nearest
+  annual_mean_global:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+diagnostics:
+  map:
+    description: Global map in January 2010.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      prw:
+        branding_suffix: tavg-u-hxy-u
+        preprocessor: regrid
+        project: ESACCI
+        mip: atmos
+        frequency: mon
+        timerange: 201001/201001
+        caption: |
+          Global map of {long_name} in January 2010 according to {dataset}.
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh
+          cmap: viridis
