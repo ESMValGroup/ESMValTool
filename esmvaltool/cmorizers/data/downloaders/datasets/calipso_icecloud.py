@@ -36,9 +36,9 @@ def download_dataset(
         Overwrite already downloaded files
     """
     if not start_date:
-        start_date = datetime(2007, 1, 1)
+        start_date = datetime(2007, 1, 1, tzinfo=datetime.UTC)
     if not end_date:
-        end_date = datetime(2022, 12, 31)
+        end_date = datetime(2022, 12, 31, tzinfo=datetime.UTC)
     loop_date = start_date
 
     downloader = NASADownloader(
