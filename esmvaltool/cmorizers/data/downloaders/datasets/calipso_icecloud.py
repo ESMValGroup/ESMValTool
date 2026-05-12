@@ -1,6 +1,7 @@
 """Script to download CALIPSO-ICECLOUD from its webpage."""
 
 import logging
+import subprocess
 from datetime import datetime
 
 from dateutil import relativedelta
@@ -57,6 +58,6 @@ def download_dataset(
                     f"CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00/{year}/"
                     f"CAL_LID_L3_Ice_Cloud-Standard-V2-00.{year}-{month:02d}A.hdf",
                 )
-            except Exception:
+            except subprocess.CalledProcessError:
                 logger.info("no data downloaded for %d-%02d", year, month)
         loop_date += relativedelta.relativedelta(years=1)
