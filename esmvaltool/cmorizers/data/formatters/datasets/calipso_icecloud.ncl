@@ -129,7 +129,7 @@ begin
       ; No input file found
       if (.not.isfilepresent(fname)) then
         log_info("No input file for " + syear + \
-                  "-" + smonth + " found. Skipping record.")
+                 "-" + smonth + " found. Skipping record.")
         continue
       end if
 
