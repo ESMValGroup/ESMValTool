@@ -25,7 +25,10 @@ It can take a few minutes for this comment to appear.
 Your contribution cannot be merged to the main branch until all commiters on
 the pull request have signed the CLA.
 
-image 1
+.. figure::  /figures/not_yet_signed.png
+   :align:   center
+   :width:   15cm
+
 
 Click on the button labelled "CLA not signed yet".
 This will take you to a page that shows the contributor license agreement.
@@ -36,7 +39,9 @@ For this and all future pull requests,
 the comment should now indicate that you have signed the CLA.
 It can take a few minutes after signing for this to update.
 
-image 2
+.. figure::  /figures/signed.png
+   :align:   center
+   :width:   10cm
 
 
 How to withdraw your agreement
