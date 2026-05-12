@@ -1,21 +1,20 @@
 ; #############################################################################
-; ESMValTool CMORizer for CALIPSO-Lidar Level 3 Ice Cloud Data, Standard V1-00
+; ESMValTool CMORizer for CALIPSO-Lidar Level 3 Ice Cloud Data, Standard V2-00
 ; #############################################################################
 ;
 ; Tier
 ;    Tier 3: restricted dataset (registration required).
 ;
 ; Source
-;    EarthData via https://eosweb.larc.nasa.gov/project/CALIPSO/
-;      CAL_LID_L3_Ice_Cloud-Standard_V1-00
+;    EarthData via
 ;
 ; Last access
-;    20220804
+;    20260512
 ;
 ; Download and processing instructions
 ; (requires EarthData login; see https://urs.earthdata.nasa.gov/)
-;    1) Go to https://eosweb.larc.nasa.gov/project/CALIPSO/
-;       CAL_LID_L3_Ice_Cloud-Standard_V1-00
+;    1) Go to https://asdc.larc.nasa.gov/project/CALIPSO/
+;       CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00
 ;    2) Click on "Get Dataset"
 ;    3) Select Granules "A" containing both, day and night (Day/Night filter
 ;       = "Both")
@@ -25,6 +24,7 @@
 ;       files in the same directory
 ;
 ; Modification history
+;    20260512-lauer_axel: update from v1.00 to v2.00
 ;    20210331-lauer_axel: updated download information
 ;    20200414-lauer_axel: written
 ;
@@ -45,7 +45,7 @@ begin
 
   ; Period (complete years only)
   YEAR1 = 2007
-  YEAR2 = 2015
+  YEAR2 = 2022
 
   ; Selected variable (standard name)
   VAR = (/"cli"/)
@@ -64,12 +64,12 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "1-00"
+  VERSION = "2-00"
 
   ; Global attributes
-  SOURCE = "https://eosweb.larc.nasa.gov/project/CALIPSO/" + \
-    "CAL_LID_L3_Ice_Cloud-Standard_V1-00"
-  REF = "doi:10.5067/CALIOP/CALIPSO/L3_ICE_CLOUD-STANDARD-V1-00"
+  SOURCE = "https://asdc.larc.nasa.gov/project/CALIPSO/" + \
+    "CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00"
+  REF = "doi:10.5067/CALIOP/CALIPSO/L3_ICE_CLOUD-STANDARD-V2-00"
   COMMENT = "Atmospheric Science Data Center (ASDC)"
 
 end
@@ -123,13 +123,14 @@ begin
       ;   both:  CAL_LID_L3_Ice_Cloud-Standard-V1-00.yyyy-mmA.hdf
       ; Here, we only use the granule "A" (= day + night).
 
-      fname = input_dir_path + "CAL_LID_L3_Ice_Cloud-Standard-V1-00." + \
+      fname = input_dir_path + "CAL_LID_L3_Ice_Cloud-Standard-V2-00." + \
         syear + "-" + smonth + "A.hdf"
 
       ; No input file found
-      if (ismissing(fname)) then
-        error_msg("f", DIAG_SCRIPT, "main", "input file for " + syear + \
-                  "-" + smonth + " not found")
+      if (.not.isfilepresent(fname)) then
+        log_info("No input file for " + syear + \
+                  "-" + smonth + " found. Skipping record.")
+        continue
       end if
 
       ; Extract data
