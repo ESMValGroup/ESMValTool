@@ -15,7 +15,7 @@ The original method created 8 resampled datasets:
 * 2 time horizons: Mid-century (MOC; 2050) and end-of-century (EOC; 2085)
 * Each scenario consists of changes calculated between 2 periods: Control (e.g. 1981-2010) and future (variable).
 
-The configuration settings for these resamples can be found in table 1 of Lenderink 2014's `supplementary data <https://iopscience.iop.org/1748-9326/9/11/115008/media/erl503687suppdata.pdf>`_.
+The configuration settings for these resamples can be found in table 1 of Lenderink 2014's `supplementary data <https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/data>`_.
 
 Implementation
 --------------

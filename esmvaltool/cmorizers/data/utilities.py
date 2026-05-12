@@ -9,12 +9,13 @@ import shutil
 from contextlib import contextmanager
 from pathlib import Path
 
+import esmvalcore.cmor.table
+import esmvalcore.config
 import iris
 import numpy as np
 import yaml
 from cf_units import Unit
 from dask import array as da
-from esmvalcore.cmor.table import CMOR_TABLES
 from iris.cube import Cube
 
 from esmvaltool import __file__ as esmvaltool_file
@@ -161,9 +162,9 @@ def convert_timeunits(cube, start_year):
         Returns the original iris cube with time coordinate reformatted.
     """
     if cube.coord("time").units == "months since 0000-01-01 00:00:00":
-        real_unit = f"months since {str(start_year)}-01-01 00:00:00"
+        real_unit = f"months since {start_year!s}-01-01 00:00:00"
     elif cube.coord("time").units == "days since 0000-01-01 00:00:00":
-        real_unit = f"days since {str(start_year)}-01-01 00:00:00"
+        real_unit = f"days since {start_year!s}-01-01 00:00:00"
     elif cube.coord("time").units == "days since 1950-1-1":
         real_unit = "days since 1950-1-1 00:00:00"
     else:
@@ -220,7 +221,7 @@ def fix_coords(
         if cube_coord.var_name == "time":
             logger.info("Fixing time...")
             cube.coord("time").convert_units(
-                Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+                Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
             )
             if overwrite_time_bounds or not cube.coord("time").has_bounds():
                 fix_bounds(cube, cube.coord("time"))
@@ -266,8 +267,8 @@ def fix_coords(
 def fix_var_metadata(cube, var_info):
     """Fix var metadata from CMOR table.
 
-    Sets var_name, long_name, standard_name and units
-    in accordance with CMOR standards from specific CMOR table.
+    Sets var_name, long_name, standard_name, units, and 'positive' attribute in
+    accordance with CMOR standards from specific CMOR table.
 
     Parameters
     ----------
@@ -291,6 +292,8 @@ def fix_var_metadata(cube, var_info):
     cube.var_name = var_info.short_name
     cube.long_name = var_info.long_name
     set_units(cube, var_info.units)
+    if var_info.positive:
+        cube.attributes["positive"] = var_info.positive
     return cube
 
 
@@ -308,11 +311,15 @@ def flip_dim_coord(cube, coord_name):
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
     reg_path = os.path.join(
-        os.path.dirname(__file__), "cmor_config", dataset + ".yml"
+        os.path.dirname(__file__),
+        "cmor_config",
+        dataset + ".yml",
     )
     with open(reg_path, encoding="utf-8") as file:
         cfg = yaml.safe_load(file)
-    cfg["cmor_table"] = CMOR_TABLES[cfg["attributes"]["project_id"]]
+    cfg["cmor_table"] = esmvalcore.cmor.table.CMOR_TABLES[
+        cfg["attributes"]["project_id"]
+    ]
     if "comment" not in cfg["attributes"]:
         cfg["attributes"]["comment"] = ""
     return cfg
@@ -365,7 +372,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     name_elements = [
         attrs["project_id"],
         attrs["dataset_id"],
-        attrs["modeling_realm"],
+        attrs["type"],
         attrs["version"],
         attrs["mip"],
         var,
@@ -399,12 +406,14 @@ def extract_doi_value(tags):
             else:
                 reference_doi.append("doi not found")
                 logger.warning(
-                    "The reference file %s does not have a doi.", bibtex_file
+                    "The reference file %s does not have a doi.",
+                    bibtex_file,
                 )
         else:
             reference_doi.append("doi not found")
             logger.warning(
-                "The reference file %s does not exist.", bibtex_file
+                "The reference file %s does not exist.",
+                bibtex_file,
             )
     return ", ".join(reference_doi)
 
@@ -458,7 +467,8 @@ def fix_bounds(cube, dim_coord):
 
     if cube.coord(dim_coord).has_bounds():
         cube.coord(dim_coord).bounds = da.array(
-            cube.coord(dim_coord).core_bounds(), dtype="float64"
+            cube.coord(dim_coord).core_bounds(),
+            dtype="float64",
         )
     return cube
 
@@ -515,7 +525,8 @@ def fix_dtype(cube):
     """Fix `dtype` of a cube and its coordinates."""
     if cube.dtype != np.float32:
         logger.info(
-            "Converting data type of data from '%s' to 'float32'", cube.dtype
+            "Converting data type of data from '%s' to 'float32'",
+            cube.dtype,
         )
         cube.data = cube.core_data().astype(np.float32, casting="same_kind")
     for coord in cube.coords():
@@ -527,7 +538,8 @@ def fix_dtype(cube):
                 coord.dtype,
             )
             coord.points = coord.core_points().astype(
-                np.float64, casting="same_kind"
+                np.float64,
+                casting="same_kind",
             )
         if coord.has_bounds() and coord.bounds_dtype != np.float64:
             logger.info(
@@ -537,7 +549,8 @@ def fix_dtype(cube):
                 coord.bounds_dtype,
             )
             coord.bounds = coord.core_bounds().astype(
-                np.float64, casting="same_kind"
+                np.float64,
+                casting="same_kind",
             )
 
 

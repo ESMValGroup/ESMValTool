@@ -39,7 +39,7 @@ rcParams.update(
         "axes.linewidth": 2,
         "lines.markersize": 8,
         "lines.linewidth": 2,
-    }
+    },
 )
 
 # Figure captions
@@ -224,13 +224,17 @@ def call_poisson(flux_cube, latitude="latitude", longitude="longitude"):
     # Remove average of flux field to account for storage term
     grid_areas = iris.analysis.cartography.area_weights(flux_cube)
     data_mean = flux_cube.collapsed(
-        ["longitude", "latitude"], iris.analysis.MEAN, weights=grid_areas
+        ["longitude", "latitude"],
+        iris.analysis.MEAN,
+        weights=grid_areas,
     ).data
     data = flux_cube.data - data_mean
 
     logger.info("Calling spherical_poisson")
     sphpo = SphericalPoisson(
-        logger, source=data * (earth_radius**2.0), tolerance=2.0e-4
+        logger,
+        source=data * (earth_radius**2.0),
+        tolerance=2.0e-4,
     )
     sphpo.solve()
     sphpo.calc_meridional_heat_transport()
@@ -297,15 +301,15 @@ def symmetry_metric(cube):
     """
     hemisphere = np.abs(
         weight_zm(cube, latitude=(0, 90, False, False))[::-1]
-        + weight_zm(cube, latitude=(-90, 0, False, False))
+        + weight_zm(cube, latitude=(-90, 0, False, False)),
     ).sum()
     tropics = np.abs(
         weight_zm(cube, latitude=(0, 30, False, False))[::-1]
-        + weight_zm(cube, latitude=(-30, 0, False, False))
+        + weight_zm(cube, latitude=(-30, 0, False, False)),
     ).sum()
     extra_tropics = np.abs(
         weight_zm(cube, latitude=(30, 90, False, False))[::-1]
-        + weight_zm(cube, latitude=(-90, -30, False, False))
+        + weight_zm(cube, latitude=(-90, -30, False, False)),
     ).sum()
     return hemisphere, tropics, extra_tropics
 
@@ -363,7 +367,7 @@ class ImpliedHeatTransport:
             flx = iris.load_cube(flx_file)
             if len(flx.shape) == 3:
                 self.flx_rolling_mean.append(
-                    flx.rolling_window("time", iris.analysis.MEAN, 12)
+                    flx.rolling_window("time", iris.analysis.MEAN, 12),
                 )
             else:
                 self.flx_clim.append(flx)
@@ -410,7 +414,7 @@ class ImpliedHeatTransport:
         """
         # Derived TOA climatologies: rlnt_clim, rtntcs_clim
         rlnt_clim = -1.0 * self.flx_clim.extract_cube(
-            NameConstraint(var_name="rlut")
+            NameConstraint(var_name="rlut"),
         )
         rlnt_clim.var_name = "rlnt"
         rlnt_clim.long_name = "radiative_flux_of_rlnt"
@@ -427,10 +431,10 @@ class ImpliedHeatTransport:
         rtntcs_rolling_mean = (
             self.flx_rolling_mean.extract_cube(NameConstraint(var_name="rsdt"))
             - self.flx_rolling_mean.extract_cube(
-                NameConstraint(var_name="rsutcs")
+                NameConstraint(var_name="rsutcs"),
             )
             - self.flx_rolling_mean.extract_cube(
-                NameConstraint(var_name="rlutcs")
+                NameConstraint(var_name="rlutcs"),
             )
         )
         rtntcs_rolling_mean.var_name = "rtntcs"
@@ -444,25 +448,33 @@ class ImpliedHeatTransport:
         info_message = "Long name: %s; Variable: %s."
         for climatology in self.mht_clim:
             logger.info(
-                info_message, climatology.long_name, climatology.var_name
+                info_message,
+                climatology.long_name,
+                climatology.var_name,
             )
 
         logger.info(self.efp_clim)
         for climatology in self.efp_clim:
             logger.info(
-                info_message, climatology.long_name, climatology.var_name
+                info_message,
+                climatology.long_name,
+                climatology.var_name,
             )
 
         logger.info(self.flx_clim)
         for climatology in self.flx_clim:
             logger.info(
-                info_message, climatology.long_name, climatology.var_name
+                info_message,
+                climatology.long_name,
+                climatology.var_name,
             )
 
         logger.info(self.mht_rolling_mean)
         for rolling_mean in self.mht_rolling_mean:
             logger.info(
-                info_message, rolling_mean.long_name, rolling_mean.var_name
+                info_message,
+                rolling_mean.long_name,
+                rolling_mean.var_name,
             )
 
         logger.info(self.symmetry_metric)
@@ -486,7 +498,7 @@ class ImpliedHeatTransport:
             extra_tropics = np.zeros(ntime)
             for i in np.arange(ntime):
                 hemisphere[i], tropics[i], extra_tropics[i] = symmetry_metric(
-                    mht_series[i]
+                    mht_series[i],
                 )
             # Create the cubes for each metric
             long_name = f"symmetry_hemisphere_of_{mht_series.long_name}"
@@ -539,7 +551,9 @@ class ImpliedHeatTransport:
             mht = self.mht_clim.extract_cube(NameConstraint(var_name=vname))
             mht.convert_units("PW")
             plt.plot(
-                mht.coord("latitude").points, mht.data, label=legend_label[i]
+                mht.coord("latitude").points,
+                mht.data,
+                label=legend_label[i],
             )
         plt.hlines(0, -90, 90, color="k", linestyles=":")
         plt.vlines(0, -10, 10, color="k", linestyles=":")
@@ -572,7 +586,9 @@ class ImpliedHeatTransport:
             mht = self.mht_clim.extract_cube(NameConstraint(var_name=vname))
             mht.convert_units("PW")
             ax1.plot(
-                mht.coord("latitude").points, mht.data, label=left["legend"][i]
+                mht.coord("latitude").points,
+                mht.data,
+                label=left["legend"][i],
             )
         ax1.axhline(0, color="k", ls=":")
         ax1.axvline(0, color="k", ls=":")
@@ -582,7 +598,10 @@ class ImpliedHeatTransport:
         ax1.set_ylim(ylim[0], ylim[1])
         ax1.set_ylabel("MHT (PW)")
         ax1.annotate(
-            "(a)", xy=(0.01, 0.95), xycoords="axes fraction", color="k"
+            "(a)",
+            xy=(0.01, 0.95),
+            xycoords="axes fraction",
+            color="k",
         )
         plt.legend()
 
@@ -605,7 +624,10 @@ class ImpliedHeatTransport:
         ax2.set_ylim(ylim[0], ylim[1])
         ax2.set_ylabel("MHT (PW)")
         ax2.annotate(
-            "(b)", xy=(0.01, 0.95), xycoords="axes fraction", color="k"
+            "(b)",
+            xy=(0.01, 0.95),
+            xycoords="axes fraction",
+            color="k",
         )
         plt.legend(loc="lower right")
         plt.tight_layout()
@@ -692,7 +714,8 @@ class ImpliedHeatTransport:
         cbs = []
         for i in range(nrows):
             data = self.quiver_maps_data(
-                dargs["var_name"][i], dargs["change_sign"][i]
+                dargs["var_name"][i],
+                dargs["change_sign"][i],
             )
             plt.subplot(
                 grds[i * grid_step : (i * grid_step) + grid_step, 0],
@@ -702,9 +725,11 @@ class ImpliedHeatTransport:
                 iplt.contourf(
                     data["efp"],
                     levels=np.linspace(
-                        dargs["vmin"], dargs["vmax"], dargs["nlevs"]
+                        dargs["vmin"],
+                        dargs["vmax"],
+                        dargs["nlevs"],
                     ),
-                )
+                ),
             )
             plt.gca().coastlines()
             if i == 0:
@@ -737,10 +762,12 @@ class ImpliedHeatTransport:
                 iplt.contourf(
                     data["flx"],
                     levels=np.linspace(
-                        dargs["wmin"], dargs["wmax"], dargs["nwlevs"]
+                        dargs["wmin"],
+                        dargs["wmax"],
+                        dargs["nwlevs"],
                     ),
                     cmap="RdBu_r",
-                )
+                ),
             )
             plt.gca().coastlines()
             format_plot(plt.gca(), dargs["label"][i][1], dargs["title"][i][1])
@@ -792,10 +819,10 @@ class ImpliedHeatTransport:
         plt.figure(figsize=(6, 12))
         for count, (var_name_1, var_name_2) in enumerate(var_list):
             yy0 = self.symmetry_metric.extract_cube(
-                NameConstraint(var_name=var_name_1)
+                NameConstraint(var_name=var_name_1),
             )
             yy1 = self.symmetry_metric.extract_cube(
-                NameConstraint(var_name=var_name_2)
+                NameConstraint(var_name=var_name_2),
             )
             axx = plt.subplot(3, 1, count + 1)
             dtx = [
@@ -863,7 +890,7 @@ def efp_maps(iht, model, experiment, config):
             "vmin": -1.2,
             "vmax": 1.2,
             "nlevs": 11,
-        }
+        },
     )
     flx_files = matching_strings(iht.flx_files, ["rtnt/", "rsut/", "rlut/"])
     provenance_record = get_provenance_record(flx_files, caption["F2"])
@@ -891,10 +918,11 @@ def efp_maps(iht, model, experiment, config):
             "vmin": -0.3,
             "vmax": 0.3,
             "nlevs": 11,
-        }
+        },
     )
     flx_files = matching_strings(
-        iht.flx_files, ["netcre/", "swcre/", "lwcre/"]
+        iht.flx_files,
+        ["netcre/", "swcre/", "lwcre/"],
     )
     provenance_record = get_provenance_record(flx_files, caption["F4"])
     figname = f"figure4_{model}_{experiment}"
@@ -916,7 +944,7 @@ def efp_maps(iht, model, experiment, config):
             "vmin": -0.35,
             "vmax": 0.35,
             "nlevs": 11,
-        }
+        },
     )
     flx_files = matching_strings(iht.flx_files, ["rsut/", "rsutcs/"])
     provenance_record = get_provenance_record(flx_files, caption["F5"])
@@ -956,7 +984,8 @@ def mht_plots(iht, model, experiment, config):
         },
     )
     flx_files = matching_strings(
-        iht.flx_files, ["netcre/", "swcre/", "lwcre/", "rsut/", "rsutcs/"]
+        iht.flx_files,
+        ["netcre/", "swcre/", "lwcre/", "rsut/", "rsutcs/"],
     )
     provenance_record = get_provenance_record(flx_files, caption["F3"])
     figname = f"figure3_{model}_{experiment}"
@@ -1027,11 +1056,11 @@ def main(config):
         for dataset in datasets:
             if dataset["dataset"] in flux_files[model_name]:
                 flux_files[model_name][dataset["dataset"]].append(
-                    dataset["filename"]
+                    dataset["filename"],
                 )
             else:
                 flux_files[model_name][dataset["dataset"]] = [
-                    dataset["filename"]
+                    dataset["filename"],
                 ]
 
     # Create dictionary of implied_heat_transport objects.

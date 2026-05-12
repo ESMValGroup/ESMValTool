@@ -165,7 +165,8 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     # derive ocean surface
     if "srf_var" in raw_info:
         var_info = cmor_table.get_variable(
-            raw_info["mip"], raw_info["srf_var"]
+            raw_info["mip"],
+            raw_info["srf_var"],
         )
         logger.info("Extract surface OBS for %s", raw_info["srf_var"])
         level_constraint = iris.Constraint(cube.var_name, depth=1)

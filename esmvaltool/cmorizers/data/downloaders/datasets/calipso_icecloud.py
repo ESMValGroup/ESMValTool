@@ -8,14 +8,19 @@ from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -34,7 +39,7 @@ def download_dataset(
     loop_date = start_date
 
     downloader = NASADownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -46,6 +51,6 @@ def download_dataset(
             downloader.download_file(
                 "https://asdc.larc.nasa.gov/data/CALIPSO/"
                 f"LID_L3_Ice_Cloud-Standard-V1-00/{year}/"
-                f"CAL_LID_L3_Ice_Cloud-Standard-V1-00.{year}-{month:02}A.hdf"
+                f"CAL_LID_L3_Ice_Cloud-Standard-V1-00.{year}-{month:02}A.hdf",
             )
         loop_date += relativedelta.relativedelta(years=1)

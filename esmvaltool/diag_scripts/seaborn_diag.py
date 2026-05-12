@@ -148,7 +148,8 @@ def _create_plot(
 ) -> None:
     """Create plot."""
     logger.debug(
-        "Using main data frame as input for plotting:\n%s", data_frame
+        "Using main data frame as input for plotting:\n%s",
+        data_frame,
     )
 
     # Plot
@@ -203,12 +204,12 @@ def _create_plot(
                 pos_joint_ax.y0,
                 pos_marg_x_ax.width,
                 pos_joint_ax.height,
-            ]
+            ],
         )
         # reposition the colorbar using new x positions and y
         # positions of the joint ax
         plot_obj.fig.axes[-1].set_position(
-            [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height]
+            [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height],
         )
 
     # Save plot data
@@ -251,13 +252,13 @@ def _get_grouped_data(cfg: dict) -> dict:
         if groupby_facet not in dataset:
             raise ValueError(
                 f"groupby_facet '{groupby_facet}' is not available for "
-                f"dataset {dataset['filename']}"
+                f"dataset {dataset['filename']}",
             )
         for facet in cfg["facets_as_columns"]:
             if facet not in dataset:
                 raise ValueError(
                     f"Facet '{facet}' used for option 'facets_as_columns' is "
-                    f"not available for dataset {dataset['filename']}"
+                    f"not available for dataset {dataset['filename']}",
                 )
 
     # Group data accordingly
@@ -306,7 +307,7 @@ def _get_dataframe(cfg: dict) -> pd.DataFrame:
     groupby_facet = cfg["groupby_facet"]
     df_main = pd.concat(df_dict.values(), ignore_index=cfg["reset_index"])
     df_main = df_main.astype(
-        {f: "category" for f in cfg["facets_as_columns"] + [groupby_facet]}
+        dict.fromkeys(cfg["facets_as_columns"] + [groupby_facet], "category"),
     )
 
     logger.info("Successfully retrieved main data frame from input data")
@@ -337,7 +338,7 @@ def _get_df_for_group(
         if variable_group in UNITS and UNITS[variable_group] != units:
             raise ValueError(
                 f"Got duplicate units for variable '{variable_group}': "
-                f"'{units}' and '{UNITS[variable_group]}'"
+                f"'{units}' and '{UNITS[variable_group]}'",
             )
         UNITS.setdefault(variable_group, units)
 
@@ -349,7 +350,8 @@ def _get_df_for_group(
             add_ancillary_variables=cfg["add_ancillary_variables"],
         )
         df_dataset = df_dataset.rename(
-            {cube.name(): variable_group}, axis="columns"
+            {cube.name(): variable_group},
+            axis="columns",
         )
 
         # Merge
@@ -365,7 +367,7 @@ def _get_df_for_group(
                 raise ValueError(
                     f"Dimensions of cube {filename} differ from other cubes "
                     f"of group '{group}'. Cubes of that group:\n"
-                    f"{pformat([d['filename'] for d in datasets])}"
+                    f"{pformat([d['filename'] for d in datasets])}",
                 )
 
             # Make sure that facet values used as columns match across datasets
@@ -378,7 +380,7 @@ def _get_df_for_group(
                         f"from value of other datasets of group '{group}': "
                         f"expected '{val}', got '{dataset[facet]}'. Datasets "
                         f"of that group:\n"
-                        f"{pformat([d['filename'] for d in datasets])}"
+                        f"{pformat([d['filename'] for d in datasets])}",
                     )
             df_group = pd.merge(
                 df_group,
@@ -453,7 +455,7 @@ def _get_plot_func(cfg: dict) -> callable:
             f"Invalid seaborn_func '{cfg['seaborn_func']}' (must be a "
             f"function of the module seaborn; an overview of seaborn plotting "
             f"functions is given here: https://seaborn.pydata.org/tutorial/"
-            f"function_overview.html)"
+            f"function_overview.html)",
         )
     logger.info("Using plotting function seaborn.%s", cfg["seaborn_func"])
     return getattr(sns, cfg["seaborn_func"])
@@ -475,13 +477,15 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         if func not in allowed_funcs:
             raise ValueError(
                 f"Got invalid operation '{func}' for option 'data_frame_ops', "
-                f"expected one of {allowed_funcs}"
+                f"expected one of {allowed_funcs}",
             )
         op_str = f"'{func}' with argument '{expr}'"
         logger.info("Modifying main data frame through operation %s", op_str)
         data_frame = getattr(data_frame, func)(expr)
         logger.debug(
-            "Main data frame after operation %s:\n%s", op_str, data_frame
+            "Main data frame after operation %s:\n%s",
+            op_str,
+            data_frame,
         )
 
     # dropna_kwargs
@@ -499,18 +503,20 @@ def _prepare_cube(cube, cubes_to_aux, cubes_to_coord, cfg):
     """Prepare cube to save data as netCDF."""
     cube.attributes.globals["seaborn_func"] = cfg["seaborn_func"]
     cube.attributes.globals["seaborn_kwargs"] = _get_str_from_kwargs(
-        cfg["seaborn_kwargs"]
+        cfg["seaborn_kwargs"],
     )
     for auxcube in cubes_to_aux:
         aux_coord = iris.coords.AuxCoord(
-            auxcube.data, long_name=auxcube.long_name
+            auxcube.data,
+            long_name=auxcube.long_name,
         )
         # Add the auxiliary coordinate to the cube
         cube.add_aux_coord(aux_coord, data_dims=0)
 
     for dimcube in cubes_to_coord:
         dim_coord = iris.coords.DimCoord(
-            dimcube.data, long_name=dimcube.long_name
+            dimcube.data,
+            long_name=dimcube.long_name,
         )
         # Add the auxiliary coordinate to the cube
         cube.add_dim_coord(dim_coord, data_dims=0)
@@ -561,7 +567,8 @@ def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
         )
 
     io.iris_save(
-        cubes_to_save, get_diagnostic_filename(cfg["plot_filename"], cfg)
+        cubes_to_save,
+        get_diagnostic_filename(cfg["plot_filename"], cfg),
     )
 
 
@@ -576,18 +583,20 @@ def _set_legend_title(plot_obj, legend_title: str) -> None:
         handles, labels = plot_obj.ax_joint.get_legend_handles_labels()
         if handles and labels:
             legend = plot_obj.ax_joint.legend(
-                handles=handles, labels=labels, title=legend_title
+                handles=handles,
+                labels=labels,
+                title=legend_title,
             )
         else:
             legend = None
     else:
         raise ValueError(
             f"Cannot set legend title, `{type(plot_obj).__name__}` does not "
-            f"support legends"
+            f"support legends",
         )
     if legend is None:
         raise ValueError(
-            "Cannot set legend title, plot does not contain legend"
+            "Cannot set legend title, plot does not contain legend",
         )
     logger.debug("Setting `legend_title='%s'`", legend_title)
     legend.set_title(legend_title)
@@ -610,7 +619,7 @@ def _validate_config(cfg: dict) -> dict:
             else:
                 raise ValueError(
                     f"String value for `hue_norm` can only be `linear` or "
-                    f"`log`, got `{hue_norm}`"
+                    f"`log`, got `{hue_norm}`",
                 )
             cfg["seaborn_kwargs"]["hue_norm"] = hue_norm
         if isinstance(hue_norm, list):

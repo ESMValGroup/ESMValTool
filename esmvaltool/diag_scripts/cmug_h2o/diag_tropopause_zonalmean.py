@@ -53,7 +53,9 @@ def _get_data_for_agg(new_svarcube, new_tacube):
     untouched_dims = set(range(new_svarcube.ndim)) - set(dims_to_collapse)
     dims = list(untouched_dims) + list(dims_to_collapse)
     unrolled_data = np.moveaxis(
-        new_tacube.data, dims, range(new_svarcube.ndim)
+        new_tacube.data,
+        dims,
+        range(new_svarcube.ndim),
     )
     return unrolled_data
 
@@ -79,7 +81,9 @@ def _get_range_and_pstring(variable, mean_cube, tropopause=False):
     else:
         print_var = mean_cube.long_name
         set_range = np.linspace(
-            np.nanmin(mean_cube.data), np.nanmax(mean_cube.data), 21
+            np.nanmin(mean_cube.data),
+            np.nanmax(mean_cube.data),
+            21,
         )
 
     return {"print_var": print_var, "set_range": set_range}
@@ -90,7 +94,8 @@ def _get_sel_files(cfg, dataname, dim=2):
     selection = []
     if dim == 2:
         for hlp in select_metadata(
-            cfg["input_data"].values(), dataset=dataname
+            cfg["input_data"].values(),
+            dataset=dataname,
         ):
             selection.append(hlp["filename"])
     else:
@@ -117,7 +122,9 @@ def _get_sel_lvardata(cfg, dataname, lvarnames):
 
     for lvar in lvarnames:
         for hlp in select_metadata(
-            cfg["input_data"].values(), long_name=lvar, dataset=dataname
+            cfg["input_data"].values(),
+            long_name=lvar,
+            dataset=dataname,
         ):
             selection.append(hlp["filename"])
 
@@ -145,8 +152,8 @@ def cube_to_save_profile(var1, var2, names):
                 var_name=names["var_name1"],
                 long_name=names["long_name1"],
                 units=names["units1"],
-            )
-        ]
+            ),
+        ],
     )
     cubes.append(
         iris.cube.Cube(
@@ -154,7 +161,7 @@ def cube_to_save_profile(var1, var2, names):
             var_name=names["var_name2"],
             long_name=names["long_name2"],
             units=names["units2"],
-        )
+        ),
     )
 
     return cubes
@@ -173,7 +180,11 @@ def find_min(data, data_min, axis):
 
 
 def get_provenance_record(
-    ancestor_files, caption, statistics, domains, plot_type="zonal"
+    ancestor_files,
+    caption,
+    statistics,
+    domains,
+    plot_type="zonal",
 ):
     """Get Provenance record."""
     record = {
@@ -207,7 +218,7 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
     # interpolate to dense grid, use equal dist points in log(p)
     logpr = np.log(np.array([25000, 2500]))
     sample_points = [
-        ("air_pressure", np.exp(np.linspace(logpr[0], logpr[1], 221)))
+        ("air_pressure", np.exp(np.linspace(logpr[0], logpr[1], 221))),
     ]
 
     for attributes in data["ta"]:
@@ -220,7 +231,9 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
         plot_zonal_timedev(
             cfg,
             new_tacube.collapsed(
-                "air_pressure", min_pos, data_min=unrolled_data
+                "air_pressure",
+                min_pos,
+                data_min=unrolled_data,
             ),
             dataset,
             "Cold point tropopause ",
@@ -231,7 +244,8 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
             svarcube = _read_data(attributes, svar)
 
             profiles[svar][dataset] = svarcube.collapsed(
-                ["time", "latitude"], iris.analysis.MEAN
+                ["time", "latitude"],
+                iris.analysis.MEAN,
             )
 
             plot_zonal_mean(
@@ -243,7 +257,8 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
             )
 
             new_svarcube = svarcube.interpolate(
-                sample_points, iris.analysis.Linear()
+                sample_points,
+                iris.analysis.Linear(),
             )
 
             unrolled_data = _get_data_for_agg(new_svarcube, new_tacube)
@@ -251,7 +266,9 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
             plot_zonal_timedev(
                 cfg,
                 new_svarcube.collapsed(
-                    "air_pressure", min_pos, data_min=unrolled_data
+                    "air_pressure",
+                    min_pos,
+                    data_min=unrolled_data,
                 ),
                 dataset,
                 "Cold point tropopause ",
@@ -318,13 +335,9 @@ def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
         ["mean"],
         ["global"],
     )
-    #
     diagnostic_file = get_diagnostic_filename(figname, cfg)
-    #
     logger.info("Saving analysis results to %s", diagnostic_file)
-    #
     iris.save(mean_cube, target=diagnostic_file)
-    #
     logger.info(
         "Recording provenance of %s:\n%s",
         diagnostic_file,
@@ -333,7 +346,8 @@ def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
         provenance_logger.log(
-            get_plot_filename(figname, cfg), provenance_record
+            get_plot_filename(figname, cfg),
+            provenance_record,
         )
 
 
@@ -347,7 +361,9 @@ def plot_zonal_timedev(cfg, mean_cube, dataname, titlestr, variable):
 
     iris.coord_categorisation.add_year(mean_cube, "time", name="year")
     iris.coord_categorisation.add_month_number(
-        mean_cube, "time", name="month_number"
+        mean_cube,
+        "time",
+        name="month_number",
     )
 
     # Adjust (ncdf) time to the format matplotlib expects
@@ -389,13 +405,9 @@ def plot_zonal_timedev(cfg, mean_cube, dataname, titlestr, variable):
         ["mean"],
         ["global"],
     )
-    #
     diagnostic_file = get_diagnostic_filename(figname, cfg)
-    #
     logger.info("Saving analysis results to %s", diagnostic_file)
-    #
     iris.save(mean_cube, target=diagnostic_file)
-    #
     logger.info(
         "Recording provenance of %s:\n%s",
         diagnostic_file,
@@ -404,7 +416,8 @@ def plot_zonal_timedev(cfg, mean_cube, dataname, titlestr, variable):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
         provenance_logger.log(
-            get_plot_filename(figname, cfg), provenance_record
+            get_plot_filename(figname, cfg),
+            provenance_record,
         )
 
 
@@ -455,11 +468,8 @@ def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
         )
 
         diagnostic_file = get_diagnostic_filename(figname, cfg)
-        #
         logger.info("Saving analysis results to %s", diagnostic_file)
-        #
         iris.save(profiles_save, target=diagnostic_file)
-        #
         logger.info(
             "Recording provenance of %s:\n%s",
             diagnostic_file,
@@ -468,17 +478,18 @@ def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(diagnostic_file, provenance_record)
             provenance_logger.log(
-                get_plot_filename(figname, cfg), provenance_record
+                get_plot_filename(figname, cfg),
+                provenance_record,
             )
 
 
 def main(cfg):
     """Read in data for tropopause calculation."""
     available_vars = list(
-        group_metadata(cfg["input_data"].values(), "short_name")
+        group_metadata(cfg["input_data"].values(), "short_name"),
     )
     available_datasets = list(
-        group_metadata(cfg["input_data"].values(), "dataset")
+        group_metadata(cfg["input_data"].values(), "dataset"),
     )
 
     logging.debug("Found variables in recipe:\n%s", available_vars)
@@ -488,7 +499,8 @@ def main(cfg):
     data = {}
     for varname in available_vars:
         data[varname] = select_metadata(
-            cfg["input_data"].values(), short_name=varname
+            cfg["input_data"].values(),
+            short_name=varname,
         )
         data[varname] = sorted_metadata(data[varname], sort="dataset")
 

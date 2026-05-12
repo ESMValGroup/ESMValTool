@@ -142,7 +142,11 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     cube = cube.aggregated_by(["month", "year"], iris.analysis.MEAN)
     attrs["mip"] = "Amon"
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 

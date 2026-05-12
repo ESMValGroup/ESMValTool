@@ -35,7 +35,8 @@ class CompareSalinity:
 
     def compute(self):
         data = group_metadata(
-            self.cfg[names.INPUT_DATA].values(), names.SHORT_NAME
+            self.cfg[names.INPUT_DATA].values(),
+            names.SHORT_NAME,
         )
         for short_name in data:
             logger.info("Processing variable %s", short_name)
@@ -71,11 +72,21 @@ class CompareSalinity:
                         ancestors,
                     )
                 self.create_radar_plot(
-                    dataset_info, dataset, reference, ref_alias, ancestors
+                    dataset_info,
+                    dataset,
+                    reference,
+                    ref_alias,
+                    ancestors,
                 )
 
     def create_timeseries_plot(
-        self, region, data, reference, reference_alias, dataset_info, ancestors
+        self,
+        region,
+        data,
+        reference,
+        reference_alias,
+        dataset_info,
+        ancestors,
     ):
         alias = dataset_info[names.ALIAS]
         qplot.plot(data, label=alias)
@@ -101,7 +112,12 @@ class CompareSalinity:
         self._create_prov_record(plot_path, caption, ancestors)
 
     def create_radar_plot(
-        self, data_info, data, reference, reference_alias, ancestors
+        self,
+        data_info,
+        data,
+        reference,
+        reference_alias,
+        ancestors,
     ):
         interval = self._get_overlap([data, reference])
         indices = self._slice_cube(data, interval[0], interval[1])
@@ -133,7 +149,7 @@ class CompareSalinity:
 
             # Draw one axe per variable + add labels labels yet
             letters = [
-                string.ascii_uppercase[i] for i in range(0, result.shape[0])
+                string.ascii_uppercase[i] for i in range(result.shape[0])
             ]
             plt.xticks(angles[:-1], letters, color="grey", size=8, rotation=45)
 
@@ -270,7 +286,7 @@ class CompareSalinity:
                 time_pts.index(ii)
                 for ii, jj in zip(time_pts, converted_t, strict=True)
                 if t_1 <= jj <= t_2
-            ]
+            ],
         )
         return [idxs[0], idxs[-1]]
 
@@ -308,7 +324,15 @@ class CompareSalinity:
 
 class TextHandler(HandlerBase):
     def create_artists(
-        self, legend, text, xdescent, ydescent, width, height, fontsize, trans
+        self,
+        legend,
+        text,
+        xdescent,
+        ydescent,
+        width,
+        height,
+        fontsize,
+        trans,
     ):
         tx = Text(
             width / 2.0,

@@ -98,7 +98,7 @@ def main(cfg):
             "OCT",
             "NOV",
             "DEC",
-        ]
+        ],
     )
     ax1.set_xlabel("month")
     ax1.grid(True, which="major", axis="x")

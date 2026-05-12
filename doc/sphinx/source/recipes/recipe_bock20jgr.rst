@@ -315,7 +315,7 @@ References
 * Copernicus Climate Change Service (C3S), 2017: ERA5: Fifth generation of
   ECMWF atmospheric reanalyses of the global climate, edited, Copernicus
   Climate Change Service Climate Data Store (CDS).
-  https://cds.climate.copernicus.eu/cdsapp#!/home
+  https://doi.org/10.24381/cds.143582cf
 
 * Flato, G., J. Marotzke, B. Abiodun, P. Braconnot, S.C. Chou, W. Collins, P.
   Cox, F. Driouech, S. Emori, V. Eyring, C. Forest, P. Gleckler, E. Guilyardi,

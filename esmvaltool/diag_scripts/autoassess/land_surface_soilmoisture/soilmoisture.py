@@ -96,7 +96,8 @@ def volumetric_soil_moisture(model_file, constr_season):
     # m01s08i223
     # CMOR name: mrsos (soil moisture in top model layer kg/m2)
     mrsos = iris.load_cube(
-        model_file, "mass_content_of_water_in_soil_layer" & constr_season
+        model_file,
+        "mass_content_of_water_in_soil_layer" & constr_season,
     )
 
     # Set soil moisture to missing data where no soil (moisture=0)
@@ -175,18 +176,22 @@ def land_sm_top(clim_file, model_file, model_dataset, config, ancestors):
         # update the coordinate system ECV data with a WGS84 coord system
         # unify coord systems for regridder
         vol_sm1_run.coord(
-            "longitude"
+            "longitude",
         ).coord_system = iris.coord_systems.GeogCS(
-            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+            semi_major_axis=6378137.0,
+            inverse_flattening=298.257223563,
         )
         vol_sm1_run.coord("latitude").coord_system = iris.coord_systems.GeogCS(
-            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+            semi_major_axis=6378137.0,
+            inverse_flattening=298.257223563,
         )
         ecv_clim.coord("longitude").coord_system = iris.coord_systems.GeogCS(
-            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+            semi_major_axis=6378137.0,
+            inverse_flattening=298.257223563,
         )
         ecv_clim.coord("latitude").coord_system = iris.coord_systems.GeogCS(
-            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+            semi_major_axis=6378137.0,
+            inverse_flattening=298.257223563,
         )
 
         # Interpolate to the grid of the climatology and form the difference
@@ -243,7 +248,8 @@ def main(config):
     clim_file = obs[0]["filename"]
 
     models = group_metadata(
-        [v for v in input_data.values() if v["project"] != "OBS"], "dataset"
+        [v for v in input_data.values() if v["project"] != "OBS"],
+        "dataset",
     )
 
     for model_dataset, group in models.items():
@@ -257,7 +263,11 @@ def main(config):
 
         # Calculate metrics
         metrics = land_sm_top(
-            clim_file, model_file, model_dataset, config, ancestors
+            clim_file,
+            model_file,
+            model_dataset,
+            config,
+            ancestors,
         )
 
         # Write metrics

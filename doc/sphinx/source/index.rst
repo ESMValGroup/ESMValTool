@@ -42,7 +42,7 @@ Learning resources:
 
 A tutorial is available on https://tutorial.esmvaltool.org.
 
-A series of video lectures has been created by `ACCESS-NRI <https://access-nri.org.au>`_.
+A series of video lectures has been created by `ACCESS-NRI <https://www.access-nri.org.au>`_.
 While these are tailored for ACCESS users, they are still very informative.
 
 .. raw:: html

@@ -50,7 +50,9 @@ class NegativeSeaIceFeedback:
         p_value = list()
         datasets = list()
         grouped_input_data = group_metadata(
-            self.cfg["input_data"].values(), "alias", sort="alias"
+            self.cfg["input_data"].values(),
+            "alias",
+            sort="alias",
         )
         for alias, dataset in grouped_input_data.items():
             try:
@@ -78,7 +80,8 @@ class NegativeSeaIceFeedback:
         except ValueError:
             try:
                 mask = np.broadcast_to(
-                    np.expand_dims(mask, -1), cellarea.shape
+                    np.expand_dims(mask, -1),
+                    cellarea.shape,
                 )
             except ValueError:
                 mask = np.broadcast_to(np.expand_dims(mask, 0), cellarea.shape)
@@ -86,7 +89,10 @@ class NegativeSeaIceFeedback:
         del cellarea, sit
 
         neg_feedback, stats, _ = self.negative_seaice_feedback(
-            var_info["sit"][0], volume, period=12, order=2
+            var_info["sit"][0],
+            volume,
+            period=12,
+            order=2,
         )
         del volume
         logger.info("Negative feedback: %10.4f", neg_feedback)
@@ -122,7 +128,8 @@ class NegativeSeaIceFeedback:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             max_thick = avg_thick.collapsed(
-                avg_thick.coords(), iris.analysis.MAX
+                avg_thick.coords(),
+                iris.analysis.MAX,
             )
         if float(max_thick.data) > 20.0:
             logger.warning("Large sea ice thickness:Max = %f", max_thick.data)
@@ -131,7 +138,8 @@ class NegativeSeaIceFeedback:
             vol = []
             for thick_slice in avg_thick.slices_over("time"):
                 vol.append(
-                    np.sum(thick_slice.data * cellarea.data * mask.data) / 1e12
+                    np.sum(thick_slice.data * cellarea.data * mask.data)
+                    / 1e12,
                 )
             vol = np.asarray(vol)
         elif len(avg_thick.shape) == 2:
@@ -179,7 +187,6 @@ class NegativeSeaIceFeedback:
             the signal detrended using a least-square polynomial
             regression of order "order"
         """
-
         if len(data.shape) != 1:
             raise ValueError("Non-conform input data")
 
@@ -266,13 +273,12 @@ class NegativeSeaIceFeedback:
             [V_min, dV]: detrended time series of annual minimum of sea ice
             volume, detrended series of wintertime volume production
         """
-
         if len(volume.shape) != 1:
             raise ValueError("Volume is not 1-D")
 
         if volume.size % period != 0:
             raise ValueError(
-                "Length of volume series is not multiple of period"
+                "Length of volume series is not multiple of period",
             )
 
         # 1. Locate the minima for each year
@@ -356,7 +362,7 @@ class NegativeSeaIceFeedback:
         axes = plt.gca()
         axes.set_title(
             f"Evaluation of the IFE \n{dataset_info[n.ALIAS]} "
-            f"({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})"
+            f"({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})",
         )
         axes.set_ylabel("Wintertime volume range \n(anomalies) [10³ km³]")
         axes.set_xlabel("Volume at minimum\n(anomalies) [10³ km³]")
@@ -370,7 +376,8 @@ class NegativeSeaIceFeedback:
             [
                 info["filename"]
                 for info in group_metadata(
-                    self.cfg["input_data"].values(), n.ALIAS
+                    self.cfg["input_data"].values(),
+                    n.ALIAS,
                 )[dataset_info[n.ALIAS]]
             ],
         )
@@ -382,7 +389,8 @@ class NegativeSeaIceFeedback:
             filename = "feedback"
 
         path = os.path.join(
-            self.cfg[n.PLOT_DIR], f"{filename}.{self.cfg[n.OUTPUT_FILE_TYPE]}"
+            self.cfg[n.PLOT_DIR],
+            f"{filename}.{self.cfg[n.OUTPUT_FILE_TYPE]}",
         )
 
         plot_options = self.cfg.get("plot", {})
@@ -399,8 +407,7 @@ class NegativeSeaIceFeedback:
         axes = plt.gca()
         logger.debug(data)
         max_limit = math.ceil(max(data))
-        if max_limit < 0:
-            max_limit = 0
+        max_limit = max(max_limit, 0)
         min_limit = math.floor(min(data))
         separation = max_limit - min_limit
 

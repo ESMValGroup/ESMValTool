@@ -1,7 +1,13 @@
 .. _recipes_wenzel16nat:
 
-Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO\ :sub:`2`
-======================================================================================================
+Legacy recipe: Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO\ :sub:`2`
+=====================================================================================================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe
+   is only included for documentation purposes and not maintained any more. The
+   last known ESMValTool version supporting this recipe is version 2.13.0.
 
 Overview
 --------
@@ -13,11 +19,11 @@ Selected figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel1
 Available recipe and diagnostics
 -----------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in archive/legacy_recipes
 
     * recipe_wenzel16nat.yml
 
-Diagnostics are stored in diag_scripts/carbon_ec/
+Diagnostics are stored in archive/legacy_diag_scripts/carbon_ec
 
     * carbon_beta: (1) scatter plot of annual gpp vs. annual CO\ :sub:`2` and
       (2) barchart of gpp(2xCO\ :sub:`2`)/gpp(1xCO\ :sub:`2`); calculates beta

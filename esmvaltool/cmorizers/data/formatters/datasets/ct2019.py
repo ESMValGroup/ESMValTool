@@ -10,8 +10,7 @@ Last access
     20200323
 
 Download and processing instructions
-    Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-    ``$RAWOBSPATH`` is given in the configuration) where the raw
+    Create a new empty directory ``Tier2/CT2019`` where the raw
     data will be stored. The download of the data is automatically handled by
     this script. If data is already present in this directory, the download is
     skipped (to force a new download delete your old files).
@@ -83,7 +82,8 @@ def _download_files(in_dir, cfg):
         ftp_client.login()
         ftp_client.cwd(cfg["data_dir"])
         files_to_download = fnmatch.filter(
-            ftp_client.nlst(), cfg["input_file_pattern"]
+            ftp_client.nlst(),
+            cfg["input_file_pattern"],
         )
         for filename in files_to_download:
             logger.info("Downloading %s", filename)
@@ -181,7 +181,11 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 

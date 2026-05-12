@@ -18,7 +18,7 @@ Download and processing instructions
       - Tick all available days
       - Tick all available timesteps
    - Click 'submit form'
-   - According to ESMValTool practice, put them in the right rawobsdir folder
+   - According to ESMValTool practice, put them in the right Tier3/CDS-UERRA folder
 
 Notes
 -----
@@ -175,7 +175,8 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
     cube = iris.load_cube(
-        str(in_file), constraint=NameConstraint(var_name=var["raw"])
+        str(in_file),
+        constraint=NameConstraint(var_name=var["raw"]),
     )
 
     # Time has strange values, so use forecast_reference_time instead
@@ -186,7 +187,8 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     # the common function fix_coords
     # Convert time calendar from proleptic_gregorian to gregorian
     cube.coord("time").units = cf_units.Unit(
-        cube.coord("time").units.origin, "gregorian"
+        cube.coord("time").units.origin,
+        "gregorian",
     )
 
     # Set standard_names for lat and lon
@@ -232,7 +234,7 @@ def _regrid_dataset(in_dir, var, cfg):
         _, infile_tail = os.path.split(infile)
         outfile = os.path.join(cfg["work_dir"], infile_tail)
         targetgrid_ds = xr.DataArray.from_iris(
-            _global_stock_cube(cfg["custom"]["regrid"])
+            _global_stock_cube(cfg["custom"]["regrid"]),
         )
         input_ds = xr.open_dataset(infile)
         # Do renaming for consistency of coordinate names
@@ -275,7 +277,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # If it doesn't exist, create it
     if not os.path.isdir(cfg["work_dir"]):
         logger.info(
-            "Creating working directory for regridding: %s", cfg["work_dir"]
+            "Creating working directory for regridding: %s",
+            cfg["work_dir"],
         )
         os.mkdir(cfg["work_dir"])
 

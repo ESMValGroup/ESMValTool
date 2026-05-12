@@ -69,9 +69,7 @@ diagnostics:
         derive: true
         force_derivation: false
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, type: satellite,
-             level: L3B, version: Ed2-8, start_year: 2003,
-             end_year: 2014, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, start_year: 2003, end_year: 2014, tier: 1}
       tas:
         <<: *spatial_mean3_cmip5_r1i1p1_amon_t2ms
         derive: false
