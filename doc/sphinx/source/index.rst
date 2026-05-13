@@ -52,6 +52,7 @@ notebooks.
    Utilities <utils/utils>
    Frequently Asked Questions <faq>
    Changelog <changelog>
+   Support <support>
 
 Indices and tables
 ------------------
