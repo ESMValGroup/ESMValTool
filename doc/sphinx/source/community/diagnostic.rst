@@ -435,6 +435,10 @@ Detailed checklist for reviews
 This (non-exhaustive) checklist provides ideas for things to check when reviewing
 pull requests for new or updated recipes and/or diagnostic scripts.
 
+The first time you open a pull request,
+you will need to agree to our contributor license agreement:
+see :ref:`contributor_license_agreement`.
+
 Technical reviews
 -----------------
 
