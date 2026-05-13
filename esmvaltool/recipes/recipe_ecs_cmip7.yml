@@ -13,8 +13,8 @@ documentation:
 
 
 datasets:
-  - {dataset: DUMMY-MODEL, exp: piControl,    ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
-  - {dataset: DUMMY-MODEL, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
+  - {project: CMIP7, dataset: DUMMY-MODEL, exp: piControl,    ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
+  - {project: CMIP7, dataset: DUMMY-MODEL, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
 
 
 preprocessors:
@@ -28,14 +28,12 @@ diagnostics:
     description: Calculate ECS for CMIP7 models.
     variables:
       tas:
-        project: CMIP7
         branding_suffix: tavg-h2m-hxy-u
         mip: atmos
         frequency: mon
         region: glb
         preprocessor: spatial_mean
       rtnt:
-        project: CMIP7
         branding_suffix: tavg-u-hxy-u
         mip: atmos
         frequency: mon
