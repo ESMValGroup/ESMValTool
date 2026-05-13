@@ -95,12 +95,12 @@ datasets:
 
   CALIPSO-ICECLOUD:
     tier: 3
-    source: https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
-    last_access: 2022-08-04
+    source: https://asdc.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00
+    last_access: 2026-05-12
     info: |
       Download and processing instructions
       (requires EarthData login; see https://urs.earthdata.nasa.gov/)
-      1) Go to https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
+      1) Go to https://asdc.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00
       2) Click on "Get Dataset"
       3) Select Granules "A" containing both, day and night (Day/Night filter = "Both")
       4) Download selected granules
