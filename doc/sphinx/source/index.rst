@@ -39,21 +39,6 @@ notebooks.
    :maxdepth: 2
    :caption: ESMValTool
 
-<<<<<<< 4452_add_tutorial_template_file
-    Introduction <introduction>
-    Tutorials <tutorials/index>
-    ESMValTool Functionalities <functionalities>
-    Gallery <gallery>
-    Getting started <quickstart/index>
-    Recipes <recipes/index>
-    Diagnostics API Reference <api/esmvaltool>
-    Obtaining input data <input>
-    Making a recipe or diagnostic <develop/index>
-    Contributing to the community <community/index>
-    Utilities <utils/utils>
-    Frequently Asked Questions <faq>
-    Changelog <changelog>
-=======
    Introduction <introduction>
    Tutorials <tutorials/index>
    ESMValTool Functionalities <functionalities>
@@ -68,7 +53,6 @@ notebooks.
    Frequently Asked Questions <faq>
    Changelog <changelog>
    Support <support>
->>>>>>> main
 
 Indices and tables
 ------------------
