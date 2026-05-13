@@ -1,0 +1,48 @@
+# ESMValTool
+---
+documentation:
+  title: >
+    Equilibrium Climate Sensitivity (ECS)
+  description: >
+    Calculate Equilibrium Climate Sensitivity (ECS) using linear regression
+    following Gregory et al. (2004).
+  authors:
+    - schlund_manuel
+  references:
+    - gregory04grl
+
+
+datasets:
+  - {dataset: DUMMY-MODEL, exp: piControl,    ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
+  - {dataset: DUMMY-MODEL, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
+
+
+preprocessors:
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+  ecs:
+    description: Calculate ECS for CMIP7 models.
+    variables:
+      tas:
+        project: CMIP7
+        branding_suffix: tavg-h2m-hxy-u
+        mip: atmos
+        frequency: mon
+        region: glb
+        preprocessor: spatial_mean
+      rtnt:
+        project: CMIP7
+        branding_suffix: tavg-u-hxy-u
+        mip: atmos
+        frequency: mon
+        region: glb
+        derive: true
+        preprocessor: spatial_mean
+    scripts:
+      calculate:
+        script: climate_metrics/ecs.py
+        calculate_mmm: false
