@@ -65,6 +65,7 @@ Contact information is available :ref:`here <Support-and-Contact>`.
    :caption: ESMValTool
 
     Introduction <introduction>
+    Tutorials <tutorials/index>
     ESMValTool Functionalities <functionalities>
     Gallery <gallery>
     Getting started <quickstart/index>
