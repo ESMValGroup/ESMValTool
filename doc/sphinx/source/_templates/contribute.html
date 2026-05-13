@@ -1,0 +1,14 @@
+{#
+Displays a link to the contributing guidelines.
+Copied from https://github.com/pydata/pydata-sphinx-theme/blob/v0.17.0/src/pydata_sphinx_theme/theme/pydata_sphinx_theme/components/edit-this-page.html
+and simplified.
+#}
+{% if sourcename is defined and theme_use_edit_page_button==true and page_source_suffix %}
+  {% set src = sourcename.split('.') %}
+  <div class="tocsection editthispage">
+    <a href="{{ pathto('community/index') }}">
+      <i class="fa-solid fa-pencil"></i>
+        Contributions are welcome!
+    </a>
+  </div>
+{% endif %}
