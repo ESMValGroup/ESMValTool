@@ -13,5 +13,5 @@ Tutorials
    :maxdepth: 1
    :caption: <add topic heading here>
 
+   template
 .. <add filename here>
-   template  # remove before merging!
