@@ -233,28 +233,24 @@ datasets:
 
   CLARA-AVHRR:
     tier: 3
-    source: https://wui.cmsaf.eu/
-    last_access: 2021-03-22
+    source: https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties
+    last_access: 2026-05-12
     info: |
       Download and processing instructions
-        1) Create ("register") an user account at
-          https://wui.cmsaf.eu/safira/action/viewLogin?menuName=NUTZER_HOME
-        2) login (same URL as above)
-        3) Search data using search form at
-        https://wui.cmsaf.eu/safira/action/viewProduktHome?menuName=PRODUKT_HOME
-          - Product group: Climate Data Records
-          - Product family: CLARA-A ed. 2.1
-          - Product name: CFC - Factional cloud cover
-                          IWP - Ice water path
-                          LWP - Liquid water path
-          - Area: Global
-          - Temporal resolution: Monthly
-        4) Select "CLARA-A ed. 2.1 AVHRR on polar orbiting satellites" from
-          list of results.
-        5) Click on "Add to order cart"
-        6) Follow download instructions in automatic email received when data
-          are ready for download.
-        7) Untar all .tar files into a single directory.
+            https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties?tab=download
+            Put all daily files for one year (yyyy) under a single directory "daily/<yyyy>",
+            monthly files for one year (yyyy) under "monthly/<yyyy>".
+            Note: you must accept the terms of use for CC-BY, EUMETSAT CM SAF, ESA CCI
+            Select the following from the CDS:
+                Product family: CLARA-A3
+                Origin: EUMETSAT
+                Variable: Cloud fraction, Cloud physical properties of the ice/liquid phase
+                Climate data record type: TCDR
+                Time aggregation: Daily mean / Monthly mean
+                Year: select all
+                Month: select all
+                Day: select all
+                Geographical area: Whole available region
 
   CLOUDSAT-L2:
     tier: 3

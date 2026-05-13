@@ -5,7 +5,6 @@ import logging
 import shutil
 import zipfile
 from datetime import datetime
-from pathlib import Path
 
 import cdsapi
 
@@ -13,33 +12,49 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
-    """Download CLARA-AVHRR dataset using CDS API.
+    """Download dataset.
 
-    - An ECMWF account is needed to download the datasets from
-      https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties
-    - The file named .cdspirc containing the key associated to
-      the ECMWF account needs to be saved in user's ${HOME} directory.
-    - All the files will be saved in ${RAWOBS}/Tier2/CLARA-AVHRR.
+    Parameters
+    ----------
+    original_data_dir : Path
+        Directory where original data will be stored.
+    dataset : str
+        Name of the dataset
+    dataset_info : dict
+         Dataset information from the datasets.yml file
+    start_date : datetime
+        Start of the interval to download
+    end_date : datetime
+        End of the interval to download
+    overwrite : bool
+        Overwrite already downloaded files
     """
     cds_url = "https://cds.climate.copernicus.eu/api"
 
-    raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
+    raw_obs_dir = original_data_dir
     output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
     output_folder.mkdir(parents=True, exist_ok=True)
 
     if start_date is None:
-        start_date = datetime(1979, 1, 1)
+        start_date_mm = datetime(1979, 1, 1, tzinfo=datetime.UTC)
+        start_date_dd = datetime(2020, 1, 1, tzinfo=datetime.UTC)
     if end_date is None:
-        end_date = datetime(2020, 12, 31)
+        end_date_mm = datetime(2020, 12, 31, tzinfo=datetime.UTC)
+        end_date_dd = datetime(2020, 12, 31, tzinfo=datetime.UTC)
 
     requests = {}
 
     # The CDS requests for daily values are done for each month separately
     # to avoid the error "cost limits exceeded".
 
-    for year in range(start_date.year, end_date.year + 1):
+    for year in range(start_date_mm.year, end_date_mm.year + 1):
         requests.update(
             {
                 "clivi_monthly_" + str(year): {
@@ -71,6 +86,8 @@ def download_dataset(
                 },
             }
         )
+
+    for year in range(start_date_dd.year, end_date_dd.year + 1):
         for month in range(1, 13):
             requests.update(
                 {
