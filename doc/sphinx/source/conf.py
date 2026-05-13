@@ -165,6 +165,8 @@ html_theme_options = {
     },
     "navbar_center": ["cross_proj_navbar"],
     "search_bar_text": "Search ESMValTool docs... (Also try search in ESMValCore docs)",
+    "secondary_sidebar_items": ["page-toc", "sourcelink", "contribute", "support"],
+    "use_edit_page_button": True,
 }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
