@@ -34,16 +34,6 @@ notebooks.
       :figclass: align-center
       :class: dark-light
 
-How to contribute
------------------
-Refer to ESMValTool :ref:`contributing to the community<community>` for a guide on contributing recipes and diagnostics.
-
-Refer to ESMValCore contributing for information on contributing code.
-
-Get in touch!
--------------
-Contact information is available :ref:`here <Support-and-Contact>`.
-
 .. toctree::
    :hidden:
    :maxdepth: 2
