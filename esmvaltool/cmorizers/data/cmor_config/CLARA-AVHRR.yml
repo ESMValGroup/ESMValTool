@@ -3,7 +3,7 @@ attributes:
   dataset_id: CLARA-AVHRR
   version: A3
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: "https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties"
   reference: "clara-a3"

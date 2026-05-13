@@ -1,10 +1,10 @@
 """Script to download CM SAF CLARA-AHRR data from the CDS."""
 
+import datetime
 import gzip
 import logging
 import shutil
 import zipfile
-from datetime import datetime
 
 import cdsapi
 
@@ -43,11 +43,11 @@ def download_dataset(
     output_folder.mkdir(parents=True, exist_ok=True)
 
     if start_date is None:
-        start_date_mm = datetime(1979, 1, 1, tzinfo=datetime.UTC)
-        start_date_dd = datetime(2020, 1, 1, tzinfo=datetime.UTC)
+        start_date_mm = datetime.datetime(1979, 1, 1, tzinfo=datetime.UTC)
+        start_date_dd = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
     if end_date is None:
-        end_date_mm = datetime(2020, 12, 31, tzinfo=datetime.UTC)
-        end_date_dd = datetime(2020, 12, 31, tzinfo=datetime.UTC)
+        end_date_mm = datetime.datetime(2020, 12, 31, tzinfo=datetime.UTC)
+        end_date_dd = datetime.datetime(2020, 12, 31, tzinfo=datetime.UTC)
 
     requests = {}
 
