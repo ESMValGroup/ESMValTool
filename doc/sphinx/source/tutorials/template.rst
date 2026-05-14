@@ -54,8 +54,8 @@ Title of the tutorial
          * Assumption 1.
          * Assumption 2.
 
-High level step 1
------------------
+Question 1
+----------
 
 Add content here.
 
@@ -67,8 +67,8 @@ Add content here.
   .. include:: files/esmvaltool_output_header.txt
      :code:
 
-High level step 2
------------------
+Question 2
+----------
 
 Add content here.
 
