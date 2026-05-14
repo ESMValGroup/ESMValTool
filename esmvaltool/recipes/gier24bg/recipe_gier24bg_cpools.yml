@@ -1,0 +1,577 @@
+# ESMValTool
+# recipe_gier21bg_carbonstorage.yml
+---
+documentation:
+
+  title: >
+    Carbon storage part of Gier et al 2022
+  description: |
+    Analysis of carbon storage (part of Gier et al., 2021).
+  authors:
+    - gier_bettina
+
+  maintainer:
+    - gier_bettina
+
+  references:
+    - acknow_author
+
+  projects:
+    - eval4cmip
+    - 4c
+    - crescendo
+
+# YAML anchors
+
+PROVENANCE_ANCHOR: &provenance
+  realms:
+    - atmos
+  themes:
+    - phys
+    - ghg
+    - carbon
+
+preprocessors:
+
+  cstorage_sum:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP',
+        'inmcm4',
+        'HWSD',
+        'LAI3g',
+        'GIMMS-LAI4g',
+        'MTE',
+        'NDP',
+        'CNRM-ESM2-1',
+        'UKESM1-0-LL',
+        'BNU-ESM',
+        'CESM2-WACCM',
+        'EC-Earth3-CC',
+        'FLUXCOM',
+        'HWSD+NCSCD',
+        'GLASS'
+      ]
+      fx_variables:
+        sftlf:
+          mip: fx
+    climate_statistics:
+      operator: mean
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: Pg m-2
+
+  cstorage_sum_obs:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP',
+        'inmcm4',
+        'HWSD',
+        'LAI3g',
+        'GIMMS-LAI4g',
+        'MTE',
+        'NDP',
+        'CNRM-ESM2-1',
+        'UKESM1-0-LL',
+        'BNU-ESM',
+        'CESM2-WACCM',
+        'EC-Earth3-CC',
+        'GFDL-ESM2M',
+        'GFDL-ESM4',
+        'FLUXCOM',
+        'HWSD+NCSCD',
+        'GLASS',
+        'FIO-ESM'
+      ]
+      fx_variables:
+        sftlf:
+          mip: fx
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: Pg m-2
+
+  cstorage_map:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP',
+        'inmcm4',
+        'LAI3g',
+        'GIMMS-LAI4g',
+        'MTE',
+        'NDP',
+        'CNRM-ESM2-1',
+        'UKESM1-0-LL',
+        'BNU-ESM',
+        'HWSD',
+        'CESM2-WACCM',
+        'EC-Earth3-CC',
+        'GFDL-ESM2M',
+        'GFDL-ESM4',
+        'FLUXCOM',
+        'HWSD+NCSCD',
+        'GLASS',
+        'FIO-ESM'
+      ]
+      fx_variables:
+        sftlf:
+          mip: fx
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    #climate_statistics:
+    #  operator: mean
+    #convert_units:
+    #  units: Pg m-2
+    #mask_multimodel:
+
+litter_datasets: &litter
+  - &c6hist {dataset: ACCESS-ESM1-5, grid: gn, project: CMIP6, exp: historical, ensemble: r1i1p1f1}
+  - {<<: *c6hist, dataset: CanESM5, grid: gn}
+  #- {<<: *c6hist, dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+  - {<<: *c6hist, dataset: CESM2, grid: gn}
+  #- {<<: *c6hist, dataset: CESM2-FV2, grid: gn, institute: NCAR}
+  #- {<<: *c6hist, dataset: CESM2-WACCM, grid: gn, institute: NCAR} #FAILED TO DOWNLOAD AREACELLO
+  #- {<<: *c6hist, dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CMCC-CM2-SR5, grid: gn}
+  - {<<: *c6hist, dataset: CMCC-ESM2, grid: gn}
+  - {<<: *c6hist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  #- {dataset: E3SM-1-1, grid: gr} # nbp looks bad
+  #- {dataset: E3SM-1-1-ECA, grid: gr} # nbp looks bad
+  - {<<: *c6hist, dataset: EC-Earth3-CC, grid: gr}
+  - {<<: *c6hist, dataset: EC-Earth3-Veg, grid: gr}
+  - {<<: *c6hist, dataset: GFDL-ESM4, grid: gr1}
+  - {<<: *c6hist, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *c6hist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6hist, dataset: MRI-ESM2-0, grid: gn, ensemble: r1i2p1f1}
+  #- {<<: *c6hist, dataset: NorCPM1, grid: gn, institute: NCC}
+ # - {<<: *c6hist, dataset: NorESM2-LM, grid: gn}
+  - {<<: *c6hist, dataset: NorESM2-MM, grid: gn}
+  #- {<<: *c6hist, dataset: UKESM1-0-LL, grid: gn, ensemble: r2i1p1f2, project: CMIP6}
+  - {<<: *c6hist, dataset: SAM0-UNICON, grid: gn}
+  - {<<: *c6hist, dataset: TaiESM1, grid: gn}
+  - &c5 {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, mip: Lmon}
+  #- {<<: *c5, dataset: CanESM2}
+  - {<<: *c5, dataset: CESM1-BGC}
+  #- {<<: *c5, dataset: GFDL-ESM2G} #, start_year: 1861}
+  #- {<<: *c5, dataset: GFDL-ESM2M} #, start_year: 1861}
+  #- {<<: *c5, dataset: HadGEM2-CC} #, start_year: 1859}
+  #- {<<: *c5, dataset: HadGEM2-ES} #, start_year: 1859}
+  #- {<<: *c5, dataset: inmcm4}
+  - {<<: *c5, dataset: IPSL-CM5A-LR}
+  - {<<: *c5, dataset: IPSL-CM5A-MR}
+  - {<<: *c5, dataset: IPSL-CM5B-LR}
+  - {<<: *c5, dataset: MIROC-ESM}
+  - {<<: *c5, dataset: MIROC-ESM-CHEM}
+  - {<<: *c5, dataset: MPI-ESM-LR}
+  - {<<: *c5, dataset: MPI-ESM-MR}
+  - {<<: *c5, dataset: NorESM1-ME}
+  - &c5esmhist {dataset: BNU-ESM, project: CMIP5, exp: esmHistorical, ensemble: r1i1p1, mip: Lmon}
+  #- {<<: *c5esmhist, dataset: CanESM2}
+  - {<<: *c5esmhist, dataset: CESM1-BGC}
+  #- {<<: *c5esmhist, dataset: GFDL-ESM2G}
+  #- {<<: *c5esmhist, dataset: GFDL-ESM2M}
+  #- {<<: *c5esmhist, dataset: FIO-ESM}
+  - {<<: *c5esmhist, dataset: MIROC-ESM}
+  - {<<: *c5esmhist, dataset: MPI-ESM-LR}
+  - {<<: *c5esmhist, dataset: MRI-ESM1}
+  - {<<: *c5esmhist, dataset: NorESM1-ME}
+  - &c6esmhist {dataset: ACCESS-ESM1-5, grid: gn, project: CMIP6, ensemble: r1i1p1f1, exp: esm-hist}
+  - {<<: *c6esmhist, dataset: CanESM5, grid: gn}
+  - {<<: *c6esmhist, dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+  #- {<<: *c6esmhist, dataset: CESM2, grid: gn}
+  - {<<: *c6esmhist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+  - {<<: *c6esmhist, dataset: EC-Earth3-CC, grid: gr}
+  #- {<<: *c6esmhist, dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1} #hus, zg retracted
+  - {<<: *c6esmhist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6esmhist, dataset: MPI-ESM1-2-LR, grid: gn}
+  #- {<<: *c6esmhist, dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+  - {<<: *c6esmhist, dataset: NorESM2-LM, grid: gn}
+  #- {<<: *c6esmhist, dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+all_datasets: &all
+  - {<<: *c6hist, dataset: ACCESS-ESM1-5, grid: gn}
+  - {<<: *c6hist, dataset: CanESM5, grid: gn}
+  - {<<: *c6hist, dataset: CESM2, grid: gn}
+  #- {<<: *c6hist, dataset: CESM2-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  #- {<<: *c6hist, dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CMCC-CM2-SR5, grid: gn}
+  - {<<: *c6hist, dataset: CMCC-ESM2, grid: gn}
+  - {<<: *c6hist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  #- {dataset: E3SM-1-1, grid: gr} # nbp looks bad
+  #- {dataset: E3SM-1-1-ECA, grid: gr} # nbp looks bad
+  - {<<: *c6hist, dataset: EC-Earth3-CC, grid: gr}
+  - {<<: *c6hist, dataset: EC-Earth3-Veg, grid: gr}
+  - {<<: *c6hist, dataset: GFDL-ESM4, grid: gr1}
+  - {<<: *c6hist, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *c6hist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6hist, dataset: MRI-ESM2-0, grid: gn, ensemble: r1i2p1f1}
+  #- {<<: *c6hist, dataset: NorCPM1, grid: gn, institute: NCC}
+  - {<<: *c6hist, dataset: NorESM2-LM, grid: gn}
+  - {<<: *c6hist, dataset: NorESM2-MM, grid: gn}
+  - {<<: *c6hist, dataset: UKESM1-0-LL, grid: gn, ensemble: r2i1p1f2, project: CMIP6}
+  - {<<: *c6hist, dataset: SAM0-UNICON, grid: gn}
+  - {<<: *c6hist, dataset: TaiESM1, grid: gn}
+  - {<<: *c5, dataset: BNU-ESM}
+  - {<<: *c5, dataset: CESM1-BGC}
+  - {<<: *c5, dataset: GFDL-ESM2G} #, start_year: 1861}
+  - {<<: *c5, dataset: GFDL-ESM2M} #, start_year: 1861}
+  - {<<: *c5, dataset: HadGEM2-CC, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: HadGEM2-ES, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: IPSL-CM5A-LR}
+  - {<<: *c5, dataset: IPSL-CM5A-MR}
+  - {<<: *c5, dataset: IPSL-CM5B-LR}
+  - {<<: *c5, dataset: MIROC-ESM}
+  - {<<: *c5, dataset: MIROC-ESM-CHEM}
+  - {<<: *c5, dataset: MPI-ESM-LR}
+  - {<<: *c5, dataset: MPI-ESM-MR}
+  - {<<: *c5, dataset: NorESM1-ME}
+  #- {<<: *c5esmhist,dataset: CanESM2}
+  - {<<: *c5esmhist, dataset: BNU-ESM}
+  - {<<: *c5esmhist, dataset: CESM1-BGC}
+  - {<<: *c5esmhist, dataset: GFDL-ESM2G}
+  - {<<: *c5esmhist, dataset: GFDL-ESM2M}
+  - {<<: *c5esmhist, dataset: MIROC-ESM}
+  - {<<: *c5esmhist, dataset: MPI-ESM-LR}
+  - {<<: *c5esmhist, dataset: MRI-ESM1}
+  - {<<: *c5esmhist, dataset: NorESM1-ME}
+  - {<<: *c6esmhist, dataset: ACCESS-ESM1-5, grid: gn}
+  - {<<: *c6esmhist, dataset: CanESM5, grid: gn}
+  - {<<: *c6esmhist, dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+  #- {<<: *c6esmhist, dataset: CESM2, grid: gn}
+  - {<<: *c6esmhist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+  - {<<: *c6esmhist, dataset: EC-Earth3-CC, grid: gr}
+  - {<<: *c6esmhist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6esmhist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6esmhist, dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+  - {<<: *c6esmhist, dataset: NorESM2-LM, grid: gn}
+  - {<<: *c6esmhist, dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+
+csoil_dataset: &csoil
+  - {<<: *c6hist, dataset: ACCESS-ESM1-5, grid: gn}
+  - {<<: *c6hist, dataset: CanESM5, grid: gn}
+  #- {<<: *c6hist, dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CMCC-CM2-SR5, grid: gn}
+  - {<<: *c6hist, dataset: CMCC-ESM2, grid: gn}
+  - {<<: *c6hist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  #- {dataset: E3SM-1-1, grid: gr} # nbp looks bad
+  #- {dataset: E3SM-1-1-ECA, grid: gr} # nbp looks bad
+  - {<<: *c6hist, dataset: EC-Earth3-CC, grid: gr}
+  - {<<: *c6hist, dataset: EC-Earth3-Veg, grid: gr}
+  - {<<: *c6hist, dataset: GFDL-ESM4, grid: gr1}
+  - {<<: *c6hist, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *c6hist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6hist, dataset: MRI-ESM2-0, grid: gn, ensemble: r1i2p1f1}
+  #- {<<: *c6hist, dataset: NorCPM1, grid: gn, institute: NCC}
+  - {<<: *c6hist, dataset: UKESM1-0-LL, grid: gn, ensemble: r2i1p1f2, project: CMIP6}
+  - {<<: *c6hist, dataset: SAM0-UNICON, grid: gn}
+  - {<<: *c6hist, dataset: TaiESM1, grid: gn}
+  - {<<: *c5, dataset: BNU-ESM}
+  - {<<: *c5, dataset: CESM1-BGC}
+  - {<<: *c5, dataset: GFDL-ESM2G} #, start_year: 1861}
+  - {<<: *c5, dataset: GFDL-ESM2M} #, start_year: 1861}
+  - {<<: *c5, dataset: HadGEM2-CC, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: HadGEM2-ES, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: IPSL-CM5A-LR}
+  - {<<: *c5, dataset: IPSL-CM5A-MR}
+  - {<<: *c5, dataset: IPSL-CM5B-LR}
+  - {<<: *c5, dataset: MIROC-ESM}
+  - {<<: *c5, dataset: MIROC-ESM-CHEM}
+  - {<<: *c5, dataset: MPI-ESM-LR}
+  - {<<: *c5, dataset: MPI-ESM-MR}
+  - {<<: *c5, dataset: NorESM1-ME}
+  #- {<<: *c5esmhist,dataset: CanESM2}
+  - {<<: *c5esmhist, dataset: BNU-ESM}
+  - {<<: *c5esmhist, dataset: CESM1-BGC}
+  - {<<: *c5esmhist, dataset: GFDL-ESM2G}
+  - {<<: *c5esmhist, dataset: GFDL-ESM2M}
+  - {<<: *c5esmhist, dataset: MIROC-ESM}
+  - {<<: *c5esmhist, dataset: MPI-ESM-LR}
+  - {<<: *c5esmhist, dataset: MRI-ESM1}
+  - {<<: *c5esmhist, dataset: NorESM1-ME}
+  - {<<: *c6esmhist, dataset: ACCESS-ESM1-5, grid: gn}
+  - {<<: *c6esmhist, dataset: CanESM5, grid: gn}
+  - {<<: *c6esmhist, dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+  #- {<<: *c6esmhist, dataset: CESM2, grid: gn}
+  - {<<: *c6esmhist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+  - {<<: *c6esmhist, dataset: EC-Earth3-CC, grid: gr}
+  - {<<: *c6esmhist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6esmhist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6esmhist, dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+  - {<<: *c6esmhist, dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+csoil_above1m_datasets: &csoil1m
+  - {<<: *c6hist, dataset: CESM2, grid: gn}
+  - {<<: *c6hist, dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: NorESM2-LM, grid: gn}
+  - {<<: *c6hist, dataset: NorESM2-MM, grid: gn}
+  - {<<: *c6esmhist, dataset: NorESM2-LM, grid: gn}
+
+
+diagnostics:
+
+  diag_carbon_storage_mean:
+    description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      cVeg:
+        preprocessor: cstorage_sum
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: NDP
+        plot_units: PgC
+        additional_datasets: *all
+      cVeg_obs:
+        short_name: cVeg
+        preprocessor: cstorage_sum_obs
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: NDP
+        plot_units: PgC
+        additional_datasets:
+          - {dataset: NDP, project: OBS, type: reanaly, version: 017b, tier: 2,
+             start_year: 2000, end_year: 2000}
+      cSoil_obs:
+        short_name: cSoil
+        preprocessor: cstorage_sum_obs
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: HWSD+NCSCD
+        plot_units: PgC
+        additional_datasets:
+          - {dataset: HWSD+NCSCD, project: OBS, type: reanaly, version: v1, tier: 3,
+             start_year: 2000, end_year: 2000}
+      cSoil:
+        preprocessor: cstorage_sum
+        project: CMIP6
+        mip: Emon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: HWSD+NCSCD
+        plot_units: PgC
+        additional_datasets: *csoil
+      cSoil1m:
+        short_name: cSoilAbove1m
+        preprocessor: cstorage_sum
+        project: CMIP6
+        mip: Emon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: HWSD+NCSCD
+        plot_units: PgC
+        additional_datasets: *csoil1m
+      cLitter:
+        preprocessor: cstorage_sum
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets: *litter
+#    additional_datasets:
+    scripts:
+      carbon_storage:
+        script: carbon_cycle/cstorage.py
+        exclude_mmm: ['BNU-ESM']
+
+  diag_carbon_storage_map_cveg:
+    description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      cVeg:
+        preprocessor: cstorage_map
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: NDP
+        plot_units: kgC m-2
+        additional_datasets:
+          - {dataset: NDP, project: OBS, type: reanaly, version: 017b, tier: 2,
+             start_year: 2000, end_year: 2000}
+    additional_datasets: *all
+    scripts:
+      carbon_storage_maps:
+        script: carbon_cycle/cstorage_maps.py
+        reference_datasets: [NDP]
+        relative_difference: true
+
+  diag_carbon_storage_map_csoil:
+    description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      cSoil:
+        preprocessor: cstorage_map
+        project: CMIP6
+        mip: Emon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: HWSD+NCSCD
+        plot_units: kgC m-2
+        additional_datasets:
+          - {dataset: HWSD+NCSCD, project: OBS, type: reanaly, version: v1, tier: 3,
+             start_year: 2000, end_year: 2000, mip: Lmon}
+          #- {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3,
+          #   start_year: 2000, end_year: 2000, mip: Lmon}
+    additional_datasets: *all
+    scripts:
+      carbon_storage_maps:
+        script: carbon_cycle/cstorage_maps.py
+        reference_datasets: [HWSD+NCSCD]
+        relative_difference: true
+
+  diag_carbon_storage_map_nbp:
+    description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      nbp:
+        preprocessor: cstorage_map
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: CAMS #Jena_CarboScope
+        plot_units: kgC m-2 yr-1
+        additional_datasets:
+          - { <<: *c6hist, dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+          - {<<: *c6esmhist, dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {<<: *c6hist, dataset: INM-CM4-8, grid: gr1}
+          - {<<: *c6hist, dataset: INM-CM5-0, grid: gr1}
+          - {<<: *c5esmhist, dataset: FIO-ESM}
+          - {<<: *c5, dataset: CanESM2}
+          - {<<: *c5, dataset: inmcm4}
+
+          - {dataset: Jena_CarboScope, project: OBS6, type: reanaly, version: v2020,
+         tier: 2}
+          - {dataset: CAMS, project: OBS6, type: reanaly, version: v20r2, tier: 2 }
+    additional_datasets: *all
+    scripts:
+      carbon_storage_maps:
+        script: carbon_cycle/cstorage_maps.py
+        reference_datasets: [Jena_CarboScope, CAMS]
+        relative_difference: false
+        exclude_mmm: ['EC-Earth3-CC', 'EC-Earth3-Veg', 'MIROC-ESM', 'MIROC-ESM-CHEM']
+
+  diag_carbon_storage_map_gpp:
+    description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      gpp:
+        preprocessor: cstorage_map
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: FLUXCOM
+        plot_units: kgC m-2 yr-1
+        additional_datasets:
+          - { <<: *c6hist, dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+          - {<<: *c6esmhist, dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {<<: *c6hist, dataset: INM-CM4-8, grid: gr1}
+          - {<<: *c6hist, dataset: INM-CM5-0, grid: gr1}
+          - {<<: *c5esmhist, dataset: FIO-ESM}
+          - {<<: *c5, dataset: CanESM2}
+          - {<<: *c5, dataset: inmcm4}
+
+          - {dataset: GLASS, project: OBS6, type: reanaly, version: V40, tier: 2 }
+          - {dataset: MTE, project: OBS, type: reanaly, version: May12, tier: 3}
+          - {dataset: FLUXCOM, project: OBS, type: reanaly,
+                version: ANN-v1, tier: 3 }
+    additional_datasets: *all
+    scripts:
+      carbon_storage_maps:
+        script: carbon_cycle/cstorage_maps.py
+        reference_datasets: [MTE, FLUXCOM, GLASS]
+        relative_difference: false
+
+  diag_carbon_storage_map_lai:
+    description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      lai:
+        preprocessor: cstorage_map
+        project: CMIP6
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: GIMMS-LAI4g
+        plot_units: '1'
+        additional_datasets:
+          - { <<: *c6hist, dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+          - {<<: *c6esmhist, dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {<<: *c6hist, dataset: INM-CM4-8, grid: gr1}
+          - {<<: *c6hist, dataset: INM-CM5-0, grid: gr1}
+          - {<<: *c5esmhist, dataset: FIO-ESM}
+          - {<<: *c5, dataset: CanESM2}
+          - {<<: *c5, dataset: inmcm4}
+
+          - {dataset: GLASS, project: OBS6, type: reanaly, version: V40, tier: 2}
+          - {dataset: LAI3g, project: OBS, type: reanaly, version: 1_regridded, tier: 3}
+          - {dataset: GIMMS-LAI4g, project: OBS6, type: reanaly, version: V1.0, tier: 2}
+    additional_datasets: *all
+    scripts:
+      carbon_storage_maps:
+        script: carbon_cycle/cstorage_maps.py
+        reference_datasets: [LAI3g, GIMMS-LAI4g, GLASS]
+        relative_difference: false
+        exclude_mmm: ['BNU-ESM', 'MRI-ESM1']

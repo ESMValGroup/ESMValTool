@@ -1,0 +1,191 @@
+##############################################################################
+# Carbon Cycle Characteristics for CMIP Models
+# N_cycles.yml
+##############################################################################
+# defaults
+N-cycle:
+  n_cycle: True
+  dyn_veg: False
+non-N-cycle:
+  n_cycle: False
+  dyn_veg: False
+Ncycle:
+  n_cycle: True
+  dyn_veg: False
+non-Ncycle:
+  n_cycle: False
+  dyn_veg: False
+
+# CMIP6
+ACCESS-ESM1-5:
+    n_cycle: True
+    dyn_veg: False
+CanESM5:
+    n_cycle: False
+    dyn_veg: False
+CanESM5-CanOE:
+    n_cycle: False
+    dyn_veg: False
+CESM2:
+    n_cycle: True
+    dyn_veg: False
+CESN2-FV2:
+    n_cycle: True
+    dyn_veg: False
+CESM2-WACCM:
+    n_cycle: True
+    dyn_veg: False
+CESM2-WACCM-FV2:
+    n_cycle: True
+    dyn_veg: False
+CMCC-CM2-SR5:
+    n_cycle: True
+    dyn_veg: False
+CMCC-ESM2:
+    n_cycle: True
+    dyn_veg: False
+CNRM-ESM2-1:
+    n_cycle: False
+    dyn_veg: False
+EC-Earth3-CC:
+    n_cycle: True
+    dyn_veg: True
+EC-Earth3-Veg:
+    n_cycle: True
+    dyn_veg: True
+GFDL-ESM4:
+    n_cycle: False
+    dyn_veg: True
+INM-CM4-8:
+    n_cycle: False
+    dyn_veg: False
+INM-CM5-0:
+    n_cycle: False
+    dyn_veg: False
+IPSL-CM6A-LR:
+    n_cycle: False
+    dyn_veg: False
+MIROC-ES2L:
+    n_cycle: True
+    dyn_veg: False
+MPI-ESM-1-2-HAM:
+    n_cycle: False
+    dyn_veg: False
+MPI-ESM1-2-LR:
+    n_cycle: True
+    dyn_veg: True
+MRI-ESM2-0:
+    n_cycle: False
+    dyn_veg: True
+NorCPM1:
+    n_cycle: False
+    dyn_veg: False
+NorESM2-LM:
+    n_cycle: True
+    dyn_veg: False
+NorESM2-MM:
+    n_cycle: True
+    dyn_veg: False
+UKESM1-0-LL:
+    n_cycle: True
+    dyn_veg: True
+SAM0-UNICON:
+    n_cycle: True
+    dyn_veg: False
+TaiESM1:
+    n_cycle: True
+    dyn_veg: False
+
+
+# CMIP5
+bcc-csm1-1:
+    n_cycle: False
+    dyn_veg: False
+bcc-csm1-1-m:
+    n_cycle: False
+    dyn_veg: False
+BNU-ESM:
+    n_cycle: False
+    dyn_veg: True
+CanESM2:
+    n_cycle: False
+    dyn_veg: False
+CCSM4:
+    n_cycle: False
+    dyn_veg: False
+CESM1-BGC:
+    n_cycle: True
+    dyn_veg: False
+CESM1-FASTCHEM:
+    n_cycle: False
+    dyn_veg: False
+CESM1-WACCM:
+    n_cycle: False
+    dyn_veg: False
+CMCC-CESM:
+    n_cycle: False
+    dyn_veg: False
+CNRM-CM5:
+    n_cycle: False
+    dyn_veg: False
+FIO-ESM:
+    n_cycle: False
+    dyn_veg: False
+GFDL-ESM2G:
+    n_cycle: False
+    dyn_veg: True
+GFDL-ESM2M:
+    n_cycle: False
+    dyn_veg: True
+GISS-E2-H-CC:
+    n_cycle: False
+    dyn_veg: False
+GISS-E2-R-CC:
+    n_cycle: False
+    dyn_veg: False
+HadGEM2-CC:
+    n_cycle: False
+    dyn_veg: True
+HadGEM2-ES:
+    n_cycle: False
+    dyn_veg: True
+inmcm4:
+    n_cycle: False
+    dyn_veg: False
+IPSL-CM5A-LR:
+    n_cycle: False
+    dyn_veg: False
+IPSL-CM5A-MR:
+    n_cycle: False
+    dyn_veg: False
+IPSL-CM5B-LR:
+    n_cycle: False
+    dyn_veg: False
+MIROC-ESM:
+    n_cycle: False
+    dyn_veg: True
+MIROC-ESM-CHEM:
+    n_cycle: False
+    dyn_veg: True
+MPI-ESM-LR:
+    n_cycle: False
+    dyn_veg: True
+MPI-ESM-MR:
+    n_cycle: False
+    dyn_veg: True
+MPI-ESM-P:
+    n_cycle: False
+    dyn_veg: True
+MRI-ESM1:
+    n_cycle: False
+    dyn_veg: False
+NorESM1-M:
+    n_cycle: True
+    dyn_veg: False
+NorESM1-ME:
+    n_cycle: True
+    dyn_veg: False
+
+Ncycle_mmm:
+    n_cycle: True
+    dyn_veg: False

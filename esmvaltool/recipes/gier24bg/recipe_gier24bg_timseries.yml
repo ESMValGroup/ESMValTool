@@ -1,0 +1,417 @@
+# ESMValTool
+# recipe_gier21bg_mmm_time_series.yml
+---
+documentation:
+
+  title: >
+    NBP time series
+
+  description: >
+    Time series of NBP (part of Gier et al., 2021).
+
+  authors:
+    - schlund_manuel
+    - gier_bettina
+
+  maintainer:
+    - gier_bettina
+
+  references:
+    - acknow_author
+
+  projects:
+    - eval4cmip
+    - 4c
+    - crescendo
+
+
+PROVENANCE_ANCHOR: &provenance
+  realms:
+    - atmos
+    - land
+  themes:
+    - bgchem
+    - carbon
+    - ghg
+
+
+# Datasets
+
+OBS: &obs
+  type: reanaly
+  tier: 2
+CMIP6_historical: &c6hist
+  project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+CMIP6_esm-hist: &c6esmhist
+  project: CMIP6
+  exp: esm-hist
+  ensemble: r1i1p1f1
+CMIP5_historical: &c5hist
+  project: CMIP5
+  exp: historical
+  ensemble: r1i1p1
+  end_year: 2005
+CMIP5_esmHistorical: &c5esmhist
+  project: CMIP5
+  exp: esmHistorical
+  ensemble: r1i1p1
+  end_year: 2005
+
+MODELS: &models
+
+  # CMIP5 historical
+  - {<<: *c5hist, dataset: BNU-ESM}
+  - {<<: *c5hist, dataset: CanESM2}
+  - {<<: *c5hist, dataset: CESM1-BGC}
+  - {<<: *c5hist, dataset: GFDL-ESM2G, start_year: 1861}
+  - {<<: *c5hist, dataset: GFDL-ESM2M, start_year: 1861}
+  - {<<: *c5hist, dataset: HadGEM2-CC, start_year: 1859}
+  - {<<: *c5hist, dataset: HadGEM2-ES, start_year: 1859}
+  - {<<: *c5hist, dataset: inmcm4}
+  - {<<: *c5hist, dataset: IPSL-CM5A-LR}
+  - {<<: *c5hist, dataset: IPSL-CM5A-MR}
+  - {<<: *c5hist, dataset: IPSL-CM5B-LR}
+  - {<<: *c5hist, dataset: MIROC-ESM}
+  - {<<: *c5hist, dataset: MIROC-ESM-CHEM}
+  - {<<: *c5hist, dataset: MPI-ESM-LR}
+  - {<<: *c5hist, dataset: MPI-ESM-MR}
+  - {<<: *c5hist, dataset: NorESM1-ME}
+
+  # CMIP5 esmHistorical
+  - {<<: *c5esmhist, dataset: CanESM2}
+  - {<<: *c5esmhist, dataset: BNU-ESM}
+  - {<<: *c5esmhist, dataset: CESM1-BGC}
+  - {<<: *c5esmhist, dataset: GFDL-ESM2G, start_year: 1861}
+  - {<<: *c5esmhist, dataset: GFDL-ESM2M, start_year: 1861}
+  - {<<: *c5esmhist, dataset: FIO-ESM}
+  - {<<: *c5esmhist, dataset: MIROC-ESM}
+  - {<<: *c5esmhist, dataset: MPI-ESM-LR}
+  - {<<: *c5esmhist, dataset: MRI-ESM1}
+  - {<<: *c5esmhist, dataset: NorESM1-ME}
+
+  # CMIP6 historical
+  - {<<: *c6hist, dataset: ACCESS-ESM1-5,   grid: gn}
+  - {<<: *c6hist, dataset: CanESM5,         grid: gn}
+  - {<<: *c6hist, dataset: CanESM5-CanOE,   grid: gn, ensemble: r1i1p2f1}
+  - {<<: *c6hist, dataset: CESM2,           grid: gn}
+  # - {<<: *c6hist, dataset: CESM2-FV2,       grid: gn}
+  - {<<: *c6hist, dataset: CESM2-WACCM,     grid: gn}
+  # - {<<: *c6hist, dataset: CESM2-WACCM-FV2, grid: gn}
+  - {<<: *c6hist, dataset: CMCC-CM2-SR5,    grid: gn} # no n_cycle info
+  - {<<: *c6hist, dataset: CMCC-ESM2,       grid: gn} # no n_cycle info
+  - {<<: *c6hist, dataset: CNRM-ESM2-1,     grid: gr, ensemble: r1i1p1f2}
+  # - {<<: *c6hist, dataset: E3SM-1-1,        grid: gr} # nbp looks bad
+  # - {<<: *c6hist, dataset: E3SM-1-1-ECA,    grid: gr} # nbp looks bad
+  - {<<: *c6hist, dataset: EC-Earth3-CC,    grid: gr}
+  - {<<: *c6hist, dataset: EC-Earth3-Veg,   grid: gr} # no n_cycle info
+  - {<<: *c6hist, dataset: GFDL-ESM4,       grid: gr1} # no n_cycle info
+  - {<<: *c6hist, dataset: INM-CM4-8,       grid: gr1}
+  - {<<: *c6hist, dataset: INM-CM5-0,       grid: gr1}
+  - {<<: *c6hist, dataset: IPSL-CM6A-LR,    grid: gr}
+  - {<<: *c6hist, dataset: MIROC-ES2L,      grid: gn, ensemble: r1i1p1f2}
+  - {<<: *c6hist, dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM1-2-LR,   grid: gn}
+  - {<<: *c6hist, dataset: MRI-ESM2-0,      grid: gn, ensemble: r1i2p1f1} # no n_cycle info
+  # - {<<: *c6hist, dataset: NorCPM1,         grid: gn}
+  - {<<: *c6hist, dataset: NorESM2-LM,      grid: gn}
+  - {<<: *c6hist, dataset: NorESM2-MM,      grid: gn}
+  - {<<: *c6hist, dataset: SAM0-UNICON,     grid: gn} # no n_cycle info
+  - {<<: *c6hist, dataset: TaiESM1,         grid: gn} # no n_cycle info
+  - {<<: *c6hist, dataset: UKESM1-0-LL,     grid: gn, ensemble: r2i1p1f2}
+
+  # CMIP6 esm-hist
+  - {<<: *c6esmhist, dataset: ACCESS-ESM1-5, grid: gn}
+  - {<<: *c6esmhist, dataset: CanESM5,       grid: gn}
+  - {<<: *c6esmhist, dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+  # - {<<: *c6esmhist, dataset: CESM2,         grid: gn}
+  - {<<: *c6esmhist, dataset: CNRM-ESM2-1,   grid: gr, ensemble: r1i1p1f3}
+  - {<<: *c6esmhist, dataset: EC-Earth3-CC,  grid: gr}
+  - {<<: *c6esmhist, dataset: GFDL-ESM4,     grid: gr1} # hus, zg retracted; no n_cycle info
+  - {<<: *c6esmhist, dataset: MIROC-ES2L,    grid: gn, ensemble: r1i1p1f2}
+  - {<<: *c6esmhist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6esmhist, dataset: MRI-ESM2-0,    grid: gn, ensemble: r1i2p1f1} # no n_cycle info
+  - {<<: *c6esmhist, dataset: NorESM2-LM,    grid: gn}
+  - {<<: *c6esmhist, dataset: UKESM1-0-LL,   grid: gn, ensemble: r1i1p1f2}
+
+
+preprocessors:
+
+  create_time_series:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        'BNU-ESM',
+        'CanESM5-CanOE',
+        'CNRM-ESM2-1',
+        'EC-Earth3-CC',
+        'FIO-ESM',
+        'GCP',
+        'GFDL-ESM4',
+        'inmcm4',
+        'JMA-TRANSCOM',
+        'MIROC-ES2L',
+        'UKESM1-0-LL',
+        'FLUXCOM',
+        'MTE',
+        'GCP2020'
+      ]
+      fx_variables:
+        sftlf:
+          mip: fx
+    mask_landsea:
+      mask_out: sea
+      threshold: 100.
+    area_statistics:
+      operator: sum
+      fx_variables:
+        areacella:
+          mip: fx
+    regrid_time:
+      frequency: mon
+    annual_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  nbp_mmm_time_series:
+    <<: *provenance
+    description: Multi-panel time series.
+    variables:
+      nbp:
+        preprocessor: create_time_series
+        mip: Lmon
+        start_year: 1850
+        end_year: 2014
+        additional_datasets:
+          - {<<: *obs, dataset: Jena_CarboScope, project: OBS6, version: v2020, start_year: 1957}
+          - {<<: *obs, dataset: CAMS, project: OBS6, type: reanaly, version: v20r2,
+             start_year: 1979, tier: 2 }
+          # CMIP5 historical
+          - { <<: *c5hist, dataset: BNU-ESM }
+          - { <<: *c5hist, dataset: CanESM2 }
+          - { <<: *c5hist, dataset: CESM1-BGC }
+          - { <<: *c5hist, dataset: GFDL-ESM2G, start_year: 1861 }
+          - { <<: *c5hist, dataset: GFDL-ESM2M, start_year: 1861 }
+          - { <<: *c5hist, dataset: HadGEM2-CC, start_year: 1859 }
+          - { <<: *c5hist, dataset: HadGEM2-ES, start_year: 1859 }
+          - { <<: *c5hist, dataset: inmcm4 }
+          - { <<: *c5hist, dataset: IPSL-CM5A-LR }
+          - { <<: *c5hist, dataset: IPSL-CM5A-MR }
+          - { <<: *c5hist, dataset: IPSL-CM5B-LR }
+          - { <<: *c5hist, dataset: MIROC-ESM }
+          - { <<: *c5hist, dataset: MIROC-ESM-CHEM }
+          - { <<: *c5hist, dataset: MPI-ESM-LR }
+          - { <<: *c5hist, dataset: MPI-ESM-MR }
+          - { <<: *c5hist, dataset: NorESM1-ME }
+
+          # CMIP5 esmHistorical
+          - { <<: *c5esmhist, dataset: CanESM2 }
+          - { <<: *c5esmhist, dataset: BNU-ESM }
+          - { <<: *c5esmhist, dataset: CESM1-BGC }
+          - { <<: *c5esmhist, dataset: GFDL-ESM2G, start_year: 1861 }
+          - { <<: *c5esmhist, dataset: GFDL-ESM2M, start_year: 1861 }
+          - { <<: *c5esmhist, dataset: FIO-ESM }
+          - { <<: *c5esmhist, dataset: MIROC-ESM }
+          - { <<: *c5esmhist, dataset: MPI-ESM-LR }
+          - { <<: *c5esmhist, dataset: MRI-ESM1 }
+          - { <<: *c5esmhist, dataset: NorESM1-ME }
+
+          # CMIP6 historical
+          - { <<: *c6hist, dataset: ACCESS-ESM1-5,   grid: gn }
+          - { <<: *c6hist, dataset: CanESM5,         grid: gn }
+          - { <<: *c6hist, dataset: CanESM5-CanOE,   grid: gn, ensemble: r1i1p2f1 }
+          - { <<: *c6hist, dataset: CESM2,           grid: gn }
+          # - {<<: *c6hist, dataset: CESM2-FV2,       grid: gn}
+          - { <<: *c6hist, dataset: CESM2-WACCM,     grid: gn }
+          # - {<<: *c6hist, dataset: CESM2-WACCM-FV2, grid: gn}
+          - { <<: *c6hist, dataset: CMCC-CM2-SR5,    grid: gn } # no n_cycle info
+          - { <<: *c6hist, dataset: CMCC-ESM2,       grid: gn } # no n_cycle info
+          - { <<: *c6hist, dataset: CNRM-ESM2-1,     grid: gr, ensemble: r1i1p1f2 }
+          # - {<<: *c6hist, dataset: E3SM-1-1,        grid: gr} # nbp looks bad
+          # - {<<: *c6hist, dataset: E3SM-1-1-ECA,    grid: gr} # nbp looks bad
+          - { <<: *c6hist, dataset: EC-Earth3-CC,    grid: gr }
+          - { <<: *c6hist, dataset: EC-Earth3-Veg,   grid: gr } # no n_cycle info
+          - { <<: *c6hist, dataset: GFDL-ESM4,       grid: gr1 } # no n_cycle info
+          - { <<: *c6hist, dataset: INM-CM4-8,       grid: gr1 }
+          - { <<: *c6hist, dataset: INM-CM5-0,       grid: gr1 }
+          - { <<: *c6hist, dataset: IPSL-CM6A-LR,    grid: gr }
+          - { <<: *c6hist, dataset: MIROC-ES2L,      grid: gn, ensemble: r1i1p1f2 }
+          - { <<: *c6hist, dataset: MPI-ESM-1-2-HAM, grid: gn }
+          - { <<: *c6hist, dataset: MPI-ESM1-2-LR,   grid: gn }
+          - { <<: *c6hist, dataset: MRI-ESM2-0,      grid: gn, ensemble: r1i2p1f1 } # no n_cycle info
+          # - {<<: *c6hist, dataset: NorCPM1,         grid: gn}
+          - { <<: *c6hist, dataset: NorESM2-LM,      grid: gn }
+          - { <<: *c6hist, dataset: NorESM2-MM,      grid: gn }
+          - { <<: *c6hist, dataset: SAM0-UNICON,     grid: gn } # no n_cycle info
+          - { <<: *c6hist, dataset: TaiESM1,         grid: gn } # no n_cycle info
+          - { <<: *c6hist, dataset: UKESM1-0-LL,     grid: gn, ensemble: r2i1p1f2 }
+
+          # CMIP6 esm-hist
+          - { <<: *c6esmhist, dataset: ACCESS-ESM1-5, grid: gn }
+          - { <<: *c6esmhist, dataset: CanESM5,       grid: gn }
+          - { <<: *c6esmhist, dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1 }
+          # - {<<: *c6esmhist, dataset: CESM2,         grid: gn}
+          - { <<: *c6esmhist, dataset: CNRM-ESM2-1,   grid: gr, ensemble: r1i1p1f3 }
+          - { <<: *c6esmhist, dataset: EC-Earth3-CC,  grid: gr }
+          - { <<: *c6esmhist, dataset: GFDL-ESM4,     grid: gr1 } # hus, zg retracted; no n_cycle info
+          - { <<: *c6esmhist, dataset: MIROC-ES2L,    grid: gn, ensemble: r1i1p1f2 }
+          - { <<: *c6esmhist, dataset: MPI-ESM1-2-LR, grid: gn }
+          - { <<: *c6esmhist, dataset: MRI-ESM2-0,    grid: gn, ensemble: r1i2p1f1 } # no n_cycle info
+          - { <<: *c6esmhist, dataset: NorESM2-LM,    grid: gn }
+          - { <<: *c6esmhist, dataset: UKESM1-0-LL,   grid: gn, ensemble: r1i1p1f2 }
+      nbp_gcp:
+        mip: Lmon
+        start_year: 1850
+        end_year: 2014
+        short_name: nbp
+        additional_datasets:
+          - {<<: *obs, dataset: GCP, project: OBS, version: 2021, frequency: yr, start_year: 1959}
+          # - {<<: *obs, dataset: JMA-TRANSCOM,    project: OBS,  version: 1,     start_year: 1986, end_year: 2008}
+          #- {<<: *obs, dataset: GCP2020,         project: OBS,  version: '1.0', start_year: 1959, frequency: yr}
+    #additional_datasets: *models
+    scripts:
+      summary_plot: &mmm_time_series
+        script: carbon_cycle/mmm_time_series.py
+        aliases:
+          All: All models
+          n_cycle=True: Models with N-cycle
+          n_cycle=False: Models without N-cycle
+          project=CMIP5_exp=esmHistorical: CMIP5 (esm-hist)
+          project=CMIP5_exp=historical: CMIP5 (historical)
+          project=CMIP6_exp=esm-hist: CMIP6 (esm-hist)
+          project=CMIP6_exp=historical: CMIP6 (historical)
+        additional_facets_file: carbon_model_characteristics.yml
+        facets_to_separate_lines: false
+        facets_to_separate_panels: [project, exp]
+        figure_kwargs:
+          constrained_layout: True
+          figsize: [9, 4]
+        input_units: 'kg s-1'
+        legend_kwargs:
+          loc: upper left
+          ncol: 3
+        n_columns: 1
+        plot_hline: 0.0
+        plot_kwargs:
+          default:
+            alpha:  0.8
+            linestyle: '-'
+          Jena_CarboScope:
+            color: black
+          CAMS:
+            color: black
+            linestyle: '--'
+          GCP:
+            color: black
+            linestyle: '-.'
+          project=CMIP5_exp=esmHistorical:
+            alpha:  0.5
+            color: C0
+            linestyle: [0, [5, 1]]
+          project=CMIP5_exp=historical:
+            color: C0
+          project=CMIP6_exp=esm-hist:
+            alpha:  0.5
+            color: C1
+            linestyle: [0, [5, 1]]
+          project=CMIP6_exp=historical:
+            color: C1
+        plot_units: 'Pg yr-1'
+        #x_lim: [1850, 2014]
+        pyplot_functions:
+          xlabel: Year
+        reference_datasets: [Jena_CarboScope, CAMS, GCP]
+        savefig_kwargs:
+          bbox_inches: tight
+        seaborn_settings:
+          style: ticks
+          rc:
+            xtick.top: true
+            ytick.right: true
+            xtick.minor.visible: true
+            ytick.minor.visible: true
+        separate_summary_plot: true
+        uncertainty_kwargs: true
+      panels:
+        <<: *mmm_time_series
+        facets_to_separate_lines: [n_cycle]
+        figure_kwargs:
+          constrained_layout: True
+          figsize: [6, 9]
+        legend: lines
+        legend_kwargs:
+          bbox_to_anchor: [0.5, -0.07]
+          loc: lower center
+          ncol: 3
+        plot_kwargs:
+          default:
+            alpha: 0.8
+            color: C0
+            linestyle: '-'
+            linewidth: 1.0
+          n_cycle=True:
+            linestyle: [0, [5, 1]]
+            color: C1
+          n_cycle=False:
+            linestyle: [0, [5, 1]]
+            color: C2
+          Jena_CarboScope:
+            color: black
+          CAMS:
+            color: black
+            linestyle: '--'
+          GCP:
+            color: black
+            linestyle: '-.'
+
+#  gpp_mmm_time_series:
+#    <<: *provenance
+#    description: Multi-panel time series.
+#    variables:
+#      gpp:
+#        preprocessor: create_time_series
+#        mip: Lmon
+#        start_year: 1850
+#        end_year: 2014
+#        additional_datasets:
+#          - {<<: *obs, dataset: MTE, project: OBS, version: May12, tier: 3 , start_year: 1982, end_year: 2011}
+#         # - {<<: *obs, dataset: FLUXCOM, project: OBS, version: ANN-v1, tier: 3 , start_year: 1980, end_year: 2013}
+#          # - {<<: *obs, dataset: JMA-TRANSCOM,    project: OBS,  version: 1,     start_year: 1986, end_year: 2008}
+#          # - {<<: *obs, dataset: GCP2020,         project: OBS,  version: '1.0', start_year: 1959, frequency: yr}
+#    additional_datasets: *models
+#    scripts:
+#      summary_plot:
+#        <<: *mmm_time_series
+#        plot_kwargs:
+#          MTE:
+#            color: black
+#        reference_datasets: [MTE]
+#      panels:
+#        <<: *mmm_time_series
+#        reference_datasets: [MTE]
+#        facets_to_separate_lines: [n_cycle]
+#        figure_kwargs:
+#          constrained_layout: True
+#          figsize: [6, 9]
+#        legend: lines
+#        legend_kwargs:
+#          bbox_to_anchor: [0.5, -0.07]
+#          loc: lower center
+#          ncol: 2
+#        plot_kwargs:
+#          default:
+#            alpha: 0.8
+#            color: C0
+#            linestyle: '-'
+#            linewidth: 1.0
+#          n_cycle=True:
+#            linestyle: [0, [5, 1]]
+#            color: C1
+#          n_cycle=False:
+#            linestyle: [0, [5, 1]]
+#            color: C2
+#          MTE:
+#            color: black

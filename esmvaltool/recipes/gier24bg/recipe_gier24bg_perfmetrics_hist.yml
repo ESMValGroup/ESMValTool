@@ -1,0 +1,406 @@
+# ESMValTool
+# recipe_perfmetrics_land_CMIP5.yml
+---
+documentation:
+  title: >
+    Perfmetrics for historical simulations, carbon cycle variables (Gier et al 2022)
+  description: |
+    Recipe for plotting the performance metrics for the CMIP5 datasets,
+    including only land variables
+
+  authors:
+    - frank_franziska
+    - righi_mattia
+    - eyring_veronika
+
+  maintainer:
+    - righi_mattia
+
+  references:
+    - gleckler08jgr
+
+  projects:
+    - esmval
+    - embrace
+    - crescendo
+    - c3s-magic
+    - cmug
+
+all_datasets: &all
+  - &c6hist {dataset: ACCESS-ESM1-5, grid: gn, project: CMIP6, exp: historical, ensemble: r1i1p1f1}
+  - {<<: *c6hist, dataset: CanESM5, grid: gn}
+  - {<<: *c6hist, dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+  - {<<: *c6hist, dataset: CESM2, grid: gn}
+  #- {<<: *c6hist, dataset: CESM2-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  #- {<<: *c6hist, dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CMCC-CM2-SR5, grid: gn}
+  - {<<: *c6hist, dataset: CMCC-ESM2, grid: gn}
+  - {<<: *c6hist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  #- {dataset: E3SM-1-1, grid: gr} # nbp looks bad
+  #- {dataset: E3SM-1-1-ECA, grid: gr} # nbp looks bad
+  - {<<: *c6hist, dataset: EC-Earth3-CC, grid: gr}
+  - {<<: *c6hist, dataset: EC-Earth3-Veg, grid: gr}
+  - {<<: *c6hist, dataset: GFDL-ESM4, grid: gr1}
+  - {<<: *c6hist, dataset: INM-CM4-8, grid: gr1}
+  - {<<: *c6hist, dataset: INM-CM5-0, grid: gr1}
+  - {<<: *c6hist, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *c6hist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6hist, dataset: MRI-ESM2-0, grid: gn, ensemble: r1i2p1f1}
+  #- {<<: *c6hist, dataset: NorCPM1, grid: gn, institute: NCC}
+  - {<<: *c6hist, dataset: NorESM2-LM, grid: gn}
+  - {<<: *c6hist, dataset: NorESM2-MM, grid: gn}
+  - {<<: *c6hist, dataset: UKESM1-0-LL, grid: gn, ensemble: r2i1p1f2, project: CMIP6}
+  - {<<: *c6hist, dataset: SAM0-UNICON, grid: gn}
+  - {<<: *c6hist, dataset: TaiESM1, grid: gn}
+  - &c5 {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {<<: *c5, dataset: CanESM2}
+  - {<<: *c5, dataset: CESM1-BGC}
+  - {<<: *c5, dataset: GFDL-ESM2G} #, start_year: 1861}
+  - {<<: *c5, dataset: GFDL-ESM2M} #, start_year: 1861}
+  - {<<: *c5, dataset: HadGEM2-CC, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: HadGEM2-ES, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: inmcm4}
+  - {<<: *c5, dataset: IPSL-CM5A-LR}
+  - {<<: *c5, dataset: IPSL-CM5A-MR}
+  - {<<: *c5, dataset: IPSL-CM5B-LR}
+  - {<<: *c5, dataset: MIROC-ESM}
+  - {<<: *c5, dataset: MIROC-ESM-CHEM}
+  - {<<: *c5, dataset: MPI-ESM-LR}
+  - {<<: *c5, dataset: MPI-ESM-MR}
+  - {<<: *c5, dataset: NorESM1-ME}
+
+cstorage: &cstorage
+  - {<<: *c6hist, dataset: ACCESS-ESM1-5, grid: gn}
+  - {<<: *c6hist, dataset: CanESM5, grid: gn}
+  - {<<: *c6hist, dataset: CESM2, grid: gn}
+  #- {<<: *c6hist, dataset: CESM2-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  #- {<<: *c6hist, dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {<<: *c6hist, dataset: CMCC-CM2-SR5, grid: gn}
+  - {<<: *c6hist, dataset: CMCC-ESM2, grid: gn}
+  - {<<: *c6hist, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  #- {dataset: E3SM-1-1, grid: gr} # nbp looks bad
+  #- {dataset: E3SM-1-1-ECA, grid: gr} # nbp looks bad
+  - {<<: *c6hist, dataset: EC-Earth3-CC, grid: gr}
+  - {<<: *c6hist, dataset: EC-Earth3-Veg, grid: gr}
+  - {<<: *c6hist, dataset: GFDL-ESM4, grid: gr1}
+  - {<<: *c6hist, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *c6hist, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {<<: *c6hist, dataset: MPI-ESM1-2-LR, grid: gn}
+  - {<<: *c6hist, dataset: MRI-ESM2-0, grid: gn, ensemble: r1i2p1f1}
+  #- {<<: *c6hist, dataset: NorCPM1, grid: gn, institute: NCC}
+  - {<<: *c6hist, dataset: NorESM2-LM, grid: gn}
+  - {<<: *c6hist, dataset: NorESM2-MM, grid: gn}
+  - {<<: *c6hist, dataset: UKESM1-0-LL, grid: gn, ensemble: r2i1p1f2, project: CMIP6}
+  - {<<: *c6hist, dataset: SAM0-UNICON, grid: gn}
+  - {<<: *c6hist, dataset: TaiESM1, grid: gn}
+  - {<<: *c5, dataset: BNU-ESM}
+  - {<<: *c5, dataset: CESM1-BGC}
+  - {<<: *c5, dataset: GFDL-ESM2G} #, start_year: 1861}
+  - {<<: *c5, dataset: GFDL-ESM2M} #, start_year: 1861}
+  - {<<: *c5, dataset: HadGEM2-CC, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: HadGEM2-ES, exp: [historical, rcp85]} #, start_year: 1859}
+  - {<<: *c5, dataset: IPSL-CM5A-LR}
+  - {<<: *c5, dataset: IPSL-CM5A-MR}
+  - {<<: *c5, dataset: IPSL-CM5B-LR}
+  - {<<: *c5, dataset: MIROC-ESM}
+  - {<<: *c5, dataset: MIROC-ESM-CHEM}
+  - {<<: *c5, dataset: MPI-ESM-LR}
+  - {<<: *c5, dataset: MPI-ESM-MR}
+  - {<<: *c5, dataset: NorESM1-ME}
+
+PROVENANCE_ANCHOR: &provenance
+  realms:
+    - atmos
+  themes:
+    - phys
+    - ghg
+    - carbon
+
+preprocessors:
+
+  ppNOLEV1:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP',
+        'inmcm4',
+        'LAI3g',
+        'GIMMS-LAI4g',
+        'MTE',
+        'NDP',
+        'CNRM-ESM2-1',
+        'UKESM1-0-LL',
+        'BNU-ESM',
+        'HWSD',
+        'CESM2-WACCM',
+        'EC-Earth3-CC',
+        'GFDL-ESM2M',
+        'GFDL-ESM4',
+        'FLUXCOM',
+        'HWSD+NCSCD',
+        'GLASS'
+      ]
+      fx_variables:
+        sftlf:
+          mip: fx
+    regrid:
+      target_grid: 2x2 #reference_dataset
+      scheme: linear
+    mask_multimodel:
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+  ppNOLEV2:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP',
+        'inmcm4',
+        'LAI3g',
+        'GIMMS-LAI4g',
+        'MTE',
+        'NDP',
+        'CNRM-ESM2-1',
+        'UKESM1-0-LL',
+        'BNU-ESM',
+        'HWSD',
+        'CESM2-WACCM',
+        'EC-Earth3-CC',
+        'GFDL-ESM2M',
+        'GFDL-ESM4',
+        'FLUXCOM',
+        'HWSD+NCSCD',
+        'GLASS'
+      ]
+      fx_variables:
+        sftlf:
+          mip: fx
+    regrid:
+      target_grid: 2x2 #reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+
+diagnostics:
+
+  nbp:
+    description: surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_processes
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      nbp:
+        short_name: nbp
+        preprocessor: ppNOLEV1
+        reference_dataset: Jena_CarboScope
+        alternative_dataset: CAMS
+        mip: Lmon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets: *all
+    additional_datasets:
+
+      - {dataset: Jena_CarboScope, project: OBS6, type: reanaly, version: v2020,
+         tier: 2} #, start_year: 1957, end_year: 2014}
+      - {dataset: CAMS, project: OBS6, type: reanaly, version: v20r2,
+         tier: 2}
+    scripts:
+      grading: &grading_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: cycle_latlon
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: monthlyclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
+        plot_stddev: ref_model
+        # Plot legend in a separate file
+        legend_outside: true
+        # Plot style
+        styleset: CMIP5
+        # Calculate grading
+        calc_grading: true
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
+        exclude_mmm: [ 'EC-Earth3-CC', 'EC-Earth3-Veg', 'MIROC-ESM', 'MIROC-ESM-CHEM' ]
+      grading_nh:
+        <<: *grading_settings
+        region: nh
+      grading_sh:
+        <<: *grading_settings
+        region: sh
+      grading_trop:
+        <<: *grading_settings
+        region: trop
+
+  gpp:
+    description: gross primary productivity
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      gpp:
+        short_name: gpp
+        preprocessor: ppNOLEV1
+        reference_dataset: FLUXCOM
+        alternative_dataset: GLASS
+        mip: Lmon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets: *all
+    additional_datasets:
+
+      - { dataset: GLASS, project: OBS6, type: reanaly, version: V40, tier: 2 }
+      #- {dataset: MTE, project: OBS, type: reanaly, version: May12, tier: 3}
+      - { dataset: FLUXCOM, project: OBS, type: reanaly,
+            version: ANN-v1, tier: 3 }
+    scripts:
+      grading:
+        <<: *grading_settings
+        exclude_mmm: []
+      grading_nh:
+        <<: *grading_settings
+        region: nh
+        exclude_mmm: []
+      grading_sh:
+        <<: *grading_settings
+        region: sh
+        exclude_mmm: []
+      grading_trop:
+        <<: *grading_settings
+        region: trop
+        exclude_mmm: []
+
+  lai:
+    description: leaf area index
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      lai:
+        short_name: lai
+        preprocessor: ppNOLEV1
+        reference_dataset: GIMMS-LAI4g
+        alternative_dataset: GLASS
+        mip: Lmon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets: *all
+    additional_datasets:
+
+      #- {dataset: LAI3g, project: OBS, type: reanaly,
+      #   version: 1_regridded, tier: 3}
+      - {dataset: GIMMS-LAI4g, project: OBS6, type: reanaly, version: V1.0, tier: 2}
+      - { dataset: GLASS, project: OBS6, type: reanaly, version: V40, tier: 2 }
+    scripts:
+      grading:
+        <<: *grading_settings
+        exclude_mmm: ['BNU-ESM', 'MRI-ESM1']
+      grading_nh:
+        <<: *grading_settings
+        region: nh
+        exclude_mmm: ['BNU-ESM', 'MRI-ESM1']
+      grading_sh:
+        <<: *grading_settings
+        region: sh
+        exclude_mmm: ['BNU-ESM', 'MRI-ESM1']
+      grading_trop:
+        <<: *grading_settings
+        region: trop
+        exclude_mmm: ['BNU-ESM', 'MRI-ESM1']
+
+#  cVeg:
+#    description: vegetation carbon
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      cVeg:
+#        preprocessor: ppNOLEV2
+#        reference_dataset: NDP
+#        mip: Lmon
+#        force_derivation: false
+#        project: CMIP5
+#        exp: historical
+#        ensemble: r1i1p1
+#        start_year: 1980
+#        end_year: 2005
+#        additional_datasets: *cstorage
+#    additional_datasets:
+#          - {dataset: NDP, project: OBS, type: reanaly, version: 017b, tier: 3,
+#             start_year: 2000, end_year: 2000}
+#    scripts:
+#      grading:
+#        <<: *grading_settings
+#
+#  cSoil:
+#    description: soil carbon
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      cSoil:
+#        preprocessor: ppNOLEV1
+#        reference_dataset: HWSD
+#        project: CMIP6
+#        mip: Emon
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        start_year: 1986
+#        end_year: 2005
+#        additional_datasets: *all
+#    additional_datasets:
+#          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3,
+#             start_year: 2000, end_year: 2000, mip: Lmon}
+#
+#          - {<<: *c5, dataset: BNU-ESM, mip: Lmon}
+#          - { <<: *c5, dataset: CESM1-BGC, mip: Lmon }
+#          - { <<: *c5, dataset: MPI-ESM-LR, mip: Lmon }
+#    scripts:
+#      grading:
+#        <<: *grading_settings
+
+  ### COLLECT METRICS #########################################################
+  collect:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      RMSD:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading*']
+        metric: RMSD
+        label_bounds: [-0.5, 0.5]
+        label_scale: 0.1
+        disp_values: false
+        cm_interval: [2, 241]
+        # Sort dataset in alphabetic order (excluding MMM)
+        #sort: true
+        project_order: ['CMIP5', 'CMIP6']
+        diag_order: ['nbp-global', 'nbp-nh', 'nbp-sh', 'nbp-trop',
+                     'gpp-global', 'gpp-nh', 'gpp-sh', 'gpp-trop',
+                     'lai-global', 'lai-nh', 'lai-sh', 'lai-trop']
+                     # 'cVeg-global', 'cSoil-global']

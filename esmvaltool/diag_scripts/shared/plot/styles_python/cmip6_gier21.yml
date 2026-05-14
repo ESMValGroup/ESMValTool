@@ -1,0 +1,1042 @@
+###############################################################################
+# PYTHON STYLE FILE
+# cmip6.yml
+# created by 'convert_ncl_style.py'.
+###############################################################################
+# This file defines plot attributes for certain datasets.
+#
+# Template:
+#
+# DATASET:
+#   avgstd: 0
+#   color: '#ffffff'
+#   dash: --
+#   facecolor: none
+#   mark: x
+#   thick: 1
+#
+# DATASET:   dataset name (same as given in the main recipe)
+# avgstd:    0 = takes part in the calculation of mean and stddev
+#            1 = does not take part in the calculation of mean and stddev
+#            (usually 0 for models, 1 for observations/reanalysis)
+# color:     hex RGB or RGBA string (e.g. #0f0fa1), see
+#            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+# dash:      matplotlib dash pattern (linestyle)
+# facecolor: Color of the filling (none = no filling)
+# mark:      marker string for markers (used in matplotlib), see
+#            https://matplotlib.org/api/markers_api.html
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# thick:     line thickness
+###############################################################################
+#CMIP5
+ACCESS1-0:
+  avgstd: 0
+  color: '#5b8ed2'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+ACCESS1-3:
+  avgstd: 0
+  color: '#5b8ed2'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+AMSRE:
+  avgstd: 1
+  color: '#000000'
+  dash: ':'
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+BDBP:
+  avgstd: 1
+  color: '#000000'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 3
+BNU-ESM:
+  avgstd: 0
+  color: '#c47900'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CCSM4:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CERES-SYN1deg:
+  avgstd: 0
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 1
+CESM1-BGC:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CESM1-CAM5:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+CESM1-CAM5-1-FV2:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+CESM1-FASTCHEM:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: -.
+  facecolor: none
+  mark: x
+  thick: 1
+CESM1-WACCM:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: -.
+  facecolor: none
+  mark: +
+  thick: 1
+CLARA-A2:
+  avgstd: 0
+  color: '#00ffff'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 3
+CMAP:
+  avgstd: 1
+  color: '#000000'
+  dash: --
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+CMCC-CESM:
+  avgstd: 0
+  color: '#e82023'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CMCC-CM:
+  avgstd: 0
+  color: '#e82023'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CMCC-CMS:
+  avgstd: 0
+  color: '#e82023'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+CNRM-AM-PRE6:
+  avgstd: 0
+  color: '#1e4c24'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CNRM-CM5:
+  avgstd: 0
+  color: '#91d67e'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CSIRO-Mk3-6-0:
+  avgstd: 0
+  color: '#f14b20'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CanCM4:
+  avgstd: 0
+  color: '#1e4c24'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CanESM2:
+  avgstd: 0
+  color: '#1e4c24'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+EC-EARTH:
+  avgstd: 0
+  color: '#7c63b8'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+ERA-Interim:
+  avgstd: 0
+  color: '#ffc800'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 3
+ERAINT:
+  avgstd: 1
+  color: '#000000'
+  dash: -.
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+ESACCI-AEROSOL:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+ESACCI-AMSR:
+  avgstd: 0
+  color: '#000000'
+  dash: --
+  facecolor: none
+  mark: x
+  thick: 4
+ESACCI-CLOUD:
+  avgstd: 0
+  color: '#ff0000'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 3
+ESACCI-SSMI:
+  avgstd: 0
+  color: '#000000'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 4
+FGOALS-g2:
+  avgstd: 0
+  color: '#f89a1c'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+FIO-ESM:
+  avgstd: 0
+  color: '#4dbb37'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+GFDL-CM2p1:
+  avgstd: 0
+  color: '#23366d'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 1
+GFDL-CM3:
+  avgstd: 0
+  color: '#23366d'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+GFDL-ESM2G:
+  avgstd: 0
+  color: '#23366d'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+GFDL-ESM2M:
+  avgstd: 0
+  color: '#23366d'
+  dash: -.
+  facecolor: none
+  mark: ^
+  thick: 1
+GISS-E2-H:
+  avgstd: 0
+  color: '#771d7b'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+GISS-E2-H-CC:
+  avgstd: 0
+  color: '#771d7b'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+GISS-E2-R:
+  avgstd: 0
+  color: '#771d7b'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+GISS-E2-R-CC:
+  avgstd: 0
+  color: '#771d7b'
+  dash: -.
+  facecolor: none
+  mark: x
+  thick: 1
+GPCP-1DD-V12:
+  avgstd: 1
+  color: '#000000'
+  dash: -.
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+HadCM3:
+  avgstd: 0
+  color: '#7a8b26'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+HadGEM2-A:
+  avgstd: 0
+  color: '#7a8b26'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+HadGEM2-AO:
+  avgstd: 0
+  color: '#7a8b26'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+HadGEM2-CC:
+  avgstd: 0
+  color: '#7a8b26'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+HadGEM2-ES:
+  avgstd: 0
+  color: '#7a8b26'
+  dash: -.
+  facecolor: none
+  mark: o
+  thick: 1
+HadISST:
+  avgstd: 1
+  color: '#000000'
+  dash: --
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+IGAG/SPARC:
+  avgstd: 0
+  color: '#f89a1c'
+  dash: '-'
+  facecolor: '#f89a1c'
+  mark: o
+  thick: 3
+INMCM4:
+  avgstd: 0
+  color: '#a1252c'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+IPSL-CM5A-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+IPSL-CM5A-MR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+IPSL-CM5B-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+MERRA:
+  avgstd: 1
+  color: '#000000'
+  dash: -.
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+MIROC-ESM:
+  avgstd: 0
+  color: '#b85fb6'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+MIROC-ESM-CHEM:
+  avgstd: 0
+  color: '#b85fb6'
+  dash: -.
+  facecolor: none
+  mark: ^
+  thick: 1
+MIROC4h:
+  avgstd: 0
+  color: '#b85fb6'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 1
+MIROC5:
+  avgstd: 0
+  color: '#b85fb6'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+MODIS:
+  avgstd: 1
+  color: '#00ff00'
+  dash: '-'
+  facecolor: '#00ff00'
+  mark: o
+  thick: 3
+MOHC-HadISST:
+  avgstd: 1
+  color: '#000000'
+  dash: --
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+MPI-ESM-LR:
+  avgstd: 0
+  color: '#5da1a2'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+MPI-ESM-MR:
+  avgstd: 0
+  color: '#5da1a2'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+MPI-ESM-P:
+  avgstd: 0
+  color: '#5da1a2'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+MPIESM-1-1:
+  avgstd: 0
+  color: '#23366d'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+MRI-CGCM3:
+  avgstd: 0
+  color: '#adff2f'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+MRI-ESM1:
+  avgstd: 0
+  color: '#adff2f'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+NCEP:
+  avgstd: 1
+  color: '#000000'
+  dash: -.
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+NIWA-BS:
+  avgstd: 1
+  color: '#000000'
+  dash: --
+  facecolor: none
+  mark: v
+  thick: 3
+NSIDC:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+NSIDC-BT:
+  avgstd: 0
+  color: '#000000'
+  dash: --
+  facecolor: none
+  mark: x
+  thick: 3
+NSIDC-NT:
+  avgstd: 0
+  color: '#000000'
+  dash: ':'
+  facecolor: none
+  mark: x
+  thick: 3
+NorESM1-M:
+  avgstd: 0
+  color: '#f13aa7'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+NorESM1-ME:
+  avgstd: 0
+  color: '#f13aa7'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+PATMOS-x:
+  avgstd: 0
+  color: '#0000ff'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 3
+TRMM-3B43-v7-0.25deg:
+  avgstd: 1
+  color: '#000000'
+  dash: --
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+TRMM-L3:
+  avgstd: 1
+  color: '#000000'
+  dash: --
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+bcc-csm1-1:
+  avgstd: 0
+  color: '#94191e'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+bcc-csm1-1-m:
+  avgstd: 0
+  color: '#94191e'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+inmcm4:
+  avgstd: 0
+  color: '#a1452c'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+#CMIP6
+ACCESS-ESM1-5:
+  avgstd: 0
+  color: '#00B050'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+AWI-CM-1-1-MR:
+  avgstd: 0
+  color: '#9900FF'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
+BCC-CSM2-MR:
+  avgstd: 0
+  color: '#94191E'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+BCC-ESM1:
+  avgstd: 0
+  color: '#94191E'
+  dash: '-'
+  facecolor: none
+  mark: s
+  thick: 1
+CAMS-CSM1-0:
+  avgstd: 0
+  color: '#FFFF00'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CanESM5:
+  avgstd: 0
+  color: '#1E4C24'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CanESM5-CanOE:
+  avgstd: 0
+  color: '#1E4C24'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CESM2:
+  avgstd: 0
+  color: '#43B2D8'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+CESM2-FV2:
+  avgstd: 0
+  color: '#43B2D8'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CESM2-WACCM:
+  avgstd: 0
+  color: '#43B2D8'
+  dash: -.
+  facecolor: none
+  mark: s
+  thick: 1
+CMCC-CM2-SR5:
+  avgstd: 0
+  color: #564f40
+  dash: -.
+  facecolor: none
+  mark: s
+  thick: 1
+CMCC-ESM2:
+  avgstd: 0
+  color: #564f40
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CNRM-CM6-1:
+  avgstd: 0
+  color: '#91D67E'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CNRM-ESM2-1:
+  avgstd: 0
+  color: '#91D67E'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+E3SM-1-0:
+  avgstd: 0
+  color: '#FFCC00'
+  dash: ':'
+  facecolor: none
+  mark: o
+  thick: 1
+EC-Earth3-CC:
+  avgstd: 0
+  color: '#d99694'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+EC-Earth3-Veg:
+  avgstd: 0
+  color: '#d99694'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+GFDL-AM4:
+  avgstd: 0
+  color: '#23366D'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+GFDL-CM4:
+  avgstd: 0
+  color: '#23366D'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+GFDL-ESM4:
+  avgstd: 0
+  color: '#23366D'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+GISS-E2-1-G:
+  avgstd: 0
+  color: '#771D7B'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+GISS-E2-1-H:
+  avgstd: 0
+  color: '#771D7B'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+HadGEM3-GC31-LL:
+  avgstd: 0
+  color: '#7A8B26'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+INM-CM4-8:
+  avgstd: 0
+  color: '#A1252C'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+INM-CM5-0:
+  avgstd: 0
+  color: '#A1252C'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+IPSL-CM6A-LR:
+  avgstd: 0
+  color: '#5B53AE'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
+IPSL-CM6A-MR:
+  avgstd: 0
+  color: '#5B53AE'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+IPSL-CM6B-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+MIROC6:
+  avgstd: 0
+  color: '#B85FB6'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+MIROC-ES2L:
+  avgstd: 0
+  color: '#B85FB6'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+MPI-ESM1-2-LR:
+  avgstd: 0
+  color: '#5DA1A2'
+  dash: '-'
+  facecolor: none
+  mark: s
+  thick: 1
+MPI-ESM1-2-HR:
+  avgstd: 0
+  color: '#5DA1A2'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+MPI-ESM-1-2-HAM:
+  avgstd: 0
+  color: '#5DA1A2'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+MRI-ESM2-0:
+  avgstd: 0
+  color: '#ADFF2F'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+NorCPM1:
+  avgstd: 0
+  color: '#F13AA7'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+NorESM2-MM:
+  avgstd: 0
+  color: '#F13AA7'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+NorESM2-LM:
+  avgstd: 0
+  color: '#F13AA7'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+NESM3:
+  avgstd: 0
+  color: '#AEAAAA'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+SAM0-UNICON:
+  avgstd: 0
+  color: '#0BF7C8'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
+TaiESM1:
+  avgstd: 0
+  color: '#4B5640'
+  dash: '-'
+  facecolor: none
+  mark: 's'
+  thick: 1
+UKESM1-0-LL:
+  avgstd: 0
+  color: '#A43C70'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+MultiModelMean:
+  avgstd: 1
+  color: '#ff0000'
+  dash: '-'
+  facecolor: '#ff0000' #'#C47900'
+  mark: 'o'
+  thick: 1.5
+MultiModelMedian:
+  avgstd: 1
+  color: '#0000ff'
+  dash: '-'
+  facecolor: '#0000ff'
+  mark: 'o'
+  thick: 3
+OBS:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: '*'
+  thick: 5
+Jena_CarboScope:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: '*'
+  thick: 5
+MTE:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: '*'
+  thick: 5
+FLUXCOM:
+  avgstd: 1
+  color: '#000000'
+  dash: '--'
+  facecolor: '#000000'
+  mark: 'p'
+  thick: 5
+CAMS:
+  avgstd: 1
+  color: '#000000'
+  dash: '--'
+  facecolor: '#000000'
+  mark: 'p'
+  thick: 5
+GCP:
+  avgstd: 1
+  color: '#000000'
+  dash: ':'
+  facecolor: '#000000'
+  mark: 'P'
+  thick: 5
+LAI3g:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: '*'
+  thick: 5
+GIMMS-LAI4g:
+  avgstd: 1
+  color: '#000000'
+  dash: '--'
+  facecolor: '#000000'
+  mark: 'p'
+  thick: 5
+GLASS:
+  avgstd: 1
+  color: '#000000'
+  dash: ':'
+  facecolor: '#000000'
+  mark: 'P'
+  thick: 5
+NDP:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: '*'
+  thick: 5
+HWSD:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: '*'
+  thick: 5
+HWSD+NCSCD:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: '*'
+  thick: 5
+default:
+  avgstd: 0
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 1
+CMIP5_historical:
+  avgstd: 0
+  color: '#62B1F5'
+  dash: '-'
+  facecolor: '#62B1F5'
+  mark: 4
+  thick: 1
+CMIP5_historical-rcp85:
+  avgstd: 0
+  color: '#62B1F5'
+  dash: '-'
+  facecolor: '#62B1F5'
+  mark: 4
+  thick: 1
+CMIP5_esmHistorical:
+  avgstd: 0
+  color: '#2A5072'
+  dash: '-'
+  facecolor: '#2A4072'
+  mark: 4
+  thick: 1
+CMIP6_historical:
+  avgstd: 0
+  color: '#EB523F'
+  dash: '-'
+  facecolor: '#EB523F'
+  mark: 5
+  thick: 1
+CMIP6_esm-hist:
+  avgstd: 0
+  color: '#7B2E25'
+  dash: '-'
+  facecolor: '#7B2E25'
+  mark: 5
+  thick: 1
+CMIP5_rcp85:
+  avgstd: 0
+  color: '#62B1F5'
+  dash: '-'
+  facecolor: '#62B1F5'
+  mark: 4
+  thick: 1
+CMIP5_esmrcp85:
+  avgstd: 0
+  color: '#2A5072'
+  dash: '-'
+  facecolor: '#2A4072'
+  mark: 4
+  thick: 1
+CMIP6_ssp585:
+  avgstd: 0
+  color: '#EB523F'
+  dash: '-'
+  facecolor: '#EB523F'
+  mark: 5
+  thick: 1
+CMIP6_esm-ssp585:
+  avgstd: 0
+  color: '#7B2E25'
+  dash: '-'
+  facecolor: '#7B2E25'
+  mark: 5
+  thick: 1
+Ncycle_mmm:
+  avgstd: 0
+  color: '#FF0000'
+  dash: 'dashdot'
+  facecolor: '#FF0000'
+  mark: 'X' # '$\heartsuit$'
+  thick: 3
+non-Ncycle_mmm:
+  avgstd: 0
+  color: '#FF0000'
+  dash: 'dotted'
+  facecolor: '#FF0000'
+  mark: 'X' # '$\clubsuit$'
+  thick: 3
