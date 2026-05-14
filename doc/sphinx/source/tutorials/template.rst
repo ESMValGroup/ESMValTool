@@ -64,7 +64,7 @@ Add content here.
 * Use admonitions from `PyData Theme documentation: Admonitions`_.
 * Include other files from within the documentation:
 
-  .. include:: esmvaltool_output_header.txt
+  .. include:: files/esmvaltool_output_header.txt
      :code:
 
 High level step 2
