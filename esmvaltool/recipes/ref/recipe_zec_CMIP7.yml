@@ -1,0 +1,77 @@
+# ESMValTool
+# recipe_zec.yml
+---
+documentation:
+  title: >
+    Zero Emission Commitment (ZEC) test for fake CMIP7 data.
+    To be updated when real CMIP7 data is available.
+
+  description: >
+    Calculate Zero Emission Commitment (ZEC) temperature.
+
+  authors:
+    - gier_bettina
+  maintainer:
+    - gier_bettina
+  references:
+    - macdougall20
+  domains:
+    - global
+  realms:
+    - atmos
+
+preprocessors:
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+  anomaly_base:
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: full
+
+
+diagnostics:
+
+  zec:
+    description: Calculate ZEC for all available models.
+    variables:
+      tas_base:
+        short_name: tas
+        preprocessor: anomaly_base
+        exp: esm-flat10
+        project: CMIP7
+        grid: g999
+        activity: C4MIP
+        institute: MOHC
+        mip: atmos
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-h2m-hxy-u
+        additional_datasets:
+          - {dataset: DUMMY-MODEL, ensemble: r1i1p1f3, start_year: 1906,
+             end_year: 1925} # real esm-flat10 range should be 90-110
+      tas:
+        short_name: tas
+        preprocessor: spatial_mean
+        exp: esm-flat10-zec
+        project: CMIP7
+        grid: g999
+        activity: C4MIP
+        institute: MOHC
+        mip: atmos
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-h2m-hxy-u
+        additional_datasets:
+          - {dataset: DUMMY-MODEL, ensemble: r1i1p1f3, start_year: 1916,
+             end_year: 2015} # real esm-flat10-zec timerange should start at 100
+    scripts:
+      zec:
+        script: climate_metrics/zec.py
+        zec_year: 50
