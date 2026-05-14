@@ -7,11 +7,14 @@
 .. 3. Add the filename (without the '.rst' extension)
 ..    to a 'toctree' directive
 ..    in the 'tutorials/index.rst' file.
-.. 4. Use the name of the tutorial for the title below.
+.. 4. Use the name of the tutorial for the title below
+..    and the reference label.
 .. 5. Remove ':orphan:', these comments,
 ..    and 'The language of tutorials' section (below).
 ..
 .. https://diataxis.fr/tutorials provides more information.
+
+.. _title_of_the_tutorial:
 
 Title of the tutorial
 =====================
@@ -62,7 +65,14 @@ Add content here.
 * Consider including diagrams to support the text.
 * Use any free icons from `Font Awesome`_ via an ``:fa:`` directive.
 * Use admonitions from `PyData Theme documentation: Admonitions`_.
-* Include other files from within the documentation:
+* Link to other files within the documentation:
+
+  * Link to pages via ``:doc:`/develop/recipe```
+    (renders as :doc:`/develop/recipe`).
+  * Link to sections via ``:ref:`diagnostic_from_example```
+    (renders as :ref:`diagnostic_from_example`).
+
+* Include other files within the documentation:
 
   .. include:: files/esmvaltool_output_header.txt
      :code:
