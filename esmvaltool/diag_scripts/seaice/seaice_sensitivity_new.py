@@ -72,9 +72,12 @@ def create_dataset_dict(cfg):
         elif group == "siconc_obs":
             siconc_obs.append(dataset)
 
-    # Add the pairs of obs
+    # Create a string for each pair of observations
     pairs = [f"{t}_v_{s}" for t in tasa_obs for s in siconc_obs]
+
+    # Add the pairs to the dictionary
     for pair in pairs:
+        dataset_dict.setdefault(pair, {})
         dataset_dict[pair]["type"] = "multi-obs"
 
         # Don't label the obs now, but change here later if needed

@@ -143,7 +143,7 @@ diagnostics:
           *tasa_obs
     scripts:
       sea_ice_sensitivity_script:
-        script: /home/users/naomi.parsons/All_ESMValTool_related/ESMValTool/esmvaltool/diag_scripts/seaice/seaice_sensitivity_new.py  # TODO
+        script: seaice/seaice_sensitivity_new.py  # TODO
         observations:
           data_period: &data_period
             start_year: *data_start
@@ -175,6 +175,6 @@ diagnostics:
         <<: *tasa
     scripts:
       sea_ice_sensitivity_script:
-        script: /home/users/naomi.parsons/All_ESMValTool_related/ESMValTool/esmvaltool/diag_scripts/seaice/seaice_sensitivity_new.py  # TODO
+        script: seaice/seaice_sensitivity_new.py  # TODO
         observations:
           data_period: *data_period
