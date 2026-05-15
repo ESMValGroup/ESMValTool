@@ -41,6 +41,9 @@ def create_dataset_dict(cfg):
     # Initialise a dictionary
     dataset_dict = {}
 
+    tasa_obs = []
+    siconc_obs = []
+
     # Iterate over the data in the cfg
     for section in cfg["input_data"].values():
 
@@ -51,16 +54,8 @@ def create_dataset_dict(cfg):
         # Create the dictionary's section for the dataset if it doesn't exist
         dataset_dict.setdefault(dataset, {})
 
-        # Add the GMST obs
-        if group == "tasa_obs":
-            dataset_dict[dataset]["type"] = "tasa_obs"
-
-        # Add the SIA obs
-        elif group == "siconc_obs":
-            dataset_dict[dataset]["type"] = "siconc_obs"
-
-        # Add the models
-        else:
+        # Add the models, they are in tas and siconc
+        if group == "tas":
             dataset_dict[dataset]["type"] = "model"
 
             # Add whether or not to label the models
@@ -69,30 +64,26 @@ def create_dataset_dict(cfg):
             else:
                 dataset_dict[dataset]["label"] = "unlabelled"
 
+        # List the GMST obs
+        elif group == "tasa_obs":
+            tasa_obs.append(dataset)
+
+        # List the SIA obs
+        elif group == "siconc_obs":
+            siconc_obs.append(dataset)
+
+    # Add the pairs of obs
+    pairs = [f"{t}_v_{s}" for t in tasa_obs for s in siconc_obs]
+    for pair in pairs:
+        dataset_dict[pair]["type"] = "multi-obs"
+
+        # Don't label the obs now, but change here later if needed
+        dataset_dict[pair]["label"] = "unlabelled"
+
     return dataset_dict
 
 
-def create_row_indices(dataset_dict):
-    # Initialize list
-    rows = []
-
-    # Add the models as they are
-    for dataset in dataset_dict:
-        if dataset_dict[dataset]["type"] == "model":
-            rows.append(dataset)
-
-    # List the obs
-    tasa_obs = [ds for ds in dataset_dict if dataset_dict[ds]["type"] == "tasa_obs"]
-    sic_obs = [ds for ds in dataset_dict if dataset_dict[ds]["type"] == "siconc_obs"]
-
-    # Add the pairs of obs
-    pairs = [f"{t}_v_{s}" for t in tasa_obs for s in sic_obs]
-    rows.append(pairs)
-
-    return rows
-
-
-def create_blank_dataframe(cfg, datasets):
+def create_df_columns(cfg):
     # This feeds through from the recipe in both diagnostics
     data_start = cfg['observations']['data_period']['start_year']
     data_end = cfg['observations']['data_period']['end_year']
@@ -132,42 +123,22 @@ def create_blank_dataframe(cfg, datasets):
     # Add single-level columns for dataset info
     first_columns = pd.Index(["label", "type"])
 
-    # Create dataframe
+    # Concatenate columns
     columns = first_columns.append(data_columns)
-    df = pd.DataFrame(
-        data=np.nan,
-        index=datasets,
-        columns=columns
-    )
 
+    return columns
+
+
+def create_blank_dataframe(cfg, dataset_dict, columns):
+    # Create DataFrame from dataset_dict
+    df = pd.DataFrame.from_dict(dataset_dict, orient="index")
+
+    # Reindex to ensure all required columns are present
+    df = df.reindex(columns=columns, fill_value=np.nan)
+
+    # Fill missing "label" and "type" with empty string
+    df[["label", "type"]] = df[["label", "type"]].fillna("")
     return df
-
-
-# def fetch_cube(dataset, variable, cfg):
-#     """Fetch a data cube for a dataset and variable using info from the config."""
-#     logger.debug(
-#         "Fetching cube for dataset: %s, variable: %s",
-#         dataset,
-#         variable,
-#     )
-#
-#     # Read the data from the config object
-#     input_data = cfg["input_data"].values()
-#
-#     # Find the correct filepath for the dataset
-#     for section in input_data:
-#         # Check the dataset AND variable matches as models have two entries
-#         # Only matching the first three letters to avoid issues with sic vs siconc
-#         if (
-#             section["dataset"] == dataset
-#             and section["short_name"][:3] == variable[:3]
-#         ):
-#             filepath = section["filename"]
-#             break
-#
-#     # Load the cube using iris
-#     cube = iris.load_cube(filepath, variable)
-#     return cube
 
 
 if __name__ == "__main__":
@@ -176,7 +147,9 @@ if __name__ == "__main__":
         print(config)
         print('-------------')
         datasets = create_dataset_dict(config)
-        rows = create_row_indices(datasets)
-        print(rows)
+        print(datasets)
         print('-------------')
-        print(create_blank_dataframe(config, rows))
+        columns = create_df_columns(config)
+        print(columns)
+        print('--------------')
+        print(create_blank_dataframe(config, datasets, columns))
