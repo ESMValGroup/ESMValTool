@@ -218,7 +218,7 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
-              GPCP-V2.3:
+              GPCP-V3.3:
                 color: black
                 label: '{dataset}'
                 linestyle: '-'
