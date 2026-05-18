@@ -86,7 +86,7 @@ def create_dataset_dict(cfg):
     return dataset_dict
 
 
-def create_df_columns(cfg):
+def retrieve_periods(cfg):
     # This feeds through from the recipe in both diagnostics
     data_start = cfg['observations']['data_period']['start_year']
     data_end = cfg['observations']['data_period']['end_year']
@@ -100,6 +100,10 @@ def create_df_columns(cfg):
     else:
         periods = [f"{data_start}-{data_end}"]
 
+    return periods
+
+
+def create_df_columns(periods):
     # In future the historical period will extend beyond 2014
     num_periods = len(periods)
 
@@ -123,8 +127,8 @@ def create_df_columns(cfg):
     # Create main column headers
     data_columns = pd.MultiIndex.from_arrays([period, regression, statistic], names=["period", "regression", "statistic"])
 
-    # Add single-level columns for dataset info
-    first_columns = pd.Index(["label", "type"])
+    # Add equivalent of single-level columns for dataset info
+    first_columns = pd.MultiIndex.from_arrays([["", ""], ["", ""], ["label", "type"]], names=["period", "regression", "statistic"])
 
     # Concatenate columns
     columns = first_columns.append(data_columns)
@@ -136,23 +140,175 @@ def create_blank_dataframe(cfg, dataset_dict, columns):
     # Create DataFrame from dataset_dict
     df = pd.DataFrame.from_dict(dataset_dict, orient="index")
 
+    # Adjustment to account for multi-row headers
+    df.columns = pd.MultiIndex.from_tuples([("", "", col) for col in df.columns])
+
     # Reindex to ensure all required columns are present
     df = df.reindex(columns=columns, fill_value=np.nan)
 
     # Fill missing "label" and "type" with empty string
-    df[["label", "type"]] = df[["label", "type"]].fillna("")
+    df[("", "", "label")] = df[("", "", "label")].fillna("")
+    df[("", "", "type")] = df[("", "", "type")].fillna("")
+
     return df
+
+
+def fetch_cube(dataset, variable, time_range, cfg):
+    """Fetch a data cube for a dataset and variable using info from the config."""
+    logger.debug(
+        "Fetching cube for dataset: %s, variable: %s",
+        dataset,
+        variable,
+    )
+
+    # Read the data from the config object
+    input_data = cfg["input_data"].values()
+
+    # Find the correct filepath for the dataset
+    for section in input_data:
+        # Check the dataset AND variable matches as models have two entries
+        # Only matching the first three letters to avoid issues with sic vs siconc
+        if (
+            section["dataset"] == dataset
+            and section["short_name"][:3] == variable[:3]
+        ):
+            filepath = section["filename"]
+            break
+
+    # Read the time constraint from the period
+    start_year, end_year = time_range.split("-")
+    time_constraint = iris.Constraint(
+        time=lambda cell: int(start_year) <= cell.point.year <= int(end_year)
+    )
+
+    # Load the cube using iris with the time constraint
+    cube = iris.load_cube(filepath, variable & time_constraint)
+    return cube
+
+
+def calculate_annual_trend(cube):
+    """Calculate the linear trend of a cube over time using scipy.stats.linregress."""
+    logger.debug("Calculating annual trend for cube %s.", cube.name())
+
+    # Depending on preprocessor, coord may be 'year' or 'time'
+    if "year" in cube.coords():
+        no_years = list(range(len(cube.coord("years").points)))
+    else:
+        no_years = list(range(len(cube.coord("time").points)))
+
+    # Return all of slope, intercept, rvalue, pvalue, stderr as hatching needs p
+    return linregress(no_years, cube.data)
+
+
+def calculate_direct_stats(dataset, time_range, cfg):
+    """Calculate the direct sensitivity of siconc to tas for a given dataset."""
+    logger.debug("Calculating direct sensitivity for dataset %s.", dataset)
+
+    # Fetch the required cubes
+    siconc_cube = fetch_cube(dataset, "siconc", time_range, cfg)
+    tas_cube = fetch_cube(dataset, "tas", time_range, cfg)
+
+    # regression (tas as independent) gives slope, intercept, rvalue, pvalue, stderr
+    return linregress(tas_cube.data, siconc_cube.data)
+
+
+def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, time_range, cfg):
+    """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
+    logger.debug(
+        "Calculating cross sensitivity for datasets %s, %s.",
+        tasa_dataset,
+        siconc_dataset,
+    )
+
+    # Fetch the required cubes
+    siconc_cube = fetch_cube(siconc_dataset, "siconc", time_range, cfg)
+    tasa_cube = fetch_cube(tasa_dataset, "tasa", time_range, cfg)
+
+    # regression (tasa as independent) gives slope, intercept, rvalue, pvalue, stderr
+    return linregress(tasa_cube.data, siconc_cube.data)
+
+
+def add_values_to_df(df, data_period, cfg):
+    # Calculate all the values for the models
+    models = df[df.loc[:, ("", "", "type")] == "model"]
+    for dataset_name, row in models.iterrows():
+
+        # Calculate annual tas trend
+        tas_cube = fetch_cube(dataset_name, "tas", data_period, cfg)
+        ann_tas_trend = calculate_annual_trend(tas_cube)
+        # Add values to dataframe
+        df.at[dataset_name, (data_period, "gmst_over_time", "slope")] = ann_tas_trend.slope
+        df.at[dataset_name, (data_period, "gmst_over_time", "r_value")] = ann_tas_trend.rvalue
+        df.at[dataset_name, (data_period, "gmst_over_time", "p_value")] = ann_tas_trend.pvalue
+        df.at[dataset_name, (data_period, "gmst_over_time", "std_err_slope")] = ann_tas_trend.stderr
+
+        # Calculate annual siconc trend
+        siconc_cube = fetch_cube(dataset_name, "siconc", data_period, cfg)
+        ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        # Add values to dataframe
+        df.at[dataset_name, (data_period, "sia_over_time", "slope")] = ann_siconc_trend.slope
+        df.at[dataset_name, (data_period, "sia_over_time", "r_value")] = ann_siconc_trend.rvalue
+        df.at[dataset_name, (data_period, "sia_over_time", "p_value")] = ann_siconc_trend.pvalue
+        df.at[dataset_name, (data_period, "sia_over_time", "std_err_slope")] = ann_siconc_trend.stderr
+
+        # Calculate direct sensitivity of siconc to tas
+        direct_sensitivity = calculate_direct_stats(dataset_name, data_period, cfg)
+        # Add values to dataframe
+        df.at[dataset_name, (data_period, "sia_over_gmst", "slope")] = direct_sensitivity.slope
+        df.at[dataset_name, (data_period, "sia_over_gmst", "r_value")] = direct_sensitivity.rvalue
+        df.at[dataset_name, (data_period, "sia_over_gmst", "p_value")] = direct_sensitivity.pvalue
+        df.at[dataset_name, (data_period, "sia_over_gmst", "std_err_slope")] = direct_sensitivity.stderr
+
+    # Calculate all the values for the observations
+    obs = df[df.loc[:, ("", "", "type")] == "multi-obs"]
+    for combined_name, row in obs.iterrows():
+        # Calculate annual tasa trend
+        gmst_dataset = combined_name.split("_v_")[0]
+        tasa_cube = fetch_cube(gmst_dataset, "tasa", data_period, cfg)
+        ann_tasa_trend = calculate_annual_trend(tasa_cube)
+        # Add values to dataframe
+        df.at[combined_name, (data_period, "gmst_over_time", "slope")] = ann_tasa_trend.slope
+        df.at[combined_name, (data_period, "gmst_over_time", "r_value")] = ann_tasa_trend.rvalue
+        df.at[combined_name, (data_period, "gmst_over_time", "p_value")] = ann_tasa_trend.pvalue
+        df.at[combined_name, (data_period, "gmst_over_time", "std_err_slope")] = ann_tasa_trend.stderr
+
+        # Calculate annual siconc trend
+        sia_dataset = combined_name.split("_v_")[1]
+        siconc_cube = fetch_cube(sia_dataset, "siconc", data_period, cfg)
+        ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        # Add values to dataframe
+        df.at[combined_name, (data_period, "sia_over_time", "slope")] = ann_siconc_trend.slope
+        df.at[combined_name, (data_period, "sia_over_time", "r_value")] = ann_siconc_trend.rvalue
+        df.at[combined_name, (data_period, "sia_over_time", "p_value")] = ann_siconc_trend.pvalue
+        df.at[combined_name, (data_period, "sia_over_time", "std_err_slope")] = ann_siconc_trend.stderr
+
+        # Calculate sensitivity of siconc to tasa
+        cross_dataset_stats = calculate_cross_dataset_stats(gmst_dataset, sia_dataset, data_period, cfg)
+        # Add values to dataframe
+        df.at[combined_name, (data_period, "sia_over_gmst", "slope")] = cross_dataset_stats.slope
+        df.at[combined_name, (data_period, "sia_over_gmst", "r_value")] = cross_dataset_stats.rvalue
+        df.at[combined_name, (data_period, "sia_over_gmst", "p_value")] = cross_dataset_stats.pvalue
+        df.at[combined_name, (data_period, "sia_over_gmst", "std_err_slope")] = cross_dataset_stats.stderr
+
+    return df
+
+
+def main(config):
+    print('-------------')
+    print(config)
+    print('-------------')
+    datasets = create_dataset_dict(config)
+    periods = retrieve_periods(config)
+    columns = create_df_columns(periods)
+    df = create_blank_dataframe(config, datasets, columns)
+    print('-------------')
+    data_period = periods[0]
+    updated = add_values_to_df(df, data_period, config)
+    updated = add_values_to_df(df, "1979-2007", config)
+    print(updated)
+    updated.to_csv("dataframe.csv")
 
 
 if __name__ == "__main__":
     with run_diagnostic() as config:
-        print('-------------')
-        print(config)
-        print('-------------')
-        datasets = create_dataset_dict(config)
-        print(datasets)
-        print('-------------')
-        columns = create_df_columns(config)
-        print(columns)
-        print('--------------')
-        print(create_blank_dataframe(config, datasets, columns))
+        main(config)
