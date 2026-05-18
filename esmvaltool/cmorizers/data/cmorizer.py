@@ -645,18 +645,19 @@ class DataCommand:
                 str(dataset_info["last_access"]),
                 "%Y-%m-%d",
             )
-            age = datetime.datetime.now().year - date.year
+            age = datetime.datetime.now(datetime.UTC).year - date.year
             shade = max(100, 255 - age * 15)
             color = f"rgb({shade},{shade},{shade})"
             tier = dataset_info["tier"]
+            unrestricted_tier = 2
             has_downloader = self._has_downloader(dataset)
             table.add_row(
                 dataset,
                 f"[green]{tier}[/green]"
-                if tier == 2
+                if tier == unrestricted_tier
                 else f"[orange3]{tier}[/orange3]",
                 f"[green]{has_downloader}[/green]"
-                if has_downloader
+                if has_downloader == "Yes"
                 else f"[red]{has_downloader}[/red]",
                 f"[{color}]{date.strftime('%Y-%m-%d')}[/{color}]",
             )
