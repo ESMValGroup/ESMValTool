@@ -43,12 +43,15 @@ It can take a few minutes after signing for this to update.
    :align:   center
    :width:   10cm
 
-If the CLA status does not update within a few minutes,
-you can trigger a re-run of the check.
-Open this URL, with the number changed to the number of your pull request:
-https://cla-assistant.io/check/ESMValGroup/ESMValTool?pullRequest=4440
-If your PR is in another repository in ESMValGroup (e.g. ESMValCore)
-you will also need to change the repository name (here: ESMValTool) in this URL.
+.. tip::
+
+   If the CLA status does not update within a few minutes,
+   you can trigger a re-run of the check.
+   Open this URL, with the number changed to the number of your pull request:
+   https://cla-assistant.io/check/ESMValGroup/ESMValTool?pullRequest=4440
+   If your PR is in another repository in ESMValGroup (e.g. ESMValCore)
+   you will also need to change the repository name (here: ESMValTool)
+   in this URL.
 
 
 How to withdraw your agreement
