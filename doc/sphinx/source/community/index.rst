@@ -25,6 +25,7 @@ help, e.g. on our
 
 		Contributing code and documentation <code_documentation>
 		Contributing a diagnostic or recipe <diagnostic>
+		Contributor license agreement <contributor_license_agreement>
 		Policy on backward compatibility <backward_compatibility>
 		Broken recipe policy <broken_recipe_policy>
 		Contributing a dataset <dataset>
