@@ -87,6 +87,7 @@ def create_dataset_dict(cfg):
     return dataset_dict
 
 
+# Setting this up to query data and obs periods by name later
 Periods = namedtuple("Periods", ["periods", "obs_period", "data_period"])
 
 
@@ -315,6 +316,103 @@ def write_df_to_csv(df, filename, cfg):
     logger.info("Wrote data to %s", csv_filepath)
 
 
+
+def roach_style_plot_from_df(df, cfg):
+    """Save a plot of trend in SIA against trend in GMST to the given filename."""
+
+    # Look up variable to determine plot title
+    data = cfg["input_data"].values()
+    first_variable = next(iter(data))
+
+    # Set plot title and filename
+    if first_variable["diagnostic"] == "arctic":
+        title = "Trends in Annual Mean Temperature And September Arctic Sea Ice"
+        save_as = "September Arctic sea ice trends"
+    elif first_variable["diagnostic"] == "antarctic":
+        title = "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice"
+        save_as = "Annual Antarctic sea ice trends"
+
+    # Only plot the entire data period in this style
+    data_period = retrieve_periods(cfg).data_period
+
+    # Set up the figure
+    fig, ax = plt.subplots(figsize=(10, 6), layout="constrained")
+    fig.suptitle(title, wrap=True)
+
+    # Set up for colouring the points
+    norm = Normalize(vmin=-1, vmax=1)
+    cmap = plt.get_cmap("PiYG_r")
+
+    # Choose p-value to hatch
+    min_p_to_hatch = 0.05
+
+    # Set up the axes
+    ax.axhline(color="black", alpha=0.5)
+    ax.axvline(color="black", alpha=0.5)
+    ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
+    ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
+
+    # Iterate over the values in the dataframe
+    for i, dataset in df.iterrows():
+
+        # Look up the relevant values
+        gmst_trend = df.at[dataset, (data_period, "gmst_over_time", "slope")]
+        sia_trend = df.at[dataset, (data_period, "sia_over_time", "slope")]
+        r_cross = df.at[dataset, (data_period, "sia_over_gmst", "r_value")]
+        p_sia = df.at[dataset, (data_period, "sia_over_time", "p_value")]
+
+        # The decadal figures (ten times bigger) are plotted
+        x = 10 * gmst_trend
+        y = 10 * sia_trend
+
+        # Decide if the point should be hatched
+        if p_sia >= min_p_to_hatch:
+            hatch = 5 * "/"  # This is a hatch pattern
+        else:
+            hatch = None
+
+        # Shape is different for obs
+        if dataset[("", "", "type")] == "model":
+            shape = "o"
+            edgecolor = None
+            order = None
+        else:
+            shape = "s"
+            edgecolor = "black"
+            order = 0
+
+        # Plot the point
+        plt.scatter(
+            x,
+            y,
+            marker=shape,
+            s=150,
+            c=[r_cross],
+            hatch=hatch,
+            cmap=cmap,
+            norm=norm,
+            edgecolors=edgecolor,
+            zorder=order,
+        )
+
+        # Label with the dataset if specified
+        if dataset[("", "", "label")] == "to_label":
+            plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
+
+    # Add a colour bar
+    plt.colorbar(label="Pearson correlation coefficient")
+
+    # Save the figure (also closes it)
+    caption = "Decadal trends of sea ice area and global mean temperature."
+    save_figure(
+        save_as,
+        get_provenance_record(cfg, caption),
+        cfg,
+        figure=fig,
+        close=True,
+    )
+
+
 def main(cfg):
     # Look at the datasets in the config object
     datasets = create_dataset_dict(cfg)
@@ -338,6 +436,9 @@ def main(cfg):
             f"{cfg['work_dir']}/{filename}",
             get_provenance_record(cfg, "Annual (not decadal) figures"),
         )
+
+    # Plot the 2D figure
+    roach_style_plot_from_df(filled, cfg)
 
 
 if __name__ == "__main__":
