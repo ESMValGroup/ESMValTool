@@ -485,43 +485,20 @@ def notz_style_plot_from_df(df, cfg):
         )
 
 
-
-    # Iterate over the dictionary
-    for dataset, inner_dict in data_dictionary.items():
-        ax.plot(
-            0.25,
-            inner_dict["direct_sensitivity"],
-            color="blue",
-            marker="_",
-            markersize=20,
-        )
-
-        # Label with the dataset if specified, offset correct by eye
-        if inner_dict["label"] == "to_label":
-            plt.annotate(
-                dataset,
-                xy=(0.25, inner_dict["direct_sensitivity"]),
-                xytext=(
-                    0.35,
-                    inner_dict["direct_sensitivity"] - 0.05,
-                ),
-            )
+    # TODO: stopped here
+    # Consider whether separate axes would actually be better
 
 
+    # Iterate over the values in the dataframe
+    for dataset, row in df.iterrows():
 
+        # Look up the relevant values
+        sensitivity = df.at[dataset, (data_period, "sia_over_gmst", "slope")]
 
-    # Create caption based on whether observation mean is present
-    if isinstance(obs_mean, int | float):
-        caption = (
-            "Sensitivity of sea ice area to annual mean global warming."
-            f"\nMean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
-        )
-    else:
-        caption = "Sensitivity of sea ice area to annual mean global warming."
 
     # Save the figure (also closes it)
     save_figure(
-        titles_dictionary["titles"]["notz_plot_filename"],
+        save_as,
         get_provenance_record(cfg, caption),
         cfg,
         figure=fig,
