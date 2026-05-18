@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from collections import namedtuple
 
 import iris
 import matplotlib.pyplot as plt
@@ -86,21 +87,30 @@ def create_dataset_dict(cfg):
     return dataset_dict
 
 
+Periods = namedtuple("Periods", ["periods", "obs_period", "data_period"])
+
+
 def retrieve_periods(cfg):
     # This feeds through from the recipe in both diagnostics
     data_start = cfg['observations']['data_period']['start_year']
     data_end = cfg['observations']['data_period']['end_year']
+    data_period = f"{data_start}-{data_end}"
+
+    # Set obs period to none if not present
+    obs_period = None
+    periods = [data_period]
 
     # This is only present in the arctic diagnostic
     if 'observation_period' in cfg['observations']:
         obs_start = cfg['observations']['observation_period']['start_year']
         obs_end = cfg['observations']['observation_period']['end_year']
-        if not obs_start == data_start or not obs_end == data_end:
-            periods = [f"{obs_start}-{obs_end}", f"{data_start}-{data_end}"]
-    else:
-        periods = [f"{data_start}-{data_end}"]
+        obs_period = f"{obs_start}-{obs_end}"
 
-    return periods
+        # Return both periods if present and different
+        if obs_period != data_period:
+            periods = [obs_period, data_period]
+
+    return Periods(periods=periods, obs_period=obs_period, data_period=data_period)
 
 
 def create_df_columns(periods):
@@ -136,7 +146,7 @@ def create_df_columns(periods):
     return columns
 
 
-def create_blank_dataframe(cfg, dataset_dict, columns):
+def create_blank_dataframe(dataset_dict, columns):
     # Create DataFrame from dataset_dict
     df = pd.DataFrame.from_dict(dataset_dict, orient="index")
 
@@ -310,11 +320,11 @@ def main(cfg):
     datasets = create_dataset_dict(cfg)
 
     # Retrieve the data periods (in case obs period is different)
-    data_periods = retrieve_periods(cfg)
+    data_periods = retrieve_periods(cfg).periods
 
     # Create a dataframe with the right columns
     columns = create_df_columns(data_periods)
-    df = create_blank_dataframe(cfg, datasets, columns)
+    df = create_blank_dataframe(datasets, columns)
 
     # Add the data for each period
     for data_period in data_periods:
