@@ -26,8 +26,7 @@ datasets:
     region: glb
 
 timerange_for_models: &time_period
-  #timerange: '1996/2014' #should end 2015 for CMIP7
-  timerange: 1996/1999
+  timerange: '2001/2021'
 
 
 preprocessors:
@@ -67,8 +66,8 @@ diagnostics:
         preprocessor: full_climatology
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2,
-         start_year: 2000, end_year: 2023, reference_for_monitor_diags: true}
+      - {dataset: CERES-EBAF-4-2, project: obs4MIPs, tier: 1,
+         start_year: 2001, end_year: 2021, reference_for_monitor_diags: true}
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
@@ -94,12 +93,8 @@ diagnostics:
         preprocessor: zonal_mean
         derive: true
     additional_datasets:
-      # - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2,
-         # start_year: 2001, end_year: 2021, reference_for_monitor_diags: true}
       - {dataset: CERES-EBAF-4-2, project: obs4MIPs, tier: 1,
          start_year: 2001, end_year: 2021, reference_for_monitor_diags: true}
-      # - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-         # start_year: 1996, end_year: 2016}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
