@@ -293,20 +293,41 @@ def add_values_to_df(df, data_period, cfg):
     return df
 
 
-def main(config):
-    print('-------------')
-    print(config)
-    print('-------------')
-    datasets = create_dataset_dict(config)
-    periods = retrieve_periods(config)
-    columns = create_df_columns(periods)
-    df = create_blank_dataframe(config, datasets, columns)
-    print('-------------')
-    data_period = periods[0]
-    updated = add_values_to_df(df, data_period, config)
-    updated = add_values_to_df(df, "1979-2007", config)
-    print(updated)
-    updated.to_csv("dataframe.csv")
+def write_df_to_csv(df, filename, cfg):
+    """Copy DataFrame to csv file."""
+    logger.debug("Writing dictionary to csv file.")
+
+    # Create the csv filepath using info from the config
+    csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
+
+    # Write the data to a csv file
+    df.to_csv(csv_filepath)
+    logger.info("Wrote data to %s", csv_filepath)
+
+
+def main(cfg):
+    # Look at the datasets in the config object
+    datasets = create_dataset_dict(cfg)
+
+    # Retrieve the data periods (in case obs period is different)
+    data_periods = retrieve_periods(cfg)
+
+    # Create a dataframe with the right columns
+    columns = create_df_columns(data_periods)
+    df = create_blank_dataframe(cfg, datasets, columns)
+
+    # Add the data for each period
+    for data_period in data_periods:
+        filled = add_values_to_df(df, data_period, cfg)
+
+    # Write the dataframe to file, with provenance
+    filename = "data_values"
+    write_df_to_csv(filled, filename, cfg)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(
+            f"{cfg['work_dir']}/{filename}",
+            get_provenance_record(cfg, "Annual (not decadal) figures"),
+        )
 
 
 if __name__ == "__main__":

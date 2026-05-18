@@ -148,9 +148,9 @@ diagnostics:
           data_period: &data_period
             start_year: *data_start
             end_year: *data_end
-          observation period:
+          observation_period:
             start_year: 1979
-            end_year: 2014
+            end_year: 2007  # TODO: put back to 2014
           sea ice sensitivity:
             mean: -4.01
             standard deviation: 0.32
