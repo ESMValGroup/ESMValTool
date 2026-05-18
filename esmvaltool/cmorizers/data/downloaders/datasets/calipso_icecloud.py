@@ -1,10 +1,14 @@
 """Script to download CALIPSO-ICECLOUD from its webpage."""
 
+import logging
+import subprocess
 from datetime import datetime
 
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
+
+logger = logging.getLogger(__name__)
 
 
 def download_dataset(
@@ -33,9 +37,9 @@ def download_dataset(
         Overwrite already downloaded files
     """
     if not start_date:
-        start_date = datetime(2007, 1, 1)
+        start_date = datetime(2007, 1, 1, tzinfo=datetime.UTC)
     if not end_date:
-        end_date = datetime(2015, 12, 31)
+        end_date = datetime(2022, 12, 31, tzinfo=datetime.UTC)
     loop_date = start_date
 
     downloader = NASADownloader(
@@ -48,9 +52,12 @@ def download_dataset(
     while loop_date <= end_date:
         year = loop_date.year
         for month in range(1, 13):
-            downloader.download_file(
-                "https://asdc.larc.nasa.gov/data/CALIPSO/"
-                f"LID_L3_Ice_Cloud-Standard-V1-00/{year}/"
-                f"CAL_LID_L3_Ice_Cloud-Standard-V1-00.{year}-{month:02}A.hdf",
-            )
+            try:
+                downloader.download_file(
+                    "https://data.asdc.earthdata.nasa.gov/asdc-prod-protected/"
+                    f"CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00/{year}/"
+                    f"CAL_LID_L3_Ice_Cloud-Standard-V2-00.{year}-{month:02d}A.hdf",
+                )
+            except subprocess.CalledProcessError:
+                logger.info("no data downloaded for %d-%02d", year, month)
         loop_date += relativedelta.relativedelta(years=1)
