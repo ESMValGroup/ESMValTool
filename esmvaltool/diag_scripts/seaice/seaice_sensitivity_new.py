@@ -316,7 +316,6 @@ def write_df_to_csv(df, filename, cfg):
     logger.info("Wrote data to %s", csv_filepath)
 
 
-
 def roach_style_plot_from_df(df, cfg):
     """Save a plot of trend in SIA against trend in GMST to the given filename."""
 
@@ -332,12 +331,15 @@ def roach_style_plot_from_df(df, cfg):
         title = "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice"
         save_as = "Annual Antarctic sea ice trends"
 
-    # Only plot the entire data period in this style
-    data_period = retrieve_periods(cfg).data_period
-
     # Set up the figure
     fig, ax = plt.subplots(figsize=(10, 6), layout="constrained")
     fig.suptitle(title, wrap=True)
+
+    # Set up the axes
+    ax.axhline(color="black", alpha=0.5)
+    ax.axvline(color="black", alpha=0.5)
+    ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
+    ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
 
     # Set up for colouring the points
     norm = Normalize(vmin=-1, vmax=1)
@@ -346,11 +348,8 @@ def roach_style_plot_from_df(df, cfg):
     # Choose p-value to hatch
     min_p_to_hatch = 0.05
 
-    # Set up the axes
-    ax.axhline(color="black", alpha=0.5)
-    ax.axvline(color="black", alpha=0.5)
-    ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
-    ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
+    # Only plot the entire data period in this style
+    data_period = retrieve_periods(cfg).data_period
 
     # Iterate over the values in the dataframe
     for dataset, row in df.iterrows():
@@ -413,6 +412,127 @@ def roach_style_plot_from_df(df, cfg):
     )
 
 
+
+
+def notz_style_plot_from_df(df, cfg):
+    """Save a plot of sensitivities and observations for model datasets."""
+
+    # Look up variable to determine plot title
+    data = cfg["input_data"].values()
+    first_variable = next(iter(data))
+
+    # Set plot title and filename
+    if first_variable["diagnostic"] == "arctic":
+        title = "September Arctic sea-ice area sensitivity\ndSIA/dGMST"
+        save_as = "September Arctic sea ice sensitivity"
+    elif first_variable["diagnostic"] == "antarctic":
+        title = "Annual Antarctic sea-ice area sensitivity\ndSIA/dGMST"
+        save_as = "Annual Antarctic sea ice sensitivity"
+
+    # Caption changes if obs are present
+    caption = "Sensitivity of sea ice area to annual mean global warming."
+
+    # Retrieve obs from config if present
+    obs_period = retrieve_periods(cfg).obs_period
+    if obs_period is not None:
+        obs_mean = cfg["observations"]["sea_ice_sensitivity"]["mean"]
+        obs_std_dev = cfg["observations"]["sea_ice_sensitivity"]["standard_deviation"]
+        obs_plausible = cfg["observations"]["sea_ice_sensitivity"]["plausible_range"]
+        # Also changes caption
+        caption = (
+            "Sensitivity of sea ice area to annual mean global warming."
+            f"\nMean (dashed), standard deviation (shaded) and plausible values from {obs_period}."
+        )
+
+    # Set up the figure
+    fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
+    fig.suptitle(title, wrap=True)
+
+    # Set up the axes
+    ax.set_xlim(0, 1)
+    ax.set_xticks([])
+    ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
+
+    # Check how many periods there are, for positioning
+    num_periods = len(retrieve_periods(cfg).periods)
+    section_width = 1 / num_periods
+
+    # Add obs to the first half / all, if present
+    if obs_period is not None:
+        ax.hlines(obs_mean, 0, section_width, linestyle="--", color="black", linewidth=2)
+        ax.fill_between(
+            [0, section_width],
+            obs_mean - obs_std_dev,
+            obs_mean + obs_std_dev,
+            facecolor="k",
+            alpha=0.15,
+        )
+        ax.hlines(
+            obs_mean + obs_plausible,
+            0,
+            section_width,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
+        )
+        ax.hlines(
+            obs_mean - obs_plausible,
+            0,
+            section_width,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
+        )
+
+
+
+    # Iterate over the dictionary
+    for dataset, inner_dict in data_dictionary.items():
+        ax.plot(
+            0.25,
+            inner_dict["direct_sensitivity"],
+            color="blue",
+            marker="_",
+            markersize=20,
+        )
+
+        # Label with the dataset if specified, offset correct by eye
+        if inner_dict["label"] == "to_label":
+            plt.annotate(
+                dataset,
+                xy=(0.25, inner_dict["direct_sensitivity"]),
+                xytext=(
+                    0.35,
+                    inner_dict["direct_sensitivity"] - 0.05,
+                ),
+            )
+
+
+
+
+    # Create caption based on whether observation mean is present
+    if isinstance(obs_mean, int | float):
+        caption = (
+            "Sensitivity of sea ice area to annual mean global warming."
+            f"\nMean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
+        )
+    else:
+        caption = "Sensitivity of sea ice area to annual mean global warming."
+
+    # Save the figure (also closes it)
+    save_figure(
+        titles_dictionary["titles"]["notz_plot_filename"],
+        get_provenance_record(cfg, caption),
+        cfg,
+        figure=fig,
+        close=True,
+    )
+
+
+
+
+
+
 def main(cfg):
     # Look at the datasets in the config object
     datasets = create_dataset_dict(cfg)
@@ -431,11 +551,11 @@ def main(cfg):
     # Write the dataframe to file, with provenance
     filename = "data_values"
     write_df_to_csv(filled, filename, cfg)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(
-            f"{cfg['work_dir']}/{filename}",
-            get_provenance_record(cfg, "Annual (not decadal) figures"),
-        )
+    # with ProvenanceLogger(cfg) as provenance_logger:
+    #     provenance_logger.log(
+    #         f"{cfg['work_dir']}/{filename}",
+    #         get_provenance_record(cfg, "Annual (not decadal) figures"),
+    #     )
 
     # Plot the 2D figure
     roach_style_plot_from_df(filled, cfg)
