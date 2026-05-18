@@ -35,6 +35,9 @@ This
 offers a good introduction to git branches, but it was written for
 BitBucket while we use GitHub, so replace the word BitBucket by GitHub
 whenever you read it.
+The first time you open a pull request,
+you will need to agree to our contributor license agreement:
+see :ref:`contributor_license_agreement`.
 
 It is recommended that you open a `draft pull
 request <https://github.blog/2019-02-14-introducing-draft-pull-requests/>`__
