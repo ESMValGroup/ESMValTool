@@ -353,7 +353,7 @@ def roach_style_plot_from_df(df, cfg):
     ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
 
     # Iterate over the values in the dataframe
-    for i, dataset in df.iterrows():
+    for dataset, row in df.iterrows():
 
         # Look up the relevant values
         gmst_trend = df.at[dataset, (data_period, "gmst_over_time", "slope")]
@@ -372,7 +372,7 @@ def roach_style_plot_from_df(df, cfg):
             hatch = None
 
         # Shape is different for obs
-        if dataset[("", "", "type")] == "model":
+        if df.at[dataset, ("", "", "type")] == "model":
             shape = "o"
             edgecolor = None
             order = None
@@ -396,7 +396,7 @@ def roach_style_plot_from_df(df, cfg):
         )
 
         # Label with the dataset if specified
-        if dataset[("", "", "label")] == "to_label":
+        if df.at[dataset, ("", "", "label")] == "to_label":
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
     # Add a colour bar
