@@ -61,7 +61,7 @@ find the row that lists ESMValGroup,
 and click the trashcan icon.
 
 After you withdraw your agreement,
-you will not be able to contribute further changes.
+you will not be able to contribute further submissions.
 The withdrawal does not affect your previous changes that have already been
 merged.
 
