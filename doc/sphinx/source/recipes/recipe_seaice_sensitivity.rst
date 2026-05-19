@@ -71,6 +71,8 @@ Example plots
    :width:   8cm
 
    Plot of sensitivity of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September to the annual mean global temperature change (K).
+   Models are shown on the left in blue, and the relationships between pairs of observational datasets are shown on the right in orange.
+   The shading around the position of each observational pair shows the standard error as computed by :func:`scipy.stats.linregress`.
 
    The dashed black line shows the observational mean, the shaded area denotes one one standard deviation of observational uncertainty, as calculated by Notz et al (2020).
    The dotted grey lines reflect Notz et al estimate of a plausible range incorporating both internal variability and observational uncertainty.
@@ -89,4 +91,5 @@ plausible  1.28 million km2 K-1
 
    Plot of the trend of annually averaged southern hemisphere sea ice area (millions of square kilometres) over time against the trend of annually and globally averaged air temperature near the surface (degrees Kelvin) over time. The values plotted are 10 times the annual trend, which was calculated using :func:`scipy.stats.linregress`, for consistency with the decadal values used in the published plot.
 
-   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates that the sea ice area trend has a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.
+   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates that the trend of sea ice area over time has a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.
+   Models are shown as circles and observational datasets are shown as squares.

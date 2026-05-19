@@ -464,6 +464,7 @@ def roach_style_plot_from_df(df, cfg):
 
     # Only plot the entire data period in this style
     data_period = retrieve_periods(cfg).data_period
+    ax.set_title(data_period, loc="center")
 
     # Iterate over the values in the dataframe
     for dataset, _ in df.iterrows():
@@ -556,8 +557,9 @@ def notz_style_plot_from_df(df, cfg):
         ]
         # Also changes caption
         caption = (
-            "Sensitivity of sea ice area to annual mean global warming."
-            f"\nMean (dashed), standard deviation (shaded) and plausible (dotted) values from {obs_period}."
+            "Sensitivity of sea ice area to annual mean global warming.\n"
+            "Mean (dashed), standard deviation (shaded) and plausible (dotted)"
+            f"values from {obs_period} are shown in grey."
         )
 
     # Set up the figure
