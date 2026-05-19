@@ -61,7 +61,9 @@ def _create_masked_cube(cube, year, month, day):
     dataset_time_unit = str(masked_cube.coord("time").units)
     dataset_time_calender = masked_cube.coord("time").units.calendar
     # Convert datetime
-    newtime = datetime.datetime(year=year, month=month, day=day)
+    newtime = datetime.datetime(
+        year=year, month=month, day=day, tzinfo=datetime.UTC
+    )
     newtime = cf_units.date2num(
         newtime,
         dataset_time_unit,
@@ -96,10 +98,7 @@ def _fix_coordinates(cube, definition):
 
 
 def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
-    if is_daily:
-        timefreq = "daily"
-    else:
-        timefreq = "monthly"
+    timefreq = "daily" if is_daily else "monthly"
     logger.info("CMORizing variable '%s' (%s)", var["short_name"], timefreq)
 
     attributes = deepcopy(cfg["attributes"])
@@ -136,8 +135,10 @@ def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
     # cubes containing only nan to fill possible gaps
 
     if is_daily:
-        loop_date = datetime.datetime(year0, 1, 1)
-        while loop_date <= datetime.datetime(year0, 12, 31):
+        loop_date = datetime.datetime(year0, 1, 1, tzinfo=datetime.UTC)
+        while loop_date <= datetime.datetime(
+            year0, 12, 31, tzinfo=datetime.UTC
+        ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
                 if (
@@ -162,8 +163,10 @@ def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
                 full_list.append(masked_cube)
             loop_date += relativedelta.relativedelta(days=1)
     else:
-        loop_date = datetime.datetime(year0, 1, 1)
-        while loop_date <= datetime.datetime(year0, 12, 31):
+        loop_date = datetime.datetime(year0, 1, 1, tzinfo=datetime.UTC)
+        while loop_date <= datetime.datetime(
+            year0, 12, 31, tzinfo=datetime.UTC
+        ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
                 if (
@@ -200,9 +203,6 @@ def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
 
     # Fix units
     cube.units = definition.units
-
-    #    # Fix data type
-    #    cube.data = cube.core_data().astype('float32')
 
     # Roll longitude
     cube.coord("longitude").points = cube.coord("longitude").points + 180.0
@@ -241,16 +241,16 @@ def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
     )
 
 
-def _load_files(var, cfg, in_dir, year, daily):
-    if type(var["raw"]) is list:
-        varlist = var["raw"]
-    else:
-        varlist = var["raw"].split()
-
-    if type(var["filename"]) is list:
-        filelist = var["filename"]
-    else:
-        filelist = var["filename"].split()
+def _load_files(var, in_dir, year, daily):
+    """Load all input files for one year. If requested, add different variables."""
+    varlist = (
+        var["raw"] if isinstance(var["raw"], list) else var["raw"].split()
+    )
+    filelist = (
+        var["filename"]
+        if isinstance(var["filename"], list)
+        else var["filename"].split()
+    )
 
     # create a list of filenames to be read
 
@@ -316,7 +316,8 @@ def _load_files(var, cfg, in_dir, year, daily):
                     for sumcube in cube_list_sum:
                         sumtimecoord = sumcube.coord("time")
                         if timecoord == sumtimecoord:
-                            sumcube += cube
+                            result = sumcube
+                            result += cube
                             logger.debug(
                                 "cube added for time %s",
                                 timecoord.units.num2date(timecoord.points),
@@ -337,10 +338,7 @@ def _load_files(var, cfg, in_dir, year, daily):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize CLARA-AVHRR dataset."""
     glob_attrs = cfg["attributes"]
-    if "version" in glob_attrs:
-        glob_version = glob_attrs["version"]
-    else:
-        glob_version = ""
+    glob_version = glob_attrs["version"] if "version" in glob_attrs else ""
 
     logger.info(
         "Starting cmorization for tier%s OBS files: %s",
@@ -354,9 +352,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if start_date is None:
         start_date_mm = datetime.datetime(1979, 1, 1, tzinfo=datetime.UTC)
         start_date_dd = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
+    else:
+        start_date_mm = start_date
+        start_date_dd = start_date
+
     if end_date is None:
         end_date_mm = datetime.datetime(2020, 12, 31, tzinfo=datetime.UTC)
         end_date_dd = datetime.datetime(2020, 12, 31, tzinfo=datetime.UTC)
+    else:
+        end_date_mm = end_date
+        end_date_dd = end_date
 
     for var_name, var in cfg["variables"].items():
         var["var_name"] = var_name
@@ -380,7 +385,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         for year in range(start_date.year, end_date.year + 1):
             logger.info("Processing year %s", year)
-            cube_list = _load_files(var, cfg, in_dir, year, daily)
+            cube_list = _load_files(var, in_dir, year, daily)
 
             if not cube_list:
                 logger.info(

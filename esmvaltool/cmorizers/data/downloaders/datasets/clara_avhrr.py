@@ -45,9 +45,16 @@ def download_dataset(
     if start_date is None:
         start_date_mm = datetime.datetime(1979, 1, 1, tzinfo=datetime.UTC)
         start_date_dd = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
+    else:
+        start_date_mm = start_date
+        start_date_dd = start_date
+
     if end_date is None:
         end_date_mm = datetime.datetime(2020, 12, 31, tzinfo=datetime.UTC)
         end_date_dd = datetime.datetime(2020, 12, 31, tzinfo=datetime.UTC)
+    else:
+        end_date_mm = end_date
+        end_date_dd = end_date
 
     requests = {}
 
