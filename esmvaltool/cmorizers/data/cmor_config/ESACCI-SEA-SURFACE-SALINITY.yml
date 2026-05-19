@@ -4,7 +4,7 @@ attributes:
   dataset_id: ESACCI-SEA-SURFACE-SALINITY
   versions: ['fv1.8', 'fv2.31']
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_surface_salinity'
   reference: "esacci-sea-surface-salinity"

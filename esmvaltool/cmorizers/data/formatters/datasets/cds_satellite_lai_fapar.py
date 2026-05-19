@@ -19,7 +19,6 @@ Download and processing instructions
       - Tick all available months
       - Tick Nominal day 20
    - Click 'submit form'
-   - According to ESMValTool practice, put them in the right rawobsdir folder
 
 Notes
 -----

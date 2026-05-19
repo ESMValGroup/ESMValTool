@@ -4,7 +4,7 @@ attributes:
   dataset_id: Duveiller2018
   version: 'v2018'
   tier: 2
-  modeling_realm: clim
+  type: clim
   project_id: OBS
   source: 'https://ndownloader.figshare.com/files/9969496'
   reference: 'duveiller2018'

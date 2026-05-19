@@ -63,7 +63,6 @@ from warnings import catch_warnings, filterwarnings
 
 import iris
 from cf_units import Unit
-from esmvalcore.cmor.table import CMOR_TABLES
 from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -82,12 +81,12 @@ def _fix_units(cube, definition):
         cube.convert_units(definition.units)
 
 
-def _fix_coordinates(cube, definition, cmor_info):
+def _fix_coordinates(cube, definition):
     cube = utils.fix_coords(cube)
 
-    if "height2m" in cmor_info.dimensions:
+    if "height2m" in definition.dimensions:
         utils.add_height2m(cube)
-    if "height10m" in cmor_info.dimensions:
+    if "height10m" in definition.dimensions:
         utils.add_scalar_height_coord(cube, height=10.0)
 
     for coord_def in definition.coordinates.values():
@@ -108,11 +107,9 @@ def _fix_coordinates(cube, definition, cmor_info):
 def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip"]
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip"], short_name)
-    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
-    if cmor_info.positive != "":
-        attributes["positive"] = cmor_info.positive
+    definition = cfg["cmor_table"].get_variable(var["mip"], short_name)
+    if definition.positive != "":
+        attributes["positive"] = definition.positive
 
     # load data
     raw_var = var.get("raw", short_name)
@@ -138,14 +135,14 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
 
     _fix_units(cube, definition)
 
-    utils.fix_var_metadata(cube, cmor_info)
+    utils.fix_var_metadata(cube, definition)
 
     # fix time units
     cube.coord("time").convert_units(
         Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
     )
 
-    cube = _fix_coordinates(cube, definition, cmor_info)
+    cube = _fix_coordinates(cube, definition)
 
     if var.get("make_negative"):
         cube.data = -1 * cube.data

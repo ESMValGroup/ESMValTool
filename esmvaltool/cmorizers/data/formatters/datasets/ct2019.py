@@ -10,8 +10,7 @@ Last access
     20200323
 
 Download and processing instructions
-    Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-    ``$RAWOBSPATH`` is given in the configuration) where the raw
+    Create a new empty directory ``Tier2/CT2019`` where the raw
     data will be stored. The download of the data is automatically handled by
     this script. If data is already present in this directory, the download is
     skipped (to force a new download delete your old files).

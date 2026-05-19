@@ -10,7 +10,7 @@ Last access
 
 Download and processing instructions
    Download and unpack all the *.tar files under a single directory
-   (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
+   (no subdirectories with years) in Tier2/Eppley-VGPM-MODIS
 
 Modification history
    20190515-lovato_tomas: written.

@@ -10,15 +10,14 @@ The following steps are necessary to prepare an observational
 data set for the use in ESMValTool.
 
 | `1. Check if your variable is CMOR standard`_
-| `2. Edit your configuration file`_
-| `3. Store your dataset in the right place`_
-| `3.1 Downloader script (optional)`_
-| `4. Create a cmorizer for the dataset`_
-| `4.1 Cmorizer script written in python`_
-| `4.2 Cmorizer script written in NCL`_
-| `5. Run the cmorizing script`_
-| `6. Naming convention of the observational data files`_
-| `7. Test the cmorized dataset`_
+| `2. Store your dataset in the right place`_
+| `2.1 Downloader script (optional)`_
+| `3. Create a cmorizer for the dataset`_
+| `3.1 Cmorizer script written in python`_
+| `3.2 Cmorizer script written in NCL`_
+| `4. Run the cmorizing script`_
+| `5. Naming convention of the observational data files`_
+| `6. Test the cmorized dataset`_
 
 .. note::
   **CMORization as a fix.** As of early 2020, we've started implementing cmorization as
@@ -33,44 +32,43 @@ data set for the use in ESMValTool.
 ==========================================
 
 Most variables are defined in the CMIP data request and can be found in the
-CMOR tables in the folder `/esmvalcore/cmor/tables/cmip6/Tables/
-<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables/cmip6/Tables>`_,
-differentiated according to the ``MIP`` they belong to. The tables are a
-copy of the `PCMDI <https://github.com/PCMDI>`_ guidelines. If you find the
+CMOR tables in the folder `/esmvalcore/cmor/tables
+<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables>`_,
+differentiated according to the ``MIP`` they belong to. A more extensive
+introduction is available in :ref:`esmvalcore:cmor_tables`. If you find the
 variable in one of these tables, you can proceed to the next section.
 
 If your variable is not available in the standard CMOR tables,
 you need to write a custom CMOR table entry for the variable
-as outlined below and add it to `/esmvalcore/cmor/tables/custom/
-<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables/custom>`_.
+as outlined below and add it to `/esmvalcore/cmor/tables/cmip6-custom/
+<https://github.com/ESMValGroup/ESMValCore/tree/main/esmvalcore/cmor/tables/cmip6-custom>`_.
 
 To create a new custom CMOR table you need to follow these
 guidelines:
 
-- Provide the ``variable_entry``;
+- Provide the ``variable_entry`` (for CMIP5-style tables) or the variable name
+  (``short_name``) followed by an optional underscore and branding suffix
+  as the key for the variable definition (for CMIP6-style tables);
 - Provide the ``modeling_realm``;
-- Provide the variable attributes, but leave ``standard_name`` blank. Necessary
+- Provide the variable attributes, but leave ``standard_name`` blank unless
+  the variable has a valid standard name. Necessary
   variable attributes are: ``units``, ``cell_methods``, ``cell_measures``,
   ``long_name``, ``comment``.
 - Provide some additional variable attributes. Necessary additional variable
-  attributes are: ``dimensions``, ``out_name``, ``type``. There are also
-  additional variable attributes that can be defined here (see the already
-  available cmorizers).
+  attributes are: ``dimensions``, ``out_name`` (usually equal to ``short_name``).
+  There are also additional variable attributes that can be defined here (see
+  the already available custom variables).
 
-It is recommended to use an existing custom table as a template, to edit the
-content and save it as ``CMOR_<short_name>.dat``.
+It is recommended to extend the file
+`esmvalcore/cmor/tables/cmip6-custom/CMIP6_custom.json <https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/cmor/tables/cmip6-custom/CMIP6_custom.json>`__
+for CMIP6-style tables. For CMIP5-style projects, use an existing custom table from
+`esmvalcore/cmor/tables/cmip5-custom/ <https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/cmor/tables/cmip5-custom>`__
+as a template, edit the content and save it in the same directory as ``CMOR_<short_name>.dat``.
 
-2. Edit your configuration file
-===============================
-
-Make sure that beside the paths to the model simulations and observations, also
-the path to raw observational data to be cmorized (``RAWOBS``) is present in
-your configuration file.
-
-3. Store your dataset in the right place
+2. Store your dataset in the right place
 ========================================
 
-The folder ``RAWOBS`` needs the subdirectories ``Tier1``, ``Tier2`` and
+The folder specified by ``--original-data-dir`` needs the subdirectories ``Tier1``, ``Tier2`` and
 ``Tier3``. The different tiers describe the different levels of restrictions
 for downloading (e.g. providing contact information, licence agreements)
 and using the observations. The unformatted (raw) observations
@@ -87,14 +85,14 @@ The dataset entry should contain:
 - the ``info`` that explain how to download the data.
 
 Note that these fields should be identical to the content of the header
-of the cmorizing script (see Section `4. Create a cmorizer for the dataset`_).
+of the cmorizing script (see Section `3. Create a cmorizer for the dataset`_).
 
-3.1 Downloader script (optional)
+2.1 Downloader script (optional)
 --------------------------------
 
 A Python script can be written to download raw observations
 from source and store the data in the appropriate tier subdirectory of the
-folder ``RAWOBS`` automatically.
+folder specified by the ``--original-data-dir`` flag automatically.
 There are many downloading scripts available in
 `/esmvaltool/cmorizers/data/downloaders/datasets/
 <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/cmorizers/data/downloaders/datasets>`_
@@ -117,7 +115,7 @@ The downloading script for the given dataset can be run with:
 
 .. code-block:: console
 
- esmvaltool data download --config_dir </path/to/config/dir/>  <dataset-name>
+ esmvaltool data download --original-data-dir </path/to/save/data>  <dataset-name>
 
 The options ``--start`` and ``--end`` can be added to the command above to
 restrict the download of raw data to a time range. They will be ignored if a specific dataset
@@ -125,7 +123,7 @@ does not support it (i.e. because it is provided as a single file). Valid format
 ``YYYY``, ``YYYYMM`` and ``YYYYMMDD``. By default, already downloaded data are not overwritten
 unless the option ``--overwrite=True`` is used.
 
-4. Create a cmorizer for the dataset
+3. Create a cmorizer for the dataset
 ====================================
 
 There are many cmorizing scripts available in
@@ -145,7 +143,7 @@ the strict CMOR standard.
 In the following two subsections two cmorizing scripts, one written in Python
 and one written in NCL, are explained in more detail.
 
-4.1 Cmorizer script written in python
+3.1 Cmorizer script written in python
 -------------------------------------
 
 Find here an example of a cmorizing script, written for the ``MTE`` dataset
@@ -166,7 +164,7 @@ augmented with the custom variables described above, are available to your scrip
 The first part of this configuration file defines the filename of the raw
 observations file. The second part defines the common global attributes for
 the cmorizer output, e.g. information that is needed to piece together the
-final observations file name in the correct structure (see Section `6. Naming convention of the observational data files`_).
+final observations file name in the correct structure (see Section `5. Naming convention of the observational data files`_).
 Another global attribute is ``reference`` which includes a ``doi`` related to the dataset.
 Please see the section `adding references
 <https://docs.esmvaltool.org/en/latest/community/diagnostic.html#adding-references>`_
@@ -218,8 +216,13 @@ saves a single variable from the raw data.
 .. _utilities.py: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/utilities.py
 
 
-4.2 Cmorizer script written in NCL
+3.2 Cmorizer script written in NCL
 ----------------------------------
+
+.. warning::
+
+  Writing new NCL code is not recommended because the
+  `NCL interpreter <https://github.com/NCAR/ncl>`__ is no longer maintained.
 
 Find here an example of a cmorizing script, written for the ``ESACCI XCH4``
 dataset that is available on the Copernicus Climate Data Store:
@@ -253,7 +256,7 @@ This module contains different kinds of small fixes to the data attributes,
 coordinates, and metadata which are necessary for the data field to be
 CMOR-compliant.
 
-5. Run the cmorizing script
+4. Run the cmorizing script
 ===========================
 
 The cmorizing script for the given dataset can be run with:
@@ -269,10 +272,9 @@ does not support it (i.e. because it is provided as a single file). Valid format
 
 .. note::
 
-   The output path given in the configuration file is the path where
+   The ``output_dir`` path given in the :ref:`configuration file <esmvalcore:config>` is the path where
    your cmorized dataset will be stored. The ESMValTool will create a folder
-   with the correct tier information
-   (see Section `2. Edit your configuration file`_) if that tier folder is not
+   with the correct tier information if that tier folder is not
    already available, and then a folder named after the dataset.
    In this folder the cmorized data set will be stored as a NetCDF file.
    The cmorized dataset will be automatically moved to the correct tier
@@ -293,7 +295,7 @@ the cmorizing scripts can be run in a single command with:
 Note that options from the ```esmvaltool data download`` and
 ``esmvaltool data format`` commands can be passed to the above command.
 
-6. Naming convention of the observational data files
+5. Naming convention of the observational data files
 ====================================================
 
 For the ESMValTool to be able to read the observations from the NetCDF file,
@@ -303,8 +305,8 @@ v1.0). The file name will be automatically correctly created if a cmorizing
 script has been used to create the netCDF file.
 
 The correct structure of an observational data set is defined in
-`config-developer.yml
-<https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/config-developer.yml>`_,
+`data-local-esmvaltool.yml
+<https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/config/configurations/data-local-esmvaltool.yml>`_,
 and looks like the following:
 
 .. code-block:: console
@@ -341,10 +343,11 @@ The different parts of the name are explained in more detail here:
 .. note::
    There is a different naming convention for ``obs4MIPs`` data (see the exact
    specifications for the obs4MIPs data file naming convention in the
-   ``config-developer.yml`` file).
+   `data-local.yml <https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/config/configurations/data-local.yml>`
+   file).
 
-7. Test the cmorized dataset
-======================================
+6. Test the cmorized dataset
+============================
 
 To verify that the cmorized data file is indeed correctly formatted, you can
 run a dedicated test recipe, that does not include any diagnostic, but only

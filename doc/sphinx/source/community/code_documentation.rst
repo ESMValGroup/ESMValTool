@@ -35,6 +35,9 @@ This
 offers a good introduction to git branches, but it was written for
 BitBucket while we use GitHub, so replace the word BitBucket by GitHub
 whenever you read it.
+The first time you open a pull request,
+you will need to agree to our contributor license agreement:
+see :ref:`contributor_license_agreement`.
 
 It is recommended that you open a `draft pull
 request <https://github.blog/2019-02-14-introducing-draft-pull-requests/>`__
@@ -260,6 +263,11 @@ However, a pull request where the CircleCI/pre-commit tests are failing cannot b
 NCL
 ~~~
 
+.. warning::
+
+  Writing new NCL code is not recommended because the
+  `NCL interpreter <https://github.com/NCAR/ncl>`__ is no longer maintained.
+
 Because there is no standard best practices document for NCL, we use
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ for NCL code as
 well, with some minor adjustments to accommodate for differences in the
@@ -274,12 +282,30 @@ R
 ~
 
 Best practices for R code are described in `The tidyverse style
-guide <https://style.tidyverse.org/>`__. We check adherence to this
-style guide by using
-`lintr <https://cran.r-project.org/web/packages/lintr/index.html>`__ on
-CircleCI. Please use `styler <https://styler.r-lib.org/>`__ to
-automatically format your code according to this style guide. In the
-future we would also like to make use of
+guide <https://style.tidyverse.org/>`__. We currently don't check adherence
+to this, but we strongly encourage any new R diagnostic to be checked against the
+style guide by using `lintr <https://cran.r-project.org/web/packages/lintr/index.html>`__.
+Please use `styler <https://styler.r-lib.org/>`__ to automatically format your code according
+to this style guide. To run these tools, uncomment these lines:
+
+.. literalinclude:: ../../../../.pre-commit-config.yaml
+    :language: yaml
+    :start-at: # - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
+    :end-at: - id: lintr
+    :caption: R configuration in ``.pre-commit-config.yaml``.
+
+and run the commands:
+
+.. code-block:: bash
+
+    pre-commit run style-files --files esmvaltool/diag_scripts/your_script.R
+    pre-commit run lintr --files esmvaltool/diag_scripts/your_script.R
+
+These pre-commit hooks have been disabled by default because over the past few
+years all diagnostics that have been contributed were written in Python.
+However, if R contributions pick up again, we would be happy to enable these
+pre-commit hooks again.
+In the future we would also like to make use of
 `goodpractice <https://cran.r-project.org/web/packages/goodpractice/index.html>`__
 to assess the quality of R code.
 
@@ -347,7 +373,8 @@ How to build and view the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whenever you make a pull request or push new commits to an existing pull
-request, readthedocs will automatically build the documentation.
+request, `readthedocs <https://app.readthedocs.org/projects/esmvaltool/>`_ will
+automatically build the documentation.
 The link to the documentation will be shown in the list of checks below your
 pull request, click 'Details' behind the check
 ``docs/readthedocs.org:esmvaltool`` to preview the documentation.
@@ -368,9 +395,16 @@ or
    sphinx-build -Ea doc/sphinx/source/ doc/sphinx/build/
 
 to build it from scratch.
+
+Alternatively, the pixi task ``doc`` can be used:
+
+.. code-block:: bash
+
+   pixi run doc
+
 Make sure that your newly added documentation builds without warnings or
 errors and looks correctly formatted.
-CircleCI_ will build the documentation with the command
+readthedocs_ will build the documentation with the command
 
 .. code-block:: bash
 
@@ -401,15 +435,6 @@ To link to a section from the ESMValCore documentation from the reStructuredText
 For example, ``:ref:`esmvalcore:recipe``` to link to
 :ref:`esmvalcore:recipe`.
 
-There is a script that generates the navigation menu shown on the left when
-you view the documentation.
-This script is called
-`doc/sphinx/source/gensidebar.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/gensidebar.py>`_
-in the ESMValTool repository and it should be identical to
-`doc/gensidebar.py <https://github.com/ESMValGroup/ESMValCore/blob/main/doc/gensidebar.py>`_
-in the ESMValCore repository, or the sidebar will change when navigating from
-the ESMValTool documentation to the ESMValCore documentation and vice-versa.
-
 .. _tests:
 
 Tests
@@ -427,7 +452,7 @@ To see some of the results on CircleCI, you may need to log in.
 You can do so using your GitHub account.
 
 To run the tests on your own computer, go to the directory where the repository
-is cloned and run the command ``pytest``.
+is cloned and run the command ``pytest`` or ``pixi run test``.
 
 Have a look at :ref:`testing_recipes` for information on testing recipes.
 
@@ -497,26 +522,38 @@ See this `statement <https://www.apache.org/licenses/GPL-compatibility.html>`__
 by the authors of the Apache 2.0 license for more information.
 
 When adding or removing dependencies, please consider applying the changes in
-the following files:
+the following locations in ``pyproject.toml``:
 
-- ``environment.yml``
-  contains dependencies that cannot be installed from
-  `PyPI <https://pypi.org/>`__
-- ``environment_osx.yml``
-  contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
-  but currently without multi language support.
-- ``pyproject.toml``
-  contains all Python dependencies, regardless of their installation source
+- ``dependencies``
+  contains dependencies that can be installed from `PyPI <https://pypi.org/>`__
+- ``[tool.pixi.dependencies]``
+  contains dependencies that can be installed from `conda-forge <https://conda-forge.org/>`__
+
+It is strongly preferred that those two lists are kept in sync, apart from
+differences in how packages are named. Run the command ``pixi lock --no-install``
+after making changes to the dependencies to update the ``pixi.lock`` file, which
+is used to make sure that the same versions of packages are installed for
+all ESMValTool developers.
+
+In addition to these core dependencies, there are also optional dependencies
+for diagnostics that need R or NCL. These are listed in the sections
+``[tool.pixi.feature.r]`` and ``[tool.pixi.feature.ncl]`` in respectively.
+
+There are also three feature groups for development dependencies:
+
+- ``[tool.pixi.feature.dev]`` contains tools that are useful for development
+- ``[tool.pixi.feature.doc]`` contains tools that are needed to build the documentation
+- ``[tool.pixi.feature.test]`` contains tools that are needed to run the tests
 
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
 
-Several test jobs on CircleCI_ related to the installation of the tool will only
-run if you change the dependencies.
-These will be skipped for most pull requests.
+.. tip::
 
-When reviewing a pull request where dependencies are added or removed, always
-check that the changes have been applied in all relevant files.
+   When reviewing a pull request where dependencies are added or removed, always
+   check that the changes have been applied to both the PyPI and the conda-forge
+   dependencies and that the ``pixi.lock`` file has been updated by running
+   ``pixi lock`` after the changes were made.
 
 .. _pull_request_checks:
 

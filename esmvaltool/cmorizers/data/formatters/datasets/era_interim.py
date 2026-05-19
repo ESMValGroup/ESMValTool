@@ -104,7 +104,6 @@ from warnings import catch_warnings, filterwarnings
 
 import iris
 import numpy as np
-from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import daily_statistics, monthly_statistics
 from iris import NameConstraint
 
@@ -160,7 +159,7 @@ def _fix_units(cube, definition):
         cube.units = "kg kg-1"
 
 
-def _fix_coordinates(cube, definition):
+def _fix_coordinates(cube, cmor_table, definition):
     """Fix coordinates."""
     # Make latitude increasing
     cube = cube[..., ::-1, :]
@@ -176,14 +175,16 @@ def _fix_coordinates(cube, definition):
     if "height10m" in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.0)
 
-    for coord_def in definition.coordinates.values():
-        axis = coord_def.axis
+    for original_coord_def in definition.coordinates.values():
+        axis = original_coord_def.axis
 
         # ERA-Interim cloud parameters are downloaded on pressure levels
         # (CMOR standard = generic (hybrid) levels, alevel)
-        if axis == "" and coord_def.name == "alevel":
+        if axis == "" and original_coord_def.name == "alevel":
             axis = "Z"
-            coord_def = CMOR_TABLES["CMIP6"].coords["plev19"]
+            coord_def = cmor_table.coords["plev19"]
+        else:
+            coord_def = original_coord_def
 
         coord = cube.coord(axis=axis)
         if axis == "T":
@@ -413,7 +414,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     )
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip"]
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
+    cmor_table = cfg["cmor_table"]
     definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
     cube = _load_cube(in_files, var)
@@ -431,7 +432,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     # Fix data type
     cube.data = cube.core_data().astype("float32")
 
-    cube = _fix_coordinates(cube, definition)
+    cube = _fix_coordinates(cube, cmor_table, definition)
 
     if attributes["dataset_id"] == "ERA-Interim":
         if "mon" in var["mip"]:
@@ -528,7 +529,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     cfg["attributes"]["comment"] = (
         cfg["attributes"]["comment"].strip().format(year=datetime.now().year)
     )
-    cfg.pop("cmor_table")
 
     n_workers = cfg_user.get("max_parallel_tasks")
     if n_workers is None:

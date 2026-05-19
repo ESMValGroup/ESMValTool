@@ -4,7 +4,7 @@ attributes:
   dataset_id: NOAA-MBL-CH4
   version: '1.0'
   tier: 2
-  modeling_realm: atmos
+  type: ground
   project_id: OBS6
   source: 'https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv'
   reference: 'noaa-mbl-ch4'

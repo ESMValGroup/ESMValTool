@@ -39,7 +39,7 @@ def save_fx_variable(cube, var, out_dir, attrs):
             [
                 attrs["project_id"],
                 attrs["dataset_id"],
-                attrs["modeling_realm"],
+                attrs["type"],
                 attrs["version"],
                 attrs["mip"],
                 var,

@@ -14,7 +14,7 @@ Download and processing instructions
       daily_files/COMBINED/v08.1/
       ancillary/v08.1/
     Put all files under a single directory (no subdirectories with years).
-    in ${RAWOBS}/Tier2/ESACCI-SOILMOISTURE
+    in Tier2/ESACCI-SOILMOISTURE
 
 """
 
