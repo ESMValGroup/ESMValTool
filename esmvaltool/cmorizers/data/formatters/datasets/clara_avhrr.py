@@ -270,7 +270,7 @@ def _load_files(var, in_dir, year, daily):
                 srcdir = Path(in_dir) / f"daily/{year}{month:02d}"
                 filepattern = filemask.format(year=year, month=f"{month:02d}")
                 in_files.extend(
-                    [str(p) for p in srcdir.glob(pattern=filepattern)]
+                    [str(p) for p in srcdir.glob(pattern=filepattern)],
                 )
         else:
             srcdir = Path(in_dir) / f"monthly/{year}"
@@ -330,7 +330,8 @@ def _load_files(var, in_dir, year, daily):
         cube_list = cube_list_sum
     elif var.get("operator"):
         errstr = "Multiple input files found, with operator '{}' configured: {}".format(
-            var.get("operator"), ", ".join(in_files)
+            var.get("operator"),
+            ", ".join(in_files),
         )
         raise ValueError(errstr)
 

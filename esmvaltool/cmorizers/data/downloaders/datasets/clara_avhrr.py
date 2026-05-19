@@ -5,6 +5,7 @@ import gzip
 import logging
 import shutil
 import zipfile
+from pathlib import Path
 
 import cdsapi
 
@@ -159,7 +160,7 @@ def download_dataset(
                 file_path.as_posix(),
             )
             # Handle both .gz and .zip files
-            with open(file_path, "rb") as file:
+            with Path(file_path).open("rb") as file:
                 magic = file.read(2)
 
             if magic == b"PK":  # ZIP file signature
@@ -169,7 +170,7 @@ def download_dataset(
             else:
                 logger.info("Detected GZIP file: %s", file_path)
                 with gzip.open(file_path, "rb") as f_in:
-                    with open(outdir / file_path.stem, "wb") as f_out:
+                    with Path(outdir / file_path.stem).open("rb") as f_out:
                         shutil.copyfileobj(f_in, f_out)
         except Exception as ex:
             logger.info("%s: no data downloaded for %s", type(ex), var_name)
