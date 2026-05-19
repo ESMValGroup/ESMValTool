@@ -39,6 +39,8 @@ def get_provenance_record(cfg, caption):
 
 
 def create_dataset_dict(cfg):
+    """Create a structured dictionary for adding values to later on."""
+    logger.debug("Creating blank dictionary.")
     # Initialise a dictionary
     dataset_dict = {}
 
@@ -59,7 +61,7 @@ def create_dataset_dict(cfg):
         if group == "tas":
             dataset_dict[dataset]["type"] = "model"
 
-            # Add whether or not to label the models
+            # Add whether to label the models
             if section.get("label_dataset"):
                 dataset_dict[dataset]["label"] = "to_label"
             else:
@@ -441,7 +443,7 @@ def notz_style_plot_from_df(df, cfg):
         # Also changes caption
         caption = (
             "Sensitivity of sea ice area to annual mean global warming."
-            f"\nMean (dashed), standard deviation (shaded) and plausible values from {obs_period}."
+            f"\nMean (dashed), standard deviation (shaded) and plausible (dotted) values from {obs_period}."
         )
 
     # Set up the figure
@@ -534,6 +536,7 @@ def notz_style_plot_from_df(df, cfg):
                             data_x + 0.1,
                             sensitivity - 0.05,
                         ),
+                        fontsize=7,
                     )
 
             # Plotting for computed observations
