@@ -248,7 +248,6 @@ diagnostics:
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
           - {dataset: ERA-5, project: obs4MIPs, tier: 1,
-
              reference_for_metric: true'}
     scripts:
       plot:
@@ -302,7 +301,6 @@ diagnostics:
           rc:
             figure.figsize: [28, 6]
         suptitle: Trend in Zonal Wind at 200 hPa
-
 
   hus200_trends:
     variables:
