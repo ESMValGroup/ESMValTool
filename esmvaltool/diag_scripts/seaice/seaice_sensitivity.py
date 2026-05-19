@@ -559,7 +559,7 @@ def notz_style_plot_from_df(df, cfg):
         caption = (
             "Sensitivity of sea ice area to annual mean global warming.\n"
             "Mean (dashed), standard deviation (shaded) and plausible (dotted)"
-            f"values from {obs_period} are shown in grey."
+            f" values from {obs_period} are shown in grey."
         )
 
     # Set up the figure
