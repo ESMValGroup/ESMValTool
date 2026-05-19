@@ -346,7 +346,7 @@ def add_values_to_df(df, data_period, cfg):
 
     # Calculate all the values for the observations
     obs = df[df.loc[:, ("", "", "type")] == "multi-obs"]
-    for combined_name, row in obs.iterrows():
+    for combined_name, _ in obs.iterrows():
         # Calculate annual tasa trend
         gmst_dataset = combined_name.split("_v_")[0]
         tasa_cube = fetch_cube(gmst_dataset, "tasa", data_period, cfg)
