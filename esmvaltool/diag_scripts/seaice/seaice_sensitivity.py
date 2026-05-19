@@ -709,8 +709,9 @@ def notz_style_plot_from_df(df, cfg):
 
 
 def main(cfg):
+    """Create two plots and one csv file per diagnostic."""
     # Log config dictionary
-    logger.debug("----------\n%s\n----------", cfg)
+    logger.debug("cfg:\n%s", cfg)
 
     # Look at the datasets in the config object
     logger.info("Reading datasets.")
