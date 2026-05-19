@@ -103,6 +103,7 @@ def create_dataset_dict(cfg):
 # Setting this up to query data and obs periods by name later
 class Periods(NamedTuple):
     """Class to hold data and observational time ranges from recipe."""
+
     periods: list[str]
     obs_period: str | None
     data_period: str
