@@ -595,8 +595,8 @@ class _Formatter:
 
     def _run_pyt_script(
         self,
-        in_dir: str,
-        out_dir: str,
+        in_dir: Path,
+        out_dir: Path,
         dataset: str,
         start: datetime.datetime | None,
         end: datetime.datetime | None,
