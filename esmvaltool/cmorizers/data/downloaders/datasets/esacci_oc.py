@@ -39,6 +39,7 @@ def download_dataset(
 
     loop_date = start_date
 
+    # See https://climate.esa.int/en/projects/ocean-colour/data/
     downloader = FTPDownloader(
         original_data_dir=original_data_dir,
         server="oceancolour.org",
