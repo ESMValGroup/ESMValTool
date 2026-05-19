@@ -459,22 +459,27 @@ def notz_style_plot_from_df(df, cfg):
     obs_period = cfg_periods.obs_period
     data_period = cfg_periods.data_period
 
-    # Set up the titles accordingly
+    # Set up the spacing and titles accordingly
     if num_periods > 1:
         # Put obs period on the left (as it should end earlier)
-        ax.set_title(obs_period, loc="left")
-        ax.set_title(data_period, loc="right")
+        ax.set_title(obs_period, loc="left", fontsize=10)
+        ax.set_title(data_period, loc="right", fontsize=10)
+
+        # Four columns used for data
+        lhs_model_x = 0.15
+        lhs_obs_x = 0.35
+        rhs_model_x = 0.65
+        rhs_obs_x = 0.85
     else:
+        # Only one axes title
         ax.set_title(data_period, loc="center")
 
-    # Horizontal positioning
-    section_width = 1 / num_periods
-    lhs_model_x = 1 - section_width + 0.35
-    lhs_obs_x = section_width - 0.15
-    rhs_model_x = 0.65  # not necessarily used
-    rhs_obs_x = 0.85  # not necessarily used
+        # Two columns used for data
+        lhs_model_x = 0.35
+        lhs_obs_x = 0.65
 
     # Add pre-defined observation values to the first half / all, if present
+    section_width = 1 / num_periods
     if obs_period is not None:
         ax.hlines(obs_mean, 0, section_width, linestyle="--", color="black", linewidth=2)
         ax.fill_between(
@@ -544,7 +549,7 @@ def notz_style_plot_from_df(df, cfg):
                 # Shade around computed observations
                 std_err = df.at[dataset, (period, "sia_over_gmst", "std_err_slope")]
                 ax.fill_between(
-                    [obs_x - 10, obs_x + 10],
+                    [obs_x - 0.05, obs_x + 0.05],
                     sensitivity - std_err,
                     sensitivity + std_err,
                     facecolor="orange",
