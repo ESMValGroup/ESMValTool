@@ -692,12 +692,15 @@ def notz_style_plot_from_df(df, cfg):
                     alpha=0.15,
                 )
 
-    # Add the data period
-    add_points(ax, data_period, lhs_model_x, lhs_obs_x, label_font_size)
+    # Add the obs data period, or the full data period if there are no obs
+    if obs_period is not None:
+        add_points(ax, obs_period, lhs_model_x, lhs_obs_x, label_font_size)
+    else:
+        add_points(ax, data_period, lhs_model_x, lhs_obs_x, label_font_size)
 
-    # Add the observation period if different
+    # Add the full data period on the right-hand side if different
     if num_periods > 1:
-        add_points(ax, obs_period, rhs_model_x, rhs_obs_x, label_font_size)
+        add_points(ax, data_period, rhs_model_x, rhs_obs_x, label_font_size)
 
     # Save the figure (also closes it)
     save_figure(
