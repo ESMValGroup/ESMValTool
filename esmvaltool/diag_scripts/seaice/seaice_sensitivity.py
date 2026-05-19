@@ -1,10 +1,12 @@
 """Diagnostic that shows the sensitivity of sea ice area to global warming."""
 
 import logging
+from collections import namedtuple
 from pathlib import Path
 
 import iris
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from matplotlib.colors import Normalize
 from scipy.stats import linregress
@@ -36,60 +38,177 @@ def get_provenance_record(cfg, caption):
     return record
 
 
-def create_category_dict(cfg):
-    """Create a structured dictionary for adding values to later on."""
-    logger.debug("Creating blank dictionary.")
-    # Create blank dictionary of correct structure
-    category_dict = {
-        "models": {},
-        "tasa_obs": {},
-        "siconc_obs": {},
-        "cross-dataset-obs": {},
-    }
+def create_dataset_dict(cfg):
+    """Create a dictionary for feeding to dataframe."""
+    logger.debug("Creating dataset dictionary.")
+    # Initialise a dictionary
+    dataset_dict = {}
 
-    # Read the data from the config object
-    input_data = cfg["input_data"].values()
+    tasa_obs = []
+    siconc_obs = []
 
-    # Iterate over the datasets to add to the dictionary
-    for section in input_data:
-        # Check for tasa observations
-        if section["variable_group"] == "tasa_obs":
-            category_dict["tasa_obs"][section["dataset"]] = {}
+    # Iterate over the data in the cfg
+    for section in cfg["input_data"].values():
+        # Read relevant facets
+        dataset = section["dataset"]
+        group = section["variable_group"]
 
-        # Check for siconc observations
-        elif section["variable_group"] == "siconc_obs":
-            category_dict["siconc_obs"][section["dataset"]] = {}
+        # Create the dictionary's section for the dataset if it doesn't exist
+        dataset_dict.setdefault(dataset, {})
 
-        # Everything else should be a model
-        else:
-            # Add the model dataset if not already present (appears twice, for tas and siconc)
-            if section["dataset"] not in category_dict["models"]:
-                category_dict["models"][section["dataset"]] = {}
+        # Add the models, they are in tas and siconc
+        if group == "tas":
+            dataset_dict[dataset]["type"] = "model"
 
-            # Add labelling info
+            # Add whether to label the models
             if section.get("label_dataset"):
-                category_dict["models"][section["dataset"]]["label"] = (
-                    "to_label"
+                dataset_dict[dataset]["label"] = "to_label"
+                logger.info(
+                    "Dataset %s will be labelled",
+                    dataset,
                 )
-                logger.info("Dataset %s will be labelled", section["dataset"])
             else:
-                category_dict["models"][section["dataset"]]["label"] = (
-                    "unlabelled"
-                )
+                dataset_dict[dataset]["label"] = "unlabelled"
                 logger.info(
                     "Not labelling dataset %s in plots",
-                    section["dataset"],
+                    dataset,
                 )
 
-    return category_dict
+        # List the GMST obs
+        elif group == "tasa_obs":
+            tasa_obs.append(dataset)
+
+        # List the SIA obs
+        elif group == "siconc_obs":
+            siconc_obs.append(dataset)
+
+    # Create a string for each pair of observations
+    pairs = [f"{t}_v_{s}" for t in tasa_obs for s in siconc_obs]
+
+    # Add the pairs to the dictionary
+    for pair in pairs:
+        dataset_dict.setdefault(pair, {})
+        dataset_dict[pair]["type"] = "multi-obs"
+
+        # Don't label the obs now, but change here later if needed
+        dataset_dict[pair]["label"] = "unlabelled"
+        logger.info(
+            "Not labelling observations pair %s in plots",
+            pair,
+        )
+
+    return dataset_dict
 
 
-def fetch_cube(dataset, variable, cfg):
-    """Fetch a data cube for a dataset and variable using info from the config."""
+# Setting this up to query data and obs periods by name later
+Periods = namedtuple("Periods", ["periods", "obs_period", "data_period"])
+
+
+def retrieve_periods(cfg):
+    """Read from the observations section of the recipe"""
+    # This feeds through from the recipe in both diagnostics
+    data_start = cfg["observations"]["data_period"]["start_year"]
+    data_end = cfg["observations"]["data_period"]["end_year"]
+    data_period = f"{data_start}-{data_end}"
+    logger.debug("Data period = %s", data_period)
+
+    # Set obs period to none if not present
+    obs_period = None
+    periods = [data_period]
+
+    # This is only present in the arctic diagnostic
+    if "observation_period" in cfg["observations"]:
+        obs_start = cfg["observations"]["observation_period"]["start_year"]
+        obs_end = cfg["observations"]["observation_period"]["end_year"]
+        obs_period = f"{obs_start}-{obs_end}"
+        logger.debug("Observation period = %s", obs_period)
+
+        # Return both periods if present and different
+        if obs_period != data_period:
+            periods = [obs_period, data_period]
+
+    return Periods(
+        periods=periods, obs_period=obs_period, data_period=data_period
+    )
+
+
+def create_df_columns(periods):
+    """Create column headers for Pandas DataFrame."""
+    # In future the historical period will extend beyond 2014
+    num_periods = len(periods)
+    logger.debug("Dataframe will cover %s periods.", num_periods)
+
+    # Sections for types of regression
+    regressions = ["gmst_over_time", "sia_over_time", "sia_over_gmst"]
+    num_regressions = len(regressions)
+
+    # Things that will be caluclated
+    statistics = ["slope", "r_value", "p_value", "std_err_slope"]
+    num_stats = len(statistics)
+
+    # Produces 1979-2014 * 12 then 1979-2021 * 12
+    period = [p for p in periods for _ in range(num_regressions * num_stats)]
+
+    # Produces gmst_over_time * 4 then sia_over_time * 4 then sia_over_gmst * 4, two times
+    regression = [
+        r
+        for _ in range(num_periods)
+        for r in regressions
+        for _ in range(num_stats)
+    ]
+
+    # Produces slope then r_value then p_value then std_err_slope, six times
+    statistic = [
+        s for _ in range(num_periods * num_regressions) for s in statistics
+    ]
+
+    # Create main column headers
+    data_columns = pd.MultiIndex.from_arrays(
+        [period, regression, statistic],
+        names=["period", "regression", "statistic"],
+    )
+
+    # Add equivalent of single-level columns for dataset info
+    first_columns = pd.MultiIndex.from_arrays(
+        [["", ""], ["", ""], ["label", "type"]],
+        names=["period", "regression", "statistic"],
+    )
+
+    # Concatenate columns
+    columns = first_columns.append(data_columns)
+
+    return columns
+
+
+def create_blank_dataframe(dataset_dict, columns):
+    """Create a Pandas DataFrame for adding values to later on."""
+    logger.debug("Creating blank dataframe.")
+
+    # Create DataFrame from dataset_dict
+    df = pd.DataFrame.from_dict(dataset_dict, orient="index")
+
+    # Adjustment to account for multi-row headers
+    df.columns = pd.MultiIndex.from_tuples(
+        [("", "", col) for col in df.columns]
+    )
+
+    # Reindex to ensure all required columns are present
+    df = df.reindex(columns=columns, fill_value=np.nan)
+
+    # Fill missing "label" and "type" with empty string
+    df[("", "", "label")] = df[("", "", "label")].fillna("")
+    df[("", "", "type")] = df[("", "", "type")].fillna("")
+
+    return df
+
+
+def fetch_cube(dataset, variable, time_range, cfg):
+    """Fetch a data cube and constrain it using the time range."""
     logger.debug(
-        "Fetching cube for dataset: %s, variable: %s",
+        "Fetching cube for dataset: %s, variable: %s, time: %s",
         dataset,
         variable,
+        time_range,
     )
 
     # Read the data from the config object
@@ -106,8 +225,14 @@ def fetch_cube(dataset, variable, cfg):
             filepath = section["filename"]
             break
 
-    # Load the cube using iris
-    cube = iris.load_cube(filepath, variable)
+    # Read the time constraint from the period
+    start_year, end_year = time_range.split("-")
+    time_constraint = iris.Constraint(
+        time=lambda cell: int(start_year) <= cell.point.year <= int(end_year)
+    )
+
+    # Load the cube using iris with the time constraint
+    cube = iris.load_cube(filepath, variable & time_constraint)
     return cube
 
 
@@ -125,19 +250,21 @@ def calculate_annual_trend(cube):
     return linregress(no_years, cube.data)
 
 
-def calculate_direct_stats(dataset, cfg):
+def calculate_direct_stats(dataset, time_range, cfg):
     """Calculate the direct sensitivity of siconc to tas for a given dataset."""
     logger.debug("Calculating direct sensitivity for dataset %s.", dataset)
 
     # Fetch the required cubes
-    siconc_cube = fetch_cube(dataset, "siconc", cfg)
-    tas_cube = fetch_cube(dataset, "tas", cfg)
+    siconc_cube = fetch_cube(dataset, "siconc", time_range, cfg)
+    tas_cube = fetch_cube(dataset, "tas", time_range, cfg)
 
     # regression (tas as independent) gives slope, intercept, rvalue, pvalue, stderr
     return linregress(tas_cube.data, siconc_cube.data)
 
 
-def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
+def calculate_cross_dataset_stats(
+    tasa_dataset, siconc_dataset, time_range, cfg
+):
     """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
     logger.debug(
         "Calculating cross sensitivity for datasets %s, %s.",
@@ -146,260 +273,193 @@ def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
     )
 
     # Fetch the required cubes
-    siconc_cube = fetch_cube(siconc_dataset, "siconc", cfg)
-    tasa_cube = fetch_cube(tasa_dataset, "tasa", cfg)
+    siconc_cube = fetch_cube(siconc_dataset, "siconc", time_range, cfg)
+    tasa_cube = fetch_cube(tasa_dataset, "tasa", time_range, cfg)
 
     # regression (tasa as independent) gives slope, intercept, rvalue, pvalue, stderr
     return linregress(tasa_cube.data, siconc_cube.data)
 
 
-def write_values_to_dict(data_dict, cfg):
-    """Calculate and write values to the structured dictionary."""
-    logger.debug("Writing values to dictionary.")
+def add_values_to_df(df, data_period, cfg):
+    """Calculate and write values to the DataFrame."""
+    logger.info("Writing values to dataframe.")
 
     # Calculate all the values for the models
-    for model_dataset in data_dict["models"]:
+    models = df[df.loc[:, ("", "", "type")] == "model"]
+    for dataset_name, row in models.iterrows():
         # Calculate annual tas trend
-        tas_cube = fetch_cube(model_dataset, "tas", cfg)
+        tas_cube = fetch_cube(dataset_name, "tas", data_period, cfg)
         ann_tas_trend = calculate_annual_trend(tas_cube)
-        data_dict["models"][model_dataset]["annual_tas_trend"] = (
+        logger.debug(
+            "Dataset %s annual tas trend: %s", dataset_name, ann_tas_trend
+        )
+        # Add values to dataframe
+        df.at[dataset_name, (data_period, "gmst_over_time", "slope")] = (
             ann_tas_trend.slope
         )
+        df.at[dataset_name, (data_period, "gmst_over_time", "r_value")] = (
+            ann_tas_trend.rvalue
+        )
+        df.at[dataset_name, (data_period, "gmst_over_time", "p_value")] = (
+            ann_tas_trend.pvalue
+        )
+        df.at[
+            dataset_name, (data_period, "gmst_over_time", "std_err_slope")
+        ] = ann_tas_trend.stderr
 
         # Calculate annual siconc trend
-        siconc_cube = fetch_cube(model_dataset, "siconc", cfg)
+        siconc_cube = fetch_cube(dataset_name, "siconc", data_period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
-        # Add the slope for 2D positioning
-        data_dict["models"][model_dataset]["annual_siconc_trend"] = (
+        logger.debug(
+            "Dataset %s annual siconc trend: %s",
+            dataset_name,
+            ann_siconc_trend,
+        )
+        # Add values to dataframe
+        df.at[dataset_name, (data_period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
         )
-        # Add the p-value for hatching in 2D plot
-        data_dict["models"][model_dataset]["annual_siconc_p-value"] = (
+        df.at[dataset_name, (data_period, "sia_over_time", "r_value")] = (
+            ann_siconc_trend.rvalue
+        )
+        df.at[dataset_name, (data_period, "sia_over_time", "p_value")] = (
             ann_siconc_trend.pvalue
         )
+        df.at[
+            dataset_name, (data_period, "sia_over_time", "std_err_slope")
+        ] = ann_siconc_trend.stderr
 
         # Calculate direct sensitivity of siconc to tas
-        direct_sensitivity = calculate_direct_stats(model_dataset, cfg)
-        # Add the slope for sensitivity plot
-        data_dict["models"][model_dataset]["direct_sensitivity"] = (
+        direct_sensitivity = calculate_direct_stats(
+            dataset_name, data_period, cfg
+        )
+        logger.debug(
+            "Dataset %s sensitivity: %s", dataset_name, direct_sensitivity
+        )
+        # Add values to dataframe
+        df.at[dataset_name, (data_period, "sia_over_gmst", "slope")] = (
             direct_sensitivity.slope
         )
-        # Add the r-value for colouring in 2D plot
-        data_dict["models"][model_dataset]["direct_r-value"] = (
+        df.at[dataset_name, (data_period, "sia_over_gmst", "r_value")] = (
             direct_sensitivity.rvalue
         )
+        df.at[dataset_name, (data_period, "sia_over_gmst", "p_value")] = (
+            direct_sensitivity.pvalue
+        )
+        df.at[
+            dataset_name, (data_period, "sia_over_gmst", "std_err_slope")
+        ] = direct_sensitivity.stderr
 
-    # Calculate just the tasa trend for the tasa observations
-    for obs_dataset in data_dict["tasa_obs"]:
-        # Calculate annual tas trend
-        tasa_cube = fetch_cube(obs_dataset, "tasa", cfg)
+    # Calculate all the values for the observations
+    obs = df[df.loc[:, ("", "", "type")] == "multi-obs"]
+    for combined_name, row in obs.iterrows():
+        # Calculate annual tasa trend
+        gmst_dataset = combined_name.split("_v_")[0]
+        tasa_cube = fetch_cube(gmst_dataset, "tasa", data_period, cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
-        # Add the slope for 2D positioning
-        data_dict["tasa_obs"][obs_dataset]["annual_tas_trend"] = (
+        logger.debug(
+            "Dataset %s tasa annual trend: %s", gmst_dataset, ann_tasa_trend
+        )
+        # Add values to dataframe
+        df.at[combined_name, (data_period, "gmst_over_time", "slope")] = (
             ann_tasa_trend.slope
         )
+        df.at[combined_name, (data_period, "gmst_over_time", "r_value")] = (
+            ann_tasa_trend.rvalue
+        )
+        df.at[combined_name, (data_period, "gmst_over_time", "p_value")] = (
+            ann_tasa_trend.pvalue
+        )
+        df.at[
+            combined_name, (data_period, "gmst_over_time", "std_err_slope")
+        ] = ann_tasa_trend.stderr
 
-    # Calculate the siconc slope and p value  for the siconc observations
-    for obs_dataset in data_dict["siconc_obs"]:
         # Calculate annual siconc trend
-        siconc_cube = fetch_cube(obs_dataset, "siconc", cfg)
+        sia_dataset = combined_name.split("_v_")[1]
+        siconc_cube = fetch_cube(sia_dataset, "siconc", data_period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
-        # Add the slope for 2D positioning
-        data_dict["siconc_obs"][obs_dataset]["annual_siconc_trend"] = (
+        logger.debug(
+            "Dataset %s siconc annual trend: %s", sia_dataset, ann_siconc_trend
+        )
+        # Add values to dataframe
+        df.at[combined_name, (data_period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
         )
-        # Add the p-value for hatching in 2D plot
-        data_dict["siconc_obs"][obs_dataset]["annual_siconc_p-value"] = (
+        df.at[combined_name, (data_period, "sia_over_time", "r_value")] = (
+            ann_siconc_trend.rvalue
+        )
+        df.at[combined_name, (data_period, "sia_over_time", "p_value")] = (
             ann_siconc_trend.pvalue
         )
+        df.at[
+            combined_name, (data_period, "sia_over_time", "std_err_slope")
+        ] = ann_siconc_trend.stderr
 
-    # Calculate cross-dataset statistics between tasa and siconc observations
-    for tasa_dataset in data_dict["tasa_obs"]:
-        for siconc_dataset in data_dict["siconc_obs"]:
-            # Determine structure of dictionary to store values
-            key_name = f"{siconc_dataset}_to_{tasa_dataset}"
-            data_dict["cross-dataset-obs"][key_name] = {}
-            inner_dict = data_dict["cross-dataset-obs"][key_name]
+        # Calculate sensitivity of siconc to tasa
+        cross_dataset_stats = calculate_cross_dataset_stats(
+            gmst_dataset, sia_dataset, data_period, cfg
+        )
+        logger.debug(
+            "Obs pair %s sensitivity: %s", combined_name, cross_dataset_stats
+        )
+        # Add values to dataframe
+        df.at[combined_name, (data_period, "sia_over_gmst", "slope")] = (
+            cross_dataset_stats.slope
+        )
+        df.at[combined_name, (data_period, "sia_over_gmst", "r_value")] = (
+            cross_dataset_stats.rvalue
+        )
+        df.at[combined_name, (data_period, "sia_over_gmst", "p_value")] = (
+            cross_dataset_stats.pvalue
+        )
+        df.at[
+            combined_name, (data_period, "sia_over_gmst", "std_err_slope")
+        ] = cross_dataset_stats.stderr
 
-            # Calculate cross-dataset sensitivity of siconc to tasa
-            cross_sensitivity = calculate_cross_dataset_stats(
-                tasa_dataset,
-                siconc_dataset,
-                cfg,
-            )
-            # Add the r-value for colouring in 2D plot
-            inner_dict["direct_r-value"] = cross_sensitivity.rvalue
-            # Store the direct sensitivity as the calculation was run anyway
-            inner_dict["direct_sensitivity"] = cross_sensitivity.slope
-
-    return data_dict
+    return df
 
 
-def write_dictionary_to_csv(sub_dict, filename, cfg):
-    """
-    Output a section of data dictionary to a csv file using Pandas.
-
-    Only sections of the dictionary should be written at a time as otherwise
-    the structure is too complex to easily convert to a DataFrame.
-    """
-    logger.debug("Writing dictionary to csv file.")
+def write_df_to_csv(df, filename, cfg):
+    """Copy DataFrame to a csv file."""
+    logger.debug("Dataframe to write:\n %s", df)
 
     # Create the csv filepath using info from the config
     csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
 
-    # Write the data to a csv file (via a Pandas DataFrame)
-    dataframe = pd.DataFrame.from_dict(sub_dict, orient="index")
-    dataframe.to_csv(csv_filepath)
+    # Write the data to a csv file
+    df.to_csv(csv_filepath)
     logger.info("Wrote data to %s", csv_filepath)
 
 
-def write_obs_from_cfg(cfg):
-    """Write the Notz-style observations from the recipe to a dictionary."""
-    logger.debug("Writing observations from config file.")
+def roach_style_plot_from_df(df, cfg):
+    """Save a plot of trend in SIA against trend in GMST to the given filename."""
+    logger.debug("DataFrame for Roach-style plot:\n %s", df)
 
-    # Initialize the dictionary with observation period
-    obs_dict = {"obs_period": cfg["observations"]["observation period"]}
-
-    # Add the observations values to the dictionary
-    notz_values = cfg["observations"]["sea ice sensitivity (Notz-style plot)"]
-    obs_dict["mean"] = notz_values["mean"]
-    obs_dict["std_dev"] = notz_values["standard deviation"]
-    obs_dict["plausible"] = notz_values["plausible range"]
-
-    return obs_dict
-
-
-def create_titles_dict(cfg):
-    """
-    Create a dictionary of appropriate titles and hardcoded observations.
-    Values depend on whether the plot is for the Arctic or Antarctic
-    and assume the recipe used September Arctic sea ice data or
-    annually mean averaged Antarctic sea ice data
-    """
-    logger.debug("Creating titles dictionary.")
-    dictionary = {}
-
+    # Look up variable to determine plot title
     data = cfg["input_data"].values()
     first_variable = next(iter(data))
 
+    # Set plot title and filename
     if first_variable["diagnostic"] == "arctic":
-        dictionary["titles"] = {
-            "notz_fig_title": "September Arctic sea-ice area sensitivity to global mean surface temperature",
-            "notz_ax_title": "dSIA/dGMST",
-            "notz_plot_filename": "September Arctic sea ice sensitivity",
-            "roach_fig_title": "Trends in Annual Mean Temperature And September Arctic Sea Ice",
-            "roach_plot_filename": "September Arctic sea ice trends",
-        }
-
+        title = (
+            "Trends in Annual Mean Temperature And September Arctic Sea Ice"
+        )
+        save_as = "September Arctic sea ice trends"
     elif first_variable["diagnostic"] == "antarctic":
-        dictionary["titles"] = {
-            "notz_fig_title": "Annually Meaned Antarctic Sea Ice Sensitivity",
-            "notz_ax_title": "dSIA/dGMST",
-            "notz_plot_filename": "Annual Antarctic sea ice sensitivity",
-            "roach_fig_title": "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice",
-            "roach_plot_filename": "Annual Antarctic sea ice trends",
-        }
-
-    dictionary["obs"] = write_obs_from_cfg(cfg)
-
-    return dictionary
-
-
-def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
-    """Save a plot of sensitivities and observations for model datasets."""
-    # Read from observations dictionary
-    obs_years = titles_dictionary["obs"]["obs_period"]
-    obs_dict = titles_dictionary["obs"]
-    obs_mean = obs_dict["mean"]
-    obs_std_dev = obs_dict["std_dev"]
-    obs_plausible = obs_dict["plausible"]
-
-    # Set up the figure
-    fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
-    fig.suptitle(titles_dictionary["titles"]["notz_fig_title"], wrap=True)
-    ax.set_title(
-        titles_dictionary["titles"]["notz_ax_title"],
-        wrap=True,
-        fontsize=10,
-    )
-
-    # Iterate over the dictionary
-    for dataset, inner_dict in data_dictionary.items():
-        ax.plot(
-            0.25,
-            inner_dict["direct_sensitivity"],
-            color="blue",
-            marker="_",
-            markersize=20,
+        title = (
+            "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice"
         )
+        save_as = "Annual Antarctic sea ice trends"
 
-        # Label with the dataset if specified, offset correct by eye
-        if inner_dict["label"] == "to_label":
-            plt.annotate(
-                dataset,
-                xy=(0.25, inner_dict["direct_sensitivity"]),
-                xytext=(
-                    0.35,
-                    inner_dict["direct_sensitivity"] - 0.05,
-                ),
-            )
-
-    # Add observations only if obs_mean is a number
-    if isinstance(obs_mean, int | float):
-        ax.hlines(obs_mean, 0, 1, linestyle="--", color="black", linewidth=2)
-        ax.fill_between(
-            [0, 1],
-            obs_mean - obs_std_dev,
-            obs_mean + obs_std_dev,
-            facecolor="k",
-            alpha=0.15,
-        )
-        ax.hlines(
-            obs_mean + obs_plausible,
-            0,
-            1,
-            linestyle=":",
-            color="0.5",
-            linewidth=1,
-        )
-        ax.hlines(
-            obs_mean - obs_plausible,
-            0,
-            1,
-            linestyle=":",
-            color="0.5",
-            linewidth=1,
-        )
-
-    # Tidy the figure
-    ax.set_xlim(0, 1)
-    ax.set_xticks([])
-    ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
-
-    # Create caption based on whether observation mean is present
-    if isinstance(obs_mean, int | float):
-        caption = (
-            "Sensitivity of sea ice area to annual mean global warming."
-            f"\nMean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
-        )
-    else:
-        caption = "Sensitivity of sea ice area to annual mean global warming."
-
-    # Save the figure (also closes it)
-    save_figure(
-        titles_dictionary["titles"]["notz_plot_filename"],
-        get_provenance_record(cfg, caption),
-        cfg,
-        figure=fig,
-        close=True,
-    )
-
-
-def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
-    """Save a plot of trend in SIA against trend in GMST to the given filename."""
     # Set up the figure
     fig, ax = plt.subplots(figsize=(10, 6), layout="constrained")
-    fig.suptitle(titles_dictionary["titles"]["roach_fig_title"], wrap=True)
+    fig.suptitle(title, wrap=True)
+
+    # Set up the axes
+    ax.axhline(color="black", alpha=0.5)
+    ax.axvline(color="black", alpha=0.5)
+    ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
+    ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
 
     # Set up for colouring the points
     norm = Normalize(vmin=-1, vmax=1)
@@ -408,82 +468,54 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Choose p-value to hatch
     min_p_to_hatch = 0.05
 
-    # Set up the axes
-    ax.axhline(color="black", alpha=0.5)
-    ax.axvline(color="black", alpha=0.5)
-    ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
-    ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
+    # Only plot the entire data period in this style
+    data_period = retrieve_periods(cfg).data_period
 
-    # Iterate over the models sub-dictionary
-    for dataset, inner_dict in data_dictionary["models"].items():
-        # Determine the position of the point
-        x = 10 * inner_dict["annual_tas_trend"]  # for equivalence to decades
-        y = (
-            10 * inner_dict["annual_siconc_trend"]
-        )  # for equivalence to decades
+    # Iterate over the values in the dataframe
+    for dataset, row in df.iterrows():
+        # Look up the relevant values
+        gmst_trend = df.at[dataset, (data_period, "gmst_over_time", "slope")]
+        sia_trend = df.at[dataset, (data_period, "sia_over_time", "slope")]
+        r_cross = df.at[dataset, (data_period, "sia_over_gmst", "r_value")]
+        p_sia = df.at[dataset, (data_period, "sia_over_time", "p_value")]
 
-        # Determine the colour of the point
-        r_corr = inner_dict["direct_r-value"]
+        # The decadal figures (ten times bigger) are plotted
+        x = 10 * gmst_trend
+        y = 10 * sia_trend
 
         # Decide if the point should be hatched
-        if inner_dict["annual_siconc_p-value"] >= min_p_to_hatch:
-            h = 5 * "/"  # This is a hatch pattern
+        if p_sia >= min_p_to_hatch:
+            hatch = 5 * "/"  # This is a hatch pattern
         else:
-            h = None
+            hatch = None
+
+        # Shape is different for obs
+        if df.at[dataset, ("", "", "type")] == "model":
+            shape = "o"
+            edgecolor = None
+            order = None
+        else:
+            shape = "s"
+            edgecolor = "black"
+            order = 0
 
         # Plot the point
         plt.scatter(
             x,
             y,
-            marker="o",
+            marker=shape,
             s=150,
-            c=[r_corr],
-            hatch=h,
+            c=[r_cross],
+            hatch=hatch,
             cmap=cmap,
             norm=norm,
+            edgecolors=edgecolor,
+            zorder=order,
         )
 
         # Label with the dataset if specified
-        if inner_dict["label"] == "to_label":
+        if df.at[dataset, ("", "", "label")] == "to_label":
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
-
-    # Add the observations
-    siconc_dict = data_dictionary["siconc_obs"]
-    tasa_dict = data_dictionary["tasa_obs"]
-
-    # Iterate over the pairs in cross-dataset-obs
-    for pair, inner_dict in data_dictionary["cross-dataset-obs"].items():
-        # Retrieve the names of the datasets from the pair string
-        siconc_ds, tasa_ds = pair.split("_to_")
-
-        # Determine the position of the point, from other dictionaries
-        x = (
-            10 * tasa_dict[tasa_ds]["annual_tas_trend"]
-        )  # This was labelled as tas, not tasa
-        y = 10 * siconc_dict[siconc_ds]["annual_siconc_trend"]
-
-        # Determine the colour of the point from the inner dictionary
-        r_corr = inner_dict["direct_r-value"]
-
-        # Decide if the point should be hatched
-        if siconc_dict[siconc_ds]["annual_siconc_p-value"] >= min_p_to_hatch:
-            h = 5 * "/"
-        else:
-            h = None
-
-        # Plot the point
-        plt.scatter(
-            x,
-            y,
-            marker="s",
-            s=150,
-            c=[r_corr],
-            hatch=h,
-            cmap=cmap,
-            norm=norm,
-            zorder=0,
-            edgecolors="black",
-        )
 
     # Add a colour bar
     plt.colorbar(label="Pearson correlation coefficient")
@@ -491,7 +523,185 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Save the figure (also closes it)
     caption = "Decadal trends of sea ice area and global mean temperature."
     save_figure(
-        titles_dictionary["titles"]["roach_plot_filename"],
+        save_as,
+        get_provenance_record(cfg, caption),
+        cfg,
+        figure=fig,
+        close=True,
+    )
+
+
+def notz_style_plot_from_df(df, cfg):
+    """Save a plot of sensitivities and observations for model datasets."""
+    logger.debug("DataFrame for Notz-style plot:\n %s", df)
+
+    # Look up variable to determine plot title
+    data = cfg["input_data"].values()
+    first_variable = next(iter(data))
+
+    # Set plot title and filename
+    if first_variable["diagnostic"] == "arctic":
+        title = "September Arctic sea-ice area sensitivity\ndSIA/dGMST"
+        save_as = "September Arctic sea ice sensitivity"
+    elif first_variable["diagnostic"] == "antarctic":
+        title = "Annual Antarctic sea-ice area sensitivity\ndSIA/dGMST"
+        save_as = "Annual Antarctic sea ice sensitivity"
+
+    # Caption changes if obs are present
+    caption = "Sensitivity of sea ice area to annual mean global warming."
+
+    # Retrieve obs from config if present
+    obs_period = retrieve_periods(cfg).obs_period
+    if obs_period is not None:
+        obs_mean = cfg["observations"]["sea_ice_sensitivity"]["mean"]
+        obs_std_dev = cfg["observations"]["sea_ice_sensitivity"][
+            "standard_deviation"
+        ]
+        obs_plausible = cfg["observations"]["sea_ice_sensitivity"][
+            "plausible_range"
+        ]
+        # Also changes caption
+        caption = (
+            "Sensitivity of sea ice area to annual mean global warming."
+            f"\nMean (dashed), standard deviation (shaded) and plausible (dotted) values from {obs_period}."
+        )
+
+    # Set up the figure
+    fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
+    fig.suptitle(title, wrap=True)
+
+    # Set up the axes
+    ax.set_xlim(0, 1)
+    ax.set_xticks([])
+    ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
+
+    # Check how many periods there are, for titles and positioning
+    cfg_periods = retrieve_periods(cfg)
+    num_periods = len(cfg_periods.periods)
+    obs_period = cfg_periods.obs_period
+    data_period = cfg_periods.data_period
+
+    # Set up the spacing and titles accordingly
+    if num_periods > 1:
+        # Put obs period on the left (as it should end earlier)
+        ax.set_title(obs_period, loc="left", fontsize=10, x=0.1)
+        ax.set_title(data_period, loc="right", fontsize=10, x=0.9)
+
+        # Four columns used for data
+        lhs_model_x = 0.15
+        lhs_obs_x = 0.35
+        rhs_model_x = 0.65
+        rhs_obs_x = 0.85
+
+        # Labelling was too big
+        label_font_size = 7
+    else:
+        # Only one axes title
+        ax.set_title(data_period, loc="center")
+
+        # Two columns used for data
+        lhs_model_x = 0.35
+        lhs_obs_x = 0.65
+
+        # Labelling need not shrink
+        label_font_size = 10
+
+    # Add pre-defined observation values to the first half / all, if present
+    section_width = 1 / num_periods
+    if obs_period is not None:
+        ax.hlines(
+            obs_mean,
+            0,
+            section_width,
+            linestyle="--",
+            color="black",
+            linewidth=2,
+        )
+        ax.fill_between(
+            [0, section_width],
+            obs_mean - obs_std_dev,
+            obs_mean + obs_std_dev,
+            facecolor="k",
+            alpha=0.15,
+        )
+        ax.hlines(
+            obs_mean + obs_plausible,
+            0,
+            section_width,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
+        )
+        ax.hlines(
+            obs_mean - obs_plausible,
+            0,
+            section_width,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
+        )
+
+    # Function that may be called once or twice
+    def add_points(ax, period, data_x, obs_x, font_size):
+        # Iterate over the values in the dataframe
+        for dataset, row in df.iterrows():
+            # Look up the sensitivity of SIA to GMST for the dataset
+            sensitivity = df.at[dataset, (period, "sia_over_gmst", "slope")]
+
+            # Plotting for models
+            if df.at[dataset, ("", "", "type")] == "model":
+                ax.plot(
+                    data_x,
+                    sensitivity,
+                    color="blue",
+                    marker="_",
+                    markersize=20,
+                )
+
+                # Label with the dataset if specified, offset correct by eye
+                if df.at[dataset, ("", "", "label")] == "to_label":
+                    plt.annotate(
+                        dataset,
+                        xy=(data_x, sensitivity),
+                        xytext=(
+                            data_x + 0.1,
+                            sensitivity - 0.05,
+                        ),
+                        fontsize=font_size,
+                    )
+
+            # Plotting for computed observations
+            if df.at[dataset, ("", "", "type")] == "multi-obs":
+                ax.plot(
+                    obs_x,
+                    sensitivity,
+                    color="orange",
+                    marker="_",
+                    markersize=20,
+                )
+
+                # Shade around computed observations
+                std_err = df.at[
+                    dataset, (period, "sia_over_gmst", "std_err_slope")
+                ]
+                ax.fill_between(
+                    [obs_x - 0.05, obs_x + 0.05],
+                    sensitivity - std_err,
+                    sensitivity + std_err,
+                    facecolor="orange",
+                    alpha=0.15,
+                )
+
+    # Add the data period
+    add_points(ax, data_period, lhs_model_x, lhs_obs_x, label_font_size)
+
+    # Add the observation period if different
+    if obs_period is not None:
+        add_points(ax, obs_period, rhs_model_x, rhs_obs_x, label_font_size)
+
+    # Save the figure (also closes it)
+    save_figure(
+        save_as,
         get_provenance_record(cfg, caption),
         cfg,
         figure=fig,
@@ -500,46 +710,46 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
 
 def main(cfg):
-    # Create the structured dictionary
-    data_dict = create_category_dict(cfg)
+    # Log config dictionary
+    logger.debug("----------\n%s\n----------", cfg)
 
-    # Calculate and write values to the dictionary
-    logger.info("Calculating and writing values to dictionary.")
-    data_dict = write_values_to_dict(data_dict, cfg)
+    # Look at the datasets in the config object
+    logger.info("Reading datasets.")
+    datasets = create_dataset_dict(cfg)
 
-    # Write the model and obs dictionaries to csv files
-    logger.info("Writing dictionaries to csv files.")
-    write_dictionary_to_csv(data_dict["models"], "models_values", cfg)
-    write_dictionary_to_csv(data_dict["tasa_obs"], "tasa_obs_values", cfg)
-    write_dictionary_to_csv(data_dict["siconc_obs"], "siconc_obs_values", cfg)
+    # Retrieve the data periods (in case obs period is different)
+    logger.info("Checking data periods.")
+    data_periods = retrieve_periods(cfg).periods
 
-    # Write the cross-dataset obs dictionary to csv files (separately for each pair)
-    for pair in data_dict["cross-dataset-obs"]:
-        data_dict["cross-dataset-obs"][pair] = data_dict["cross-dataset-obs"][
-            pair
-        ]
-        write_dictionary_to_csv(
-            data_dict["cross-dataset-obs"][pair],
-            f"{pair}",
-            cfg,
+    # Create a dataframe with the right columns
+    logger.info("Creating dataframe.")
+    columns = create_df_columns(data_periods)
+    df = create_blank_dataframe(datasets, columns)
+
+    # Add the data for each period
+    for data_period in data_periods:
+        logger.info(
+            "Calculating and writing values for period %s.", data_period
         )
+        filled = add_values_to_df(df, data_period, cfg)
 
-    # Create a single provenance record for the csv files
+    # Write the dataframe to file, with provenance
+    logger.info("Writing dataframe to csv file.")
+    filename = "data_values"
+    write_df_to_csv(filled, filename, cfg)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            f"{cfg['work_dir']}/figures_as_csv",
+            f"{cfg['work_dir']}/{filename}",
             get_provenance_record(cfg, "Annual (not decadal) figures"),
         )
 
-    # Titles and observations depend on the diagnostic being plotted
-    logger.info("Creating titles and observations dictionary")
-    titles_and_obs_dict = create_titles_dict(cfg)
-
-    # Plot the sensitivities, uses model data only (and obs from recipe)
-    logger.info("Creating Notz-style plot")
-    notz_style_plot_from_dict(data_dict["models"], titles_and_obs_dict, cfg)
+    # Plot the 2D figure
     logger.info("Creating Roach-style plot")
-    roach_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
+    roach_style_plot_from_df(filled, cfg)
+
+    # Plot the 1D figure
+    logger.info("Creating Notz-style plot")
+    notz_style_plot_from_df(filled, cfg)
 
 
 if __name__ == "__main__":

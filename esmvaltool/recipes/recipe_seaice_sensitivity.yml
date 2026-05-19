@@ -51,16 +51,17 @@ arctic_siconc_obs: &arctic_siconc_obs
 antarctic_siconc_obs: &antarctic_siconc_obs
   - { <<: *obs_defaults, dataset: OSI-450-sh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
 
+
 preprocessors:
   extract_test_period:
     &extract_test_period
     extract_time:
       start_day: 1
       start_month: 1
-      start_year: 1979
+      start_year: &data_start 1979
       end_day: 31
       end_month: 12
-      end_year: 2014
+      end_year: &data_end 2014
 
   extract_sept:
     &extract_sept
@@ -125,32 +126,35 @@ diagnostics:
         mip: SImon
         additional_datasets:
           *model_datasets
-      tas:
-        preprocessor: pp_avg_ann_global_temp
-        mip: Amon
-        additional_datasets:
-          *model_datasets
       siconc_obs:
         short_name: siconc
         preprocessor: pp_arctic_sept_sea_ice
         additional_datasets:
           *arctic_siconc_obs
-      tasa_obs:
-        short_name: tasa
+      tas: &tas
         preprocessor: pp_avg_ann_global_temp
         mip: Amon
+        additional_datasets:
+          *model_datasets
+      tasa_obs: &tasa
+        <<: *tas
+        short_name: tasa
         additional_datasets:
           *tasa_obs
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
         observations:
-          observation period: 1979-2014
-          sea ice sensitivity (Notz-style plot):
+          data_period: &data_period
+            start_year: *data_start
+            end_year: *data_end
+          observation_period:
+            start_year: 1979
+            end_year: 2014
+          sea_ice_sensitivity:
             mean: -4.01
-            standard deviation: 0.32
-            plausible range: 1.28
-
+            standard_deviation: 0.32
+            plausible_range: 1.28
 
   antarctic:
     description: Plots annual mean sea ice sensitivity below 0 latitude in millions of square kilometres
@@ -160,28 +164,17 @@ diagnostics:
         mip: SImon
         additional_datasets:
           *model_datasets
-      tas:
-        preprocessor: pp_avg_ann_global_temp
-        mip: Amon
-        additional_datasets:
-          *model_datasets
       siconc_obs:
         short_name: siconc
         preprocessor: pp_antarctic_avg_ann_sea_ice
         additional_datasets:
           *antarctic_siconc_obs
+      tas:
+        <<: *tas
       tasa_obs:
-        short_name: tasa
-        preprocessor: pp_avg_ann_global_temp
-        mip: Amon
-        additional_datasets:
-          *tasa_obs
+        <<: *tasa
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
         observations:
-          observation period:
-          sea ice sensitivity (Notz-style plot):
-            mean:
-            standard deviation:
-            plausible range:
+          data_period: *data_period
