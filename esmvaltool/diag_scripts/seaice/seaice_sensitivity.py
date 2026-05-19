@@ -102,6 +102,7 @@ def create_dataset_dict(cfg):
 
 # Setting this up to query data and obs periods by name later
 class Periods(NamedTuple):
+    """Class to hold data and observational time ranges from recipe."""
     periods: list[str]
     obs_period: str | None
     data_period: str
@@ -480,10 +481,7 @@ def roach_style_plot_from_df(df, cfg):
         y = 10 * sia_trend
 
         # Decide if the point should be hatched
-        if p_sia >= min_p_to_hatch:
-            hatch = 5 * "/"  # This is a hatch pattern
-        else:
-            hatch = None
+        hatch = 5 * "/" if p_sia >= min_p_to_hatch else None
 
         # Shape is different for obs
         if df.loc[dataset, ("", "", "type")] == "model":
