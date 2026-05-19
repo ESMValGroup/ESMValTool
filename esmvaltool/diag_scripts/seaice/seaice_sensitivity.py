@@ -292,16 +292,16 @@ def add_values_to_df(df, data_period, cfg):
         ann_tas_trend = calculate_annual_trend(tas_cube)
         logger.debug("Dataset %s annual tas trend: %s", dataset, ann_tas_trend)
         # Add values to dataframe
-        df.at[dataset, (data_period, "gmst_over_time", "slope")] = (
+        df.loc[dataset, (data_period, "gmst_over_time", "slope")] = (
             ann_tas_trend.slope
         )
-        df.at[dataset, (data_period, "gmst_over_time", "r_value")] = (
+        df.loc[dataset, (data_period, "gmst_over_time", "r_value")] = (
             ann_tas_trend.rvalue
         )
-        df.at[dataset, (data_period, "gmst_over_time", "p_value")] = (
+        df.loc[dataset, (data_period, "gmst_over_time", "p_value")] = (
             ann_tas_trend.pvalue
         )
-        df.at[dataset, (data_period, "gmst_over_time", "std_err_slope")] = (
+        df.loc[dataset, (data_period, "gmst_over_time", "std_err_slope")] = (
             ann_tas_trend.stderr
         )
 
@@ -314,16 +314,16 @@ def add_values_to_df(df, data_period, cfg):
             ann_siconc_trend,
         )
         # Add values to dataframe
-        df.at[dataset, (data_period, "sia_over_time", "slope")] = (
+        df.loc[dataset, (data_period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
         )
-        df.at[dataset, (data_period, "sia_over_time", "r_value")] = (
+        df.loc[dataset, (data_period, "sia_over_time", "r_value")] = (
             ann_siconc_trend.rvalue
         )
-        df.at[dataset, (data_period, "sia_over_time", "p_value")] = (
+        df.loc[dataset, (data_period, "sia_over_time", "p_value")] = (
             ann_siconc_trend.pvalue
         )
-        df.at[dataset, (data_period, "sia_over_time", "std_err_slope")] = (
+        df.loc[dataset, (data_period, "sia_over_time", "std_err_slope")] = (
             ann_siconc_trend.stderr
         )
 
@@ -331,16 +331,16 @@ def add_values_to_df(df, data_period, cfg):
         direct_sensitivity = calculate_direct_stats(dataset, data_period, cfg)
         logger.debug("Dataset %s sensitivity: %s", dataset, direct_sensitivity)
         # Add values to dataframe
-        df.at[dataset, (data_period, "sia_over_gmst", "slope")] = (
+        df.loc[dataset, (data_period, "sia_over_gmst", "slope")] = (
             direct_sensitivity.slope
         )
-        df.at[dataset, (data_period, "sia_over_gmst", "r_value")] = (
+        df.loc[dataset, (data_period, "sia_over_gmst", "r_value")] = (
             direct_sensitivity.rvalue
         )
-        df.at[dataset, (data_period, "sia_over_gmst", "p_value")] = (
+        df.loc[dataset, (data_period, "sia_over_gmst", "p_value")] = (
             direct_sensitivity.pvalue
         )
-        df.at[dataset, (data_period, "sia_over_gmst", "std_err_slope")] = (
+        df.loc[dataset, (data_period, "sia_over_gmst", "std_err_slope")] = (
             direct_sensitivity.stderr
         )
 
@@ -355,16 +355,16 @@ def add_values_to_df(df, data_period, cfg):
             "Dataset %s tasa annual trend: %s", gmst_dataset, ann_tasa_trend
         )
         # Add values to dataframe
-        df.at[combined_name, (data_period, "gmst_over_time", "slope")] = (
+        df.loc[combined_name, (data_period, "gmst_over_time", "slope")] = (
             ann_tasa_trend.slope
         )
-        df.at[combined_name, (data_period, "gmst_over_time", "r_value")] = (
+        df.loc[combined_name, (data_period, "gmst_over_time", "r_value")] = (
             ann_tasa_trend.rvalue
         )
-        df.at[combined_name, (data_period, "gmst_over_time", "p_value")] = (
+        df.loc[combined_name, (data_period, "gmst_over_time", "p_value")] = (
             ann_tasa_trend.pvalue
         )
-        df.at[
+        df.loc[
             combined_name, (data_period, "gmst_over_time", "std_err_slope")
         ] = ann_tasa_trend.stderr
 
@@ -376,16 +376,16 @@ def add_values_to_df(df, data_period, cfg):
             "Dataset %s siconc annual trend: %s", sia_dataset, ann_siconc_trend
         )
         # Add values to dataframe
-        df.at[combined_name, (data_period, "sia_over_time", "slope")] = (
+        df.loc[combined_name, (data_period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
         )
-        df.at[combined_name, (data_period, "sia_over_time", "r_value")] = (
+        df.loc[combined_name, (data_period, "sia_over_time", "r_value")] = (
             ann_siconc_trend.rvalue
         )
-        df.at[combined_name, (data_period, "sia_over_time", "p_value")] = (
+        df.loc[combined_name, (data_period, "sia_over_time", "p_value")] = (
             ann_siconc_trend.pvalue
         )
-        df.at[
+        df.loc[
             combined_name, (data_period, "sia_over_time", "std_err_slope")
         ] = ann_siconc_trend.stderr
 
@@ -397,16 +397,16 @@ def add_values_to_df(df, data_period, cfg):
             "Obs pair %s sensitivity: %s", combined_name, cross_dataset_stats
         )
         # Add values to dataframe
-        df.at[combined_name, (data_period, "sia_over_gmst", "slope")] = (
+        df.loc[combined_name, (data_period, "sia_over_gmst", "slope")] = (
             cross_dataset_stats.slope
         )
-        df.at[combined_name, (data_period, "sia_over_gmst", "r_value")] = (
+        df.loc[combined_name, (data_period, "sia_over_gmst", "r_value")] = (
             cross_dataset_stats.rvalue
         )
-        df.at[combined_name, (data_period, "sia_over_gmst", "p_value")] = (
+        df.loc[combined_name, (data_period, "sia_over_gmst", "p_value")] = (
             cross_dataset_stats.pvalue
         )
-        df.at[
+        df.loc[
             combined_name, (data_period, "sia_over_gmst", "std_err_slope")
         ] = cross_dataset_stats.stderr
 
@@ -469,10 +469,10 @@ def roach_style_plot_from_df(df, cfg):
     # Iterate over the values in the dataframe
     for dataset, _ in df.iterrows():
         # Look up the relevant values
-        gmst_trend = df.at[dataset, (data_period, "gmst_over_time", "slope")]
-        sia_trend = df.at[dataset, (data_period, "sia_over_time", "slope")]
-        r_cross = df.at[dataset, (data_period, "sia_over_gmst", "r_value")]
-        p_sia = df.at[dataset, (data_period, "sia_over_time", "p_value")]
+        gmst_trend = df.loc[dataset, (data_period, "gmst_over_time", "slope")]
+        sia_trend = df.loc[dataset, (data_period, "sia_over_time", "slope")]
+        r_cross = df.loc[dataset, (data_period, "sia_over_gmst", "r_value")]
+        p_sia = df.loc[dataset, (data_period, "sia_over_time", "p_value")]
 
         # The decadal figures (ten times bigger) are plotted
         x = 10 * gmst_trend
@@ -485,7 +485,7 @@ def roach_style_plot_from_df(df, cfg):
             hatch = None
 
         # Shape is different for obs
-        if df.at[dataset, ("", "", "type")] == "model":
+        if df.loc[dataset, ("", "", "type")] == "model":
             shape = "o"
             edgecolor = None
             order = None
@@ -509,7 +509,7 @@ def roach_style_plot_from_df(df, cfg):
         )
 
         # Label with the dataset if specified
-        if df.at[dataset, ("", "", "label")] == "to_label":
+        if df.loc[dataset, ("", "", "label")] == "to_label":
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
     # Add a colour bar
@@ -642,10 +642,10 @@ def notz_style_plot_from_df(df, cfg):
         # Iterate over the values in the dataframe
         for dataset, _ in df.iterrows():
             # Look up the sensitivity of SIA to GMST for the dataset
-            sensitivity = df.at[dataset, (period, "sia_over_gmst", "slope")]
+            sensitivity = df.loc[dataset, (period, "sia_over_gmst", "slope")]
 
             # Plotting for models
-            if df.at[dataset, ("", "", "type")] == "model":
+            if df.loc[dataset, ("", "", "type")] == "model":
                 ax.plot(
                     data_x,
                     sensitivity,
@@ -655,7 +655,7 @@ def notz_style_plot_from_df(df, cfg):
                 )
 
                 # Label with the dataset if specified, offset correct by eye
-                if df.at[dataset, ("", "", "label")] == "to_label":
+                if df.loc[dataset, ("", "", "label")] == "to_label":
                     plt.annotate(
                         dataset,
                         xy=(data_x, sensitivity),
@@ -667,7 +667,7 @@ def notz_style_plot_from_df(df, cfg):
                     )
 
             # Plotting for computed observations
-            if df.at[dataset, ("", "", "type")] == "multi-obs":
+            if df.loc[dataset, ("", "", "type")] == "multi-obs":
                 ax.plot(
                     obs_x,
                     sensitivity,
@@ -677,7 +677,7 @@ def notz_style_plot_from_df(df, cfg):
                 )
 
                 # Shade around computed observations
-                std_err = df.at[
+                std_err = df.loc[
                     dataset, (period, "sia_over_gmst", "std_err_slope")
                 ]
                 ax.fill_between(
