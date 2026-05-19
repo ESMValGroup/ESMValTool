@@ -137,7 +137,10 @@ def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
     if is_daily:
         loop_date = datetime.datetime(year0, 1, 1, tzinfo=datetime.UTC)
         while loop_date <= datetime.datetime(
-            year0, 12, 31, tzinfo=datetime.UTC
+            year0,
+            12,
+            31,
+            tzinfo=datetime.UTC,
         ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
@@ -325,12 +328,10 @@ def _load_files(var, in_dir, year, daily):
                             break
         cube_list = cube_list_sum
     elif var.get("operator"):
-        raise ValueError(
-            "Multiple input files found, with operator '{}' configured: {}".format(
-                var.get("operator"),
-                ", ".join(in_files),
-            ),
+        errstr = "Multiple input files found, with operator '{}' configured: {}".format(
+            var.get("operator"), ", ".join(in_files)
         )
+        raise ValueError(errstr)
 
     return cube_list
 
@@ -338,7 +339,7 @@ def _load_files(var, in_dir, year, daily):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize CLARA-AVHRR dataset."""
     glob_attrs = cfg["attributes"]
-    glob_version = glob_attrs["version"] if "version" in glob_attrs else ""
+    glob_version = glob_attrs.get("version", "")
 
     logger.info(
         "Starting cmorization for tier%s OBS files: %s",

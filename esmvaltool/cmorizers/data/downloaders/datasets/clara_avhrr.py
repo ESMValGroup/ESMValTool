@@ -91,7 +91,7 @@ def download_dataset(
                     "year": str(year),
                     "month": [f"{m:02d}" for m in range(1, 13)],
                 },
-            }
+            },
         )
 
     for year in range(start_date_dd.year, end_date_dd.year + 1):
@@ -128,7 +128,7 @@ def download_dataset(
                         "month": f"{month:02d}",
                         "day": [f"{m:02d}" for m in range(1, 32)],
                     },
-                }
+                },
             )
 
     cds_client = cdsapi.Client(cds_url)
