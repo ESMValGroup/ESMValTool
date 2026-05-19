@@ -252,6 +252,8 @@ def _load_files(var, cfg, in_dir, year, daily):
     else:
         filelist = var["filename"].split()
 
+    # create a list of filenames to be read
+
     in_files = []
 
     for filemask in filelist:
@@ -288,10 +290,16 @@ def _load_files(var, cfg, in_dir, year, daily):
         "platform",
     ]
 
+    # remove global attributes that might prevent concatenation
+
     for cube in cube_list:
         for attr in drop_attrs:
             if attr in cube.attributes:
                 cube.attributes.pop(attr)
+
+    # If "operator" is defined in the CMOR config file, then
+    # do calculations now. So far, only the "sum" of 2 or more
+    # variables is implemented
 
     cube_list_sum = []
     if var.get("operator", "") == "sum":
@@ -315,7 +323,7 @@ def _load_files(var, cfg, in_dir, year, daily):
                             )
                             break
         cube_list = cube_list_sum
-    else:
+    elif var.get("operator"):
         raise ValueError(
             "Multiple input files found, with operator '{}' configured: {}".format(
                 var.get("operator"),
