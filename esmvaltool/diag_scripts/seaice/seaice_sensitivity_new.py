@@ -1,8 +1,8 @@
 """Diagnostic that shows the sensitivity of sea ice area to global warming."""
 
 import logging
-from pathlib import Path
 from collections import namedtuple
+from pathlib import Path
 
 import iris
 import matplotlib.pyplot as plt
@@ -49,7 +49,6 @@ def create_dataset_dict(cfg):
 
     # Iterate over the data in the cfg
     for section in cfg["input_data"].values():
-
         # Read relevant facets
         dataset = section["dataset"]
         group = section["variable_group"]
@@ -95,8 +94,8 @@ Periods = namedtuple("Periods", ["periods", "obs_period", "data_period"])
 
 def retrieve_periods(cfg):
     # This feeds through from the recipe in both diagnostics
-    data_start = cfg['observations']['data_period']['start_year']
-    data_end = cfg['observations']['data_period']['end_year']
+    data_start = cfg["observations"]["data_period"]["start_year"]
+    data_end = cfg["observations"]["data_period"]["end_year"]
     data_period = f"{data_start}-{data_end}"
 
     # Set obs period to none if not present
@@ -104,16 +103,18 @@ def retrieve_periods(cfg):
     periods = [data_period]
 
     # This is only present in the arctic diagnostic
-    if 'observation_period' in cfg['observations']:
-        obs_start = cfg['observations']['observation_period']['start_year']
-        obs_end = cfg['observations']['observation_period']['end_year']
+    if "observation_period" in cfg["observations"]:
+        obs_start = cfg["observations"]["observation_period"]["start_year"]
+        obs_end = cfg["observations"]["observation_period"]["end_year"]
         obs_period = f"{obs_start}-{obs_end}"
 
         # Return both periods if present and different
         if obs_period != data_period:
             periods = [obs_period, data_period]
 
-    return Periods(periods=periods, obs_period=obs_period, data_period=data_period)
+    return Periods(
+        periods=periods, obs_period=obs_period, data_period=data_period
+    )
 
 
 def create_df_columns(periods):
@@ -132,16 +133,29 @@ def create_df_columns(periods):
     period = [p for p in periods for _ in range(num_regressions * num_stats)]
 
     # Produces gmst_over_time * 4 then sia_over_time * 4 then sia_over_gmst * 4, two times
-    regression = [r for _ in range(num_periods) for r in regressions for _ in range(num_stats)]
+    regression = [
+        r
+        for _ in range(num_periods)
+        for r in regressions
+        for _ in range(num_stats)
+    ]
 
     # Produces slope then r_value then p_value then std_err_slope, six times
-    statistic = [s for _ in range(num_periods * num_regressions) for s in statistics]
+    statistic = [
+        s for _ in range(num_periods * num_regressions) for s in statistics
+    ]
 
     # Create main column headers
-    data_columns = pd.MultiIndex.from_arrays([period, regression, statistic], names=["period", "regression", "statistic"])
+    data_columns = pd.MultiIndex.from_arrays(
+        [period, regression, statistic],
+        names=["period", "regression", "statistic"],
+    )
 
     # Add equivalent of single-level columns for dataset info
-    first_columns = pd.MultiIndex.from_arrays([["", ""], ["", ""], ["label", "type"]], names=["period", "regression", "statistic"])
+    first_columns = pd.MultiIndex.from_arrays(
+        [["", ""], ["", ""], ["label", "type"]],
+        names=["period", "regression", "statistic"],
+    )
 
     # Concatenate columns
     columns = first_columns.append(data_columns)
@@ -154,7 +168,9 @@ def create_blank_dataframe(dataset_dict, columns):
     df = pd.DataFrame.from_dict(dataset_dict, orient="index")
 
     # Adjustment to account for multi-row headers
-    df.columns = pd.MultiIndex.from_tuples([("", "", col) for col in df.columns])
+    df.columns = pd.MultiIndex.from_tuples(
+        [("", "", col) for col in df.columns]
+    )
 
     # Reindex to ensure all required columns are present
     df = df.reindex(columns=columns, fill_value=np.nan)
@@ -225,7 +241,9 @@ def calculate_direct_stats(dataset, time_range, cfg):
     return linregress(tas_cube.data, siconc_cube.data)
 
 
-def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, time_range, cfg):
+def calculate_cross_dataset_stats(
+    tasa_dataset, siconc_dataset, time_range, cfg
+):
     """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
     logger.debug(
         "Calculating cross sensitivity for datasets %s, %s.",
@@ -245,32 +263,57 @@ def add_values_to_df(df, data_period, cfg):
     # Calculate all the values for the models
     models = df[df.loc[:, ("", "", "type")] == "model"]
     for dataset_name, row in models.iterrows():
-
         # Calculate annual tas trend
         tas_cube = fetch_cube(dataset_name, "tas", data_period, cfg)
         ann_tas_trend = calculate_annual_trend(tas_cube)
         # Add values to dataframe
-        df.at[dataset_name, (data_period, "gmst_over_time", "slope")] = ann_tas_trend.slope
-        df.at[dataset_name, (data_period, "gmst_over_time", "r_value")] = ann_tas_trend.rvalue
-        df.at[dataset_name, (data_period, "gmst_over_time", "p_value")] = ann_tas_trend.pvalue
-        df.at[dataset_name, (data_period, "gmst_over_time", "std_err_slope")] = ann_tas_trend.stderr
+        df.at[dataset_name, (data_period, "gmst_over_time", "slope")] = (
+            ann_tas_trend.slope
+        )
+        df.at[dataset_name, (data_period, "gmst_over_time", "r_value")] = (
+            ann_tas_trend.rvalue
+        )
+        df.at[dataset_name, (data_period, "gmst_over_time", "p_value")] = (
+            ann_tas_trend.pvalue
+        )
+        df.at[
+            dataset_name, (data_period, "gmst_over_time", "std_err_slope")
+        ] = ann_tas_trend.stderr
 
         # Calculate annual siconc trend
         siconc_cube = fetch_cube(dataset_name, "siconc", data_period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         # Add values to dataframe
-        df.at[dataset_name, (data_period, "sia_over_time", "slope")] = ann_siconc_trend.slope
-        df.at[dataset_name, (data_period, "sia_over_time", "r_value")] = ann_siconc_trend.rvalue
-        df.at[dataset_name, (data_period, "sia_over_time", "p_value")] = ann_siconc_trend.pvalue
-        df.at[dataset_name, (data_period, "sia_over_time", "std_err_slope")] = ann_siconc_trend.stderr
+        df.at[dataset_name, (data_period, "sia_over_time", "slope")] = (
+            ann_siconc_trend.slope
+        )
+        df.at[dataset_name, (data_period, "sia_over_time", "r_value")] = (
+            ann_siconc_trend.rvalue
+        )
+        df.at[dataset_name, (data_period, "sia_over_time", "p_value")] = (
+            ann_siconc_trend.pvalue
+        )
+        df.at[
+            dataset_name, (data_period, "sia_over_time", "std_err_slope")
+        ] = ann_siconc_trend.stderr
 
         # Calculate direct sensitivity of siconc to tas
-        direct_sensitivity = calculate_direct_stats(dataset_name, data_period, cfg)
+        direct_sensitivity = calculate_direct_stats(
+            dataset_name, data_period, cfg
+        )
         # Add values to dataframe
-        df.at[dataset_name, (data_period, "sia_over_gmst", "slope")] = direct_sensitivity.slope
-        df.at[dataset_name, (data_period, "sia_over_gmst", "r_value")] = direct_sensitivity.rvalue
-        df.at[dataset_name, (data_period, "sia_over_gmst", "p_value")] = direct_sensitivity.pvalue
-        df.at[dataset_name, (data_period, "sia_over_gmst", "std_err_slope")] = direct_sensitivity.stderr
+        df.at[dataset_name, (data_period, "sia_over_gmst", "slope")] = (
+            direct_sensitivity.slope
+        )
+        df.at[dataset_name, (data_period, "sia_over_gmst", "r_value")] = (
+            direct_sensitivity.rvalue
+        )
+        df.at[dataset_name, (data_period, "sia_over_gmst", "p_value")] = (
+            direct_sensitivity.pvalue
+        )
+        df.at[
+            dataset_name, (data_period, "sia_over_gmst", "std_err_slope")
+        ] = direct_sensitivity.stderr
 
     # Calculate all the values for the observations
     obs = df[df.loc[:, ("", "", "type")] == "multi-obs"]
@@ -280,28 +323,54 @@ def add_values_to_df(df, data_period, cfg):
         tasa_cube = fetch_cube(gmst_dataset, "tasa", data_period, cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
         # Add values to dataframe
-        df.at[combined_name, (data_period, "gmst_over_time", "slope")] = ann_tasa_trend.slope
-        df.at[combined_name, (data_period, "gmst_over_time", "r_value")] = ann_tasa_trend.rvalue
-        df.at[combined_name, (data_period, "gmst_over_time", "p_value")] = ann_tasa_trend.pvalue
-        df.at[combined_name, (data_period, "gmst_over_time", "std_err_slope")] = ann_tasa_trend.stderr
+        df.at[combined_name, (data_period, "gmst_over_time", "slope")] = (
+            ann_tasa_trend.slope
+        )
+        df.at[combined_name, (data_period, "gmst_over_time", "r_value")] = (
+            ann_tasa_trend.rvalue
+        )
+        df.at[combined_name, (data_period, "gmst_over_time", "p_value")] = (
+            ann_tasa_trend.pvalue
+        )
+        df.at[
+            combined_name, (data_period, "gmst_over_time", "std_err_slope")
+        ] = ann_tasa_trend.stderr
 
         # Calculate annual siconc trend
         sia_dataset = combined_name.split("_v_")[1]
         siconc_cube = fetch_cube(sia_dataset, "siconc", data_period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         # Add values to dataframe
-        df.at[combined_name, (data_period, "sia_over_time", "slope")] = ann_siconc_trend.slope
-        df.at[combined_name, (data_period, "sia_over_time", "r_value")] = ann_siconc_trend.rvalue
-        df.at[combined_name, (data_period, "sia_over_time", "p_value")] = ann_siconc_trend.pvalue
-        df.at[combined_name, (data_period, "sia_over_time", "std_err_slope")] = ann_siconc_trend.stderr
+        df.at[combined_name, (data_period, "sia_over_time", "slope")] = (
+            ann_siconc_trend.slope
+        )
+        df.at[combined_name, (data_period, "sia_over_time", "r_value")] = (
+            ann_siconc_trend.rvalue
+        )
+        df.at[combined_name, (data_period, "sia_over_time", "p_value")] = (
+            ann_siconc_trend.pvalue
+        )
+        df.at[
+            combined_name, (data_period, "sia_over_time", "std_err_slope")
+        ] = ann_siconc_trend.stderr
 
         # Calculate sensitivity of siconc to tasa
-        cross_dataset_stats = calculate_cross_dataset_stats(gmst_dataset, sia_dataset, data_period, cfg)
+        cross_dataset_stats = calculate_cross_dataset_stats(
+            gmst_dataset, sia_dataset, data_period, cfg
+        )
         # Add values to dataframe
-        df.at[combined_name, (data_period, "sia_over_gmst", "slope")] = cross_dataset_stats.slope
-        df.at[combined_name, (data_period, "sia_over_gmst", "r_value")] = cross_dataset_stats.rvalue
-        df.at[combined_name, (data_period, "sia_over_gmst", "p_value")] = cross_dataset_stats.pvalue
-        df.at[combined_name, (data_period, "sia_over_gmst", "std_err_slope")] = cross_dataset_stats.stderr
+        df.at[combined_name, (data_period, "sia_over_gmst", "slope")] = (
+            cross_dataset_stats.slope
+        )
+        df.at[combined_name, (data_period, "sia_over_gmst", "r_value")] = (
+            cross_dataset_stats.rvalue
+        )
+        df.at[combined_name, (data_period, "sia_over_gmst", "p_value")] = (
+            cross_dataset_stats.pvalue
+        )
+        df.at[
+            combined_name, (data_period, "sia_over_gmst", "std_err_slope")
+        ] = cross_dataset_stats.stderr
 
     return df
 
@@ -327,10 +396,14 @@ def roach_style_plot_from_df(df, cfg):
 
     # Set plot title and filename
     if first_variable["diagnostic"] == "arctic":
-        title = "Trends in Annual Mean Temperature And September Arctic Sea Ice"
+        title = (
+            "Trends in Annual Mean Temperature And September Arctic Sea Ice"
+        )
         save_as = "September Arctic sea ice trends"
     elif first_variable["diagnostic"] == "antarctic":
-        title = "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice"
+        title = (
+            "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice"
+        )
         save_as = "Annual Antarctic sea ice trends"
 
     # Set up the figure
@@ -355,7 +428,6 @@ def roach_style_plot_from_df(df, cfg):
 
     # Iterate over the values in the dataframe
     for dataset, row in df.iterrows():
-
         # Look up the relevant values
         gmst_trend = df.at[dataset, (data_period, "gmst_over_time", "slope")]
         sia_trend = df.at[dataset, (data_period, "sia_over_time", "slope")]
@@ -414,8 +486,6 @@ def roach_style_plot_from_df(df, cfg):
     )
 
 
-
-
 def notz_style_plot_from_df(df, cfg):
     """Save a plot of sensitivities and observations for model datasets."""
 
@@ -438,8 +508,12 @@ def notz_style_plot_from_df(df, cfg):
     obs_period = retrieve_periods(cfg).obs_period
     if obs_period is not None:
         obs_mean = cfg["observations"]["sea_ice_sensitivity"]["mean"]
-        obs_std_dev = cfg["observations"]["sea_ice_sensitivity"]["standard_deviation"]
-        obs_plausible = cfg["observations"]["sea_ice_sensitivity"]["plausible_range"]
+        obs_std_dev = cfg["observations"]["sea_ice_sensitivity"][
+            "standard_deviation"
+        ]
+        obs_plausible = cfg["observations"]["sea_ice_sensitivity"][
+            "plausible_range"
+        ]
         # Also changes caption
         caption = (
             "Sensitivity of sea ice area to annual mean global warming."
@@ -483,7 +557,14 @@ def notz_style_plot_from_df(df, cfg):
     # Add pre-defined observation values to the first half / all, if present
     section_width = 1 / num_periods
     if obs_period is not None:
-        ax.hlines(obs_mean, 0, section_width, linestyle="--", color="black", linewidth=2)
+        ax.hlines(
+            obs_mean,
+            0,
+            section_width,
+            linestyle="--",
+            color="black",
+            linewidth=2,
+        )
         ax.fill_between(
             [0, section_width],
             obs_mean - obs_std_dev,
@@ -508,12 +589,10 @@ def notz_style_plot_from_df(df, cfg):
             linewidth=1,
         )
 
-
     # Function that may be called once or twice
     def add_points(ax, period, data_x, obs_x):
         # Iterate over the values in the dataframe
         for dataset, row in df.iterrows():
-
             # Look up the sensitivity of SIA to GMST for the dataset
             sensitivity = df.at[dataset, (period, "sia_over_gmst", "slope")]
 
@@ -550,7 +629,9 @@ def notz_style_plot_from_df(df, cfg):
                 )
 
                 # Shade around computed observations
-                std_err = df.at[dataset, (period, "sia_over_gmst", "std_err_slope")]
+                std_err = df.at[
+                    dataset, (period, "sia_over_gmst", "std_err_slope")
+                ]
                 ax.fill_between(
                     [obs_x - 0.05, obs_x + 0.05],
                     sensitivity - std_err,
@@ -558,7 +639,6 @@ def notz_style_plot_from_df(df, cfg):
                     facecolor="orange",
                     alpha=0.15,
                 )
-
 
     # Add the data period
     add_points(ax, data_period, lhs_model_x, lhs_obs_x)
