@@ -35,10 +35,9 @@ Modification history
 """
 
 import datetime
-import glob
 import logging
-import os
 from copy import deepcopy
+from pathlib import Path
 
 import cf_units
 import iris
@@ -62,7 +61,10 @@ def _create_masked_cube(cube, year, month, day):
     dataset_time_calender = masked_cube.coord("time").units.calendar
     # Convert datetime
     newtime = datetime.datetime(
-        year=year, month=month, day=day, tzinfo=datetime.UTC
+        year=year,
+        month=month,
+        day=day,
+        tzinfo=datetime.UTC,
     )
     newtime = cf_units.date2num(
         newtime,
@@ -168,7 +170,10 @@ def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
     else:
         loop_date = datetime.datetime(year0, 1, 1, tzinfo=datetime.UTC)
         while loop_date <= datetime.datetime(
-            year0, 12, 31, tzinfo=datetime.UTC
+            year0,
+            12,
+            31,
+            tzinfo=datetime.UTC,
         ):
             date_available = False
             for idx, cubetime in enumerate(time_list):
@@ -262,19 +267,15 @@ def _load_files(var, in_dir, year, daily):
     for filemask in filelist:
         if daily:
             for month in range(1, 13):
-                filepattern = os.path.join(
-                    in_dir,
-                    f"daily/{year}{month:02d}",
-                    filemask.format(year=year, month=f"{month:02d}"),
+                srcdir = Path(in_dir) / f"daily/{year}{month:02d}"
+                filepattern = filemask.format(year=year, month=f"{month:02d}")
+                in_files.extend(
+                    [str(p) for p in srcdir.glob(pattern=filepattern)]
                 )
-                in_files.extend(glob.glob(filepattern))
         else:
-            filepattern = os.path.join(
-                in_dir,
-                f"monthly/{year}",
-                filemask.format(year=year),
-            )
-            in_files.extend(glob.glob(filepattern))
+            srcdir = Path(in_dir) / f"monthly/{year}"
+            filepattern = filemask.format(year=year)
+            in_files.extend([str(p) for p in srcdir.glob(pattern=filepattern)])
 
     if len(varlist) == 1:
         cube_list = iris.load(in_files, varlist[0])
