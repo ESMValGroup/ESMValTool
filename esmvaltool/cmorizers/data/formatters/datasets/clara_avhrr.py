@@ -21,9 +21,10 @@ Download and processing instructions
        Month: select all
        Day: select all
        Geographical area: Whole available region
-   Put all daily files for one year (yyyy) under a single directory "daily/<yyyy>",
-   monthly files for one year (yyyy) under "monthly/<yyyy>".
-   Note: you must accept the terms of use for CC-BY, EUMETSAT CM SAF, ESA CCI
+       Put all daily files for one month (mm) of one year (yyyy) under a single
+       directory "daily/<yyyymm>", monthly files for one year (yyyy) under "monthly/<yyyy>".
+   Note: you must accept the terms of use for CC-BY, EUMETSAT CM SAF, ESA CCI to be able
+         to download the data from the CDS
 
    Alternatively, use the automatic downloader (recommended):
      esmvaltool data download CLARA-AVHRR
@@ -94,36 +95,18 @@ def _fix_coordinates(cube, definition):
     return cube
 
 
-def _extract_variable(in_files, var, cfg, out_dir, is_daily):
+def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
     if is_daily:
         timefreq = "daily"
     else:
         timefreq = "monthly"
     logger.info("CMORizing variable '%s' (%s)", var["short_name"], timefreq)
+
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip"]
     attributes["raw"] = var["raw"]
     cmor_table = CMOR_TABLES[attributes["project_id"]]
     definition = cmor_table.get_variable(var["mip"], var["short_name"])
-
-    # load all input files (1 year) into 1 cube
-    # --> drop attributes that differ among input files
-    cube_list = iris.load(in_files, var["raw"])
-
-    # (global) attributes to remove
-    drop_attrs = [
-        "date_created",
-        "time_coverage_start",
-        "time_coverage_end",
-        "CMSAF_included_Daily_Means",
-        "CMSAF_platform_and_orbits",
-        "platform",
-    ]
-
-    for cube in cube_list:
-        for attr in drop_attrs:
-            if attr in cube.attributes:
-                cube.attributes.pop(attr)
 
     # make sure there is one cube for every day (daily data) or
     # every month (monthly data) of the year
@@ -251,7 +234,96 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
         unlimited_dimensions=["time"],
     )
 
-    logger.info("Finished CMORizing %s", ", ".join(in_files))
+    logger.info(
+        "Finished CMORizing variable '%s' (%s) for current year",
+        var["short_name"],
+        timefreq,
+    )
+
+
+def _load_files(var, cfg, in_dir, year, daily):
+    if type(var["raw"]) is list:
+        varlist = var["raw"]
+    else:
+        varlist = var["raw"].split()
+
+    if type(var["filename"]) is list:
+        filelist = var["filename"]
+    else:
+        filelist = var["filename"].split()
+
+    in_files = []
+
+    for filemask in filelist:
+        if daily:
+            for month in range(1, 13):
+                filepattern = os.path.join(
+                    in_dir,
+                    f"daily/{year}{month:02d}",
+                    filemask.format(year=year, month=f"{month:02d}"),
+                )
+                in_files.extend(glob.glob(filepattern))
+        else:
+            filepattern = os.path.join(
+                in_dir,
+                f"monthly/{year}",
+                filemask.format(year=year),
+            )
+            in_files.extend(glob.glob(filepattern))
+
+    if len(varlist) == 1:
+        cube_list = iris.load(in_files, varlist[0])
+    else:
+        cube_list = []
+        for raw_name in varlist:
+            cube_list.extend(iris.load(in_files, raw_name))
+
+    # (global) attributes to remove
+    drop_attrs = [
+        "date_created",
+        "time_coverage_start",
+        "time_coverage_end",
+        "CMSAF_included_Daily_Means",
+        "CMSAF_platform_and_orbits",
+        "platform",
+    ]
+
+    for cube in cube_list:
+        for attr in drop_attrs:
+            if attr in cube.attributes:
+                cube.attributes.pop(attr)
+
+    cube_list_sum = []
+    if var.get("operator", "") == "sum":
+        for raw_name in varlist:
+            sublist = [c for c in cube_list if c.var_name == raw_name]
+            if not cube_list_sum:
+                cube_list_sum = sublist
+            else:
+                logger.debug("Adding cubes (%s)...\n", raw_name)
+                for cube in sublist:
+                    # get time of cube to be added to the sum
+                    timecoord = cube.coord("time")
+                    # find sum cube with matching time
+                    for sumcube in cube_list_sum:
+                        sumtimecoord = sumcube.coord("time")
+                        if timecoord == sumtimecoord:
+                            sumcube += cube
+                            logger.debug(
+                                "cube added for time %s",
+                                timecoord.units.num2date(timecoord.points),
+                            )
+                            break
+        cube_list = cube_list_sum
+    else:
+        raise ValueError(
+            "Multiple input files found, with operator '{}' configured: {}".format(
+                var.get("operator"),
+                ", ".join(in_files),
+            ),
+        )
+
+    return cube_list
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
@@ -300,30 +372,13 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         for year in range(start_date.year, end_date.year + 1):
             logger.info("Processing year %s", year)
-            in_files = []
-            if daily:
-                for month in range(1, 13):
-                    filepattern = os.path.join(
-                        in_dir,
-                        f"daily/{year}{month:02d}",
-                        var["filename"].format(
-                            year=year, month=f"{month:02d}"
-                        ),
-                    )
-                    in_files.extend(glob.glob(filepattern))
-            else:
-                filepattern = os.path.join(
-                    in_dir,
-                    f"monthly/{year}",
-                    var["filename"].format(year=year),
-                )
-                in_files.extend(glob.glob(filepattern))
+            cube_list = _load_files(var, cfg, in_dir, year, daily)
 
-            if not in_files:
+            if not cube_list:
                 logger.info(
                     "%d: no data not found for variable %s",
                     year,
                     var_name,
                 )
             else:
-                _extract_variable(in_files, var, cfg, out_dir, daily)
+                _extract_variable(cube_list, var, cfg, out_dir, daily)

@@ -26,6 +26,12 @@ variables:
     short_name: lwp
     raw: lwp_allsky
     filename: LWPmm{year}*.nc
+  clwvi_month:
+    mip: Amon
+    short_name: clwvi
+    raw: ['lwp_allsky', 'iwp_allsky']
+    filename: ['LWPmm{year}*.nc', 'IWPmm{year}*.nc']
+    operator: sum
   # daily means
   clivi_day:
     mip: CFday
@@ -42,3 +48,9 @@ variables:
     short_name: lwp
     raw: lwp_allsky
     filename: LWPdm{year}{month}*.nc
+  clwvi_day:
+    mip: CFday
+    short_name: clwvi
+    raw: ['lwp_allsky', 'iwp_allsky']
+    filename: ['LWPdm{year}{month}*.nc', 'IWPdm{year}{month}*.nc']
+    operator: sum

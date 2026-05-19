@@ -238,8 +238,8 @@ datasets:
     info: |
       Download and processing instructions
             https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties?tab=download
-            Put all daily files for one year (yyyy) under a single directory "daily/<yyyy>",
-            monthly files for one year (yyyy) under "monthly/<yyyy>".
+            Put all daily files for one month (mm) of one year (yyyy) under a single
+            directory "daily/<yyyymm>", monthly files for one year (yyyy) under "monthly/<yyyy>".
             Note: you must accept the terms of use for CC-BY, EUMETSAT CM SAF, ESA CCI
             Select the following from the CDS:
                 Product family: CLARA-A3
