@@ -283,7 +283,7 @@ def calculate_cross_dataset_stats(
     return linregress(tasa_cube.data, siconc_cube.data)
 
 
-def add_values_to_df(df, data_period, cfg):
+def add_values_to_df(df, period, cfg):
     """Calculate and write values to the DataFrame."""
     logger.info("Writing values to dataframe.")
 
@@ -291,25 +291,25 @@ def add_values_to_df(df, data_period, cfg):
     models = df[df.loc[:, ("", "", "type")] == "model"]
     for dataset, _ in models.iterrows():
         # Calculate annual tas trend
-        tas_cube = fetch_cube(dataset, "tas", data_period, cfg)
+        tas_cube = fetch_cube(dataset, "tas", period, cfg)
         ann_tas_trend = calculate_annual_trend(tas_cube)
         logger.debug("Dataset %s annual tas trend: %s", dataset, ann_tas_trend)
         # Add values to dataframe
-        df.loc[dataset, (data_period, "gmst_over_time", "slope")] = (
+        df.loc[dataset, (period, "gmst_over_time", "slope")] = (
             ann_tas_trend.slope
         )
-        df.loc[dataset, (data_period, "gmst_over_time", "r_value")] = (
+        df.loc[dataset, (period, "gmst_over_time", "r_value")] = (
             ann_tas_trend.rvalue
         )
-        df.loc[dataset, (data_period, "gmst_over_time", "p_value")] = (
+        df.loc[dataset, (period, "gmst_over_time", "p_value")] = (
             ann_tas_trend.pvalue
         )
-        df.loc[dataset, (data_period, "gmst_over_time", "std_err_slope")] = (
+        df.loc[dataset, (period, "gmst_over_time", "std_err_slope")] = (
             ann_tas_trend.stderr
         )
 
         # Calculate annual siconc trend
-        siconc_cube = fetch_cube(dataset, "siconc", data_period, cfg)
+        siconc_cube = fetch_cube(dataset, "siconc", period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         logger.debug(
             "Dataset %s annual siconc trend: %s",
@@ -317,33 +317,33 @@ def add_values_to_df(df, data_period, cfg):
             ann_siconc_trend,
         )
         # Add values to dataframe
-        df.loc[dataset, (data_period, "sia_over_time", "slope")] = (
+        df.loc[dataset, (period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
         )
-        df.loc[dataset, (data_period, "sia_over_time", "r_value")] = (
+        df.loc[dataset, (period, "sia_over_time", "r_value")] = (
             ann_siconc_trend.rvalue
         )
-        df.loc[dataset, (data_period, "sia_over_time", "p_value")] = (
+        df.loc[dataset, (period, "sia_over_time", "p_value")] = (
             ann_siconc_trend.pvalue
         )
-        df.loc[dataset, (data_period, "sia_over_time", "std_err_slope")] = (
+        df.loc[dataset, (period, "sia_over_time", "std_err_slope")] = (
             ann_siconc_trend.stderr
         )
 
         # Calculate direct sensitivity of siconc to tas
-        direct_sensitivity = calculate_direct_stats(dataset, data_period, cfg)
+        direct_sensitivity = calculate_direct_stats(dataset, period, cfg)
         logger.debug("Dataset %s sensitivity: %s", dataset, direct_sensitivity)
         # Add values to dataframe
-        df.loc[dataset, (data_period, "sia_over_gmst", "slope")] = (
+        df.loc[dataset, (period, "sia_over_gmst", "slope")] = (
             direct_sensitivity.slope
         )
-        df.loc[dataset, (data_period, "sia_over_gmst", "r_value")] = (
+        df.loc[dataset, (period, "sia_over_gmst", "r_value")] = (
             direct_sensitivity.rvalue
         )
-        df.loc[dataset, (data_period, "sia_over_gmst", "p_value")] = (
+        df.loc[dataset, (period, "sia_over_gmst", "p_value")] = (
             direct_sensitivity.pvalue
         )
-        df.loc[dataset, (data_period, "sia_over_gmst", "std_err_slope")] = (
+        df.loc[dataset, (period, "sia_over_gmst", "std_err_slope")] = (
             direct_sensitivity.stderr
         )
 
@@ -352,66 +352,66 @@ def add_values_to_df(df, data_period, cfg):
     for combined_name, _ in obs.iterrows():
         # Calculate annual tasa trend
         gmst_dataset = combined_name.split("_v_")[0]
-        tasa_cube = fetch_cube(gmst_dataset, "tasa", data_period, cfg)
+        tasa_cube = fetch_cube(gmst_dataset, "tasa", period, cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
         logger.debug(
             "Dataset %s tasa annual trend: %s", gmst_dataset, ann_tasa_trend
         )
         # Add values to dataframe
-        df.loc[combined_name, (data_period, "gmst_over_time", "slope")] = (
+        df.loc[combined_name, (period, "gmst_over_time", "slope")] = (
             ann_tasa_trend.slope
         )
-        df.loc[combined_name, (data_period, "gmst_over_time", "r_value")] = (
+        df.loc[combined_name, (period, "gmst_over_time", "r_value")] = (
             ann_tasa_trend.rvalue
         )
-        df.loc[combined_name, (data_period, "gmst_over_time", "p_value")] = (
+        df.loc[combined_name, (period, "gmst_over_time", "p_value")] = (
             ann_tasa_trend.pvalue
         )
-        df.loc[
-            combined_name, (data_period, "gmst_over_time", "std_err_slope")
-        ] = ann_tasa_trend.stderr
+        df.loc[combined_name, (period, "gmst_over_time", "std_err_slope")] = (
+            ann_tasa_trend.stderr
+        )
 
         # Calculate annual siconc trend
         sia_dataset = combined_name.split("_v_")[1]
-        siconc_cube = fetch_cube(sia_dataset, "siconc", data_period, cfg)
+        siconc_cube = fetch_cube(sia_dataset, "siconc", period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         logger.debug(
             "Dataset %s siconc annual trend: %s", sia_dataset, ann_siconc_trend
         )
         # Add values to dataframe
-        df.loc[combined_name, (data_period, "sia_over_time", "slope")] = (
+        df.loc[combined_name, (period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
         )
-        df.loc[combined_name, (data_period, "sia_over_time", "r_value")] = (
+        df.loc[combined_name, (period, "sia_over_time", "r_value")] = (
             ann_siconc_trend.rvalue
         )
-        df.loc[combined_name, (data_period, "sia_over_time", "p_value")] = (
+        df.loc[combined_name, (period, "sia_over_time", "p_value")] = (
             ann_siconc_trend.pvalue
         )
-        df.loc[
-            combined_name, (data_period, "sia_over_time", "std_err_slope")
-        ] = ann_siconc_trend.stderr
+        df.loc[combined_name, (period, "sia_over_time", "std_err_slope")] = (
+            ann_siconc_trend.stderr
+        )
 
         # Calculate sensitivity of siconc to tasa
         cross_dataset_stats = calculate_cross_dataset_stats(
-            gmst_dataset, sia_dataset, data_period, cfg
+            gmst_dataset, sia_dataset, period, cfg
         )
         logger.debug(
             "Obs pair %s sensitivity: %s", combined_name, cross_dataset_stats
         )
         # Add values to dataframe
-        df.loc[combined_name, (data_period, "sia_over_gmst", "slope")] = (
+        df.loc[combined_name, (period, "sia_over_gmst", "slope")] = (
             cross_dataset_stats.slope
         )
-        df.loc[combined_name, (data_period, "sia_over_gmst", "r_value")] = (
+        df.loc[combined_name, (period, "sia_over_gmst", "r_value")] = (
             cross_dataset_stats.rvalue
         )
-        df.loc[combined_name, (data_period, "sia_over_gmst", "p_value")] = (
+        df.loc[combined_name, (period, "sia_over_gmst", "p_value")] = (
             cross_dataset_stats.pvalue
         )
-        df.loc[
-            combined_name, (data_period, "sia_over_gmst", "std_err_slope")
-        ] = cross_dataset_stats.stderr
+        df.loc[combined_name, (period, "sia_over_gmst", "std_err_slope")] = (
+            cross_dataset_stats.stderr
+        )
 
     return df
 
