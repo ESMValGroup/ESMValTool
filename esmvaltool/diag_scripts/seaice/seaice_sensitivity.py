@@ -286,69 +286,63 @@ def add_values_to_df(df, data_period, cfg):
 
     # Calculate all the values for the models
     models = df[df.loc[:, ("", "", "type")] == "model"]
-    for dataset_name, row in models.iterrows():
+    for dataset, _ in models.iterrows():
         # Calculate annual tas trend
-        tas_cube = fetch_cube(dataset_name, "tas", data_period, cfg)
+        tas_cube = fetch_cube(dataset, "tas", data_period, cfg)
         ann_tas_trend = calculate_annual_trend(tas_cube)
-        logger.debug(
-            "Dataset %s annual tas trend: %s", dataset_name, ann_tas_trend
-        )
+        logger.debug("Dataset %s annual tas trend: %s", dataset, ann_tas_trend)
         # Add values to dataframe
-        df.at[dataset_name, (data_period, "gmst_over_time", "slope")] = (
+        df.at[dataset, (data_period, "gmst_over_time", "slope")] = (
             ann_tas_trend.slope
         )
-        df.at[dataset_name, (data_period, "gmst_over_time", "r_value")] = (
+        df.at[dataset, (data_period, "gmst_over_time", "r_value")] = (
             ann_tas_trend.rvalue
         )
-        df.at[dataset_name, (data_period, "gmst_over_time", "p_value")] = (
+        df.at[dataset, (data_period, "gmst_over_time", "p_value")] = (
             ann_tas_trend.pvalue
         )
-        df.at[
-            dataset_name, (data_period, "gmst_over_time", "std_err_slope")
-        ] = ann_tas_trend.stderr
+        df.at[dataset, (data_period, "gmst_over_time", "std_err_slope")] = (
+            ann_tas_trend.stderr
+        )
 
         # Calculate annual siconc trend
-        siconc_cube = fetch_cube(dataset_name, "siconc", data_period, cfg)
+        siconc_cube = fetch_cube(dataset, "siconc", data_period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         logger.debug(
             "Dataset %s annual siconc trend: %s",
-            dataset_name,
+            dataset,
             ann_siconc_trend,
         )
         # Add values to dataframe
-        df.at[dataset_name, (data_period, "sia_over_time", "slope")] = (
+        df.at[dataset, (data_period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
         )
-        df.at[dataset_name, (data_period, "sia_over_time", "r_value")] = (
+        df.at[dataset, (data_period, "sia_over_time", "r_value")] = (
             ann_siconc_trend.rvalue
         )
-        df.at[dataset_name, (data_period, "sia_over_time", "p_value")] = (
+        df.at[dataset, (data_period, "sia_over_time", "p_value")] = (
             ann_siconc_trend.pvalue
         )
-        df.at[
-            dataset_name, (data_period, "sia_over_time", "std_err_slope")
-        ] = ann_siconc_trend.stderr
+        df.at[dataset, (data_period, "sia_over_time", "std_err_slope")] = (
+            ann_siconc_trend.stderr
+        )
 
         # Calculate direct sensitivity of siconc to tas
-        direct_sensitivity = calculate_direct_stats(
-            dataset_name, data_period, cfg
-        )
-        logger.debug(
-            "Dataset %s sensitivity: %s", dataset_name, direct_sensitivity
-        )
+        direct_sensitivity = calculate_direct_stats(dataset, data_period, cfg)
+        logger.debug("Dataset %s sensitivity: %s", dataset, direct_sensitivity)
         # Add values to dataframe
-        df.at[dataset_name, (data_period, "sia_over_gmst", "slope")] = (
+        df.at[dataset, (data_period, "sia_over_gmst", "slope")] = (
             direct_sensitivity.slope
         )
-        df.at[dataset_name, (data_period, "sia_over_gmst", "r_value")] = (
+        df.at[dataset, (data_period, "sia_over_gmst", "r_value")] = (
             direct_sensitivity.rvalue
         )
-        df.at[dataset_name, (data_period, "sia_over_gmst", "p_value")] = (
+        df.at[dataset, (data_period, "sia_over_gmst", "p_value")] = (
             direct_sensitivity.pvalue
         )
-        df.at[
-            dataset_name, (data_period, "sia_over_gmst", "std_err_slope")
-        ] = direct_sensitivity.stderr
+        df.at[dataset, (data_period, "sia_over_gmst", "std_err_slope")] = (
+            direct_sensitivity.stderr
+        )
 
     # Calculate all the values for the observations
     obs = df[df.loc[:, ("", "", "type")] == "multi-obs"]
@@ -472,7 +466,7 @@ def roach_style_plot_from_df(df, cfg):
     data_period = retrieve_periods(cfg).data_period
 
     # Iterate over the values in the dataframe
-    for dataset, row in df.iterrows():
+    for dataset, _ in df.iterrows():
         # Look up the relevant values
         gmst_trend = df.at[dataset, (data_period, "gmst_over_time", "slope")]
         sia_trend = df.at[dataset, (data_period, "sia_over_time", "slope")]
@@ -644,7 +638,7 @@ def notz_style_plot_from_df(df, cfg):
     # Function that may be called once or twice
     def add_points(ax, period, data_x, obs_x, font_size):
         # Iterate over the values in the dataframe
-        for dataset, row in df.iterrows():
+        for dataset, _ in df.iterrows():
             # Look up the sensitivity of SIA to GMST for the dataset
             sensitivity = df.at[dataset, (period, "sia_over_gmst", "slope")]
 
