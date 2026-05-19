@@ -1,8 +1,8 @@
 """Diagnostic that shows the sensitivity of sea ice area to global warming."""
 
 import logging
-from collections import namedtuple
 from pathlib import Path
+from typing import NamedTuple
 
 import iris
 import matplotlib.pyplot as plt
@@ -101,11 +101,14 @@ def create_dataset_dict(cfg):
 
 
 # Setting this up to query data and obs periods by name later
-Periods = namedtuple("Periods", ["periods", "obs_period", "data_period"])
+class Periods(NamedTuple):
+    periods: list[str]
+    obs_period: str | None
+    data_period: str
 
 
 def retrieve_periods(cfg):
-    """Read from the observations section of the recipe"""
+    """Read from the observations section of the recipe."""
     # This feeds through from the recipe in both diagnostics
     data_start = cfg["observations"]["data_period"]["start_year"]
     data_end = cfg["observations"]["data_period"]["end_year"]
@@ -175,9 +178,7 @@ def create_df_columns(periods):
     )
 
     # Concatenate columns
-    columns = first_columns.append(data_columns)
-
-    return columns
+    return first_columns.append(data_columns)
 
 
 def create_blank_dataframe(dataset_dict, columns):
