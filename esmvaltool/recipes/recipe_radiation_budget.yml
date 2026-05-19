@@ -18,9 +18,9 @@ documentation:
     - hogan_emma
 
 datasets:
-  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical,
+  - {dataset: HadGEM3-GC31-LL, alias: HadGEM3-GC31-LL, project: CMIP6, exp: historical,
      ensemble: r1i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
-  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+  - {dataset: UKESM1-0-LL, alias: UKESM1-0-LL, project: CMIP6, exp: historical,
      ensemble: r5i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
 
 preprocessors:
@@ -40,7 +40,7 @@ preprocessors:
 
 diagnostics:
   single_value_radiation_budget:
-    description: Radiation budget for HadGEM3 vs UKESM1.
+    description: Radiation budget.
     variables:
       rss:
         mip: Emon
@@ -92,7 +92,7 @@ diagnostics:
         script: radiation_budget/radiation_budget.py
 
   seasonal_radiation_budget:
-    description: Seasonal radiation budget for HadGEM3 vs UKESM1.
+    description: Seasonal radiation budget.
     variables:
       rss:
         mip: Emon
