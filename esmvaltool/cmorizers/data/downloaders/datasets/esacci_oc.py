@@ -4,7 +4,7 @@ from datetime import datetime
 
 from dateutil import relativedelta
 
-from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(
@@ -35,21 +35,23 @@ def download_dataset(
     if not start_date:
         start_date = datetime(1997, 9, 1)
     if not end_date:
-        end_date = datetime(2020, 12, 1)
+        end_date = datetime(2022, 12, 1)
 
     loop_date = start_date
 
-    downloader = CCIDownloader(
+    downloader = FTPDownloader(
         original_data_dir=original_data_dir,
+        server="oceancolour.org",
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
+        user="oc-cci-data",
+        passwd="ELaiWai8ae",  # noqa: S106
     )
-    downloader.ftp_name = "ocean_colour"
     downloader.connect()
 
-    downloader.set_cwd("v5.0-release/geographic/netcdf/chlor_a/monthly/v5.0/")
+    downloader.set_cwd("occci-v5.0/geographic/netcdf/monthly/chlor_a")
     while loop_date <= end_date:
         year = loop_date.year
-        downloader.download_year(f"{year}")
+        downloader.download_folder(str(year))
         loop_date += relativedelta.relativedelta(years=1)

@@ -148,7 +148,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     """Merge all data into a single (regridded) file."""
     var = raw_info["name"]
     do_bin = (bins != 0) and (bins % 2 == 0)
-    datafile = sorted(glob.glob(in_dir + "/" + raw_info["file"] + "*.nc"))
+    datafile = sorted(in_dir.glob(f"{raw_info["file"]}*.nc"))
     for dataset_id in datafile:
         dataset = xr.open_dataset(dataset_id)
         data_array = dataset[var].sel(lat=slice(None, None, -1))
