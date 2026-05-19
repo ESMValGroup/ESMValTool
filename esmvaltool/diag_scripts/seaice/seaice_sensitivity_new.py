@@ -39,8 +39,8 @@ def get_provenance_record(cfg, caption):
 
 
 def create_dataset_dict(cfg):
-    """Create a structured dictionary for adding values to later on."""
-    logger.debug("Creating blank dictionary.")
+    """Create a dictionary for feeding to dataframe."""
+    logger.debug("Creating dataset dictionary.")
     # Initialise a dictionary
     dataset_dict = {}
 
@@ -63,8 +63,16 @@ def create_dataset_dict(cfg):
             # Add whether to label the models
             if section.get("label_dataset"):
                 dataset_dict[dataset]["label"] = "to_label"
+                logger.info(
+                    "Dataset %s will be labelled",
+                    dataset,
+                )
             else:
                 dataset_dict[dataset]["label"] = "unlabelled"
+                logger.info(
+                    "Not labelling dataset %s in plots",
+                    dataset,
+                )
 
         # List the GMST obs
         elif group == "tasa_obs":
@@ -84,6 +92,10 @@ def create_dataset_dict(cfg):
 
         # Don't label the obs now, but change here later if needed
         dataset_dict[pair]["label"] = "unlabelled"
+        logger.info(
+            "Not labelling observations pair %s in plots",
+            pair,
+        )
 
     return dataset_dict
 
@@ -93,10 +105,12 @@ Periods = namedtuple("Periods", ["periods", "obs_period", "data_period"])
 
 
 def retrieve_periods(cfg):
+    """Read from the observations section of the recipe"""
     # This feeds through from the recipe in both diagnostics
     data_start = cfg["observations"]["data_period"]["start_year"]
     data_end = cfg["observations"]["data_period"]["end_year"]
     data_period = f"{data_start}-{data_end}"
+    logger.debug("Data period = %s", data_period)
 
     # Set obs period to none if not present
     obs_period = None
@@ -107,6 +121,7 @@ def retrieve_periods(cfg):
         obs_start = cfg["observations"]["observation_period"]["start_year"]
         obs_end = cfg["observations"]["observation_period"]["end_year"]
         obs_period = f"{obs_start}-{obs_end}"
+        logger.debug("Observation period = %s", obs_period)
 
         # Return both periods if present and different
         if obs_period != data_period:
@@ -118,8 +133,10 @@ def retrieve_periods(cfg):
 
 
 def create_df_columns(periods):
+    """Create column headers for Pandas DataFrame."""
     # In future the historical period will extend beyond 2014
     num_periods = len(periods)
+    logger.debug("Dataframe will cover %s periods.", num_periods)
 
     # Sections for types of regression
     regressions = ["gmst_over_time", "sia_over_time", "sia_over_gmst"]
@@ -164,6 +181,9 @@ def create_df_columns(periods):
 
 
 def create_blank_dataframe(dataset_dict, columns):
+    """Create a Pandas DataFrame for adding values to later on."""
+    logger.debug("Creating blank dataframe.")
+
     # Create DataFrame from dataset_dict
     df = pd.DataFrame.from_dict(dataset_dict, orient="index")
 
@@ -183,11 +203,12 @@ def create_blank_dataframe(dataset_dict, columns):
 
 
 def fetch_cube(dataset, variable, time_range, cfg):
-    """Fetch a data cube for a dataset and variable using info from the config."""
+    """Fetch a data cube and constrain it using the time range."""
     logger.debug(
-        "Fetching cube for dataset: %s, variable: %s",
+        "Fetching cube for dataset: %s, variable: %s, time: %s",
         dataset,
         variable,
+        time_range,
     )
 
     # Read the data from the config object
@@ -260,12 +281,18 @@ def calculate_cross_dataset_stats(
 
 
 def add_values_to_df(df, data_period, cfg):
+    """Calculate and write values to the DataFrame."""
+    logger.info("Writing values to dataframe.")
+
     # Calculate all the values for the models
     models = df[df.loc[:, ("", "", "type")] == "model"]
     for dataset_name, row in models.iterrows():
         # Calculate annual tas trend
         tas_cube = fetch_cube(dataset_name, "tas", data_period, cfg)
         ann_tas_trend = calculate_annual_trend(tas_cube)
+        logger.debug(
+            "Dataset %s annual tas trend: %s", dataset_name, ann_tas_trend
+        )
         # Add values to dataframe
         df.at[dataset_name, (data_period, "gmst_over_time", "slope")] = (
             ann_tas_trend.slope
@@ -283,6 +310,11 @@ def add_values_to_df(df, data_period, cfg):
         # Calculate annual siconc trend
         siconc_cube = fetch_cube(dataset_name, "siconc", data_period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        logger.debug(
+            "Dataset %s annual siconc trend: %s",
+            dataset_name,
+            ann_siconc_trend,
+        )
         # Add values to dataframe
         df.at[dataset_name, (data_period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
@@ -300,6 +332,9 @@ def add_values_to_df(df, data_period, cfg):
         # Calculate direct sensitivity of siconc to tas
         direct_sensitivity = calculate_direct_stats(
             dataset_name, data_period, cfg
+        )
+        logger.debug(
+            "Dataset %s sensitivity: %s", dataset_name, direct_sensitivity
         )
         # Add values to dataframe
         df.at[dataset_name, (data_period, "sia_over_gmst", "slope")] = (
@@ -322,6 +357,9 @@ def add_values_to_df(df, data_period, cfg):
         gmst_dataset = combined_name.split("_v_")[0]
         tasa_cube = fetch_cube(gmst_dataset, "tasa", data_period, cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
+        logger.debug(
+            "Dataset %s tasa annual trend: %s", gmst_dataset, ann_tasa_trend
+        )
         # Add values to dataframe
         df.at[combined_name, (data_period, "gmst_over_time", "slope")] = (
             ann_tasa_trend.slope
@@ -340,6 +378,9 @@ def add_values_to_df(df, data_period, cfg):
         sia_dataset = combined_name.split("_v_")[1]
         siconc_cube = fetch_cube(sia_dataset, "siconc", data_period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        logger.debug(
+            "Dataset %s siconc annual trend: %s", sia_dataset, ann_siconc_trend
+        )
         # Add values to dataframe
         df.at[combined_name, (data_period, "sia_over_time", "slope")] = (
             ann_siconc_trend.slope
@@ -357,6 +398,9 @@ def add_values_to_df(df, data_period, cfg):
         # Calculate sensitivity of siconc to tasa
         cross_dataset_stats = calculate_cross_dataset_stats(
             gmst_dataset, sia_dataset, data_period, cfg
+        )
+        logger.debug(
+            "Obs pair %s sensitivity: %s", combined_name, cross_dataset_stats
         )
         # Add values to dataframe
         df.at[combined_name, (data_period, "sia_over_gmst", "slope")] = (
@@ -376,8 +420,8 @@ def add_values_to_df(df, data_period, cfg):
 
 
 def write_df_to_csv(df, filename, cfg):
-    """Copy DataFrame to csv file."""
-    logger.debug("Writing dictionary to csv file.")
+    """Copy DataFrame to a csv file."""
+    logger.debug("Dataframe to write:\n %s", df)
 
     # Create the csv filepath using info from the config
     csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
@@ -389,6 +433,7 @@ def write_df_to_csv(df, filename, cfg):
 
 def roach_style_plot_from_df(df, cfg):
     """Save a plot of trend in SIA against trend in GMST to the given filename."""
+    logger.debug("DataFrame for Roach-style plot:\n %s", df)
 
     # Look up variable to determine plot title
     data = cfg["input_data"].values()
@@ -488,6 +533,7 @@ def roach_style_plot_from_df(df, cfg):
 
 def notz_style_plot_from_df(df, cfg):
     """Save a plot of sensitivities and observations for model datasets."""
+    logger.debug("DataFrame for Notz-style plot:\n %s", df)
 
     # Look up variable to determine plot title
     data = cfg["input_data"].values()
@@ -538,14 +584,17 @@ def notz_style_plot_from_df(df, cfg):
     # Set up the spacing and titles accordingly
     if num_periods > 1:
         # Put obs period on the left (as it should end earlier)
-        ax.set_title(obs_period, loc="left", fontsize=10)
-        ax.set_title(data_period, loc="right", fontsize=10)
+        ax.set_title(obs_period, loc="left", fontsize=10, x=0.1)
+        ax.set_title(data_period, loc="right", fontsize=10, x=0.9)
 
         # Four columns used for data
         lhs_model_x = 0.15
         lhs_obs_x = 0.35
         rhs_model_x = 0.65
         rhs_obs_x = 0.85
+
+        # Labelling was too big
+        label_font_size = 7
     else:
         # Only one axes title
         ax.set_title(data_period, loc="center")
@@ -553,6 +602,9 @@ def notz_style_plot_from_df(df, cfg):
         # Two columns used for data
         lhs_model_x = 0.35
         lhs_obs_x = 0.65
+
+        # Labelling need not shrink
+        label_font_size = 10
 
     # Add pre-defined observation values to the first half / all, if present
     section_width = 1 / num_periods
@@ -590,7 +642,7 @@ def notz_style_plot_from_df(df, cfg):
         )
 
     # Function that may be called once or twice
-    def add_points(ax, period, data_x, obs_x):
+    def add_points(ax, period, data_x, obs_x, font_size):
         # Iterate over the values in the dataframe
         for dataset, row in df.iterrows():
             # Look up the sensitivity of SIA to GMST for the dataset
@@ -615,7 +667,7 @@ def notz_style_plot_from_df(df, cfg):
                             data_x + 0.1,
                             sensitivity - 0.05,
                         ),
-                        fontsize=7,
+                        fontsize=font_size,
                     )
 
             # Plotting for computed observations
@@ -641,11 +693,11 @@ def notz_style_plot_from_df(df, cfg):
                 )
 
     # Add the data period
-    add_points(ax, data_period, lhs_model_x, lhs_obs_x)
+    add_points(ax, data_period, lhs_model_x, lhs_obs_x, label_font_size)
 
     # Add the observation period if different
     if obs_period is not None:
-        add_points(ax, obs_period, rhs_model_x, rhs_obs_x)
+        add_points(ax, obs_period, rhs_model_x, rhs_obs_x, label_font_size)
 
     # Save the figure (also closes it)
     save_figure(
@@ -658,21 +710,31 @@ def notz_style_plot_from_df(df, cfg):
 
 
 def main(cfg):
+    # Log config dictionary
+    logger.debug("----------\n%s\n----------", cfg)
+
     # Look at the datasets in the config object
+    logger.info("Reading datasets.")
     datasets = create_dataset_dict(cfg)
 
     # Retrieve the data periods (in case obs period is different)
+    logger.info("Checking data periods.")
     data_periods = retrieve_periods(cfg).periods
 
     # Create a dataframe with the right columns
+    logger.info("Creating dataframe.")
     columns = create_df_columns(data_periods)
     df = create_blank_dataframe(datasets, columns)
 
     # Add the data for each period
     for data_period in data_periods:
+        logger.info(
+            "Calculating and writing values for period %s.", data_period
+        )
         filled = add_values_to_df(df, data_period, cfg)
 
     # Write the dataframe to file, with provenance
+    logger.info("Writing dataframe to csv file.")
     filename = "data_values"
     write_df_to_csv(filled, filename, cfg)
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -682,9 +744,11 @@ def main(cfg):
         )
 
     # Plot the 2D figure
+    logger.info("Creating Roach-style plot")
     roach_style_plot_from_df(filled, cfg)
 
     # Plot the 1D figure
+    logger.info("Creating Notz-style plot")
     notz_style_plot_from_df(filled, cfg)
 
 
