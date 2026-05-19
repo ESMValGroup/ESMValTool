@@ -696,7 +696,7 @@ def notz_style_plot_from_df(df, cfg):
     add_points(ax, data_period, lhs_model_x, lhs_obs_x, label_font_size)
 
     # Add the observation period if different
-    if obs_period is not None:
+    if num_periods > 1:
         add_points(ax, obs_period, rhs_model_x, rhs_obs_x, label_font_size)
 
     # Save the figure (also closes it)
