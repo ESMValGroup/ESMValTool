@@ -1435,11 +1435,12 @@ diagnostics:
     variables:
       clt:
       clivi:
+      clwvi:
       lwp:
     additional_datasets:
-      - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
+      - {dataset: CLARA-AVHRR, project: OBS6, tier: 3,
          type: sat, version: A3-DAILY, mip: CFday, start_year: 2020, end_year: 2020}
-      - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
+      - {dataset: CLARA-AVHRR, project: OBS6, tier: 3,
          type: sat, version: A3-MONTHLY, mip: Amon, start_year: 1979, end_year: 2020}
     scripts: null
 
