@@ -453,11 +453,28 @@ def notz_style_plot_from_df(df, cfg):
     ax.set_xticks([])
     ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
 
-    # Check how many periods there are, for positioning
-    num_periods = len(retrieve_periods(cfg).periods)
-    section_width = 1 / num_periods
+    # Check how many periods there are, for titles and positioning
+    cfg_periods = retrieve_periods(cfg)
+    num_periods = len(cfg_periods.periods)
+    obs_period = cfg_periods.obs_period
+    data_period = cfg_periods.data_period
 
-    # Add obs to the first half / all, if present
+    # Set up the titles accordingly
+    if num_periods > 1:
+        # Put obs period on the left (as it should end earlier)
+        ax.set_title(obs_period, loc="left")
+        ax.set_title(data_period, loc="right")
+    else:
+        ax.set_title(data_period, loc="center")
+
+    # Horizontal positioning
+    section_width = 1 / num_periods
+    lhs_model_x = 1 - section_width + 0.35
+    lhs_obs_x = section_width - 0.15
+    rhs_model_x = 0.65  # not necessarily used
+    rhs_obs_x = 0.85  # not necessarily used
+
+    # Add pre-defined observation values to the first half / all, if present
     if obs_period is not None:
         ax.hlines(obs_mean, 0, section_width, linestyle="--", color="black", linewidth=2)
         ax.fill_between(
@@ -485,16 +502,62 @@ def notz_style_plot_from_df(df, cfg):
         )
 
 
-    # TODO: stopped here
-    # Consider whether separate axes would actually be better
+    # Function that may be called once or twice
+    def add_points(ax, period, data_x, obs_x):
+        # Iterate over the values in the dataframe
+        for dataset, row in df.iterrows():
+
+            # Look up the sensitivity of SIA to GMST for the dataset
+            sensitivity = df.at[dataset, (period, "sia_over_gmst", "slope")]
+
+            # Plotting for models
+            if df.at[dataset, ("", "", "type")] == "model":
+                ax.plot(
+                    data_x,
+                    sensitivity,
+                    color="blue",
+                    marker="_",
+                    markersize=20,
+                )
+
+                # Label with the dataset if specified, offset correct by eye
+                if df.at[dataset, ("", "", "label")] == "to_label":
+                    plt.annotate(
+                        dataset,
+                        xy=(data_x, sensitivity),
+                        xytext=(
+                            data_x + 0.1,
+                            sensitivity - 0.05,
+                        ),
+                    )
+
+            # Plotting for computed observations
+            if df.at[dataset, ("", "", "type")] == "multi-obs":
+                ax.plot(
+                    obs_x,
+                    sensitivity,
+                    color="orange",
+                    marker="_",
+                    markersize=20,
+                )
+
+                # Shade around computed observations
+                std_err = df.at[dataset, (period, "sia_over_gmst", "std_err_slope")]
+                ax.fill_between(
+                    [obs_x - 10, obs_x + 10],
+                    sensitivity - std_err,
+                    sensitivity + std_err,
+                    facecolor="orange",
+                    alpha=0.15,
+                )
 
 
-    # Iterate over the values in the dataframe
-    for dataset, row in df.iterrows():
+    # Add the data period
+    add_points(ax, data_period, lhs_model_x, lhs_obs_x)
 
-        # Look up the relevant values
-        sensitivity = df.at[dataset, (data_period, "sia_over_gmst", "slope")]
-
+    # Add the observation period if different
+    if obs_period is not None:
+        add_points(ax, obs_period, rhs_model_x, rhs_obs_x)
 
     # Save the figure (also closes it)
     save_figure(
@@ -504,10 +567,6 @@ def notz_style_plot_from_df(df, cfg):
         figure=fig,
         close=True,
     )
-
-
-
-
 
 
 def main(cfg):
@@ -528,14 +587,17 @@ def main(cfg):
     # Write the dataframe to file, with provenance
     filename = "data_values"
     write_df_to_csv(filled, filename, cfg)
-    # with ProvenanceLogger(cfg) as provenance_logger:
-    #     provenance_logger.log(
-    #         f"{cfg['work_dir']}/{filename}",
-    #         get_provenance_record(cfg, "Annual (not decadal) figures"),
-    #     )
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(
+            f"{cfg['work_dir']}/{filename}",
+            get_provenance_record(cfg, "Annual (not decadal) figures"),
+        )
 
     # Plot the 2D figure
     roach_style_plot_from_df(filled, cfg)
+
+    # Plot the 1D figure
+    notz_style_plot_from_df(filled, cfg)
 
 
 if __name__ == "__main__":
