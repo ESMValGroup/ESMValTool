@@ -115,19 +115,34 @@ def main(cfg):
             training_data_no_nans.corr(),
         )
     ec.plot_individual_scatterplots(
-        training_data, prediction_data, attributes, "training_data", cfg
+        training_data,
+        prediction_data,
+        attributes,
+        "training_data",
+        cfg,
     )
     ec.plot_merged_scatterplots(
-        training_data, prediction_data, attributes, "training_data", cfg
+        training_data,
+        prediction_data,
+        attributes,
+        "training_data",
+        cfg,
     )
     ec.plot_target_distributions(
-        training_data, prediction_data, attributes, "training_data", cfg
+        training_data,
+        prediction_data,
+        attributes,
+        "training_data",
+        cfg,
     )
 
     # Export CSV
     ec.export_csv(training_data, attributes, "training_data", cfg)
     ec.export_csv(
-        training_data_no_nans, attributes, "training_data_no_nans", cfg
+        training_data_no_nans,
+        attributes,
+        "training_data_no_nans",
+        cfg,
     )
     ec.export_csv(prediction_data, attributes, "prediction_data", cfg)
 

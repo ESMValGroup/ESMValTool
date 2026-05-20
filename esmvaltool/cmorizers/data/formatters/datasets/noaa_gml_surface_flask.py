@@ -13,6 +13,7 @@ Download and processing instructions
     Download one of the following file:
     https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/ch4_surface-flask_ccgg_text.tar.gz
     https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/co2_surface-flask_ccgg_text.tar.gz
+    https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz
 """
 
 import logging
@@ -37,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 FLASK_COLUMNS = ["site", "year", "month", "value"]
 DTYPE_FLASK_COLUMNS = {"site": str, "year": int, "month": int, "value": float}
-TRACE_GAS_UNITS = {"ch4s": "1e-09", "co2s": "1e-06"}
+TRACE_GAS_UNITS = {"ch4s": "1e-09", "co2s": "1e-06", "n2os": "1e-09"}
 
 
 class FlaskStation(NamedTuple):
@@ -132,7 +133,7 @@ def load_file(filesystem, filepath, station_dict):
         data_frame.index = pd.to_datetime(
             data_frame["year"].astype(str)
             + "-"
-            + data_frame["month"].astype(str)
+            + data_frame["month"].astype(str),
         )
         # Create FlaskCO2Station object
         station = FlaskStation(
@@ -200,16 +201,17 @@ def assemble_cube(stations, idx, var_attrs):
     )
     if len(all_data_columns) != 1:
         raise ValueError(
-            "Station data frames has different sets of column names."
+            "Station data frames has different sets of column names.",
         )
 
     trace_gas = da.stack([df["value"].values for df in data_frames], axis=-1)[
-        ..., idx
+        ...,
+        idx,
     ]
 
     times = date_index.to_pydatetime()
     time_points = np.array(
-        [datetime(year=t.year, month=t.month, day=15) for t in times]
+        [datetime(year=t.year, month=t.month, day=15) for t in times],
     )
     time_bounds_lower = times
     time_bounds_upper = np.array(
@@ -220,7 +222,7 @@ def assemble_cube(stations, idx, var_attrs):
                 day=1,
             )
             for t in times
-        ]
+        ],
     )
     time_bounds = np.stack([time_bounds_lower, time_bounds_upper], axis=-1)
     time_units = cf_units.Unit("days since 1850-01-01", calendar="standard")
@@ -268,7 +270,9 @@ def assemble_cube(stations, idx, var_attrs):
     )
     cube = iris.cube.Cube(
         data=da.ma.masked_array(
-            trace_gas, da.isnan(trace_gas), fill_value=-999.999
+            trace_gas,
+            da.isnan(trace_gas),
+            fill_value=-999.999,
         ),
         standard_name=(var_attrs["standard_name"]),
         long_name=var_attrs["long_name"],
@@ -297,7 +301,8 @@ def build_cube(filesystem, paths, var_attrs):
     individual_stations = [s for s in individual_stations if s is not None]
     stations = merge_stations(individual_stations)
     latlon_points = np.stack(
-        [stations.site_latitude, stations.site_longitude], axis=-1
+        [stations.site_latitude, stations.site_longitude],
+        axis=-1,
     )
     index = S2PointIndex(latlon_points)
     cell_ids = index.get_cell_ids()
@@ -313,17 +318,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     tar_file_system = TarFileSystem(f"{in_dir}/{raw_filename}")
     paths = tar_file_system.glob(
         f"{cfg['trace_gas']}_surface-flask_ccgg_text/"
-        f"{cfg['trace_gas']}_*_month.txt"
+        f"{cfg['trace_gas']}_*_month.txt",
     )
 
     versions = np.unique(
         np.array(
-            [os.path.basename(p).split("_")[-3] for p in paths], dtype=str
-        )
+            [os.path.basename(p).split("_")[-3] for p in paths],
+            dtype=str,
+        ),
     )
     if len(versions) != 1:
         raise ValueError(
-            "All station datasets in tar file must have same version."
+            "All station datasets in tar file must have same version.",
         )
     version = versions[0]
 

@@ -120,11 +120,12 @@ def zmnam_calc(da_fname, outdir, src_props):
         if lat_weighting is True:
             for j_lat in np.arange(len(lat)):
                 zg_da_lp[:, i_lev, j_lat] *= np.sqrt(
-                    abs(np.cos(lat[j_lat] * deg_to_r))
+                    abs(np.cos(lat[j_lat] * deg_to_r)),
                 )
 
         zg_da_lp_an = zg_da_lp[:, i_lev, :] - np.mean(
-            zg_da_lp[:, i_lev, :], axis=0
+            zg_da_lp[:, i_lev, :],
+            axis=0,
         )
         cov = np.dot(zg_da_lp_an.T, zg_da_lp_an) / (n_tim - 1)
 
@@ -145,7 +146,7 @@ def zmnam_calc(da_fname, outdir, src_props):
         if lat_weighting is True:
             for i_lat in np.arange(len(lat)):
                 eigenvec[i_lat, :] /= np.sqrt(
-                    abs(np.cos(lat[i_lat] * deg_to_r))
+                    abs(np.cos(lat[i_lat] * deg_to_r)),
                 )
 
         # Retain leading standardized PC & EOF
@@ -175,7 +176,7 @@ def zmnam_calc(da_fname, outdir, src_props):
 
         for k_mo in range(len(date[mid_mon])):
             lead_pc_mo[k_mo] = np.mean(
-                lead_pc[sta_mon[k_mo] : end_mon[k_mo] + 1]
+                lead_pc[sta_mon[k_mo] : end_mon[k_mo] + 1],
             )
             time_mo[k_mo] = time[mid_mon[k_mo]]
 
@@ -302,7 +303,6 @@ def zmnam_calc(da_fname, outdir, src_props):
         time_var.setncattr("units", time_uni)
         time_var.setncattr("calendar", time_cal)
         time_var[:] = 0
-        #
         lev_var = file_out.createVariable("plev", "d", ("plev",))
         if lev_lnam:
             lev_var.setncattr("long_name", lev_lnam)
@@ -312,17 +312,14 @@ def zmnam_calc(da_fname, outdir, src_props):
         lev_var.setncattr("positive", lev_pos)
         lev_var.setncattr("axis", lev_axi)
         lev_var[:] = lev[:]
-        #
         lat_var = file_out.createVariable("lat", "d", ("lat",))
         lat_var.setncattr("units", lat_uni)
         lev_var.setncattr("axis", lat_axi)
         lat_var[:] = lat[:]
-        #
         lon_var = file_out.createVariable("lon", "d", ("lon",))
         lon_var.setncattr("units", lon_uni)
         lon_var.setncattr("axis", lon_axi)
         lon_var[:] = lon[:]
-        #
         eofs_var = file_out.createVariable("EOF", "d", ("plev", "lat"))
         eofs_var.setncattr("long_name", "Zonal mean annular mode EOF")
         eofs_var.setncattr("index_type", index_name)
@@ -331,10 +328,10 @@ def zmnam_calc(da_fname, outdir, src_props):
             "Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479",
         )
         eofs_var[:] = eofs[:, :]
-        #
         eigs_var = file_out.createVariable("eigenvalues", "d", ("plev"))
         eigs_var.setncattr(
-            "long_name", "Zonal mean annular mode EOF explained variance"
+            "long_name",
+            "Zonal mean annular mode EOF explained variance",
         )
         eigs_var.setncattr("index_type", index_name)
         eigs_var.setncattr(

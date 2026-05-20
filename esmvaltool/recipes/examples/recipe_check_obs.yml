@@ -3,7 +3,7 @@
 ---
 documentation:
   description: |
-    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    Test recipe for OBS, no preprocessor or diagnostics are applied,
     just to check correct reading of the CMORized data.
 
   title: Recipe to test run all obs cmorizers.
@@ -53,11 +53,15 @@ diagnostics:
     variables:
       rlut:
       rlutcs:
+      rsdt:
       rsut:
       rsutcs:
+      rtmt:
+      rtnt:
+        derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: Ed4.1, start_year: 2001, end_year: 2021}
+         type: sat, version: Ed4.2.1, start_year: 2001, end_year: 2024}
     scripts: null
 
 
@@ -177,6 +181,19 @@ diagnostics:
     scripts: null
 
 
+  EN4:
+    description: EN4 check
+    variables:
+      thetao:
+      so:
+      tos:
+      sos:
+    additional_datasets:
+      - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly,
+         version: 4.2.2, tier: 2, start_year: 1900, end_year: 2024}
+    scripts: null
+
+
   Eppley-VGPM-MODIS:
     description: Eppley-VGPM-MODIS check
     variables:
@@ -188,39 +205,131 @@ diagnostics:
 
 
   ESACCI-AEROSOL:
-    description: ESACCI-AEROSOL check
+    description: ESACCI-AEROSOL AATSR/ATSR2 and SLSTR daily & monthly data check
     variables:
-      abs550aer:
+      abs550aer: &var_aermon
+        frequency: mon
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: AATSR-SU-v4.3-MONTHLY, start_year: 1997, end_year: 2017}
       od550aer:
+        <<: *var_aermon
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-MONTHLY, start_year: 2011, end_year: 2023}
       od550aerStderr:
+        <<: *var_aermon
       od550lt1aer:
+        <<: *var_aermon
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-MONTHLY, start_year: 2011, end_year: 2023}
       od870aer:
+        <<: *var_aermon
       od870aerStderr:
+        <<: *var_aermon
+      abs550aer_day: &var_aerday
+        short_name: abs550aer
+        frequency: day
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: AATSR-SU-v4.3-DAILY, start_year: 1997, end_year: 2017}
+      od550aer_day:
+        <<: *var_aerday
+        short_name: od550aer
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-DAILY, start_year: 2011, end_year: 2023}
+      od550aerStderr_day:
+        <<: *var_aerday
+        short_name: od550aerStderr
+      od550lt1aer_day:
+        <<: *var_aerday
+        short_name: od550lt1aer
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-MONTHLY, start_year: 2011, end_year: 2023}
+      od870aer_day:
+        <<: *var_aerday
+        short_name: od870aer
+      od870aerStderr_day:
+        <<: *var_aerday
+        short_name: od870aerStderr
+    scripts: null
+
+
+  ESACCI-BIOMASS:
+    description: ESACCI-BIOMASS check
+    variables:
+      agb_2007:
+        start_year: 2007
+        end_year: 2007
+        short_name: agb
+      agb_2010:
+        start_year: 2010
+        end_year: 2010
+        short_name: agb
+      agb_2015-2022:
+        start_year: 2015
+        end_year: 2022
+        short_name: agb
     additional_datasets:
-      - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
-         type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
+      - {dataset: ESACCI-BIOMASS, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v6.0, frequency: yr}
     scripts: null
 
 
   ESACCI-CLOUD:
     description: ESACCI-CLOUD check
     variables:
-      clivi:
+      clivi: &var_mon
+        mip: Amon
+        start_year: 1982
+        end_year: 2016
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AM, start_year: 1992}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-PM}
       clt:
+        <<: *var_mon
       cltStderr:
+        <<: *var_mon
       clwvi:
+        <<: *var_mon
       lwp:
+        <<: *var_mon
       rlut:
+        <<: *var_mon
       rlutcs:
+        <<: *var_mon
       rsut:
+        <<: *var_mon
       rsutcs:
+        <<: *var_mon
       rsdt:
+        <<: *var_mon
       rlus:
+        <<: *var_mon
       rsus:
+        <<: *var_mon
       rsuscs:
-    additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: AVHRR-AMPM-fv3.0, start_year: 1982, end_year: 2016}
+        <<: *var_mon
+      clt_day: &var_day
+        short_name: clt
+        mip: day
+        start_year: 2003
+        end_year: 2007
+        version: v3.0-AVHRR-AMPM
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat}
+      clwvi_day:
+        <<: *var_day
+        short_name: clwvi
+        mip: CFday
+        version: v3.0-AVHRR-AMPM-daylight
+      cod_day:
+        <<: *var_day
+        short_name: cod
+        version: v3.0-AVHRR-AMPM-daylight
     scripts: null
 
 
@@ -278,6 +387,10 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
              type: sat, version: L3, start_year: 1997, end_year: 2010}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-GTO-ECV, start_year: 1995, end_year: 2023}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-IASI, start_year: 2008, end_year: 2023}
       tozStderr:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
@@ -290,14 +403,14 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
              type: sat, version: L3, start_year: 2007, end_year: 2008}
-      toz:
-        additional_datasets:
-          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
-             type: sat, version: L3, start_year: 1995, end_year: 2023}
       o3:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
-             type: sat, version: L3, start_year: 1984, end_year: 2022}
+             type: sat, version: L3-SAGE-OMPS, start_year: 1984, end_year: 2022}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-MEGRIDOP, start_year: 2001, end_year: 2022}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-IASI, start_year: 2008, end_year: 2023}
     scripts: null
 
   ESACCI-SEAICE:
@@ -331,6 +444,18 @@ diagnostics:
          type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
     scripts: null
 
+  ESACCI-SNOW:
+    description: ESACCI-SNOW check
+    variables:
+      snc:
+        start_year: 1982
+        end_year: 2018
+      snw:
+        start_year: 1979
+        end_year: 2019
+    additional_datasets:
+      - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    scripts: null
 
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check
@@ -499,7 +624,7 @@ diagnostics:
     variables:
       pr:
     additional_datasets:
-      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
+      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: sat,
          version: 2.3, start_year: 1979, end_year: 2022}
     scripts: null
 
@@ -601,13 +726,19 @@ diagnostics:
   JRA-25:
     description: JRA-25 check
     variables:
+      cl:
       clt:
+      clwvi:
       hus:
       prw:
       rlut:
       rlutcs:
       rsut:
       rsutcs:
+      ta:
+      tas:
+      tcw:
+      wap:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 1, start_year: 1979, end_year: 2007}
@@ -634,7 +765,7 @@ diagnostics:
       wap:
     additional_datasets:
       - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1958, end_year: 2022}
+         type: reanaly, version: 1, start_year: 1958, end_year: 2023}
     scripts: null
 
   Kadow2020:
@@ -814,8 +945,8 @@ diagnostics:
     variables:
       ch4s:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
-         start_year: 1983, end_year: 2023}
+      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
+         start_year: 1983}
     scripts: null
 
   NOAA-GML-SURFACE-FLASK-CO2:
@@ -823,8 +954,17 @@ diagnostics:
     variables:
       co2s:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
-         start_year: 1968, end_year: 2023}
+      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
+         start_year: 1968}
+    scripts: null
+
+  NOAA-GML-SURFACE-FLASK-N2O:
+    description: NOAA Global Monitoring Lab Surface flask N2O data check
+    variables:
+      n2os:
+    additional_datasets:
+      - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: ground, version: 1, tier: 2,
+         start_year: 1997}
     scripts: null
 
   NOAA-MBL-CH4:
@@ -832,7 +972,7 @@ diagnostics:
     variables:
       ch4s:
     additional_datasets:
-      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
+      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: ground, version: 1.0, tier: 2,
          start_year: 1983, end_year: 2023}
     scripts: null
 
@@ -1039,9 +1179,22 @@ diagnostics:
         mip: Oyr
     additional_datasets:
       - {dataset: WOA, project: OBS6, tier: 2,
-         type: clim, version: 2018, start_year: 2000, end_year: 2000}
+         type: clim, version: 2023, start_year: 2000, end_year: 2000}
       - {dataset: WOA, project: OBS, tier: 2,
          type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
+    scripts: null
+
+  Yang2020:
+    description: Yang2020 check
+    variables:
+      areacella:
+        mip: fx
+      dpn2o:
+        mip: Omon
+      n2oflux:
+        mip: Omon
+    additional_datasets:
+      - {project: OBS6, dataset: Yang2020, tier: 2, type: reanaly, version: 1}
     scripts: null
 
 
@@ -1052,7 +1205,7 @@ diagnostics:
     variables:
       od440aer:
     additional_datasets:
-      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20240406}
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: ground, version: 20250823}
     scripts: null
 
   ANUClimate:
@@ -1115,10 +1268,21 @@ diagnostics:
     variables:
       cli:
     additional_datasets:
-      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
-         mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
+      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 2-00,
+         mip: Amon, tier: 3, start_year: 2007, end_year: 2022}
     scripts: null
 
+  CAMS:
+    description: CAMS check
+    variables:
+      fgco2:
+        mip: Omon
+      nbp:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: CAMS, project: OBS6, tier: 3,
+         type: reanaly, version: v23r1, start_year: 1979, end_year: 2023}
+    scripts: null
 
   CDS-SATELLITE-ALBEDO:
     description: CDS-SATELLITE-ALBEDO check
@@ -1752,7 +1916,7 @@ diagnostics:
       wetlandFrac:
     additional_datasets:
       - {dataset: GLWD, project: OBS6, mip: Emon, tier: 2,
-         type: land, version: '2.0', start_year: 2002, end_year: 2002}
+         type: sat, version: '2.0', start_year: 2002, end_year: 2002}
     scripts: null
 
 

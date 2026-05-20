@@ -58,13 +58,13 @@ def _set_list_dict1(sa_dict):
         {
             "var_name": "drsnstcs_divby_dtas",
             "long_name": "Temperature mediated "
-            + "shortwave absorption for clear skye",
+            "shortwave absorption for clear skye",
             "units": "W m-2 K-1",
         },
         {
             "var_name": "drsnst_divby_dtas",
             "long_name": "Temperature mediated "
-            + "shortwave absorption for all skye",
+            "shortwave absorption for all skye",
             "units": "W m-2 K-1",
         },
     ]
@@ -78,13 +78,13 @@ def _set_list_dict2(sa_dict):
         {
             "var_name": "dlvp_divby_dtas",
             "long_name": "Temperature mediated latent heat "
-            + "release from precipitation",
+            "release from precipitation",
             "units": "W m-2 K-1",
         },
         {
             "var_name": "drsnstcs_divby_dtas",
             "long_name": "Temperature mediated "
-            + "shortwave absorption for clear skye",
+            "shortwave absorption for clear skye",
             "units": "W m-2 K-1",
         },
     ]
@@ -105,7 +105,8 @@ def _calculate_regression_sa(sa_dict):
 
     # Regression between clr-dSWA/dtas and all-dSWA/dtas
     reg_dict["rsnst"] = stats.linregress(
-        sa_dict["rsnstcsdt"], sa_dict["rsnstdt"]
+        sa_dict["rsnstcsdt"],
+        sa_dict["rsnstdt"],
     )
     reg_dict["y_rsnst"] = (
         reg_dict["rsnst"].slope * np.linspace(0.2, 1.4, 2)
@@ -359,8 +360,8 @@ def cube_to_save_matrix(var1, name):
                 var_name=name["var_name"],
                 long_name=name["long_name"],
                 units=name["units"],
-            )
-        ]
+            ),
+        ],
     )
 
     return cubes
@@ -378,8 +379,8 @@ def cube_to_save_vars(list_dict):
                         var_name=list_dict["name"][iii]["var_name"],
                         long_name=list_dict["name"][iii]["long_name"],
                         units=list_dict["name"][iii]["units"],
-                    )
-                ]
+                    ),
+                ],
             )
         else:
             cubes.append(
@@ -388,14 +389,17 @@ def cube_to_save_vars(list_dict):
                     var_name=list_dict["name"][iii]["var_name"],
                     long_name=list_dict["name"][iii]["long_name"],
                     units=list_dict["name"][iii]["units"],
-                )
+                ),
             )
 
     return cubes
 
 
 def get_provenance_record(
-    ancestor_files, caption, statistics, plot_type="scatter"
+    ancestor_files,
+    caption,
+    statistics,
+    plot_type="scatter",
 ):
     """Get Provenance record."""
     record = {
@@ -428,7 +432,7 @@ def plot_slope_regression(cfg, data_dict):
             np.mean(sa_dict["lvpdt"]),
             np.mean(sa_dict["rsnstdt"]),
             np.mean(sa_dict["rsnstcsdt"]),
-        ]
+        ],
     )
 
     reg_dict = _calculate_regression_sa(sa_dict)
@@ -447,10 +451,10 @@ def plot_slope_regression(cfg, data_dict):
 
     caption = (
         "The temperature-mediated response of each atmospheric "
-        + "energy budget term for each model as blue circles and "
-        + "the model mean as a red cross. The numbers above the "
-        + "abscissa are the cross-model correlations between "
-        + "dlvp/dtas and each other temperature-mediated response."
+        "energy budget term for each model as blue circles and "
+        "the model mean as a red cross. The numbers above the "
+        "abscissa are the cross-model correlations between "
+        "dlvp/dtas and each other temperature-mediated response."
     )
 
     provenance_record = get_provenance_record(
@@ -473,7 +477,7 @@ def plot_slope_regression(cfg, data_dict):
         {
             "var_name": "dlvp_divby_dtas",
             "long_name": "Temperature mediated latent heat "
-            + "release from precipitation",
+            "release from precipitation",
             "units": "W m-2 K-1",
         },
         {
@@ -484,7 +488,7 @@ def plot_slope_regression(cfg, data_dict):
         {
             "var_name": "drsnstcs_divby_dtas",
             "long_name": "Temperature mediated "
-            + "shortwave absorption for clear skye",
+            "shortwave absorption for clear skye",
             "units": "W m-2 K-1",
         },
     ]
@@ -499,7 +503,8 @@ def plot_slope_regression(cfg, data_dict):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
         provenance_logger.log(
-            get_plot_filename("fig2a", cfg), provenance_record
+            get_plot_filename("fig2a", cfg),
+            provenance_record,
         )
 
     fig, axx = plt.subplots(figsize=(7, 7))
@@ -512,11 +517,13 @@ def plot_slope_regression(cfg, data_dict):
 
     caption = (
         "Scatterplot of dlvp/dtas versus drsnstcs/dtas with "
-        + "corresponding least-squares linear fit (red line)."
+        "corresponding least-squares linear fit (red line)."
     )
 
     provenance_record = get_provenance_record(
-        _get_sel_files_var(cfg, ["lvp", "rsnstcs", "tas"]), caption, ["corr"]
+        _get_sel_files_var(cfg, ["lvp", "rsnstcs", "tas"]),
+        caption,
+        ["corr"],
     )
 
     diagnostic_file = get_diagnostic_filename("fig2b", cfg)
@@ -543,11 +550,13 @@ def plot_slope_regression(cfg, data_dict):
 
     caption = (
         "Scatterplot of drsnstcs/dtas versus drsnst/dtas with "
-        + "corresponding least-squares linear fit (red line)."
+        "corresponding least-squares linear fit (red line)."
     )
 
     provenance_record = get_provenance_record(
-        _get_sel_files_var(cfg, ["rsnstcs", "rsnst", "tas"]), caption, ["corr"]
+        _get_sel_files_var(cfg, ["rsnstcs", "rsnst", "tas"]),
+        caption,
+        ["corr"],
     )
 
     diagnostic_file = get_diagnostic_filename("exfig2b", cfg)
@@ -576,16 +585,18 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
             np.mean(data_model[:, 2]),
             np.mean(data_model[:, 4]),
             np.mean(data_model[:, 5]),
-        ]
+        ],
     )
 
     reg_dict = {}
     reg_dict["rsnstcsdt"] = stats.linregress(
-        data_model[:, 5], data_model[:, 3]
+        data_model[:, 5],
+        data_model[:, 3],
     )
     reg_dict["rsnstdt"] = stats.linregress(data_model[:, 1], data_model[:, 3])
     reg_dict["rlnstcsdt"] = stats.linregress(
-        data_model[:, 4], data_model[:, 3]
+        data_model[:, 4],
+        data_model[:, 3],
     )
     reg_dict["rlnstdt"] = stats.linregress(data_model[:, 0], data_model[:, 3])
     reg_dict["hfssdt"] = stats.linregress(data_model[:, 2], data_model[:, 3])
@@ -749,14 +760,16 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
 
     caption = (
         "The temperature-mediated response of each atmospheric "
-        + "energy budget term for each model as blue circles and "
-        + "the model mean as a red cross. The numbers above the "
-        + "abscissa are the cross-model correlations between "
-        + "dlvp/dtas and each other temperature-mediated response."
+        "energy budget term for each model as blue circles and "
+        "the model mean as a red cross. The numbers above the "
+        "abscissa are the cross-model correlations between "
+        "dlvp/dtas and each other temperature-mediated response."
     )
 
     provenance_record = get_provenance_record(
-        _get_sel_files_var(cfg, available_vars), caption, ["mean"]
+        _get_sel_files_var(cfg, available_vars),
+        caption,
+        ["mean"],
     )
 
     diagnostic_file = get_diagnostic_filename("exfig2a", cfg)
@@ -769,13 +782,13 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
             {
                 "var_name": "all",
                 "long_name": "dlvp, "
-                + "drlnst, "
-                + "drsnst, "
-                + "dhfss, "
-                + "drlnstcs, and,"
-                + "drsnstcs "
-                + "divided by "
-                + "dtas",
+                "drlnst, "
+                "drsnst, "
+                "dhfss, "
+                "drlnstcs, and,"
+                "drsnstcs "
+                "divided by "
+                "dtas",
                 "units": "W m-2 K-1",
             },
         ),
@@ -790,7 +803,8 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
         provenance_logger.log(
-            get_plot_filename("exfig2a", cfg), provenance_record
+            get_plot_filename("exfig2a", cfg),
+            provenance_record,
         )
 
 
@@ -907,11 +921,9 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
         axes_functions={
             "set_title": dataset_name,
             "set_xlabel": "2−m temperature (tas)"
-            + "global−mean annual anomaly ("
-            + variables.units("tas")
-            + ")",
+            "global−mean annual anomaly (" + variables.units("tas") + ")",
             "set_ylabel": r"Energy budget term global - "
-            + "mean annual anomalies (W m$^{-2}$)",
+            "mean annual anomalies (W m$^{-2}$)",
             "set_xlim": [0, 7.0],
             "set_ylim": [-5.0, 17.0],
             "set_yticks": np.linspace(-4, 16, 11),
@@ -1010,14 +1022,17 @@ def substract_and_reg_deangelis2(cfg, data, var):
 
         for jvar in varvar:
             data_var[jvar] = data.get_data(
-                short_name=jvar, exp=ABRUPT4XCO2, dataset=dataset
+                short_name=jvar,
+                exp=ABRUPT4XCO2,
+                dataset=dataset,
             ) - data.get_data(short_name=jvar, exp=PICONTROL, dataset=dataset)
 
         # Perform linear regression
         for jvar in varvar:
             if jvar != "tas":
                 reg_var[jvar] = stats.linregress(
-                    data_var["tas"], data_var[jvar]
+                    data_var["tas"],
+                    data_var[jvar],
                 )
 
         # Plot ECS regression if desired
@@ -1070,7 +1085,7 @@ def main(cfg):
     # logging.debug("Found variables in recipe:\n%s", var)
 
     available_vars = list(
-        group_metadata(cfg["input_data"].values(), "short_name")
+        group_metadata(cfg["input_data"].values(), "short_name"),
     )
     logging.debug("Found variables in recipe:\n%s", available_vars)
 
@@ -1093,12 +1108,12 @@ def main(cfg):
     if "abrupt-4xCO2" not in available_exp:
         if "abrupt4xCO2" not in available_exp:
             raise ValueError(
-                "The diagnostic needs an experiment with " + "4 times CO2."
+                "The diagnostic needs an experiment with " + "4 times CO2.",
             )
 
     if "piControl" not in available_exp:
         raise ValueError(
-            "The diagnostic needs a pre industrial control " + "experiment."
+            "The diagnostic needs a pre industrial control " + "experiment.",
         )
 
     ###########################################################################

@@ -4,47 +4,77 @@ attributes:
   dataset_id: JRA-25
   version: '1'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
-  source: 'https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/'
+  source: 'https://data.rda.ucar.edu/ds625.1'
   reference: 'jra_25'
   comment: |
     ''
 
 # Variables to cmorize
 variables:
-  clt_month:
+  cl:
+    short_name: cl
+    mip: Amon
+    raw: TCDC_HBL
+    file: 'fcst_phy3m.{year}*.nc'
+  clt:
     short_name: clt
     mip: Amon
-    raw: clt
-    file: clt_Amon_reanalysis_JRA-25_197901-201312.nc
-  hus_month:
+    raw: TCDC_COL
+    file: 'fcst_phy2m.{year}*.nc'
+  clwvi:
+    short_name: clwvi
+    mip: Amon
+    raw: CWAT_COL
+    file: 'fcst_phy2m.{year}*.nc'
+  hus:
     short_name: hus
     mip: Amon
-    raw: hus
-    file: hus_Amon_reanalysis_JRA-25_197901-201312.nc
-  prw_month:
+    raw: SPFH_PRS
+    file: 'anl_p.{year}*.nc'
+  prw:
     short_name: prw
     mip: Amon
-    raw: prw
-    file: prw_Amon_reanalysis_JRA-25_197901-201312.nc
-  rlut_month:
+    raw: PWAT_COL
+    file: 'fcst_phy2m.{year}*.nc'
+  rlut:
     short_name: rlut
     mip: Amon
-    raw: rlut
-    file: rlut_Amon_reanalysis_JRA-25_197901-201312.nc
-  rlutcs_month:
+    raw: ULWRF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  rlutcs:
     short_name: rlutcs
     mip: Amon
-    raw: rlutcs
-    file: rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
-  rsut_month:
+    raw: CSULF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  rsut:
     short_name: rsut
     mip: Amon
-    raw: rsut
-    file: rsut_Amon_reanalysis_JRA-25_197901-201312.nc
-  rsutcs_month:
+    raw: USWRF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  rsutcs:
     short_name: rsutcs
     mip: Amon
-    raw: rsutcs
-    file: rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+    raw: CSUSF_TOA
+    file: 'fcst_phy2m.{year}*.nc'
+  ta:
+    short_name: ta
+    mip: Amon
+    raw: TMP_PRS
+    file: 'anl_p.{year}*.nc'
+  tas:
+    short_name: tas
+    mip: Amon
+    raw: TMP_SFC
+    file: 'anl_p.{year}*.nc'
+  tcw:
+    short_name: tcw
+    mip: Amon
+    raw: CWAT_PRS
+    file: 'anl_p.{year}*.nc'
+  wap:
+    short_name: wap
+    mip: Amon
+    raw: VVEL_PRS
+    file: 'anl_chipsi.{year}*.nc'

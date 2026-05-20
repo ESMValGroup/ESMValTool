@@ -68,34 +68,54 @@ def meta_direntr(cfg, model, input_data, flist):
     """
     with ProvenanceLogger(cfg) as provlog:
         hfls_file = e.select_metadata(
-            input_data, short_name="hfls", dataset=model
+            input_data,
+            short_name="hfls",
+            dataset=model,
         )[0]["filename"]
         hfss_file = e.select_metadata(
-            input_data, short_name="hfss", dataset=model
+            input_data,
+            short_name="hfss",
+            dataset=model,
         )[0]["filename"]
         hus_file = e.select_metadata(
-            input_data, short_name="hus", dataset=model
+            input_data,
+            short_name="hus",
+            dataset=model,
         )[0]["filename"]
         pr_file = e.select_metadata(
-            input_data, short_name="pr", dataset=model
+            input_data,
+            short_name="pr",
+            dataset=model,
         )[0]["filename"]
         prsn_file = e.select_metadata(
-            input_data, short_name="prsn", dataset=model
+            input_data,
+            short_name="prsn",
+            dataset=model,
         )[0]["filename"]
         ps_file = e.select_metadata(
-            input_data, short_name="ps", dataset=model
+            input_data,
+            short_name="ps",
+            dataset=model,
         )[0]["filename"]
         rlut_file = e.select_metadata(
-            input_data, short_name="rlut", dataset=model
+            input_data,
+            short_name="rlut",
+            dataset=model,
         )[0]["filename"]
         ts_file = e.select_metadata(
-            input_data, short_name="ts", dataset=model
+            input_data,
+            short_name="ts",
+            dataset=model,
         )[0]["filename"]
         uas_file = e.select_metadata(
-            input_data, short_name="uas", dataset=model
+            input_data,
+            short_name="uas",
+            dataset=model,
         )[0]["filename"]
         vas_file = e.select_metadata(
-            input_data, short_name="vas", dataset=model
+            input_data,
+            short_name="vas",
+            dataset=model,
         )[0]["filename"]
         attr = ["sensible heat entropy production", model]
         ancestor = [
@@ -144,28 +164,44 @@ def meta_indentr(cfg, model, input_data, flist):
     """
     with ProvenanceLogger(cfg) as provlog:
         rlds_file = e.select_metadata(
-            input_data, short_name="rlds", dataset=model
+            input_data,
+            short_name="rlds",
+            dataset=model,
         )[0]["filename"]
         rlus_file = e.select_metadata(
-            input_data, short_name="rlus", dataset=model
+            input_data,
+            short_name="rlus",
+            dataset=model,
         )[0]["filename"]
         rlut_file = e.select_metadata(
-            input_data, short_name="rlut", dataset=model
+            input_data,
+            short_name="rlut",
+            dataset=model,
         )[0]["filename"]
         rsds_file = e.select_metadata(
-            input_data, short_name="rsds", dataset=model
+            input_data,
+            short_name="rsds",
+            dataset=model,
         )[0]["filename"]
         rsdt_file = e.select_metadata(
-            input_data, short_name="rsdt", dataset=model
+            input_data,
+            short_name="rsdt",
+            dataset=model,
         )[0]["filename"]
         rsus_file = e.select_metadata(
-            input_data, short_name="rsus", dataset=model
+            input_data,
+            short_name="rsus",
+            dataset=model,
         )[0]["filename"]
         rsut_file = e.select_metadata(
-            input_data, short_name="rsut", dataset=model
+            input_data,
+            short_name="rsut",
+            dataset=model,
         )[0]["filename"]
         ts_file = e.select_metadata(
-            input_data, short_name="ts", dataset=model
+            input_data,
+            short_name="ts",
+            dataset=model,
         )[0]["filename"]
         attr = ["horizontal entropy production", model]
         ancestor = [rlut_file, rsdt_file, rsut_file]

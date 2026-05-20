@@ -25,6 +25,7 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
+   recipe_sanity_checks
    recipe_seaborn
    recipe_ref
 
@@ -44,8 +45,6 @@ Atmosphere
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_extreme_index
-   recipe_eyring06jgr
-   recipe_eyring13jgr
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
@@ -65,6 +64,8 @@ Atmosphere
    recipe_validation
    recipe_radiation_budget
    recipe_aod_aeronet_assess
+   recipe_surface_trace_gas
+   recipe_weathertyping
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -83,14 +84,11 @@ Future projections
    recipe_li17natcc
    recipe_meehl20sciadv
    recipe_emergent_constraints
-   recipe_wenzel14jgr
    recipe_schlund20esd
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
    recipe_kcs
-   recipe_wenzel16jclim
-   recipe_wenzel16nat
    recipe_tcr
    recipe_tcre
    recipe_tebaldi21esd
@@ -120,6 +118,7 @@ Land
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et
+   recipe_ref_fire
 
 Ocean
 ^^^^^
@@ -131,6 +130,7 @@ Ocean
    recipe_combined_indices
    recipe_esacci_oc
    recipe_enso_ref
+   recipe_enso_clivar
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
@@ -151,6 +151,7 @@ Other
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
+   recipe_seaice_sensitivity
    recipe_shapeselect
    recipes_testing
    recipe_toymodel

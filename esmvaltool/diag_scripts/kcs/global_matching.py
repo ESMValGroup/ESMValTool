@@ -63,7 +63,9 @@ def get_resampling_period(target_dts, cmip_dt):
     get the best match.
     """
     target_dts = target_dts.rolling(
-        time=30, center=True, min_periods=30
+        time=30,
+        center=True,
+        min_periods=30,
     ).mean()
     time_idx = abs(target_dts - cmip_dt).argmin(dim="time").values
     year = target_dts.isel(time=time_idx).year.values.astype(int)
@@ -80,7 +82,9 @@ def _timeline(axes, yloc, interval):
     yloc = 0.05 + yloc / 20
 
     plot_args = dict(
-        transform=axes.get_xaxis_transform(), linewidth=2, color="red"
+        transform=axes.get_xaxis_transform(),
+        linewidth=2,
+        color="red",
     )
 
     axes.plot([xmin, xmax], [yloc] * 2, **plot_args, label="Selected periods")
@@ -143,7 +147,7 @@ def make_plot(metadata, scenarios, cfg, provenance):
         _timeline(axes, i, scenario["period_bounds"])
 
     handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))  # dict removes dupes
+    by_label = dict(zip(labels, handles, strict=True))  # dict removes dupes
     axes.legend(by_label.values(), by_label.keys())
     axes.set_xlabel("Year")
     axes.set_ylabel(r"Global mean $\Delta T$ (K) w.r.t. reference period")

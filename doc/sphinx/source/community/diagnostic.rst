@@ -24,12 +24,7 @@ The easiest way to do this is probably to copy the example recipe and diagnostic
 script and adjust those to your needs.
 
 If you have no preferred programming language yet, Python 3 is highly recommended, because it is most well supported.
-However, NCL, R, (and Julia) scripts are also supported.
-
-.. note::
-
-    ESMValTool stopped supporting Julia as a main dependency, so if you'd like to
-    write and test a Julia diagnostic, you will have to install Julia from source.
+However, NCL, and R scripts are also supported.
 
 Good example recipes for the different languages are:
 
@@ -58,7 +53,10 @@ See :ref:`api_shared` for the documentation of the shared Python code.
 
 Re-using existing code
 ======================
-Always make sure your code is or can be released under a license that is compatible with the Apache 2.0 license.
+If re-using existing code, ensure that you have the right to contribute for
+release under the Apache 2.0 license,
+and carefully check the requirements of our
+:ref:`contributor_license_agreement`.
 
 If you have existing code in a supported scripting language, you have two options for re-using it. If it is fairly
 mature and a large amount of code, the preferred way is to package and publish it on the
@@ -363,38 +361,6 @@ Have a look at the example NCL diagnostic in
 `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 for a complete example.
 
-Recording provenance in a Julia diagnostic script
--------------------------------------------------
-The provenance information is written in a ``diagnostic_provenance.yml`` that will be located in ``run_dir``.
-For example a ``provenance_record`` can be stored in a yaml file as:
-
-.. code-block:: julia
-
-  provenance_file = string(run_dir, "/diagnostic_provenance.yml")
-
-  open(provenance_file, "w") do io
-      JSON.print(io, provenance_records, 4)
-  end
-
-The ``provenance_records`` can be defined as a dictionary of provenance items.
-For example:
-
-.. code-block:: julia
-
-  provenance_records = Dict()
-
-  provenance_record = Dict(
-      "ancestors" => [input_file],
-      "authors" => ["vonhardenberg_jost", "arnone_enrico"],
-      "caption" => "Example diagnostic in Julia",
-      "domains" => ["global"],
-      "projects" => ["crescendo", "c3s-magic"],
-      "references" => ["zhang11wcc"],
-      "statistics" => ["other"],
-  )
-
-  provenance_records[output_file] = provenance_record
-
 Recording provenance in an R diagnostic script
 ----------------------------------------------
 The provenance information is written in a ``diagnostic_provenance.yml`` that will be located in ``run_dir``.
@@ -471,6 +437,10 @@ Detailed checklist for reviews
 
 This (non-exhaustive) checklist provides ideas for things to check when reviewing
 pull requests for new or updated recipes and/or diagnostic scripts.
+
+The first time you open a pull request,
+you will need to agree to our contributor license agreement:
+see :ref:`contributor_license_agreement`.
 
 Technical reviews
 -----------------

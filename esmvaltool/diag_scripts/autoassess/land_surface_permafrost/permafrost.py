@@ -64,7 +64,9 @@ def land_permafrost_top(run):
     # STASH m01s08i225
     period = "monthly"
     soiltemp = load_run_ss(
-        run, period, "soil_temperature"
+        run,
+        period,
+        "soil_temperature",
     )  # has dims(time, depth, lat, long)
 
     # check soil depths
@@ -86,7 +88,7 @@ def land_permafrost_top(run):
     # extract northern latitudes
     airtemp = airtemp.extract(iris.Constraint(latitude=lambda cell: cell > 0))
     soiltemp = soiltemp.extract(
-        iris.Constraint(latitude=lambda cell: cell > 0)
+        iris.Constraint(latitude=lambda cell: cell > 0),
     )
 
     # calculate the permafrost area and fraction less than zero
@@ -120,7 +122,9 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     # Make an aggregator to define the permafrost extent
     # I dont really understand this but it works
     frozen_count = iris.analysis.Aggregator(
-        "frozen_count", num_frozen, units_func=lambda units: 1
+        "frozen_count",
+        num_frozen,
+        units_func=lambda units: 1,
     )
 
     # Calculate the permafrost locations
@@ -153,7 +157,9 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     grid_areas = iris.analysis.cartography.area_weights(pf_periods)
     # calculate the areas not masked in pf_periods
     pf_area = pf_periods.collapsed(
-        ["longitude", "latitude"], iris.analysis.SUM, weights=grid_areas
+        ["longitude", "latitude"],
+        iris.analysis.SUM,
+        weights=grid_areas,
     ).data
 
     # what is the area where the temperature is less than 0 degrees C?
@@ -171,8 +177,9 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     plt.figure(figsize=(8, 8))
     ax = plt.axes(
         projection=ccrs.Orthographic(
-            central_longitude=-80.0, central_latitude=60.0
-        )
+            central_longitude=-80.0,
+            central_latitude=60.0,
+        ),
     )
     qplt.pcolormesh(pf_periods)
     ax.gridlines()
@@ -180,7 +187,7 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     levels = [thresh_temperature]
     qplt.contour(airtemp, levels, colors="k", linewidths=3)
     plt.title(
-        "Permafrost extent & zero degree isotherm ({})".format(run["runid"])
+        "Permafrost extent & zero degree isotherm ({})".format(run["runid"]),
     )
     plt.savefig("pf_extent_north_america_" + run["runid"] + ".png")
 
@@ -188,8 +195,9 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     plt.figure(figsize=(8, 8))
     ax = plt.axes(
         projection=ccrs.Orthographic(
-            central_longitude=100.0, central_latitude=50.0
-        )
+            central_longitude=100.0,
+            central_latitude=50.0,
+        ),
     )
     qplt.pcolormesh(pf_periods)
     ax.gridlines()
@@ -197,14 +205,14 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     levels = [thresh_temperature]
     qplt.contour(airtemp, levels, colors="k", linewidths=3)
     plt.title(
-        "Permafrost extent & zero degree isotherm ({})".format(run["runid"])
+        "Permafrost extent & zero degree isotherm ({})".format(run["runid"]),
     )
     plt.savefig("pf_extent_asia_" + run["runid"] + ".png")
 
     # record provenance
     plot_file = "pf_extent_asia_" + run["runid"]
     caption = "Permafrost extent & zero degree isotherm ({})".format(
-        run["runid"]
+        run["runid"],
     )
     provenance_record = get_provenance_record(caption, run)
     cfg = {}
@@ -252,7 +260,9 @@ def num_frozen(data, threshold, axis, frozen_length):
 def get_landfr_mask(run):
     """Get the land fraction mask."""
     supermean_data_dir = os.path.join(
-        run["data_root"], run["runid"], run["_area"] + "_supermeans"
+        run["data_root"],
+        run["runid"],
+        run["_area"] + "_supermeans",
     )
     # m01s03i395
     # TODO: replacing time-varying mask with fixed sftfx
@@ -275,13 +285,15 @@ def get_nonice_mask(run):
 
     """
     supermean_data_dir = os.path.join(
-        run["data_root"], run["runid"], run["_area"] + "_supermeans"
+        run["data_root"],
+        run["runid"],
+        run["_area"] + "_supermeans",
     )
 
     # m01s08i223
     # use mrsos (moisture in surface soil layer), Lmon
     name_constraint = iris.Constraint(
-        name="mass_content_of_water_in_soil_layer"
+        name="mass_content_of_water_in_soil_layer",
     )
     cubes_path = os.path.join(supermean_data_dir, "cubeList.nc")
     cubes = iris.load(cubes_path)
@@ -340,7 +352,8 @@ def make_monthly_amp(cube):
     iris.coord_categorisation.add_month(cube, "time", name="month")
     cube_clim = cube.aggregated_by("month", iris.analysis.MEAN)
     cube_ampl = cube_clim.collapsed(
-        "time", iris.analysis.MAX
+        "time",
+        iris.analysis.MAX,
     ) - cube_clim.collapsed("time", iris.analysis.MIN)
     return cube_ampl
 
@@ -372,10 +385,10 @@ def koven_temp_atten(soiltemp, airtemp):
     # assign metrics
     metrics = {}
     metrics["attenuation 1m over surface"] = np.median(
-        soiltemp_ampl_1m_1d / soiltemp_ampl_surf_1d
+        soiltemp_ampl_1m_1d / soiltemp_ampl_surf_1d,
     )
     metrics["attenuation surface over air"] = np.median(
-        soiltemp_ampl_surf_1d / airtemp_ampl_1d
+        soiltemp_ampl_surf_1d / airtemp_ampl_1d,
     )
 
     return metrics
