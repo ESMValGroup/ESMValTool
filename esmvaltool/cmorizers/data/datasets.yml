@@ -1082,13 +1082,31 @@ datasets:
     info: |
       Download the file MPI_MOBO-DIC_2004-2019_v2.nc
 
-  MODIS:
+  MODIS-Aqua:
     tier: 3
     source: https://ladsweb.modaps.eosdis.nasa.gov/search/order
-    last_access: 2019-02-09
+    last_access: 2026-01-30
     info: |
       In Products: select "MODIS Aqua", "Collection 6.1" and
         "L3 Atmosphere Product", click on MYD08_M3.
+      In Time: select from 2000-01-01 to today.
+      In Location: skip, the global domain will be applied.
+      In Files: select all.
+      Submit the order.
+      A registration is required to download the data.
+
+      Caveats
+        clwvi and clivi data are in-cloud values whereas CMIP5 models provide
+        grid-box averages --> multiply MODIS clwvi and clivi values with cloud
+        fraction as a first guess
+
+  MODIS-Terra:
+    tier: 3
+    source: https://ladsweb.modaps.eosdis.nasa.gov/search/order
+    last_access: 2026-01-30
+    info: |
+      In Products: select "MODIS Terra", "Collection 6.1" and
+        "L3 Atmosphere Product", click on MOD08_M3.
       In Time: select from 2000-01-01 to today.
       In Location: skip, the global domain will be applied.
       In Files: select all.

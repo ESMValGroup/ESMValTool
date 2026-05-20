@@ -58,6 +58,7 @@ dependencies = [
     "packaging",
     "pandas",
     "progressbar2",
+    "pyhdf",
     "pyproj>=2.1",
     "pys2index",
     "python-dateutil",
