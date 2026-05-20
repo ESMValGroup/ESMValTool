@@ -7,7 +7,7 @@ attributes:
   dataset_id: AERONET
   version: 20250726
   tier: 3
-  modeling_realm: atmos
+  type: ground
   project_id: OBS6
   source: 'https://aeronet.gsfc.nasa.gov/new_web/download_all_v3_aod.html'
   reference: 'aeronetv3'

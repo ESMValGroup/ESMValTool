@@ -7,10 +7,10 @@ from copy import deepcopy
 import cartopy.crs as ccrs
 import dask.array as da
 import iris.quickplot
-import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+from matplotlib import colors
 
 logger = logging.getLogger(__name__)
 
@@ -57,11 +57,11 @@ def _check_size_of_parameters(*args):
             if len(arg_0) != len(arg):
                 raise ValueError(
                     "Invalid input: array-like parameters need "
-                    "to have the same size"
+                    "to have the same size",
                 )
         except TypeError as exc:
             raise TypeError(
-                "Invalid input: some parameters are not array-like"
+                "Invalid input: some parameters are not array-like",
             ) from exc
     return
 
@@ -74,7 +74,10 @@ def get_path_to_mpl_style(style_file=None):
         style_file += ".mplstyle"
     base_dir = os.path.dirname(os.path.realpath(__file__))
     filepath = os.path.join(
-        base_dir, "styles_python", "matplotlib", style_file
+        base_dir,
+        "styles_python",
+        "matplotlib",
+        style_file,
     )
     logger.debug("Using matplotlib style: %s", filepath)
     return filepath
@@ -105,13 +108,13 @@ def get_dataset_style(dataset, style_file=None):
     if default_dataset not in style:
         raise ValueError(
             f"Style file {filepath} does not contain section "
-            f"[{default_dataset}] (used for unknown datasets)"
+            f"[{default_dataset}] (used for unknown datasets)",
         )
     for option in options:
         if option not in style[default_dataset]:
             raise ValueError(
                 f"Style file {filepath} does not contain default information "
-                f"for '{option}' (under section [{default_dataset}])"
+                f"for '{option}' (under section [{default_dataset}])",
             )
 
     # Check if dataset is available
@@ -143,7 +146,7 @@ def _check_cube(cube):
     if cube.ndim != 2:
         raise ValueError(
             f"Expected 2D cube, got {cube.ndim:d}D cube: "
-            f"{cube.summary(shorten=True)}"
+            f"{cube.summary(shorten=True)}",
         )
     required_coords = ["latitude", "longitude"]
     for coord_name in required_coords:
@@ -151,7 +154,7 @@ def _check_cube(cube):
             raise iris.exceptions.CoordinateNotFoundError(
                 f"Cube {cube.summary(shorten=True)} does not contain "
                 f"necessary dimensional coordinate '{coord_name}' for "
-                f"plotting global map plot"
+                f"plotting global map plot",
             )
 
 
@@ -170,7 +173,7 @@ def _get_centered_cmap(cmap_name, vmin, vmax, center, n_colors=100):
     if not vmin < center < vmax:
         raise ValueError(
             f"Expected monotonic increase vmin < center < vmax, got vmin = "
-            f"{vmin}, vmax = {vmax}, center = {center}"
+            f"{vmin}, vmax = {vmax}, center = {center}",
         )
     if center - vmin > vmax - center:
         minval = 0.0
@@ -238,12 +241,16 @@ def global_contourf(
     if cbar_center is not None:
         if cbar_range is None:
             raise ValueError(
-                "'cbar_center' can only be used if 'cbar_range' is given"
+                "'cbar_center' can only be used if 'cbar_range' is given",
             )
         cmap = kwargs.get("cmap", plt.get_cmap())
         n_colors = cbar_range[2] if len(cbar_range) > 2 else 100
         cmap = _get_centered_cmap(
-            cmap, cbar_range[0], cbar_range[1], cbar_center, n_colors
+            cmap,
+            cbar_range[0],
+            cbar_range[1],
+            cbar_center,
+            n_colors,
         )
         kwargs["cmap"] = cmap
 
@@ -273,7 +280,10 @@ def global_contourf(
         colorbar.set_ticklabels([str(tick) for tick in cbar_ticks])
     elif cbar_range is not None:
         ticks = np.linspace(
-            *cbar_range[:2], 10, endpoint=False, dtype=type(cbar_range[0])
+            *cbar_range[:2],
+            10,
+            endpoint=False,
+            dtype=type(cbar_range[0]),
         )
         colorbar.set_ticks(ticks)
         colorbar.set_ticklabels([str(tick) for tick in ticks])
@@ -283,7 +293,11 @@ def global_contourf(
 
 
 def global_pcolormesh(
-    cube, cbar_center=None, cbar_label=None, cbar_ticks=None, **kwargs
+    cube,
+    cbar_center=None,
+    cbar_label=None,
+    cbar_ticks=None,
+    **kwargs,
 ):
     """Plot global color mesh.
 
@@ -331,11 +345,14 @@ def global_pcolormesh(
     if cbar_center is not None:
         if not ("vmin" in kwargs and "vmax" in kwargs):
             raise ValueError(
-                "'cbar_center' can only be used if 'vmin' and 'vmax' are given"
+                "'cbar_center' can only be used if 'vmin' and 'vmax' are given",
             )
         cmap = kwargs.get("cmap", plt.get_cmap())
         cmap = _get_centered_cmap(
-            cmap, kwargs["vmin"], kwargs["vmax"], cbar_center
+            cmap,
+            kwargs["vmin"],
+            kwargs["vmax"],
+            cbar_center,
         )
         kwargs["cmap"] = cmap
 
@@ -423,7 +440,10 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
     # Check parameters
     _check_size_of_parameters(
-        x_data, y_data, datasets, kwargs.get("plot_kwargs", x_data)
+        x_data,
+        y_data,
+        datasets,
+        kwargs.get("plot_kwargs", x_data),
     )
     empty_dict = [{} for _ in x_data]
 
@@ -511,7 +531,9 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
 
     # Check parameters
     _check_size_of_parameters(
-        x_data, y_data, kwargs.get("plot_kwargs", x_data)
+        x_data,
+        y_data,
+        kwargs.get("plot_kwargs", x_data),
     )
     empty_dict = [{} for _ in x_data]
 
@@ -529,7 +551,9 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
 
         # Plot
         axes.plot(
-            x_vals, y_data[idx], **(kwargs.get("plot_kwargs", empty_dict)[idx])
+            x_vals,
+            y_data[idx],
+            **(kwargs.get("plot_kwargs", empty_dict)[idx]),
         )
 
     # Customize plot
@@ -537,7 +561,9 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
 
     # Save plot
     fig.savefig(
-        filepath, bbox_extra_artists=[legend], **kwargs.get("save_kwargs", {})
+        filepath,
+        bbox_extra_artists=[legend],
+        **kwargs.get("save_kwargs", {}),
     )
     logger.info("Wrote %s", filepath)
     plt.close()

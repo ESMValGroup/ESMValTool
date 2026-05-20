@@ -22,9 +22,8 @@ encountered this language before. The key information about this format is:
 - yaml is case sensitive;
 
 More information can be found in the `yaml tutorial
-<https://learnxinyminutes.com/docs/yaml/>`_ and `yaml quick reference card
-<https://yaml.org/refcard.html>`_. ESMValTool uses the `yamllint
-<http://www.yamllint.com>`_ linter tool to check recipe syntax.
+<https://learnxinyminutes.com/docs/yaml/>`_. ESMValTool uses the `yamllint
+<https://www.yamllint.com>`_ linter tool to check recipe syntax.
 
 
 .. _rerunning:
@@ -259,14 +258,14 @@ interpreted as filenames. They may also contain directories and globs, like
 `./my_data/tas_*.nc` to load all surface temperature data from the `my_data`
 subdirectory of the current working directory. The iris function will return
 either a single `Cube
-<https://scitools.org.uk/iris/docs/latest/iris/iris/cube.html#iris.cube.Cube>`_,
+<https://scitools-iris.readthedocs.io/en/stable/generated/api/iris.cube.html#iris.cube.Cube>`_,
 or a list of cubes in the form of a `CubeList
-<https://scitools.org.uk/iris/docs/latest/iris/iris/cube.html#iris.cube.CubeList>`_.
+<https://scitools-iris.readthedocs.io/en/stable/generated/api/iris.cube.html#iris.cube.CubeList>`_.
 
 Often, we want to combine different parts of dataset to form the whole dataset
 again. This is accomplished in iris using either a `merge` or a
 `concatenate`. Refer to `the iris user guide
-<https://scitools.org.uk/iris/docs/latest/userguide/merge_and_concat.html>`_ to
+<https://scitools-iris.readthedocs.io/en/stable/userguide/merge_and_concat.html>`_ to
 understand the difference.
 
 In fact, it is this `concatenate` that has failed you when you are reading this

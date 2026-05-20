@@ -5,7 +5,7 @@ attributes:
   dataset_id: ESACCI-SST
   version: 3.0-L4-analysis
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: 'dx.doi.org/10.5285/4a9654136a7148e39b7feb56f8bb02d2'
   reference: ["esacci-sst"]

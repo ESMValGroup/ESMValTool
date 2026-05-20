@@ -106,7 +106,8 @@ def calculate_mm_stats(cubes, mean_file, stdev_file):
 
         mm_mean_cube = mm_cube.collapsed(["cube_label"], iris.analysis.MEAN)
         mm_stdev_cube = mm_cube.collapsed(
-            ["cube_label"], iris.analysis.STD_DEV
+            ["cube_label"],
+            iris.analysis.STD_DEV,
         )
         iris.save(mm_mean_cube, mean_file)
         iris.save(mm_stdev_cube, stdev_file)
@@ -188,7 +189,8 @@ def main(cfg):
     for project in projects:
         # get all data sets for project across experiments
         project_data = select_metadata(
-            cfg["input_data"].values(), project=project
+            cfg["input_data"].values(),
+            project=project,
         )
         for gwl in cfg["gwls"]:
             gwl_subset_df = gwl_df[gwl_df["GWL"] == gwl]

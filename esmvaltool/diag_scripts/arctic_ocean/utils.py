@@ -95,7 +95,11 @@ def timmean(cfg, model_filenames, mmodel, cmor_var, observations="PHC"):
     logger.info("Calculate timmean %s for %s", cmor_var, mmodel)
     cdo = Cdo()
     ofilename = genfilename(
-        cfg["work_dir"], cmor_var, mmodel, data_type="timmean", extension=".nc"
+        cfg["work_dir"],
+        cmor_var,
+        mmodel,
+        data_type="timmean",
+        extension=".nc",
     )
     if mmodel != observations:
         cdo.timmean(input=model_filenames[mmodel], output=ofilename)
@@ -183,7 +187,7 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name="shiftedcmap"):
         [
             np.linspace(0.0, midpoint, 128, endpoint=False),
             np.linspace(midpoint, 1.0, 129, endpoint=True),
-        ]
+        ],
     )
 
     for regi, shii in zip(reg_index, shift_index, strict=True):
@@ -227,7 +231,8 @@ def get_cmap(cmap_name):
     try:
         mpl.colormaps.register(
             cmap=LinearSegmentedColormap(
-                "cubehelix3", mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3)
+                "cubehelix3",
+                mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3),
             ),
             name="new_cubehelix3",
             force=False,
@@ -251,7 +256,7 @@ def get_cmap(cmap_name):
         raise ValueError(
             f"Get unrecognised name for the colormap `{cmap_name}`.\
                             Colormaps should be from standard matplotlib \
-                            set or from cmocean package."
+                            set or from cmocean package.",
         )
     return colormap
 
@@ -273,7 +278,10 @@ def point_distance(lon_s4new, lat_s4new):
     """
     g_proj = pyproj.Geod(ellps="WGS84")
     (_, _, dist) = g_proj.inv(
-        lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:], lat_s4new[1:]
+        lon_s4new[0:-1],
+        lat_s4new[0:-1],
+        lon_s4new[1:],
+        lat_s4new[1:],
     )
     dist = dist.cumsum() / 1000
     dist = np.insert(dist, 0, 0)
@@ -303,31 +311,31 @@ def get_provenance_record(attributes, data_type, file_type):
     elif data_type == "hofm" and file_type == "png":
         caption = (
             "Hovmoeller diagram. Region: {region}. Model: {mmodel} ".format(
-                **attributes
+                **attributes,
             )
         )
     elif data_type == "transect" and file_type == "npy":
         caption = (
             "Data for Transect. Region: {region}. Model: {mmodel} ".format(
-                **attributes
+                **attributes,
             )
         )
     elif data_type == "tsplot" and file_type == "npy":
         caption = (
             "Data for TS diagram. Region: {region}. Model: {mmodel} ".format(
-                **attributes
+                **attributes,
             )
         )
     elif data_type == "timmean" and file_type == "nc":
         caption = (
             "Global time mean. Region: {region}. Model: {mmodel} ".format(
-                **attributes
+                **attributes,
             )
         )
     elif data_type == "profile" and file_type == "png":
         caption = (
             "Mean vertical profile. Region: {region}. Model: {mmodel} ".format(
-                **attributes
+                **attributes,
             )
         )
     elif data_type == "plot2d" and file_type == "png":
@@ -348,12 +356,12 @@ def get_provenance_record(attributes, data_type, file_type):
     elif data_type == "transect" and file_type == "png":
         caption = (
             "Vertical transect. Region: {region}. Model: {mmodel} ".format(
-                **attributes
+                **attributes,
             )
         )
     elif data_type == "tsplot" and file_type == "png":
         caption = "TS diagram. Region: {region}. Model: {mmodel} ".format(
-            **attributes
+            **attributes,
         )
     else:
         caption = "None"

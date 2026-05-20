@@ -104,20 +104,20 @@ def _get_ordered_dict(cfg, all_data):
     order = cfg["order"]
     if len(order) != len(set(order)):
         raise ValueError(
-            f"Expected unique elements for 'order' option, got {order}"
+            f"Expected unique elements for 'order' option, got {order}",
         )
     logger.info("Using order %s for barplot", order)
     if len(order) != len(all_data):
         raise ValueError(
             f"Expected {len(all_data):d} unique elements for 'order' option "
             f"(number of different labels for the barplot), got "
-            f"{len(order):d}"
+            f"{len(order):d}",
         )
     for label in order:
         if label not in all_data:
             raise ValueError(
                 f"Got invalid label '{label}' in 'order' option, expected one "
-                f"of {list(all_data.keys())}"
+                f"of {list(all_data.keys())}",
             )
         new_dict.append((label, all_data[label]))
     return OrderedDict(new_dict)
@@ -136,7 +136,7 @@ def get_all_data(cfg, input_files):
         except iris.exceptions.CoordinateNotFoundError as exc:
             raise iris.exceptions.CoordinateNotFoundError(
                 f"File '{filename}' does not contain necessary coordinate "
-                f"'dataset'"
+                f"'dataset'",
             ) from exc
         logger.info("Processing '%s'", filename)
 
@@ -155,12 +155,11 @@ def get_all_data(cfg, input_files):
         }
         if metadata is None:
             metadata = new_metadata
-        else:
-            if metadata != new_metadata:
-                raise ValueError(
-                    f"Got differing metadata for the different input files, "
-                    f"{metadata} and {new_metadata}"
-                )
+        elif metadata != new_metadata:
+            raise ValueError(
+                f"Got differing metadata for the different input files, "
+                f"{metadata} and {new_metadata}",
+            )
     return (all_data, all_files, metadata)
 
 
@@ -196,7 +195,7 @@ def plot_data(cfg, all_data, metadata):
         if "Mean" in xy_data[0]:
             mean_idx = np.nonzero(xy_data[0] == "Mean")[0][0]
             bars[mean_idx].set_facecolor(
-                _adjust_lightness(bars[mean_idx].get_facecolor()[:3])
+                _adjust_lightness(bars[mean_idx].get_facecolor()[:3]),
             )
 
     # Plot appearance
@@ -279,7 +278,7 @@ def main(cfg):
     provenance_record.update(
         {
             "plot_types": ["bar"],
-        }
+        },
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)

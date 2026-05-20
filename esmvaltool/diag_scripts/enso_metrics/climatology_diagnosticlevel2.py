@@ -88,26 +88,25 @@ def provenance_record(var_grp, ancestor_files):
     caption = {
         "pr_bias": (
             "Time-mean precipitation bias in the equatorial Pacific, "
-            + "primarily highlighting the double intertropical convergence "
-            + "zone (ITCZ) bias."
+            "primarily highlighting the double intertropical convergence "
+            "zone (ITCZ) bias."
         ),
         "pr_seacycle": (
             "Bias in the amplitude of the mean seasonal cycle of "
-            + "precipitation in the equatorial Pacific."
+            "precipitation in the equatorial Pacific."
         ),
         "sst_bias": (
-            "Time-mean sea surface temperature bias in the "
-            + "equatorial Pacific."
+            "Time-mean sea surface temperature bias in the equatorial Pacific."
         ),
         "sst_seacycle": (
             "Bias in the amplitude of the mean seasonal cycle of "
-            + "sea surface temperature in the equatorial Pacific."
+            "sea surface temperature in the equatorial Pacific."
         ),
         "tauu_bias": "Time-mean zonal wind stress bias in the "
-        + "equatorial Pacific.",
+        "equatorial Pacific.",
         "tauu_seacycle": (
             "Bias in the amplitude of the mean seasonal cycle of "
-            + "zonal wind stress in the equatorial Pacific."
+            "zonal wind stress in the equatorial Pacific."
         ),
     }
     record = {

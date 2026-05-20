@@ -50,7 +50,8 @@ def _get_sel_files(cfg, dataname, dim=2):
     selection = []
     if dim == 2:
         for hlp in select_metadata(
-            cfg["input_data"].values(), dataset=dataname
+            cfg["input_data"].values(),
+            dataset=dataname,
         ):
             selection.append(hlp["filename"])
     else:
@@ -72,7 +73,11 @@ def _get_sel_files_var(cfg, varnames):
 
 
 def get_provenance_record(
-    ancestor_files, caption, statistics, domains, plot_type="geo"
+    ancestor_files,
+    caption,
+    statistics,
+    domains,
+    plot_type="geo",
 ):
     """Get Provenance record."""
     record = {
@@ -96,7 +101,7 @@ def get_latlon_index(coords, lim1, lim2):
     """Get index for given 1D vector, e.g. lats or lons between 2 limits."""
     index = (
         np.where(
-            np.absolute(coords - (lim2 + lim1) / 2.0) <= (lim2 - lim1) / 2.0
+            np.absolute(coords - (lim2 + lim1) / 2.0) <= (lim2 - lim1) / 2.0,
         )
     )[0]
     return index
@@ -112,13 +117,19 @@ def cube_to_save_ploted(var, lats, lons, names):
     )
     new_cube.add_dim_coord(
         iris.coords.DimCoord(
-            lats, var_name="lat", long_name="latitude", units="degrees_north"
+            lats,
+            var_name="lat",
+            long_name="latitude",
+            units="degrees_north",
         ),
         0,
     )
     new_cube.add_dim_coord(
         iris.coords.DimCoord(
-            lons, var_name="lon", long_name="longitude", units="degrees_east"
+            lons,
+            var_name="lon",
+            long_name="longitude",
+            units="degrees_east",
         ),
         1,
     )
@@ -135,8 +146,8 @@ def cube_to_save_scatter(var1, var2, names):
                 var_name=names["var_name1"],
                 long_name=names["long_name1"],
                 units=names["units1"],
-            )
-        ]
+            ),
+        ],
     )
     cubes.append(
         iris.cube.Cube(
@@ -144,7 +155,7 @@ def cube_to_save_scatter(var1, var2, names):
             var_name=names["var_name2"],
             long_name=names["long_name2"],
             units=names["units2"],
-        )
+        ),
     )
 
     return cubes
@@ -231,7 +242,7 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                         dataset=dataname,
                         exp="historical",
                     )
-                )[0]["start_year"]
+                )[0]["start_year"],
             )
             + "-"
             + str(
@@ -241,7 +252,7 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                         dataset=dataname,
                         exp="historical",
                     )
-                )[0]["end_year"]
+                )[0]["end_year"],
             )
             + " to "
             + str(
@@ -251,7 +262,7 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                         dataset=dataname,
                         exp=future_exp,
                     )
-                )[0]["start_year"]
+                )[0]["start_year"],
             )
             + "-"
             + str(
@@ -261,7 +272,7 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                         dataset=dataname,
                         exp=future_exp,
                     )
-                )[0]["end_year"]
+                )[0]["end_year"],
             )
             + " projected "
             + "under the "
@@ -294,7 +305,8 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
     )
 
     diagnostic_file = get_diagnostic_filename(
-        dataname + "_rain_wind_change", cfg
+        dataname + "_rain_wind_change",
+        cfg,
     )
 
     logger.info("Saving analysis results to %s", diagnostic_file)
@@ -310,8 +322,8 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                     "long_name": "Prec" + "ipita" + "tion " + "Change",
                     "units": "mm d-1",
                 },
-            )
-        ]
+            ),
+        ],
     )
 
     if data["ar_diff_rain"].ndim == 3:
@@ -322,13 +334,10 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                 data["lons"],
                 {
                     "var_name": "std_pr",
-                    "long_name": "Standard "
-                    + "Deviation "
-                    + "of the Prec"
-                    + "ipitation ",
+                    "long_name": "Standard Deviation of the Precipitation ",
                     "units": "mm d-1",
                 },
-            )
+            ),
         )
 
     cubelist.append(
@@ -341,7 +350,7 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                 "long_name": "Eastward Wind Change",
                 "units": "m s-1",
             },
-        )
+        ),
     )
 
     cubelist.append(
@@ -354,7 +363,7 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
                 "long_name": "Northward Wind Change",
                 "units": "m s-1",
             },
-        )
+        ),
     )
 
     iris.save(cubelist, target=diagnostic_file)
@@ -434,7 +443,10 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     selection = _get_sel_files_var(cfg, ["pr", "ts"])
 
     provenance_record = get_provenance_record(
-        selection, titlestr, ["diff"], ["reg"]
+        selection,
+        titlestr,
+        ["diff"],
+        ["reg"],
     )
 
     diagnostic_file = get_diagnostic_filename(figname, cfg)
@@ -462,7 +474,8 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            get_plot_filename(figname, cfg), provenance_record
+            get_plot_filename(figname, cfg),
+            provenance_record,
         )
         provenance_logger.log(diagnostic_file, provenance_record)
 
@@ -478,7 +491,8 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     subplot_kw = {"projection": cart.PlateCarree(central_longitude=180)}
     fig, axx = plt.subplots(figsize=(8, 4), subplot_kw=subplot_kw)
     axx.set_extent(
-        [-150, 60, -15, 30], cart.PlateCarree(central_longitude=180)
+        [-150, 60, -15, 30],
+        cart.PlateCarree(central_longitude=180),
     )
 
     # draw filled contours
@@ -519,11 +533,11 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     axx.set_ylabel("Latitude")
     axx.set_title(
         "Inter-model relationship between ISM rainfall changes"
-        + " and mean precip."
+        " and mean precip.",
     )
     axx.set_xticks(np.linspace(-150, 60, 8))
     axx.set_xticklabels(
-        ["30°E", "60°E", "90°E", "120°E", "150°E", "180°E", "150°W", "120°W"]
+        ["30°E", "60°E", "90°E", "120°E", "150°E", "180°E", "150°W", "120°W"],
     )
     axx.set_yticks([-15, 0, 15, 30])
     axx.set_yticklabels(["15°S", "0°", "15°N", "30°N"])
@@ -534,18 +548,21 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
 
     caption = (
         "Inter-model relationship between ISM "
-        + "(Indian Summer Monsoon) region (60◦ –95◦ E, 10◦ –30◦ N) "
-        + "rainfall changes and in simulated present-day precipitation "
-        + "over the Indo-Pacific. Solid boxes denote the tropical "
-        + "western Pacific (140◦ E–170◦ W, 12◦ S–12◦ N) and southeastern "
-        + "Indian Ocean (SEIO; 70◦ –100◦ E, 8◦ S–2◦ N) and colour shading "
-        + "indicates regions of significance at the 95% level according to "
-        + "t-test. All the precipitation changes are normalized by the "
-        + "corresponding global mean SST increase for each model"
+        "(Indian Summer Monsoon) region (60◦ –95◦ E, 10◦ –30◦ N) "
+        "rainfall changes and in simulated present-day precipitation "
+        "over the Indo-Pacific. Solid boxes denote the tropical "
+        "western Pacific (140◦ E–170◦ W, 12◦ S–12◦ N) and southeastern "
+        "Indian Ocean (SEIO; 70◦ –100◦ E, 8◦ S–2◦ N) and colour shading "
+        "indicates regions of significance at the 95% level according to "
+        "t-test. All the precipitation changes are normalized by the "
+        "corresponding global mean SST increase for each model"
     )
 
     provenance_record = get_provenance_record(
-        _get_sel_files_var(cfg, ["pr", "ts"]), caption, ["corr"], ["reg"]
+        _get_sel_files_var(cfg, ["pr", "ts"]),
+        caption,
+        ["corr"],
+        ["reg"],
     )
 
     diagnostic_file = get_diagnostic_filename("li17natcc_fig1b", cfg)
@@ -569,7 +586,8 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            get_plot_filename("li17natcc_fig1b", cfg), provenance_record
+            get_plot_filename("li17natcc_fig1b", cfg),
+            provenance_record,
         )
         provenance_logger.log(diagnostic_file, provenance_record)
 
@@ -620,8 +638,8 @@ def plot_reg_li(cfg, data_ar, future_exp):
 
     caption = (
         " Scatter plot of the simulated tropical western Pacific "
-        + "precipitation (mm d−1 ) versus projected average ISM "
-        + "(Indian Summer Monsoon) rainfall changes under the "
+        "precipitation (mm d−1 ) versus projected average ISM "
+        "(Indian Summer Monsoon) rainfall changes under the "
         + future_exp
         + " scenario. The red line denotes the observed present-day "
         + "western Pacific precipitation and the inter-model "
@@ -663,7 +681,8 @@ def plot_reg_li(cfg, data_ar, future_exp):
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            get_plot_filename("li17natcc_fig2a", cfg), provenance_record
+            get_plot_filename("li17natcc_fig2a", cfg),
+            provenance_record,
         )
         provenance_logger.log(diagnostic_file, provenance_record)
 
@@ -739,11 +758,11 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
 
     caption = (
         " Scatter plot of the uncorrected versus corrected average "
-        + "ISM (Indian Summer Monsoon) rainfall change ratios (% per degree "
-        + "Celsius of global SST warming). The error bars for the "
-        + "Multi-model mean indicate the standard deviation spread among "
-        + "models and the 2:1 line (y = 0.5x) is used to illustrate the "
-        + "Multi-model mean reduction in projected rainfall increase."
+        "ISM (Indian Summer Monsoon) rainfall change ratios (% per degree "
+        "Celsius of global SST warming). The error bars for the "
+        "Multi-model mean indicate the standard deviation spread among "
+        "models and the 2:1 line (y = 0.5x) is used to illustrate the "
+        "Multi-model mean reduction in projected rainfall increase."
     )
 
     provenance_record = get_provenance_record(
@@ -781,7 +800,8 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            get_plot_filename("li17natcc_fig2b", cfg), provenance_record
+            get_plot_filename("li17natcc_fig2b", cfg),
+            provenance_record,
         )
         provenance_logger.log(diagnostic_file, provenance_record)
 
@@ -821,64 +841,92 @@ def substract_li(cfg, data, lats, lons, future_exp):
         datasets.append(data.get_info(n.DATASET, dataset_path))
         ar_diff_rain[:, :, iii] = (
             data.get_data(
-                short_name="pr", exp=future_exp, dataset=datasets[iii]
+                short_name="pr",
+                exp=future_exp,
+                dataset=datasets[iii],
             )
             - data.get_data(
-                short_name="pr", exp="historical", dataset=datasets[iii]
+                short_name="pr",
+                exp="historical",
+                dataset=datasets[iii],
             )
         ) / (
             data.get_data(
-                short_name="ts", exp=future_exp, dataset=datasets[iii]
+                short_name="ts",
+                exp=future_exp,
+                dataset=datasets[iii],
             )
             - data.get_data(
-                short_name="ts", exp="historical", dataset=datasets[iii]
+                short_name="ts",
+                exp="historical",
+                dataset=datasets[iii],
             )
         )
         # ISM (60◦ –95◦ E, 10◦ –30◦ N)
         mism_diff_rain[iii] = np.mean(
             (ar_diff_rain[:, get_latlon_index(lons, 60, 95), iii])[
-                get_latlon_index(lats, 10, 30), :
-            ]
+                get_latlon_index(lats, 10, 30),
+                :,
+            ],
         )
         ar_hist_rain[:, :, iii] = data.get_data(
-            short_name="pr", exp="historical", dataset=datasets[iii]
+            short_name="pr",
+            exp="historical",
+            dataset=datasets[iii],
         )
         # Western pacific (140◦ E–170◦ W, 12◦ S–12◦ N)
         mwp_hist_rain[iii] = np.mean(
             (ar_hist_rain[:, get_latlon_index(lons, 140, 170), iii])[
-                get_latlon_index(lats, -12, 12), :
-            ]
+                get_latlon_index(lats, -12, 12),
+                :,
+            ],
         )
 
         ar_diff_ua[:, :, iii] = (
             data.get_data(
-                short_name="ua", exp=future_exp, dataset=datasets[iii]
+                short_name="ua",
+                exp=future_exp,
+                dataset=datasets[iii],
             )
             - data.get_data(
-                short_name="ua", exp="historical", dataset=datasets[iii]
+                short_name="ua",
+                exp="historical",
+                dataset=datasets[iii],
             )
         ) / (
             data.get_data(
-                short_name="ts", exp=future_exp, dataset=datasets[iii]
+                short_name="ts",
+                exp=future_exp,
+                dataset=datasets[iii],
             )
             - data.get_data(
-                short_name="ts", exp="historical", dataset=datasets[iii]
+                short_name="ts",
+                exp="historical",
+                dataset=datasets[iii],
             )
         )
 
         ar_diff_va[:, :, iii] = (
             data.get_data(
-                short_name="va", exp=future_exp, dataset=datasets[iii]
+                short_name="va",
+                exp=future_exp,
+                dataset=datasets[iii],
             )
             - data.get_data(
-                short_name="va", exp="historical", dataset=datasets[iii]
+                short_name="va",
+                exp="historical",
+                dataset=datasets[iii],
             )
         ) / (
             data.get_data(
-                short_name="ts", exp=future_exp, dataset=datasets[iii]
+                short_name="ts",
+                exp=future_exp,
+                dataset=datasets[iii],
             )
             - data.get_data(
-                short_name="ts", exp="historical", dataset=datasets[iii]
+                short_name="ts",
+                exp="historical",
+                dataset=datasets[iii],
             )
         )
 
@@ -916,7 +964,7 @@ def correct_li(data, lats, lons, reg):
     mism_hist_rain = np.zeros(len(data["datasets"]))
     mism_diff_cor = np.zeros(len(data["datasets"]))
 
-    for iii in range(0, len(data["datasets"])):
+    for iii in range(len(data["datasets"])):
         # Errors of climate projection
         proj_err[:, :, iii] = mwp_hist_cor[iii] * reg[:, :, 2]
 
@@ -926,13 +974,15 @@ def correct_li(data, lats, lons, reg):
         )
         mism_hist_rain[iii] = np.mean(
             (data["ar_hist_rain"][:, get_latlon_index(lons, 60, 95), iii])[
-                get_latlon_index(lats, 10, 30), :
-            ]
+                get_latlon_index(lats, 10, 30),
+                :,
+            ],
         )
         mism_diff_cor[iii] = np.mean(
             (ar_diff_cor[:, get_latlon_index(lons, 60, 95), iii])[
-                get_latlon_index(lats, 10, 30), :
-            ]
+                get_latlon_index(lats, 10, 30),
+                :,
+            ],
         )
 
     return {
@@ -962,7 +1012,7 @@ def main(cfg):
     # Check for tas and rlnst
     if not var.vars_available("pr", "ua", "va", "ts"):
         raise ValueError(
-            "This diagnostic needs 'pr', 'ua', " + " 'va', and 'ts'"
+            "This diagnostic needs 'pr', 'ua', " + " 'va', and 'ts'",
         )
 
     available_exp = list(group_metadata(cfg["input_data"].values(), "exp"))
@@ -970,13 +1020,13 @@ def main(cfg):
     if "historical" not in available_exp:
         raise ValueError(
             "The diagnostic needs an historical experiment "
-            + " and one other experiment."
+            " and one other experiment.",
         )
 
     if len(available_exp) != 2:
         raise ValueError(
             "The diagnostic needs an two model experiments: "
-            + " onehistorical and one other one."
+            " onehistorical and one other one.",
         )
 
     available_exp.remove("historical")
@@ -1033,7 +1083,10 @@ def main(cfg):
 
     # Regression between mean ISM rain difference and historical rain
     reg2d = get_reg_2d_li(
-        data_ar["mism_diff_rain"], data_ar["ar_hist_rain"], lats, lons
+        data_ar["mism_diff_rain"],
+        data_ar["ar_hist_rain"],
+        lats,
+        lons,
     )
 
     plot_2dcorrelation_li(cfg, reg2d, lats, lons)
@@ -1042,7 +1095,10 @@ def main(cfg):
 
     # Regression between mean WP rain and rain difference for each location
     reg2d_wp = get_reg_2d_li(
-        data_ar["mwp_hist_rain"], data_ar["ar_diff_rain"], lats, lons
+        data_ar["mwp_hist_rain"],
+        data_ar["ar_diff_rain"],
+        lats,
+        lons,
     )
 
     data_ar2 = correct_li(data_ar, lats, lons, reg2d_wp)

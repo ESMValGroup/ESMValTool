@@ -2,7 +2,7 @@ attributes:
   project_id: 'OBS6'
   dataset_id: 'ESACCI-BIOMASS'
   tier: 2
-  modeling_realm: sat
+  type: sat
   institution: 'GAMMA Remote Sensing'
   reference: 'esacci-biomass'
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/'

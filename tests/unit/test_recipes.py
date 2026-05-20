@@ -30,7 +30,9 @@ def test_reference_tags(recipe_file):
     for tag in tags:
         bibtex_file = REFERENCES_PATH / f"{tag}.bibtex"
         assert bibtex_file.is_file(), msg.format(
-            tag=tag, recipe=recipe_file, path=REFERENCES_PATH
+            tag=tag,
+            recipe=recipe_file,
+            path=REFERENCES_PATH,
         )
 
 

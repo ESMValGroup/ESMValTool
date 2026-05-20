@@ -22,7 +22,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import arviz as az
 import cartopy.crs as ccrs
 import cf_units
 import iris
@@ -32,6 +31,7 @@ import iris.quickplot
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import xarray as xr
 from matplotlib.colors import ListedColormap
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
@@ -152,7 +152,9 @@ def _select_key_or_default(
 
 # /libs/iris_plus.py
 def _sort_time(
-    cube: iris.cube.Cube, field: str, filename: str
+    cube: iris.cube.Cube,
+    field: str,
+    filename: str,
 ) -> iris.cube.Cube:
     """Sort time dimension in the iris cube.
 
@@ -177,7 +179,8 @@ def _sort_time(
     tcoord.units = cf_units.Unit(tcoord.units.origin, calendar="gregorian")
     tcoord.convert_units("days since 1661-01-01 00:00:00")
     tcoord.units = cf_units.Unit(
-        tcoord.units.origin, calendar="proleptic_gregorian"
+        tcoord.units.origin,
+        calendar="proleptic_gregorian",
     )
     cube.remove_coord("time")
     cube.add_dim_coord(tcoord, 0)
@@ -192,7 +195,9 @@ def _sort_time(
 
 
 def _insert_data_into_cube(
-    data: np.array, eg_cube: iris.cube.Cube, mask: np.array | None = None
+    data: np.array,
+    eg_cube: iris.cube.Cube,
+    mask: np.array | None = None,
 ) -> iris.cube.Cube:
     """Insert data into cube following mask.
 
@@ -352,17 +357,20 @@ def _select_post_param(trace: str) -> dict:
         return np.reshape(out, new_shape)
 
     try:
-        trace = az.from_netcdf(trace, engine="netcdf4")
+        trace = xr.open_datatree(trace, engine="netcdf4")
     except (ValueError, OSError) as expt:
         logger.debug("_select_post_param error %s", expt)
-    params = trace.to_dict()["posterior"]
-    params_names = params.keys()
+    params = trace["posterior"]
+    params_names = list(trace["posterior"].data_vars)
     params = [_select_post_param_name(var) for var in params_names]
     return params, list(params_names)
 
 
 def _construct_param_comb(
-    i: int, params: list, params_names: list, extra_params: dict
+    i: int,
+    params: list,
+    params_names: list,
+    extra_params: dict,
 ) -> dict:
     """Construct a new dictionary containing parameters.
 
@@ -446,12 +454,15 @@ def _read_variable_from_netcdf(
 
     if isinstance(filename, str):
         dataset = iris.load_raw(
-            Path(directory) / filename, callback=_sort_time
+            Path(directory) / filename,
+            callback=_sort_time,
         )
     else:
+        # Fallback for CMIP7 data for tasmax
+        var = "tas" if "tasmax/tas_tmaxavg" in filename[0] else filename[1]
         dataset = iris.load_raw(
             Path(directory) / filename[0],
-            filename[1],
+            var,
             callback=_sort_time,
         )
     dataset = dataset[0]
@@ -490,7 +501,9 @@ def _read_variable_from_netcdf(
     if subset_function is not None:
         if isinstance(subset_function, list):
             for func, _args in zip(
-                subset_function, subset_function_args, strict=False
+                subset_function,
+                subset_function_args,
+                strict=False,
             ):
                 try:
                     dataset = func(dataset, **_args)
@@ -868,7 +881,7 @@ def _get_parameters(config: dict) -> tuple:
     # Parameter files (traces, scalers, and other model parameters)
     param_file_trace = list(Path(confire_param).glob("trace*.nc"))[0]
     param_file_none_trace = list(
-        Path(confire_param).glob("none_trace-params*.txt")
+        Path(confire_param).glob("none_trace-params*.txt"),
     )[0]
     scale_file = list(Path(confire_param).glob("scalers*.csv"))[0]
     # **Load Variable Information and NetCDF Files**
@@ -1142,7 +1155,7 @@ def diagnostic_run_confire(
         [
             [1, 1, 1, 1],
             oranges(np.linspace(0, 1, 256)),
-        ]
+        ],
     )
     cmap = ListedColormap(colors)
     # Plots

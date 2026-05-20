@@ -1,6 +1,0 @@
-^\.circleci/
-^environment\.yml$
-^pyproject.toml$
-^setup\.py$
-^setup\.cfg$
-^MANIFEST.in$

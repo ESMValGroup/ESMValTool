@@ -22,5 +22,10 @@ from esmvaltool.cmorizers.data.formatters.datasets import (
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     noaa_gml_surface_flask.cmorization(
-        in_dir, out_dir, cfg, cfg_user, start_date, end_date
+        in_dir,
+        out_dir,
+        cfg,
+        cfg_user,
+        start_date,
+        end_date,
     )

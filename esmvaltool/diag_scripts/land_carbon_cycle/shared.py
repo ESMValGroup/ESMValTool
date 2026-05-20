@@ -34,7 +34,7 @@ def _apply_gpp_threshold(gpp_dat, fig_config):
     # converting gC m-2 yr-1 to kgC m-2 s-1
     gpp_thres = fig_config["gpp_threshold"] / (86400.0 * 365 * 1000.0)
     gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(
-        fig_config["fill_value"]
+        fig_config["fill_value"],
     )
     return gpp_dat
 
@@ -54,7 +54,7 @@ def _get_obs_data_zonal(diag_config):
     if not diag_config.get("obs_variable"):
         raise ValueError(
             "The observation variable needs to be specified in "
-            "the recipe (see recipe description for details)"
+            "the recipe (see recipe description for details)",
         )
     obs_dir = os.path.join(
         diag_config["auxiliary_data_dir"],
@@ -71,11 +71,12 @@ def _get_obs_data_zonal(diag_config):
         obs_filename = (
             f"{_var}_{{frequency}}_{{source_label}}_"
             f"{{variant_label}}_{{grid_label}}z.nc".format(
-                **diag_config["obs_info"]
+                **diag_config["obs_info"],
             )
         )
         input_files = np.append(
-            input_files, os.path.join(obs_dir, obs_filename)
+            input_files,
+            os.path.join(obs_dir, obs_filename),
         )
 
     nvars = len(var_list)

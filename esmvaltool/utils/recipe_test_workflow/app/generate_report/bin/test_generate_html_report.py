@@ -24,12 +24,12 @@ def mock_db_with_passed_values(row_data):
         The mock task state data in the form [('recipe', 'status', 'cycle')]
 
     Yields
-    -------
+    ------
     Path
         A pathlib.Path to the mock db.
     """
     sql_string = ",".join(
-        [f"('{row[0]}', '{row[1]}', '{row[2]}')" for row in row_data]
+        [f"('{row[0]}', '{row[1]}', '{row[2]}')" for row in row_data],
     )
     # This nested context manager cleans up the resource, so no
     # "try/except/finally" clean up is required.
@@ -95,16 +95,19 @@ def test_fetch_report_data_multi_cycle():
                     "process_task": {
                         "status": "succeeded",
                         "style": "color: green",
-                    }
-                }
+                    },
+                },
             },
         ),
         (
             [("compare_recipe_1", "failed")],
             {
                 "recipe_1": {
-                    "compare_task": {"status": "failed", "style": "color: red"}
-                }
+                    "compare_task": {
+                        "status": "failed",
+                        "style": "color: red",
+                    },
+                },
             },
         ),
         (
@@ -122,7 +125,7 @@ def test_fetch_report_data_multi_cycle():
                         "status": "failed",
                         "style": "color: red",
                     },
-                }
+                },
             },
         ),
         ([("other_task", "succeeded")], {}),
@@ -134,7 +137,7 @@ def test_fetch_report_data_multi_cycle():
                         "status": "running",
                         "style": "color: black",
                     },
-                }
+                },
             },
         ),
         (
@@ -144,8 +147,8 @@ def test_fetch_report_data_multi_cycle():
                     "process_task": {
                         "status": "succeeded",
                         "style": "color: green",
-                    }
-                }
+                    },
+                },
             },
         ),
     ],

@@ -4,7 +4,7 @@ attributes:
   dataset_id: OSI-450-sh
   version: 'v3'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'http://osisaf.met.no/p/ice/'
   reference: 'osi-450'

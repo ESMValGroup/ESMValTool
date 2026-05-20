@@ -142,18 +142,18 @@ def provenance_record(var_grp, ancestor_files):
     caption = {
         "doubleITCZ_seacycle": (
             "Meridional structure of the mean seasonal cycle of "
-            + "precipitation (PR) in the eastern Pacific (150-90°W averaged)."
+            "precipitation (PR) in the eastern Pacific (150-90°W averaged)."
         ),
         "pr_seacycle": (
             "Zonal structure of the mean seasonal cycle of "
-            + "precipitation (PR) in the eastern Pacific (5°S-5°N averaged)."
+            "precipitation (PR) in the eastern Pacific (5°S-5°N averaged)."
         ),
         "sst_seacycle": (
             "Zonal structure of the mean seasonal cycle of "
-            + "sea surface temperature (SST) in the eastern Pacific (5°S-5°N averaged)."
+            "sea surface temperature (SST) in the eastern Pacific (5°S-5°N averaged)."
         ),
         "tauu_seacycle": "Zonal structure of the mean seasonal cycle of "
-        + "zonal wind stress (TAUX) in the eastern Pacific (5°S-5°N averaged).",
+        "zonal wind stress (TAUX) in the eastern Pacific (5°S-5°N averaged).",
     }
     record = {
         "caption": caption[var_grp],

@@ -74,22 +74,22 @@ def _get_anomaly_cube(onepct_cube, pi_cube):
     if onepct_cube.ndim != 1:
         raise ValueError(
             f"This diagnostics needs 1D cubes, got {onepct_cube.ndim:d}D cube "
-            f"for '1pctCO2' experiment"
+            f"for '1pctCO2' experiment",
         )
     if pi_cube.ndim != 1:
         raise ValueError(
             f"This diagnostics needs 1D cubes, got {pi_cube.ndim:d}D cube for "
-            f"'piControl' experiment"
+            f"'piControl' experiment",
         )
     if onepct_cube.shape != pi_cube.shape:
         raise ValueError(
             f"Cube shapes of '1pctCO2' and 'piControl' are not identical, got "
-            f"{onepct_cube.shape} and {pi_cube.shape}"
+            f"{onepct_cube.shape} and {pi_cube.shape}",
         )
     if onepct_cube.shape[0] < END_YEAR_IDX:
         raise ValueError(
             f"Cubes need at least {END_YEAR_IDX:d} points for TCR "
-            f"calculation, got only {onepct_cube.shape[0]:d}"
+            f"calculation, got only {onepct_cube.shape[0]:d}",
         )
 
     # Calculate anomaly
@@ -122,11 +122,14 @@ def _get_anomaly_cubes(cfg):
     for dataset in onepct_data:
         dataset_name = dataset["dataset"]
         pi_data = select_metadata(
-            input_data, short_name="tas", exp="piControl", dataset=dataset_name
+            input_data,
+            short_name="tas",
+            exp="piControl",
+            dataset=dataset_name,
         )
         if not pi_data:
             raise ValueError(
-                "No 'piControl' data available for dataset 'dataset_name'"
+                "No 'piControl' data available for dataset 'dataset_name'",
             )
         onepct_cube = iris.load_cube(dataset["filename"])
         pi_cube = iris.load_cube(pi_data[0]["filename"])
@@ -227,7 +230,7 @@ def _plot(cfg, cube, dataset_name, tcr):
         f"control simulation of the same model. The horizontal dashed line "
         f"indicates the transient climate response (TCR) defined as the "
         f"20-year average ΔT centered at the time of CO2 doubling "
-        f"(vertical dashed lines)."
+        f"(vertical dashed lines).",
     )
     provenance_record["plot_types"] = ["times"]
 
@@ -251,12 +254,18 @@ def calculate_tcr(cfg):
         new_tcr = tas_2x
         tcr[dataset_name] = new_tcr
         logger.info(
-            "TCR (%s) = %.2f %s", dataset_name, new_tcr, anomaly_cube.units
+            "TCR (%s) = %.2f %s",
+            dataset_name,
+            new_tcr,
+            anomaly_cube.units,
         )
 
         # Plot
         (path, plot_path, provenance_record) = _plot(
-            cfg, anomaly_cube, dataset_name, new_tcr
+            cfg,
+            anomaly_cube,
+            dataset_name,
+            new_tcr,
         )
         if path is not None:
             provenance_record["ancestors"] = ancestors[dataset_name]
@@ -272,7 +281,7 @@ def check_input_data(cfg):
     if not variables_available(cfg, ["tas"]):
         raise ValueError(
             "This diagnostic needs variable 'tas' if 'read_external_file' is "
-            "not given"
+            "not given",
         )
     input_data = cfg["input_data"].values()
     project_group = group_metadata(input_data, "project")
@@ -280,14 +289,14 @@ def check_input_data(cfg):
     if len(projects) > 1:
         raise ValueError(
             f"This diagnostic supports only unique 'project' attributes, got "
-            f"{projects}"
+            f"{projects}",
         )
     exp_group = group_metadata(input_data, "exp")
     exps = set(exp_group.keys())
     if exps != {"piControl", "1pctCO2"}:
         raise ValueError(
             f"This diagnostic needs '1pctCO2' and 'piControl' experiment, got "
-            f"{exps}"
+            f"{exps}",
         )
 
 
@@ -308,13 +317,13 @@ def get_provenance_record(caption):
 def read_external_file(cfg):
     """Read external file to get TCR."""
     filepath = os.path.expanduser(
-        os.path.expandvars(cfg["read_external_file"])
+        os.path.expandvars(cfg["read_external_file"]),
     )
     if not os.path.isabs(filepath):
         filepath = os.path.join(os.path.dirname(__file__), filepath)
     if not os.path.isfile(filepath):
         raise FileNotFoundError(
-            f"Desired external file '{filepath}' does not exist"
+            f"Desired external file '{filepath}' does not exist",
         )
     with open(filepath) as infile:
         external_data = yaml.safe_load(infile)
@@ -354,7 +363,8 @@ def write_data(cfg, tcr, external_file=None):
     ancestor_files = []
     for dataset_name in tcr.keys():
         datasets = select_metadata(
-            cfg["input_data"].values(), dataset=dataset_name
+            cfg["input_data"].values(),
+            dataset=dataset_name,
         )
         ancestor_files.extend(sorted([d["filename"] for d in datasets]))
     if external_file is not None:

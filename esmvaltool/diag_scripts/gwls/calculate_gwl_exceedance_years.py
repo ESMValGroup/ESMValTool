@@ -57,7 +57,8 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
             str(window_size),
         )
         smoothed_ts = calculate_moving_average_centered(
-            anomaly_ts_cube.data, window_size
+            anomaly_ts_cube.data,
+            window_size,
         )
 
         for gwl in gwls:
@@ -66,7 +67,7 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
             # only write exceedance_year if gwl is exceeded in the time series
             if np.nanmax(smoothed_ts) > float(gwl):
                 exceedance_year = start_year + np.argmax(
-                    smoothed_ts > float(gwl)
+                    smoothed_ts > float(gwl),
                 )
                 new_record_df = pd.DataFrame(
                     [
@@ -77,8 +78,8 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
                             "Ens": data["ensemble"],
                             "GWL": gwl,
                             "Exceedance_Year": exceedance_year,
-                        }
-                    ]
+                        },
+                    ],
                 )
                 logger.info("Exceedance year %s ", exceedance_year)
                 gwl_df = pd.concat([gwl_df, new_record_df], ignore_index=True)
@@ -96,12 +97,15 @@ def main(cfg):
 
     # group preproocessed input by project
     input_data_sorted = sorted_metadata(
-        input_data, ["project", "exp", "dataset", "ensemble"]
+        input_data,
+        ["project", "exp", "dataset", "ensemble"],
     )
 
     # calculate GWL exceedance years and return in a dataframe
     gwl_df = calculate_gwl_exceedance_years(
-        input_data_sorted, gwls, window_size
+        input_data_sorted,
+        gwls,
+        window_size,
     )
     gwl_file = os.path.join(cfg["work_dir"], "GWL_exceedance_years.csv")
     gwl_df.to_csv(gwl_file, sep=",", index=False)

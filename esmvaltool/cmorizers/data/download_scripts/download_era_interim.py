@@ -12,34 +12,26 @@ https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batc
 4. Copy/paste the text in https://api.ecmwf.int/v1/key/ into a blank text file
 and save it as $HOME/.ecmwfapirc
 
-5. Copy the default configuration file with
-
-```bash
-esmvaltool config get_config_user --path=config-user.yml
-```
-
-and set the ``rootpath`` for the RAWOBS project.
-
-6. Check the description of the variables at
+5. Check the description of the variables at
 https://apps.ecmwf.int/codes/grib/param-db
 
-7. Check the invariant variables at
+6. Check the invariant variables at
 https://apps.ecmwf.int/datasets/data/interim-full-invariant
 
 ```bash
-python download_era_interim.py --config_file config-user.yml --start_year 2000
---end_year 2000
+python download_era_interim.py --original-data-dir /path/to/save/data
+--start_year 2000 --end_year 2000
 ```
 
-This will download and save the data in the RAWOBS directory,
+This will download and save the data in the /path/to/save/data directory,
 under Tier3/ERA-Interim.
 
 """
 
 import argparse
 import os
+from pathlib import Path
 
-import yaml
 from ecmwfapi import ECMWFDataServer
 
 DAY_TIMESTEPS = {
@@ -106,8 +98,8 @@ MONTH_TIMESTEPS = {
         "stream": "moda",
         "type": "an",
         "levelist": "1/5/10/20/30/50/70/100/150/200/"
-        + "250/300/400/500/600/700/850"
-        + "/925/1000",  # CMIP6 Amon table, plev19
+        "250/300/400/500/600/700/850"
+        "/925/1000",  # CMIP6 Amon table, plev19
     },
 }
 
@@ -180,7 +172,7 @@ def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
                     "target": f"{era_interim_land_dir}/ERA-Interim-Land_{symbol}"
                     f"_{frequency}_{year}.nc",
                     **timesteps[timestep],
-                }
+                },
             )
 
 
@@ -201,7 +193,7 @@ def _get_daily_data(params, timesteps, years, server, era_interim_dir):
                     "target": f"{era_interim_dir}/ERA-Interim_{symbol}"
                     f"_{frequency}_{year}.nc",
                     **timesteps[timestep],
-                }
+                },
             )
 
 
@@ -215,7 +207,7 @@ def _get_monthly_data(params, timesteps, years, server, era_interim_dir):
                     "dataset": "interim",
                     # All months of a year eg. 19900101/.../19901101/19901201
                     "date": "/".join(
-                        [f"{year}{m:02}01" for m in range(1, 13)]
+                        [f"{year}{m:02}01" for m in range(1, 13)],
                     ),
                     "expver": "1",
                     "grid": "0.75/0.75",
@@ -224,7 +216,7 @@ def _get_monthly_data(params, timesteps, years, server, era_interim_dir):
                     "target": f"{era_interim_dir}/ERA-Interim_{symbol}"
                     f"_{frequency}_{year}.nc",
                     **timesteps[timestep],
-                }
+                },
             )
 
 
@@ -245,39 +237,32 @@ def _get_invariant_data(params, server, era_interim_dir):
                 "type": "an",
                 "format": "netcdf",
                 "target": f"{era_interim_dir}/ERA-Interim_{symbol}.nc",
-            }
+            },
         )
 
 
-def cli():
+def cli() -> None:
     """Download ERA-Interim variables from ECMWF data server."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--config_file",
-        "-c",
-        default=os.path.join(os.path.dirname(__file__), "config-user.yml"),
+        "--original-data-dir",
+        "-o",
+        type=Path,
+        default=Path.cwd(),
         help="Config file",
     )
     parser.add_argument(
-        "--start_year", type=int, default=1979, help="Start year"
+        "--start_year",
+        type=int,
+        default=1979,
+        help="Start year",
     )
     parser.add_argument("--end_year", type=int, default=2019, help="End year")
     args = parser.parse_args()
 
-    # get and read config file
-    config_file_name = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(args.config_file))
-    )
-
-    with open(config_file_name) as config_file:
-        config = yaml.safe_load(config_file)
-
-    rawobs_dir = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(config["rootpath"]["RAWOBS"]))
-    )
-    era_interim_dir = f"{rawobs_dir}/Tier3/ERA-Interim"
+    era_interim_dir = f"{args.original_data_dir}/Tier3/ERA-Interim"
     os.makedirs(era_interim_dir, exist_ok=True)
-    era_interim_land_dir = f"{rawobs_dir}/Tier3/ERA-Interim-Land"
+    era_interim_land_dir = f"{args.original_data_dir}/Tier3/ERA-Interim-Land"
     os.makedirs(era_interim_land_dir, exist_ok=True)
 
     years = range(args.start_year, args.end_year + 1)
@@ -285,11 +270,19 @@ def cli():
 
     _get_daily_data(DAY_PARAMS, DAY_TIMESTEPS, years, server, era_interim_dir)
     _get_monthly_data(
-        MONTH_PARAMS, MONTH_TIMESTEPS, years, server, era_interim_dir
+        MONTH_PARAMS,
+        MONTH_TIMESTEPS,
+        years,
+        server,
+        era_interim_dir,
     )
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
     _get_land_data(
-        LAND_PARAMS, DAY_TIMESTEPS, years, server, era_interim_land_dir
+        LAND_PARAMS,
+        DAY_TIMESTEPS,
+        years,
+        server,
+        era_interim_land_dir,
     )
 
 

@@ -67,7 +67,10 @@ def plot_contour(cube, cfg, plt_title, file_name):
     plt.savefig(file_name)
     plt.close()
     _get_provenance_record(
-        cfg, file_name, plt_title, loc=os.path.basename(file_name)
+        cfg,
+        file_name,
+        plt_title,
+        loc=os.path.basename(file_name),
     )
 
 
@@ -83,14 +86,22 @@ def save_plotted_cubes(cube, cfg, plot_name):
             # files are overwritten once; provenance fails second time
             try:
                 _get_provenance_record(
-                    cfg, save_path, prov_name, loc=os.path.dirname(save_path)
+                    cfg,
+                    save_path,
+                    prov_name,
+                    loc=os.path.dirname(save_path),
                 )
             except KeyError:
                 pass
 
 
 def plot_latlon_cubes(
-    cube_1, cube_2, cfg, data_names, obs_name=None, season=None
+    cube_1,
+    cube_2,
+    cfg,
+    data_names,
+    obs_name=None,
+    season=None,
 ):
     """Plot lat-lon vars for control, experiment, and obs.
 
@@ -104,7 +115,9 @@ def plot_latlon_cubes(
         plot_name = "_".join([cfg["analysis_type"], data_names]) + ".png"
         plot_title = "alltime " + cfg["analysis_type"] + ": " + data_names
         plot_file_path = os.path.join(
-            cfg["plot_dir"], "alltime", "Difference_" + plot_name
+            cfg["plot_dir"],
+            "alltime",
+            "Difference_" + plot_name,
         )
     else:
         plot_name = (
@@ -112,7 +125,9 @@ def plot_latlon_cubes(
         )
         plot_title = season + " " + cfg["analysis_type"] + ": " + data_names
         plot_file_path = os.path.join(
-            cfg["plot_dir"], season, "Difference_" + plot_name
+            cfg["plot_dir"],
+            season,
+            "Difference_" + plot_name,
         )
     cubes = [cube_1, cube_2]
 
@@ -159,7 +174,9 @@ def plot_latlon_cubes(
         # obs is always cube_2
         if not season:
             plot_file_path = os.path.join(
-                cfg["plot_dir"], "alltime", "_".join([obs_name, var]) + ".png"
+                cfg["plot_dir"],
+                "alltime",
+                "_".join([obs_name, var]) + ".png",
             )
             plot_contour(
                 cube_2,
@@ -194,7 +211,7 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
     plt.title(
         f"Annual Climatology of {var}"
         if period == "alltime"
-        else f"{period} of {var}"
+        else f"{period} of {var}",
     )
     if xcoordinate == "latitude":
         axis = plt.gca()
@@ -223,7 +240,7 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
             ],
         )
     plt.xlabel(xcoordinate + " (deg)")
-    plt.ylabel(f"{var} [{str(cube_1.units)}]")
+    plt.ylabel(f"{var} [{cube_1.units!s}]")
     plt.tight_layout()
     plt.grid()
     plt.legend()
@@ -247,7 +264,10 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
     plt.close()
     caption = period + " Zonal/Meridional Mean for " + var + " " + data_names
     _get_provenance_record(
-        cfg, plot_file_path, caption, loc=os.path.join(cfg["plot_dir"], period)
+        cfg,
+        plot_file_path,
+        caption,
+        loc=os.path.join(cfg["plot_dir"], period),
     )
 
 
@@ -258,10 +278,16 @@ def apply_seasons(data_set_dict):
     data_cube = iris.load_cube(data_file)
     seasons = ["DJF", "MAM", "JJA", "SON"]
     iris.coord_categorisation.add_season(
-        data_cube, "time", "clim_season", seasons
+        data_cube,
+        "time",
+        "clim_season",
+        seasons,
     )
     iris.coord_categorisation.add_season_year(
-        data_cube, "time", "season_year", seasons
+        data_cube,
+        "time",
+        "season_year",
+        seasons,
     )
     season_cubes = [extract_season(data_cube, season) for season in seasons]
     season_meaned_cubes = [
@@ -298,14 +324,16 @@ def coordinate_collapse(data_set, cfg):
         if "mask_threshold" in cfg:
             thr = cfg["mask_threshold"]
             data_set.data = np.ma.masked_array(
-                data_set.data, mask=mask_cube.data > thr
+                data_set.data,
+                mask=mask_cube.data > thr,
             )
         else:
             logger.warning("Could not find masking threshold")
             logger.warning("Please specify it if needed")
             logger.warning("Masking on 0-values = True (masked value)")
             data_set.data = np.ma.masked_array(
-                data_set.data, mask=mask_cube.data == 0
+                data_set.data,
+                mask=mask_cube.data == 0,
             )
 
     # if zonal mean on LON
@@ -337,7 +365,9 @@ def do_preamble(cfg):
     # get data
     input_data = cfg["input_data"].values()
     grouped_input_data = group_metadata(
-        input_data, "short_name", sort="dataset"
+        input_data,
+        "short_name",
+        sort="dataset",
     )
 
     return input_data, grouped_input_data
@@ -360,7 +390,10 @@ def plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key):
     seasons = ["DJF", "MAM", "JJA", "SON"]
     if cfg["analysis_type"] == "lat_lon":
         for control_season, experiment_season, season in zip(
-            ctrl_seasons, exper_seasons, seasons, strict=True
+            ctrl_seasons,
+            exper_seasons,
+            seasons,
+            strict=True,
         ):
             plot_latlon_cubes(
                 control_season,
@@ -372,13 +405,19 @@ def plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key):
             )
     elif cfg["analysis_type"] == "zonal_mean":
         for control_season, experiment_season, season in zip(
-            ctrl_seasons, exper_seasons, seasons, strict=True
+            ctrl_seasons,
+            exper_seasons,
+            seasons,
+            strict=True,
         ):
             plot_info = [plot_key, "latitude", season]
             plot_zonal_cubes(control_season, experiment_season, cfg, plot_info)
     elif cfg["analysis_type"] == "meridional_mean":
         for control_season, experiment_season, season in zip(
-            ctrl_seasons, exper_seasons, seasons, strict=True
+            ctrl_seasons,
+            exper_seasons,
+            seasons,
+            strict=True,
         ):
             plot_info = [plot_key, "longitude", season]
             plot_zonal_cubes(control_season, experiment_season, cfg, plot_info)
@@ -396,7 +435,10 @@ def main(cfg):
         # get the control, experiment and obs dicts
         cmip_type = cfg["cmip_era"] if "cmip_era" in cfg else None
         ctrl, exper, obs = get_control_exper_obs(
-            short_name, input_data, cfg, cmip_type=cmip_type
+            short_name,
+            input_data,
+            cfg,
+            cmip_type=cmip_type,
         )
         # set a plot key holding info on var and data set names
         plot_key = f"{short_name}_{ctrl['alias']}_vs_{exper['alias']}"
@@ -420,11 +462,13 @@ def main(cfg):
                         coordinate_collapse(obss, cfg) for obss in obs_seasons
                     ]
                     plot_key_obs = (
-                        f"{short_name}_{ctrl['alias']}"
-                        + f"_vs_{iobs['alias']}"
+                        f"{short_name}_{ctrl['alias']}_vs_{iobs['alias']}"
                     )
                     plot_ctrl_exper_seasons(
-                        ctrl_seasons, obs_seasons, cfg, plot_key_obs
+                        ctrl_seasons,
+                        obs_seasons,
+                        cfg,
+                        plot_key_obs,
                     )
 
         # apply the supermeans (MEAN on time), collapse a coord and plot
@@ -441,7 +485,11 @@ def main(cfg):
                 plot_key = f"{short_name}_{control_dataset_name}_vs_{obs_name}"
                 if cfg["analysis_type"] == "lat_lon":
                     plot_latlon_cubes(
-                        ctrl, obs_analyzed, cfg, plot_key, obs_name=obs_name
+                        ctrl,
+                        obs_analyzed,
+                        cfg,
+                        plot_key,
+                        obs_name=obs_name,
                     )
 
 

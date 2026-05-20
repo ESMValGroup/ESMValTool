@@ -57,7 +57,7 @@ def ocean_fraction_calc(sftlf):
     """
     sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
     sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(
-        6371229.0
+        6371229.0,
     )
     sftof = 100 - sftlf
 
@@ -68,7 +68,11 @@ def ocean_fraction_calc(sftlf):
 
 
 def area_avg_landsea(
-    cube, ocean_frac, land_frac, land=True, return_cube=False
+    cube,
+    ocean_frac,
+    land_frac,
+    land=True,
+    return_cube=False,
 ):
     """Calculate the global mean of a variable in a cube.
 
@@ -98,17 +102,21 @@ def area_avg_landsea(
         cube.coord("longitude").guess_bounds()
 
     global_weights = iris.analysis.cartography.area_weights(
-        cube, normalize=False
+        cube,
+        normalize=False,
     )
 
     if land is False:
         ocean_frac.data = da.array.ma.masked_less(ocean_frac.core_data(), 0.01)
         weights = iris.analysis.cartography.area_weights(
-            ocean_frac, normalize=False
+            ocean_frac,
+            normalize=False,
         )
         ocean_area = (
             ocean_frac.collapsed(
-                ["latitude", "longitude"], iris.analysis.SUM, weights=weights
+                ["latitude", "longitude"],
+                iris.analysis.SUM,
+                weights=weights,
             )
             / 1e12
         )
@@ -123,11 +131,14 @@ def area_avg_landsea(
     if land:
         land_frac.data = da.array.ma.masked_less(land_frac.core_data(), 0.01)
         weights = iris.analysis.cartography.area_weights(
-            land_frac, normalize=False
+            land_frac,
+            normalize=False,
         )
         land_area = (
             land_frac.collapsed(
-                ["latitude", "longitude"], iris.analysis.SUM, weights=weights
+                ["latitude", "longitude"],
+                iris.analysis.SUM,
+                weights=weights,
             )
             / 1e12
         )
@@ -224,7 +235,10 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
         "Surface Downwelling Longwave Radiation",
     ]
     for orig_var, new_var, long_var in zip(
-        original_var_names, new_var_names, long_var_names, strict=True
+        original_var_names,
+        new_var_names,
+        long_var_names,
+        strict=True,
     ):
         if has_orig_vars:
             if cube.var_name == orig_var:
