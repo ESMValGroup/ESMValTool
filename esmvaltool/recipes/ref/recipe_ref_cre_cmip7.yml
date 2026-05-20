@@ -36,8 +36,7 @@ preprocessors:
       period: full
     regrid:
       target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+      scheme: area_weighted
 
   zonal_mean:
     climate_statistics:
