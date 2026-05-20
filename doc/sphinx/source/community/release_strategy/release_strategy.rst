@@ -617,17 +617,12 @@ Contact the feedstock maintainers if you want to become a maintainer yourself.
 9. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are three main Docker container images available for ESMValTool on
+There are two main Docker container images available for ESMValTool on
 `Dockerhub <https://hub.docker.com/r/esmvalgroup/esmvaltool/tags>`_:
 
 - ``esmvalgroup/esmvaltool:stable``, built from `docker/Dockerfile <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile>`_,
   this is a tag that is always the same as the latest released version.
   This image is only built by Dockerhub when a new release is created.
-- ``esmvalgroup/esmvaltool:development``, built from `docker/Dockerfile.dev <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.dev>`_,
-  this is a tag that always points to the latest development version of
-  ESMValTool.
-  This image is built by Dockerhub every time there is a new commit to the
-  ``main`` branch on Github.
 - ``esmvalgroup/esmvaltool:experimental``, built from `docker/Dockerfile.exp <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.exp>`_,
   this is a tag that always points to the latest development version of
   ESMValTool with the latest development version of ESMValCore.
@@ -637,7 +632,7 @@ There are three main Docker container images available for ESMValTool on
   This image is built by Dockerhub every time there is a new commit to the
   ESMValTool ``main`` branch on Github.
 
-In addition to the three images mentioned above, there is an image available
+In addition to the two images mentioned above, there is an image available
 for every release (e.g. ``esmvalgroup/esmvaltool:v2.5.0``).
 When working on the Docker images, always try to follow the
 `best practices <https://docs.docker.com/develop/develop-images/dockerfile_best-practices/>`__.
@@ -662,7 +657,7 @@ the container image for v2.5.0 of the tool run:
 
    git checkout v2.5.0
    git clean -x
-   docker build -t esmvalgroup/esmvaltool:v2.5.0 . -f docker/Dockerfile
+   docker build --pull -t esmvalgroup/esmvaltool:v2.5.0 . -f docker/Dockerfile
    docker push esmvalgroup/esmvaltool:v2.5.0
 
 and if it is the latest release that you are updating, also run
