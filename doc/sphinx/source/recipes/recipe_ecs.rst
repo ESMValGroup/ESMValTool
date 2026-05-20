@@ -22,6 +22,7 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
    * recipe_ecs.yml
+   * ref/recipe_ref_ecs.yml
 
 
 Diagnostics are stored in diag_scripts/

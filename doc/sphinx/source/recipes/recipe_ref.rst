@@ -40,7 +40,8 @@ Recipes are stored in `recipes/`
   total column ozone vs. annual cycle map plot, altitude vs. zonal mean
   ozone profile climatology map plot
 * :ref:`ref/recipe_ref_fire.yml <recipe_ref_fire>`:
-   Maps of burnt area fraction, fire weather control, and fuel load continuity control.
+  Maps of burnt area fraction, fire weather control, and fuel load continuity
+  control.
 
 
 Example plots:
