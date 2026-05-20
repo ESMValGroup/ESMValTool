@@ -345,6 +345,11 @@ authors:
     given-names: Tobias
     orcid: "https://orcid.org/0000-0003-4637-5337"
   -
+    affiliation: "ECCC, Canada"
+    family-names: Stevens
+    given-names: Robin
+    orcid: "https://orcid.org/0000-0002-8737-6988"
+  -
     affiliation: "URead, UK"
     family-names: Swaminathan
     given-names: Ranjini
