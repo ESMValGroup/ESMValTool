@@ -105,9 +105,3 @@ diagnostics:
             plot_kwargs:
               CERES-EBAF-4-2:
                 color: black
-              ESACCI-CLOUD:
-                color: black
-                linestyle: dashed
-              ISCCP-FH:
-                color: black
-                linestyle: dotted
