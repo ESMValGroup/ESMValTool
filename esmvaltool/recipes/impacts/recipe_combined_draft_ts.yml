@@ -46,6 +46,9 @@ preprocessors:
 
   snow_preproc:
     custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
     local_solar_time:
     mask_landsea:
       mask_out: sea
@@ -279,7 +282,7 @@ diagnostics:
         options:
           threshold_conversion:
             inverted: false
-            accumulated: false
+            accumulated: false #todo: check this
             threshold: 100
             operators: [max]
            #TODO: in the future maybe pass "operators: ["a", "b", "c"]" here, which then are used for the lines in the timeline plot.
@@ -423,7 +426,12 @@ diagnostics:
         preprocessor: ocean_preproc_timeline_min
     scripts:
       plot:
+<<<<<<< HEAD
         script: monitor/multi_datasets.py
+=======
+        #script: monitor/multi_datasets.py
+        script: impact/diagnostic_draft3.py
+>>>>>>> 0728069ff (timelines with new default style)
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -451,7 +459,7 @@ diagnostics:
         preprocessor: ocean_preproc_timeline_min
     scripts:
       plot:
-        script: monitor/multi_datasets.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -478,7 +486,7 @@ diagnostics:
       
     scripts:
       plot:
-        script: monitor/multi_datasets.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
