@@ -135,19 +135,21 @@ diagnostics:
         mip: Omon
         preprocessor: ssh_east
         additional_datasets:
-          - {dataset: CMEMS, project: OBS6, type: sat, tier: 2, version: SEALEVEL-GLO-PHY-L4, start_year: 1993, end_year: 2018}
+          # can use either of the following obs for zos
+          # - {dataset: CMEMS, project: OBS6, type: sat, tier: 2, version: SEALEVEL-GLO-PHY-L4, start_year: 1993, end_year: 2018}
+          - {dataset: AVISO-1-0, project: obs4MIPs, institute: CNES, grid: gn, version: '*', start_year: 1993, end_year: 2010}
       ssh_eqp:
         short_name: zos
         mip: Omon
         preprocessor: ssh_eqp
         additional_datasets:
-          - {dataset: CMEMS, project: OBS6, type: sat, tier: 2, version: SEALEVEL-GLO-PHY-L4, start_year: 1993, end_year: 2018}
+          - {dataset: AVISO-1-0, project: obs4MIPs, institute: CNES, grid: gn, version: '*', start_year: 1993, end_year: 2010}
       ssh_eqp_area:
         short_name: zos
         mip: Omon
         preprocessor: ssh_eqp_area
         additional_datasets:
-          - {dataset: CMEMS, project: OBS6, type: sat, tier: 2, version: SEALEVEL-GLO-PHY-L4, start_year: 1993, end_year: 2018}
+          - {dataset: AVISO-1-0, project: obs4MIPs, institute: CNES, grid: gn, version: '*', start_year: 1993, end_year: 2010}
 
     scripts:
       plot_script:

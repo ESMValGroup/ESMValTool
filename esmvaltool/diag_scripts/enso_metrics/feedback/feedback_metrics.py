@@ -290,8 +290,8 @@ def obs_extract_overlap(obs_1, obs_2):
     start_2 = obs_2.coord("time").cell(0).point
     end_2 = obs_2.coord("time").cell(-1).point
 
-    start_overlap = max(start_1, start_2)
-    end_overlap = min(end_1, end_2)
+    start_overlap = max(start_1, start_2).replace(day=1, hour=0)
+    end_overlap = min(end_1, end_2).replace(day=31, hour=12)
     # convert to yymmdd? use extract time, num2date
     logger.info(
         "%s, %s obs time overlap: %s to %s",
@@ -415,6 +415,11 @@ def main(cfg):
                 input_data,
                 variable_group=var_prep,
                 project="OBS6",
+            )
+            obs += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="obs4MIPs",
             )
             models += select_metadata(
                 input_data,
