@@ -21,15 +21,15 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-   * recipe_ecs.yml
-   * ref/recipe_ref_ecs.yml
+* recipe_ecs.yml
+* ref/recipe_ref_ecs.yml
 
 
 Diagnostics are stored in diag_scripts/
 
-   * climate_metrics/ecs.py
-   * climate_metrics/create_barplot.py
-   * climate_metrics/create_scatterplot.py
+* climate_metrics/ecs.py
+* climate_metrics/create_barplot.py
+* climate_metrics/create_scatterplot.py
 
 
 User settings in recipe
