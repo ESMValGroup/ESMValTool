@@ -26,7 +26,7 @@ datasets:
     region: glb
 
 timerange_for_models: &time_period
-  timerange: '2001/2021'
+  timerange: '2002/2021'
 
 
 preprocessors:
@@ -65,7 +65,7 @@ diagnostics:
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF-4-2, project: obs4MIPs, tier: 1,
-         start_year: 2001, end_year: 2021, reference_for_monitor_diags: true}
+         start_year: 2002, end_year: 2021, reference_for_monitor_diags: true}
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
@@ -92,7 +92,7 @@ diagnostics:
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF-4-2, project: obs4MIPs, tier: 1,
-         start_year: 2001, end_year: 2021, reference_for_monitor_diags: true}
+         start_year: 2002, end_year: 2021, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
