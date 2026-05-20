@@ -800,6 +800,19 @@ diagnostics:
     scripts: null
 
 
+  MISR:
+    description: MISR check
+    variables:
+      od550aer:
+        mip: AERmon
+      abs550aer:
+        mip: AERmon
+    additional_datasets:
+      - {dataset: MISR, project: OBS, mip: AERmon, tier: 3,
+         type: sat, version: v0032, start_year: 2000, end_year: 2020}
+    scripts: null
+
+
   MOBO-DIC-MPIM:
     description: MOBO-DIC-MPIM check
     variables:
