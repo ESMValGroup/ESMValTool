@@ -1,0 +1,486 @@
+# ESMValTool
+# TODO: Include warning: Currently not full year periods are deprechiated cause they could produce missleading results...
+# TODO: currently need to call map function after timeline such that cube is still intact for timeline, maybe fix this in diagnostic...
+---
+documentation:
+  title: Impact diagnostics first experiments.
+  description: >
+    TODO
+  authors:
+    - caspers_laura
+  maintainer:
+    - caspers_laura
+
+# Note: the following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+    #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
+
+
+preprocessors:
+
+  # 
+  temperature_preproc:
+    ##In the future extract europe or similar with: 
+    #extract_region:
+    #  start_latitude: -30
+    #  end_latitude: 30
+    #  start_longitude: 0
+    #  end_longitude: 360
+    convert_units:
+      units: degC
+    local_solar_time: # Needed to ensure dates are local time and not UTC [otherwise extremes at one noon could count for two days. TODO: maybe consider how this could influence results for e.g. low temperatures at night]
+    mask_landsea:
+      mask_out: sea
+
+  
+      
+  precipitation_preproc:
+    custom_order: true
+    local_solar_time:
+    mask_landsea:
+      mask_out: sea
+    convert_units:
+      units: mm day-1
+
+
+  snow_preproc:
+    custom_order: true
+    local_solar_time:
+    mask_landsea:
+      mask_out: sea
+    convert_units:
+      units: mm
+
+  
+
+###########################
+
+  # radiation_preproc:
+  #   climate_statistics:
+  #     operator: mean  
+
+
+  # ocean_preproc:
+  #   regrid:
+  #     target_grid: 2x2
+  #     scheme: linear
+  #   climate_statistics:
+  #     operator: mean
+  #   mask_landsea:
+  #     mask_out: land
+
+############################
+
+  radiation_preproc_timeline:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean  
+
+  radiation_preproc_timeline_min:
+    area_statistics:
+      operator: min
+    annual_statistics:
+      operator: mean  
+
+  radiation_preproc_timeline_max:
+    area_statistics:
+      operator: max
+    annual_statistics:
+      operator: mean  
+
+  ocean_preproc_timeline:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: mean
+    mask_landsea:
+      mask_out: land
+    annual_statistics:
+      operator: mean
+
+  ocean_preproc_timeline_max:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: max
+    mask_landsea:
+      mask_out: land
+    annual_statistics:
+      operator: mean
+
+  ocean_preproc_timeline_min:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: min
+    mask_landsea:
+      mask_out: land
+    annual_statistics:
+      operator: mean
+
+
+  zostoga_preproc_timeline:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: mean
+    mask_landsea:
+      mask_out: land
+    annual_statistics:
+      operator: mean
+
+
+ 
+
+
+diagnostics:
+
+  plot_days_tmax_40:
+    description: Map showing number of days where the temperature exceeds 40°C.
+    variables:
+      tasmax:
+        timerange: 20000601/20030901
+        mip: day
+        preprocessor: temperature_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        script: impact/diagnostic_draft3.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        options:
+          threshold_conversion:
+            inverted: false
+            accumulated: false
+            threshold: 40
+        plots:
+          timeseries:
+          # map:
+          #   caption: 'Number of days per year with temperatures exceeding 40°C for {dataset}.'
+          #   common_cbar: true
+          #   fontsize: 10
+          #   plot_kwargs:
+          #     default:
+          #       cmap: 'coolwarm'
+
+  plot_days_tmin_0:
+    description: Map showing number of days where the temperature drops below 0°C.
+    variables:
+      tasmin:
+        timerange: 20000601/20030901
+        mip: day
+        preprocessor: temperature_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        script: impact/diagnostic_draft3.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        options:
+          threshold_conversion:
+            inverted: true
+            accumulated: false
+            threshold: 0
+           #TODO: in the future maybe pass "operators: ["a", "b", "c"]" here, which then are used for the lines in the timeline plot.
+        plots:
+          timeseries:
+          # map:
+          #   caption: 'Number of days per year with temperatures drops below 0°C for {dataset}.'
+          #   common_cbar: true
+          #   fontsize: 10
+          #   plot_kwargs:
+          #     default:
+          #       cmap: 'coolwarm'
+
+  plot_days_prmaxthreshold1:
+    description: Map showing number of days where the rain rate exceeds 1 mm.
+    variables:
+      pr:
+        timerange: 20000601/20030901
+        mip: day
+        preprocessor: precipitation_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        script: impact/diagnostic_draft3.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        options:
+          threshold_conversion:
+            inverted: false
+            accumulated: false
+            threshold: 1 #1,10
+        plots:
+          timeseries:
+          # map:     
+          #   #TODO: include actual threshold number in this caption:
+          #   caption: 'Number of days per year with rain rate exceeding threshold for {dataset}.'
+          #   common_cbar: true
+          #   fontsize: 10
+          #   plot_kwargs:
+          #     default:
+          #       cmap: 'coolwarm'
+
+
+  plot_days_prmaxthreshold10:
+    description: Map showing number of days where the rain rate exceeds xx mm.
+    variables:
+      pr:
+        timerange: 20000601/20030901
+        mip: day
+        preprocessor: precipitation_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        script: impact/diagnostic_draft3.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        options:
+          threshold_conversion:
+            inverted: false
+            accumulated: false
+            threshold: 10 #1,10
+        plots:
+          timeseries:
+          # map:     
+          #   #TODO: include actual threshold number in this caption:
+          #   caption: 'Number of days per year with rain rate exceeding threshold for {dataset}.'
+          #   common_cbar: true
+          #   fontsize: 10
+          #   plot_kwargs:
+          #     default:
+          #       cmap: 'coolwarm'
+
+        
+          
+
+  plot_snwe_10:
+    additional_datasets:
+      - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    description: Map showing number of days there is more than 10 cm of smow water equivalent.
+    variables:
+      snw:
+        timerange: 20000601/20030901
+        mip: day
+        preprocessor: snow_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        script: impact/diagnostic_draft3.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        options:
+          threshold_conversion:
+            inverted: false
+            accumulated: false
+            threshold: 100
+            operators: [max]
+           #TODO: in the future maybe pass "operators: ["a", "b", "c"]" here, which then are used for the lines in the timeline plot.
+        plots:
+          timeseries:
+          # map:
+          #   caption: 'Number of days per year with temperatures drops below 0°C for {dataset}.'
+          #   common_cbar: true
+          #   fontsize: 10
+          #   plot_kwargs:
+          #     default:
+          #       cmap: 'coolwarm'
+
+##########THIS IS NOT WORKING YET, TODO; WARNING: ValueError: Chunks do not add up to shape. Got chunks=((39,), (39,)), shape=(404, 802)
+  # timeseries_zostoga:
+  #   description: Plot timeseries showing the Global Average Thermosteric Sea Level Change.
+  #   variables:
+  #     zostoga:
+  #       timerange: 20000601/20030901
+  #       mip: Omon
+  #       preprocessor: zostoga_preproc_timeline
+  #     # zostoga_max:
+  #     #   short_name: zostoga
+  #     #   timerange: 20000601/20030901
+  #     #   mip: Omon
+  #     #   preprocessor: ocean_preproc_timeline_max
+  #     # zostoga_min:
+  #     #   short_name: zostoga
+  #     #   timerange: 20000601/20030901
+  #     #   mip: Omon
+  #     #   preprocessor: ocean_preproc_timeline_min
+  #   scripts:
+  #     plot:
+  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+  #       plot_folder: '{plot_dir}'
+  #       plot_filename: '{plot_type}_{real_name}_{mip}'
+  #       facet_used_for_labels: dataset
+  #       plots:
+  #         timeseries:
+
+
+
+
+
+
+
+
+
+          
+
+  # plot_sst:
+  #   description: Plot maps showing the sea surface temperature.
+  #   variables:
+  #     tos:
+  #       timerange: 20000601/20030901
+  #       mip: Oday
+  #       preprocessor: ocean_preproc
+  #   scripts:
+  #     plot:
+  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+  #       plot_folder: '{plot_dir}'
+  #       plot_filename: '{plot_type}_{real_name}_{mip}'
+  #       facet_used_for_labels: dataset
+  #       plots:
+  #         map:
+  #           caption: |
+  #             TODO test.
+  #           common_cbar: true
+  #           fontsize: 10
+  #           plot_kwargs:
+  #             default:
+  #               cmap: 'coolwarm'
+
+  # plot_mld:
+  #   #additional_datasets: 
+  #   #  - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc} 
+  #   description: Plot maps showing the mixed layer depth.
+  #   variables:
+  #     mlotst:
+  #       timerange: 20000601/20030901
+  #       mip: Omon #or Eday
+  #       preprocessor: ocean_preproc
+  #   scripts:
+  #     plot:
+  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+  #       plot_folder: '{plot_dir}'
+  #       plot_filename: '{plot_type}_{real_name}_{mip}'
+  #       facet_used_for_labels: dataset
+  #       plots:
+  #         map:
+  #         #benchmarking_map:
+  #           caption: |
+  #             TODO test.
+  #           common_cbar: true
+  #           fontsize: 10
+  #           plot_kwargs:
+  #             default:
+  #               cmap: 'coolwarm'
+
+
+  # plot_rsds:
+  #   description: Plot maps showing the shortwave downward radiation at the surface.
+  #   variables:
+  #     rsds:
+  #       timerange: 20000601/20030901
+  #       mip: day #or Amon
+  #       preprocessor: radiation_preproc
+  #   scripts:
+  #     plot:
+  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
+  #       plot_folder: '{plot_dir}'
+  #       plot_filename: '{plot_type}_{real_name}_{mip}'
+  #       facet_used_for_labels: dataset
+  #       plots:
+  #         map:
+  #           caption: |
+  #             TODO test.
+  #           common_cbar: true
+  #           fontsize: 10
+  #           plot_kwargs:
+  #             default:
+  #               cmap: 'coolwarm'
+      
+
+  timeseries_sst:
+    description: Plot timeseries showing the sea surface temperature.
+    variables:
+      tos:
+        timerange: 20000601/20030901
+        mip: Oday
+        preprocessor: ocean_preproc_timeline
+      tos_max:
+        short_name: tos
+        timerange: 20000601/20030901
+        mip: Oday
+        preprocessor: ocean_preproc_timeline_max
+      tos_min:
+        short_name: tos
+        timerange: 20000601/20030901
+        mip: Oday
+        preprocessor: ocean_preproc_timeline_min
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
+
+  timeseries_mld:
+    # additional_datasets: 
+    #   - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc} 
+    description: Plot timeseries showing the mixed layer depth.
+    variables:
+      mlotst:
+        timerange: 20000601/20030901
+        mip: Omon #Omon or Eday
+        preprocessor: ocean_preproc_timeline
+      mlotst_max:
+        short_name: mlotst
+        timerange: 20000601/20030901
+        mip: Omon
+        preprocessor: ocean_preproc_timeline_max
+      mlotst_min:
+        short_name: mlotst
+        timerange: 20000601/20030901
+        mip: Omon
+        preprocessor: ocean_preproc_timeline_min
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
+
+  timeseries_rsds:
+    description: Plot timeseries showing the shortwave downward radiation at the surface.
+    variables:
+      rsds:
+        timerange: 20000601/20030901
+        mip: Amon #or Amon
+        preprocessor: radiation_preproc_timeline
+      rsds_min:
+        short_name: rsds
+        timerange: 20000601/20030901
+        mip: Amon #or Amon
+        preprocessor: radiation_preproc_timeline_min
+      rsds_max:
+        short_name: rsds
+        timerange: 20000601/20030901
+        mip: Amon #or Amon
+        preprocessor: radiation_preproc_timeline_max
+      
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
