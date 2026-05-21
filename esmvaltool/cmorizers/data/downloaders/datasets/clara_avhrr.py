@@ -43,6 +43,11 @@ def download_dataset(
     output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
     output_folder.mkdir(parents=True, exist_ok=True)
 
+    #  Note: As of May 2026, CLARA-AVHRR (version A3) data on the CDS are only
+    #        available until 2020. Alternatively, CLARA-AVHRR data could also
+    #        be obtained from the EUMETSAT data store
+    #        (https://data.eumetsat.int/).
+
     if start_date is None:
         start_date_mm = datetime.datetime(1979, 1, 1, tzinfo=datetime.UTC)
         start_date_dd = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)

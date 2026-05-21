@@ -23,11 +23,16 @@ Download and processing instructions
        Geographical area: Whole available region
        Put all daily files for one month (mm) of one year (yyyy) under a single
        directory "daily/<yyyymm>", monthly files for one year (yyyy) under "monthly/<yyyy>".
+
    Note: you must accept the terms of use for CC-BY, EUMETSAT CM SAF, ESA CCI to be able
          to download the data from the CDS
 
+   As of May 2026, CLARA-AVHRR (version A3) data on the CDS are only available until 2020.
+   Alternatively, CLARA-AVHRR data could also be obtained from the EUMETSAT data store
+   (https://data.eumetsat.int/).
+
    Alternatively, use the automatic downloader (recommended):
-     esmvaltool data download CLARA-AVHRR
+     esmvaltool data download CLARA-AVHRR --original-data-dir <path for downloading data>
 
 
 Modification history

@@ -251,6 +251,9 @@ datasets:
                 Month: select all
                 Day: select all
                 Geographical area: Whole available region
+      Note: As of May 2026, CLARA-AVHRR (version A3) data on the CDS are only available until 2020.
+            Alternatively, CLARA-AVHRR data could also be obtained from the EUMETSAT data store
+            (https://data.eumetsat.int/).
 
   CLOUDSAT-L2:
     tier: 3
