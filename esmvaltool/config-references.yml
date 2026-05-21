@@ -819,6 +819,11 @@ authors:
     name: Stevens, Mark
     institute: NCAR, US
     orcid:
+  steketee_anton:
+    name: Steketee, Anton
+    institute: ACCESS-NRI
+    orcid: https://orcid.org/0009-0002-9081-4106
+    github: anton-seaice
   storkey_dave:
     name: Storkey, Dave
     institute: MetOffice, UK
@@ -872,6 +877,7 @@ authors:
 
 projects:
   4c: EU H2020 project 4C
+  access-nri: The Australian Earth System Simulator (ACCESS-NRI)
   applicate: EU Horizon 2020 Advanced prediction in polar regions and beyond
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
