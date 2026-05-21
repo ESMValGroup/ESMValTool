@@ -297,6 +297,8 @@ esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-gr
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
 test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "default" }
+# Environment for testing ESMValCore xcube support
+xcube-dev = { features = ["xcube", "dev", "doc", "test"], solve-group = "xcube" }
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
@@ -307,6 +309,19 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "defaul
 "ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
 # Replace the line above with the following to use a local ESMValCore repository instead.
 # "ESMValCore" = { path = "../ESMValCore", editable = true }
+
+[tool.pixi.feature.xcube]
+platforms = ["linux-64"]
+
+[tool.pixi.feature.xcube.pypi-dependencies]
+"ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "add-xcube-support" }
+"fixer" = { git = "https://github.com/ESMValGroup/fixer-prototype.git", subdirectory = "packages/fixer", branch = "main" }
+"fixer-cmip7" = { git = "https://github.com/ESMValGroup/fixer-prototype.git", subdirectory = "packages/fixer-cmip7", branch = "main" }
+"fixer-esa-cci" = { git = "https://github.com/ESMValGroup/fixer-prototype.git", subdirectory = "packages/fixer-esa-cci", branch = "main" }
+
+[tool.pixi.feature.xcube.dependencies]
+"xcube" = "*"
+"xcube-cci" = "*"
 
 # Tools for running the tests.
 [tool.pixi.feature.test.dependencies]
