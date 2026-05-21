@@ -96,7 +96,7 @@ References
   C., Steinert, N., Swann, A., Tjiputra, J., and Ziehn, T.: flat10MIP: An
   emissions-driven experiment to diagnose the climate response to positive,
   zero, and negative CO\ :sub:`2` emissions, Geosci. Model Dev., 18, 5699–5724,
-   https://doi.org/10.5194/gmd-18-5699-2025, 2025.
+  https://doi.org/10.5194/gmd-18-5699-2025, 2025.
 
 Example plots
 -------------
