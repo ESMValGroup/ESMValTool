@@ -1,6 +1,8 @@
 # Workflow from https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
 
+permissions: {}
+
 on:
   release:
     types: [published]
@@ -16,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.x"
       - name: Install pypa/build
@@ -33,7 +35,7 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python3 -m build
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: python-package-distributions
           path: dist/
@@ -53,9 +55,9 @@ jobs:
 
     steps:
       - name: Download all the dists
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: python-package-distributions
           path: dist/
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.14.0
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
