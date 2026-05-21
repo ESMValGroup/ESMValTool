@@ -21,24 +21,36 @@ documentation:
   maintainer:
     - parsons_naomi
 
-defaults: &defaults {ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
-datasets:
-  - {<<: *defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, label_dataset: True}
-  - {<<: *defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, label_dataset: True}
-  - {<<: *defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
-  - {<<: *defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
-  - {<<: *defaults, dataset: BCC-CSM2-MR, institute: BCC}
-  - {<<: *defaults, dataset: CAMS-CSM1-0, institute: CAMS}
-  - {<<: *defaults, dataset: CanESM5, institute: CCCma}
-  - {<<: *defaults, dataset: CESM2, institute: NCAR}
-  - {<<: *defaults, dataset: CESM2-WACCM, institute: NCAR}
-  - {<<: *defaults, dataset: CESM2-WACCM-FV2, institute: NCAR}
-  - {<<: *defaults, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
-  - {<<: *defaults, dataset: MIROC6, institute: MIROC}
-  - {<<: *defaults, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
-  - {<<: *defaults, dataset: MPI-ESM1-2-HR, institute: MPI-M}
-  - {<<: *defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
-  - {<<: *defaults, dataset: MRI-ESM2-0, institute: MRI}
+model_defaults: &model_defaults { ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
+model_datasets: &model_datasets
+  - {<<: *model_defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, label_dataset: True}
+  - {<<: *model_defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, label_dataset: True}
+  - {<<: *model_defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+  - {<<: *model_defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
+  - {<<: *model_defaults, dataset: BCC-CSM2-MR, institute: BCC}
+  - {<<: *model_defaults, dataset: CAMS-CSM1-0, institute: CAMS}
+  - {<<: *model_defaults, dataset: CanESM5, institute: CCCma}
+  - {<<: *model_defaults, dataset: CESM2, institute: NCAR}
+  - {<<: *model_defaults, dataset: CESM2-WACCM, institute: NCAR}
+  - {<<: *model_defaults, dataset: CESM2-WACCM-FV2, institute: NCAR}
+  - {<<: *model_defaults, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+  - {<<: *model_defaults, dataset: MIROC6, institute: MIROC}
+  - {<<: *model_defaults, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+  - {<<: *model_defaults, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+  - {<<: *model_defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+  - {<<: *model_defaults, dataset: MRI-ESM2-0, institute: MRI}
+
+obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2}
+tasa_obs: &tasa_obs
+  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }
+  - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
+
+arctic_siconc_obs: &arctic_siconc_obs
+  - { <<: *obs_defaults, dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
+
+antarctic_siconc_obs: &antarctic_siconc_obs
+  - { <<: *obs_defaults, dataset: OSI-450-sh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
+
 
 preprocessors:
   extract_test_period:
@@ -46,10 +58,10 @@ preprocessors:
     extract_time:
       start_day: 1
       start_month: 1
-      start_year: 1979
+      start_year: &data_start 1979
       end_day: 31
       end_month: 12
-      end_year: 2014
+      end_year: &data_end 2014
 
   extract_sept:
     &extract_sept
@@ -89,7 +101,6 @@ preprocessors:
     &annual_mean
     annual_statistics:
       operator: mean
-      keep_group_coordinates: true
 
   pp_arctic_sept_sea_ice:
     <<: *extract_test_period
@@ -113,35 +124,37 @@ diagnostics:
       siconc:
         preprocessor: pp_arctic_sept_sea_ice
         mip: SImon
-      tas:
+        additional_datasets:
+          *model_datasets
+      siconc_obs:
+        short_name: siconc
+        preprocessor: pp_arctic_sept_sea_ice
+        additional_datasets:
+          *arctic_siconc_obs
+      tas: &tas
         preprocessor: pp_avg_ann_global_temp
         mip: Amon
+        additional_datasets:
+          *model_datasets
+      tasa_obs: &tasa
+        <<: *tas
+        short_name: tasa
+        additional_datasets:
+          *tasa_obs
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
         observations:
-          observation period: 1979-2014
-          sea ice sensitivity (Notz-style plot):
+          data_period: &data_period
+            start_year: *data_start
+            end_year: *data_end
+          observation_period:
+            start_year: 1979
+            end_year: 2014
+          sea_ice_sensitivity:
             mean: -4.01
-            standard deviation: 0.32
-            plausible range: 1.28
-          annual trends (Roach-style plot):
-            first point:
-              GMST trend:
-              SIA trend:
-              Pearson CC of SIA over GMST:
-              significance of SIA over GMST:
-            second point:
-              GMST trend:
-              SIA trend:
-              Pearson CC of SIA over GMST:
-              significance of SIA over GMST:
-            third point:
-              GMST trend:
-              SIA trend:
-              Pearson CC of SIA over GMST:
-              significance of SIA over GMST:
-
+            standard_deviation: 0.32
+            plausible_range: 1.28
 
   antarctic:
     description: Plots annual mean sea ice sensitivity below 0 latitude in millions of square kilometres
@@ -149,31 +162,19 @@ diagnostics:
       siconc:
         preprocessor: pp_antarctic_avg_ann_sea_ice
         mip: SImon
+        additional_datasets:
+          *model_datasets
+      siconc_obs:
+        short_name: siconc
+        preprocessor: pp_antarctic_avg_ann_sea_ice
+        additional_datasets:
+          *antarctic_siconc_obs
       tas:
-        preprocessor: pp_avg_ann_global_temp
-        mip: Amon
+        <<: *tas
+      tasa_obs:
+        <<: *tasa
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
         observations:
-          observation period:
-          sea ice sensitivity (Notz-style plot):
-            mean:
-            standard deviation:
-            plausible range:
-          annual trends (Roach-style plot):
-            first point:
-              GMST trend:
-              SIA trend:
-              Pearson CC of SIA over GMST:
-              significance of SIA over GMST:
-            second point:
-              GMST trend:
-              SIA trend:
-              Pearson CC of SIA over GMST:
-              significance of SIA over GMST:
-            third point:
-              GMST trend:
-              SIA trend:
-              Pearson CC of SIA over GMST:
-              significance of SIA over GMST:
+          data_period: *data_period
