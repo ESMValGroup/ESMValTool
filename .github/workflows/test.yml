@@ -13,23 +13,30 @@ on:
 # Required shell entrypoint to have properly configured bash shell
 defaults:
   run:
-    shell: bash -l {0}
+    shell: pixi run bash -e {0}
 
 jobs:
-  linux:
-    runs-on: "ubuntu-latest"
-    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
+  test:
+    runs-on: ${{ matrix.os }}
+    if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
+<<<<<<< HEAD
         python-version: ["3.12", "3.13", "3.14"]
     name: Linux Python ${{ matrix.python-version }}
+=======
+        os: [ubuntu-latest, macos-latest]
+        environment: [test-py312, test-py313]
+    name: ${{ matrix.os }} ${{ matrix.environment }}
+>>>>>>> main
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
+<<<<<<< HEAD
           activate-environment: esmvaltool
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
@@ -100,15 +107,24 @@ jobs:
         run: pip install --no-deps -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Inspect environment
         run: conda list
+=======
+          frozen: true
+          environments: ${{ matrix.environment }}
+>>>>>>> main
       - name: Check dependencies are compatible
         run: pip check
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
-        run: pytest -n 2 -m "not installation" 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/test_report.txt
+        run: pytest -n 2 -m "not installation"
       - name: Upload artifacts
-        if: ${{ always() }}  # upload artifacts even if fail
+        if: ${{ always() }} # upload artifacts even if fail
         uses: actions/upload-artifact@v7
         with:
-          name: Test_OSX_python_${{ matrix.python-version }}
-          path: test_osx_artifacts_python_${{ matrix.python-version }}
+          name: Test_reports_${{ matrix.os }}_${{ matrix.environment }}
+          path: test-reports
+      - name: Check the command line interface
+        run: |
+          esmvaltool version
+          esmvaltool -- --help
+          esmvaltool develop compare -- --help
