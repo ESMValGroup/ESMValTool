@@ -64,7 +64,7 @@ diagnostics:
         preprocessor: full_climatology
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF-4-2, project: obs4MIPs, tier: 1,
+      - {dataset: CERES-EBAF-4-2-1, project: obs4MIPs, tier: 1,
          start_year: 2002, end_year: 2021, reference_for_monitor_diags: true}
     scripts:
       plot: &plot_multi_dataset_default
@@ -91,7 +91,7 @@ diagnostics:
         preprocessor: zonal_mean
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF-4-2, project: obs4MIPs, tier: 1,
+      - {dataset: CERES-EBAF-4-2-1, project: obs4MIPs, tier: 1,
          start_year: 2002, end_year: 2021, reference_for_monitor_diags: true}
     scripts:
       plot:
