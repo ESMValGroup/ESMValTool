@@ -13,7 +13,13 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
+<<<<<<< HEAD
   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+=======
+  - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc}
+  # - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  # - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+>>>>>>> 3f2783952 (Added ORAS5 Observations to mixed layer depth diagnostic.)
     #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
 
 
@@ -94,35 +100,39 @@ preprocessors:
       operator: mean  
 
   ocean_preproc_timeline:
+    custom_order: true
     regrid:
       target_grid: 2x2
       scheme: linear
     area_statistics:
       operator: mean
-    mask_landsea:
-      mask_out: land
+      #Todo: Masking does not work with oras5 -> is masking necessary?
+    # mask_landsea: 
+    #   mask_out: land
     annual_statistics:
       operator: mean
 
   ocean_preproc_timeline_max:
+    custom_order: true 
     regrid:
       target_grid: 2x2
       scheme: linear
     area_statistics:
       operator: max
-    mask_landsea:
-      mask_out: land
+    # mask_landsea:
+    #   mask_out: land
     annual_statistics:
       operator: mean
 
   ocean_preproc_timeline_min:
+    custom_order: true
     regrid:
       target_grid: 2x2
       scheme: linear
     area_statistics:
       operator: min
-    mask_landsea:
-      mask_out: land
+    # mask_landsea:
+    #   mask_out: land
     annual_statistics:
       operator: mean
 
@@ -163,6 +173,7 @@ diagnostics:
             inverted: false
             accumulated: false
             threshold: 40
+            operators: [max, mean, min]
         plots:
           timeseries:
           # map:
@@ -191,6 +202,7 @@ diagnostics:
             inverted: true
             accumulated: false
             threshold: 0
+            operators: [max, mean, min]
            #TODO: in the future maybe pass "operators: ["a", "b", "c"]" here, which then are used for the lines in the timeline plot.
         plots:
           timeseries:
@@ -220,6 +232,7 @@ diagnostics:
             inverted: false
             accumulated: false
             threshold: 1 #1,10
+            operators: [max, mean, min]
         plots:
           timeseries:
           # map:     
@@ -250,6 +263,7 @@ diagnostics:
             inverted: false
             accumulated: false
             threshold: 10 #1,10
+            operators: [max, mean, min]
         plots:
           timeseries:
           # map:     
@@ -426,12 +440,8 @@ diagnostics:
         preprocessor: ocean_preproc_timeline_min
     scripts:
       plot:
-<<<<<<< HEAD
-        script: monitor/multi_datasets.py
-=======
         #script: monitor/multi_datasets.py
         script: impact/diagnostic_draft3.py
->>>>>>> 0728069ff (timelines with new default style)
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -439,8 +449,8 @@ diagnostics:
           timeseries:
 
   timeseries_mld:
-    # additional_datasets: 
-    #   - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc} 
+    additional_datasets: 
+      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc} 
     description: Plot timeseries showing the mixed layer depth.
     variables:
       mlotst:

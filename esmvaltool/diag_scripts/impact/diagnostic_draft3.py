@@ -1165,11 +1165,7 @@ class MultiDatasets(MonitorBase):
 
 
                 label = f"{label_dataset} - {operator}"
-                #cube = dataset["cube"]
-                #logger.info(cube)
-                #logger.info("here the cube, and now ds:")
-                #logger.info(dataset)
-                
+               
                 coords = self._check_cube_coords(cube, plot_type)
                 coord = cube.coord(coords[0], dim_coords=True)
                 coord_label = f"{coord.name()} [{coord.units}]"
