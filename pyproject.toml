@@ -60,7 +60,7 @@ dependencies = [
     "pandas",
     "progressbar2",
     "pyproj>=2.1",
-    "pys2index",
+    #  "pys2index",
     "python-dateutil",
     "pyyaml",
     "rasterio>=1.3.10",
@@ -245,7 +245,7 @@ convention = "numpy"
 "progressbar2" = "*"
 "prov" = "*"
 "pyproj" = ">=2.1"
-"pys2index" = "*"
+#  "pys2index" = "*"
 "python" = ">=3.12"
 "python-cdo" = "*"
 "python-dateutil" = "*"
@@ -297,7 +297,7 @@ esmvaltool = { features = ["esmvalcore", "ncl", "r"], solve-group = "esmvaltool"
 esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
-test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "default" }
+test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "py313" }
 test-py314 = { features = ["py314", "esmvalcore", "test"], solve-group = "default" }
 
 # Default ESMValCore version.
