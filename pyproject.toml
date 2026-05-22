@@ -16,6 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Atmospheric Science",
     "Topic :: Scientific/Engineering :: GIS",
@@ -81,7 +82,7 @@ description = "A community tool for pre-processing data from Earth system models
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 name = "ESMValTool"
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.12,<3.15"
 
 [project.entry-points."console_scripts"]
 nclcodestyle = "esmvaltool.utils.nclcodestyle.nclcodestyle:_main"
@@ -297,6 +298,7 @@ esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-gr
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
 test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "default" }
+test-py314 = { features = ["py314", "esmvalcore", "test"], solve-group = "default" }
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
@@ -341,6 +343,10 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "defaul
 # Feature for running tests with Python 3.13.
 [tool.pixi.feature.py313.dependencies]
 "python" = "3.13.*"
+
+# Feature for running tests with Python 3.14.
+[tool.pixi.feature.py314.dependencies]
+"python" = "3.14.*"
 
 # Feature for running diagnostics that also require NCL.
 [tool.pixi.feature.ncl]
