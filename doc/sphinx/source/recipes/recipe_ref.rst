@@ -17,7 +17,7 @@ Recipes are stored in `recipes/`
 
 * :ref:`recipe_ecs.yml <recipes_ecs>`:
   Calculate equilibrium climate sensitivity (ECS)
-* :ref:`recipe_tcr.yml <recipes_tcr>`:
+* :ref:`ref/recipe_ref_tcr.yml <recipes_tcr>`:
   Calculate transient climate response (TCR)
 * :ref:`recipe_tcre.yml <recipes_tcre>`:
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
