@@ -321,7 +321,7 @@ These are the detailed steps to take to make a release.
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
    - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
-   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``environment.yml`` of ESMValTool to add it to the list of channels used. Adjust the pin on ESMValCore after each release candidate (e.g. ``esmvalcore==2.8.0rc1``). Check that the environment creation of ESMValTool works fine and contains the latest release candidate version.
+   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``pyproject.toml`` of ESMValTool to add it to the list of channels used. Adjust the pin on ESMValCore after each release candidate (e.g. ``esmvalcore==2.8.0rc1``). Check that the environment creation of ESMValTool works fine and contains the latest release candidate version.
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
@@ -359,7 +359,7 @@ These are the detailed steps to take to make a release.
 
 #. ESMValTool release
 
-   - Pin ESMValCore to the same version as ESMValTool in the ``environment.yml`` and on `conda-forge
+   - Pin ESMValCore to the same version as ESMValTool in the ``pyproject.toml`` and on `conda-forge
      <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
      This way, we make sure that ESMValTool uses the ESMValCore version with which it has been tested.
      Make sure to comment again the release candidate channel once ESMValCore has been released.
@@ -617,17 +617,12 @@ Contact the feedstock maintainers if you want to become a maintainer yourself.
 9. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are three main Docker container images available for ESMValTool on
+There are two main Docker container images available for ESMValTool on
 `Dockerhub <https://hub.docker.com/r/esmvalgroup/esmvaltool/tags>`_:
 
 - ``esmvalgroup/esmvaltool:stable``, built from `docker/Dockerfile <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile>`_,
   this is a tag that is always the same as the latest released version.
   This image is only built by Dockerhub when a new release is created.
-- ``esmvalgroup/esmvaltool:development``, built from `docker/Dockerfile.dev <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.dev>`_,
-  this is a tag that always points to the latest development version of
-  ESMValTool.
-  This image is built by Dockerhub every time there is a new commit to the
-  ``main`` branch on Github.
 - ``esmvalgroup/esmvaltool:experimental``, built from `docker/Dockerfile.exp <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.exp>`_,
   this is a tag that always points to the latest development version of
   ESMValTool with the latest development version of ESMValCore.
@@ -637,7 +632,7 @@ There are three main Docker container images available for ESMValTool on
   This image is built by Dockerhub every time there is a new commit to the
   ESMValTool ``main`` branch on Github.
 
-In addition to the three images mentioned above, there is an image available
+In addition to the two images mentioned above, there is an image available
 for every release (e.g. ``esmvalgroup/esmvaltool:v2.5.0``).
 When working on the Docker images, always try to follow the
 `best practices <https://docs.docker.com/develop/develop-images/dockerfile_best-practices/>`__.
@@ -662,7 +657,7 @@ the container image for v2.5.0 of the tool run:
 
    git checkout v2.5.0
    git clean -x
-   docker build -t esmvalgroup/esmvaltool:v2.5.0 . -f docker/Dockerfile
+   docker build --pull -t esmvalgroup/esmvaltool:v2.5.0 . -f docker/Dockerfile
    docker push esmvalgroup/esmvaltool:v2.5.0
 
 and if it is the latest release that you are updating, also run
