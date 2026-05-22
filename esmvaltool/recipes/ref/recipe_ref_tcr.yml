@@ -1,0 +1,37 @@
+# ESMValTool
+---
+documentation:
+  title: >
+    Transient Climate Response (TCR)
+  description: >
+    Calculate Transient Climate Response (TCR).
+  authors:
+    - schlund_manuel
+  maintainer:
+    - schlund_manuel
+  references:
+    - gregory08jgr
+
+
+datasets:
+  - {project: CMIP7, dataset: DUMMY-MODEL, mip: atmos, frequency: mon, region: glb, exp: piControl, ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
+  - {project: CMIP7, dataset: DUMMY-MODEL, mip: atmos, frequency: mon, region: glb, exp: 1pctCO2,   ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
+
+
+preprocessors:
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+  tcr:
+    description: Calculate TCR.
+    variables:
+      tas:
+        branding_suffix: tavg-h2m-hxy-u
+        preprocessor: spatial_mean
+    scripts:
+      calculate:
+        script: climate_metrics/tcr.py
+        calculate_mmm: false
