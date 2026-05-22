@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - python3.14
   schedule:
     - cron: "0 0 * * *"
 
