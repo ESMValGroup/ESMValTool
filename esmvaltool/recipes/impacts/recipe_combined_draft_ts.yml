@@ -13,13 +13,9 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
-<<<<<<< HEAD
+  #- {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc}
   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-=======
-  - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc}
-  # - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
   # - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
->>>>>>> 3f2783952 (Added ORAS5 Observations to mixed layer depth diagnostic.)
     #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
 
 
@@ -138,14 +134,12 @@ preprocessors:
 
 
   zostoga_preproc_timeline:
-    custom_order: true
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-    area_statistics:
-      operator: mean
-    mask_landsea:
-      mask_out: land
+    # custom_order: true
+    # regrid:
+    #   target_grid: 2x2
+    #   scheme: linear
+    # mask_landsea:
+    #   mask_out: land
     annual_statistics:
       operator: mean
 
@@ -310,32 +304,22 @@ diagnostics:
           #     default:
           #       cmap: 'coolwarm'
 
-##########THIS IS NOT WORKING YET, TODO; WARNING: ValueError: Chunks do not add up to shape. Got chunks=((39,), (39,)), shape=(404, 802)
-  # timeseries_zostoga:
-  #   description: Plot timeseries showing the Global Average Thermosteric Sea Level Change.
-  #   variables:
-  #     zostoga:
-  #       timerange: 20000601/20030901
-  #       mip: Omon
-  #       preprocessor: zostoga_preproc_timeline
-  #     # zostoga_max:
-  #     #   short_name: zostoga
-  #     #   timerange: 20000601/20030901
-  #     #   mip: Omon
-  #     #   preprocessor: ocean_preproc_timeline_max
-  #     # zostoga_min:
-  #     #   short_name: zostoga
-  #     #   timerange: 20000601/20030901
-  #     #   mip: Omon
-  #     #   preprocessor: ocean_preproc_timeline_min
-  #   scripts:
-  #     plot:
-  #       script: /home/b/b383904/recipe_development_esmvaltool/multi_datasets.py
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{mip}'
-  #       facet_used_for_labels: dataset
-  #       plots:
-  #         timeseries:
+  ########## data is already a global mean, thus no area statistics possible
+  timeseries_zostoga:
+    description: Plot timeseries showing the Global Average Thermosteric Sea Level Change.
+    variables:
+      zostoga:
+        timerange: 20000601/20030901
+        mip: Omon
+        preprocessor: zostoga_preproc_timeline
+    scripts:
+      thermosteric_sealevel_mean:
+        script: impact/diagnostic_draft3.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
 
 
 
@@ -422,6 +406,8 @@ diagnostics:
       
 
   timeseries_sst:
+    additional_datasets: 
+      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: tos, raw_name: sosstsst, raw_units: deg_C, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc} 
     description: Plot timeseries showing the sea surface temperature.
     variables:
       tos:

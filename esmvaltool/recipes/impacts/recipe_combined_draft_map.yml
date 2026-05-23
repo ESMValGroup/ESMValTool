@@ -6,7 +6,6 @@
 
 
 
-# Runtime error; how to average Omon/Amon data to a year in preproc. for ts diagnostic? 
 
 ---
 documentation:
@@ -259,30 +258,32 @@ diagnostics:
             plot_kwargs:
               default:
                 cmap: 'coolwarm'
-          
 
-  plot_zostoga:
-    description: Map showing the Global Average Thermosteric Sea Level Change.
-    variables:
-      zostoga:
-        timerange: 20000601/20030901
-        mip: Omon
-        preprocessor: ocean_preproc
-    scripts:
-      plot:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
-        plots:
-          map:
-            caption: |
-              TODO test.
-            common_cbar: true
-            fontsize: 10
-            plot_kwargs:
-              default:
-                cmap: 'coolwarm'
+
+######Todo: This variable is a global average -> cannot be plotted as a map 
+
+  # plot_zostoga:
+  #   description: Map showing the Global Average Thermosteric Sea Level Change.
+  #   variables:
+  #     zostoga:
+  #       timerange: 20000601/20030901
+  #       mip: Omon
+  #       preprocessor: ocean_preproc
+  #   scripts:
+  #     plot:
+  #       script: monitor/multi_datasets.py
+  #       plot_folder: '{plot_dir}'
+  #       plot_filename: '{plot_type}_{real_name}_{mip}'
+  #       facet_used_for_labels: dataset
+  #       plots:
+  #         map:
+  #           caption: |
+  #             TODO test.
+  #           common_cbar: true
+  #           fontsize: 10
+  #           plot_kwargs:
+  #             default:
+  #               cmap: 'coolwarm'
 
 
   plot_sst:

@@ -303,6 +303,13 @@ class MultiDatasets(MonitorBase):
             if option_options is None:
                 option_options = {}  # noqa: PLW2901
                 self.options[options_type] = option_options
+
+
+            default_settings_opt = self.options_settings[options_type][
+                "default_settings"
+            ]
+            for key, val in default_settings_opt.items():
+                self.options[options_type].setdefault(key, val)
         
         # Check given plot types and set default settings for them
         for plot_type, plot_options in self.plots.items():
@@ -323,14 +330,10 @@ class MultiDatasets(MonitorBase):
             default_settings = self.plot_settings[plot_type][
                 "default_settings"
             ]
+
             for key, val in default_settings.items():
                 self.plots[plot_type].setdefault(key, val)
-
-            default_settings_opt = self.options_settings[options_type][
-                "default_settings"
-            ]
-            for key, val in default_settings_opt.items():
-                self.options[options_type].setdefault(key, val)
+           
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -1078,8 +1081,6 @@ class MultiDatasets(MonitorBase):
         """Plot 1D data."""
         # Plot all datasets in one single figure
         coord_label = "unkown coordinate"
-<<<<<<< HEAD
-=======
         linestyle = {}
         linestyle_iter = iter(['--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))])
 
@@ -1097,21 +1098,12 @@ class MultiDatasets(MonitorBase):
                 else:
                     linestyle[operator] = next(linestyle_iter, '--')
 
-        operators=[]   
->>>>>>> 0728069ff (timelines with new default style)
+        operators=[]
+
         for dataset in datasets:
-            label = self._get_label(dataset)
+            label_dataset = self._get_label(dataset)
             cube = dataset["cube"]
-<<<<<<< HEAD
-            if self.options["threshold_conversion"]:
-                oldcube = cube
-                cube = self.thr_area_statistics(cube, operator = "mean")
-                for operator in self.options["threshold_conversion"]["operators"]:
-                    cube = self.thr_area_statistics(oldcube, operator = operator) #TODO: append instead of overwrite...
-            coords = self._check_cube_coords(cube, plot_type)
-            coord = cube.coord(coords[0], dim_coords=True)
-            coord_label = f"{coord.name()} [{coord.units}]"
-=======
+            oldcube = cube
             if "threshold_conversion" in self.options:
                 oldcube = cube
                 for operator in self.options["threshold_conversion"]["operators"]:
@@ -1137,48 +1129,61 @@ class MultiDatasets(MonitorBase):
                         iris.plot.plot(cube, coord, linestyle=linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
                     else:
                         iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
->>>>>>> 0728069ff (timelines with new default style)
 
-            # Actual plot
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs.setdefault("label", label)
-            plot_kwargs["axes"] = axes
-            if self.plots[plot_type]["transpose_axes"]:
-                iris.plot.plot(cube, coord, **plot_kwargs)
             else:
                 
                 operator_list = [cm.method for cm in cube.cell_methods if 'latitude' in cm.coord_names] # list of all cell methods accociated to latitude coord
-                if len(operator_list) == 1:
-                    operator = operator_list[0]
-                else:
-                    warnings.warn("There are multiple operations accociated with the time coordinate, expected is only one. Continuing with the first one, but results might be not accurate.")
-                    operator = operator_list[0]
-                if operator not in operators:
-                    if operator == 'mean':
-                        linestyle[operator] = '-'
+                if len(operator_list) > 0:
+                    if len(operator_list) == 1:
+                        operator = operator_list[0]
                     else:
-                        linestyle[operator] = next(linestyle_iter, '--')
-                operators.append(operator)    
+                        warnings.warn("There are multiple operations accociated with the time coordinate, expected is only one. Continuing with the first one, but results might be not accurate.")
+                        operator = operator_list[0]
+                    if operator not in operators:
+                        if operator == 'mean':
+                            linestyle[operator] = '-'
+                        else:
+                            linestyle[operator] = next(linestyle_iter, '--')
+                    operators.append(operator)    
+                    
+                    linestyle_op = linestyle[operator]
+                    
+
+
+                    label = f"{label_dataset} - {operator}"
                 
-                linestyle_op = linestyle[operator]
-                
+                    coords = self._check_cube_coords(cube, plot_type)
+                    coord = cube.coord(coords[0], dim_coords=True)
+                    coord_label = f"{coord.name()} [{coord.units}]"
 
+                    # Actual plot
+                    plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+                    plot_kwargs.setdefault("label", label)
+                    plot_kwargs["axes"] = axes
 
-                label = f"{label_dataset} - {operator}"
-               
-                coords = self._check_cube_coords(cube, plot_type)
-                coord = cube.coord(coords[0], dim_coords=True)
-                coord_label = f"{coord.name()} [{coord.units}]"
-
-                # Actual plot
-                plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-                plot_kwargs.setdefault("label", label)
-                plot_kwargs["axes"] = axes
-
-                if self.plots[plot_type]["transpose_axes"]:
-                    iris.plot.plot(cube, coord, linestyle=linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
+                    if self.plots[plot_type]["transpose_axes"]:
+                        iris.plot.plot(cube, coord, linestyle=linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
+                    else:
+                        iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
                 else:
-                    iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
+                    label = label_dataset
+           
+                    coords = self._check_cube_coords(cube, plot_type)
+                    coord = cube.coord(coords[0], dim_coords=True)
+                    coord_label = f"{coord.name()} [{coord.units}]"
+
+                    # Actual plot
+                    plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+                    plot_kwargs.setdefault("label", label)
+                    plot_kwargs["axes"] = axes
+                    if self.plots[plot_type]["transpose_axes"]:
+                        iris.plot.plot(cube, coord, **plot_kwargs)
+                    else:
+                        iris.plot.plot(coord, cube, **plot_kwargs)                    
+
+
+
+
 
                 # if self.plots[plot_type]["transpose_axes"]:
                 #     iris.plot.plot(cube, coord, **plot_kwargs)
@@ -1560,13 +1565,13 @@ class MultiDatasets(MonitorBase):
         cubes: dict[str, Cube] = {
             self._get_label(d): d["cube"] for d in datasets
         }
-        if self.options["threshold_conversion"]:
+        if "threshold_conversion" in self.options:
             for label, cube in cubes.items():
                 cubes[label] = self.thr_area_statistics(cube, operator = "mean")
         netcdf_path = self._get_netcdf_path(plot_path)
         #coord_name = datasets[0]["cube"].coord(dim_coords=True).name()
         cube_0 = datasets[0]["cube"]
-        if self.options["threshold_conversion"]:
+        if "threshold_conversion" in self.options:
             cube_0 = self.thr_area_statistics(cube_0, operator = "mean")
         coord_name = cube_0.coord(dim_coords=True).name()
         var_attrs = {
@@ -1703,7 +1708,7 @@ class MultiDatasets(MonitorBase):
             benchmark_datasets = options_function(datasets)
         
         # For threshold data, do the spatial mean here:
-        if self.options["threshold_conversion"]:
+        if "threshold_conversion" in self.options:
             benchmark_datasets = self.thr_area_statistics(datasets = benchmark_datasets, operator = "mean")
         self._plot_1d_data(plot_type, benchmark_datasets, axes)
 
