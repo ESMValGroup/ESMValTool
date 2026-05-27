@@ -192,12 +192,16 @@ def dyn_steric_regression(
         dpi=150,
     )
     plt.close()
-    return slopes, mask
+
+    # Put slopes and mask back into iris cubes
+    slopes_cube = zos[0].copy(data=slopes)
+    mask_cube = zos[0].copy(data=mask)
+    return slopes_cube, mask_cube
 
 
 def save_data(
-    slopes: np.array,
-    mask: np.array,
+    slopes: iris.cube.Cube,
+    mask: iris.cube.Cube,
     work_path: Path,
     model: str,
     scenario: str,
@@ -206,9 +210,9 @@ def save_data(
 
     Parameters
     ----------
-    slopes: np.array
+    slopes: iris.cube.Cube
         zostoga/zos regression slopes
-    mask: np.array
+    mask: iris.cube.Cube
         model mask
     work_path: Path
         path to save data to
@@ -221,8 +225,16 @@ def save_data(
     -------
     None
     """
-    np.save(Path(work_path) / f"zos_regression_{scenario}_{model}.npy", slopes)
-    np.save(Path(work_path) / f"zos_mask_{scenario}_{model}.npy", mask)
+    # Update variable names in both cubes
+    slopes.var_name = "zos_zostoga_regression_slope"
+    mask.var_name = "zos_mask"
+    slopes.long_name = "Regression slope of zos vs zostoga"
+    mask.long_name = "Model-specific mask for zos"
+
+    iris.save(
+        slopes, Path(work_path) / f"zos_regression_{scenario}_{model}.nc"
+    )
+    iris.save(mask, Path(work_path) / f"zos_mask_{scenario}_{model}.nc")
 
 
 def evaluate_regression(
@@ -376,7 +388,8 @@ def evaluate_patterns(
         )
 
         p_scaled = (
-            zostoga.data[:, np.newaxis, np.newaxis] * slope[np.newaxis, :, :]
+            zostoga.data[:, np.newaxis, np.newaxis]
+            * slope.data[np.newaxis, :, :]
         )
 
         # Diff maps for end of century (20 yr mean)
@@ -504,12 +517,12 @@ def patterns(model: str, cfg: dict) -> None:
     for index, (z_dtr, zos) in enumerate(
         zip(zostoga_list, zos_list, strict=True)
     ):
-        slopes_arr, masks_arr = dyn_steric_regression(
+        slopes_cube, masks_cube = dyn_steric_regression(
             z_dtr, zos, plot_path, scenarios[index]
         )
-        save_data(slopes_arr, masks_arr, work_path, model, scenarios[index])
-        slopes.append(slopes_arr)
-        masks.append(masks_arr)
+        save_data(slopes_cube, masks_cube, work_path, model, scenarios[index])
+        slopes.append(slopes_cube)
+        masks.append(masks_cube)
 
     # Test the patterns
     evaluate_patterns(zostoga_list, zos_list, slopes, plot_path, model)
