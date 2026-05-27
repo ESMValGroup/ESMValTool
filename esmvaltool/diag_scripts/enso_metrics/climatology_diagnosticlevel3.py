@@ -199,7 +199,7 @@ def main(cfg):
                 # create pairs, add obs first to list
                 pairs = [var_attr[-1]]
                 logger.info("iterate though datasets\n %s", pformat(metadata))
-                if metadata["project"] == "CMIP6":
+                if metadata["project"].startswith("CMIP"):
                     pairs.append(metadata)
                     fig = plotmaps_level3(pairs, itcz=False)
                     # save_plotdata(data_cubes, grp, pairs, cfg)

@@ -206,10 +206,10 @@ def main(cfg):
         prov = provenance_record(grp, list(cfg["input_data"].keys()))
         for metadata in var_attr:
             logger.info("iterate though datasets\n %s", pformat(metadata))
-            if metadata["project"] == "CMIP6":
+            if metadata["project"].startswith("CMIP"):
                 pairs.append(metadata)
                 fig, filename, rmse = plot_level1(pairs, cfg, prov)
-
+                logger.info("metric %s", rmse)
                 save_figure(
                     "_".join(filename),
                     prov,
