@@ -19,8 +19,9 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
-  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  #- {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  #- {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  #- {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
     #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
 
 
@@ -218,8 +219,8 @@ diagnostics:
 
   plot_snwe_10:
     additional_datasets:
-      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn,  reference_for_monitor_diags: true}
-    #  - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0, reference_for_monitor_diags: true}
+    #  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn,  reference_for_monitor_diags: true}
+      - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0, reference_for_monitor_diags: true}
     description: Map showing number of days there is more than 10 cm of snow water equivalent.
     variables:
       snw:
@@ -237,7 +238,7 @@ diagnostics:
             inverted: false
             accumulated: false
             threshold: 100
-           #TODO: in the future maybe pass "operators: ["a", "b", "c"]" here, which then are used for the lines in the timeline plot.
+           
         plots:
           # timeseries:
           map:
@@ -277,78 +278,78 @@ diagnostics:
 
 #####Todo fix the following three:
 
-  # plot_sst:
-  #   description: Plot maps showing the sea surface temperature.
-  #   variables:
-  #     tos:
-  #       timerange: 20000601/20030901
-  #       mip: Oday
-  #       preprocessor: ocean_preproc
-  #   scripts:
-  #     plot:
-  #       script: monitor/multi_datasets.py
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{mip}'
-  #       facet_used_for_labels: dataset
-  #       plots:
-  #         map:
-  #           caption: |
-  #             TODO test.
-  #           common_cbar: true
-  #           fontsize: 10
-  #           plot_kwargs:
-  #             default:
-  #               cmap: 'coolwarm'
+  plot_sst:
+    description: Plot maps showing the sea surface temperature.
+    variables:
+      tos:
+        timerange: 20000601/20030901
+        mip: Oday
+        preprocessor: ocean_preproc
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          map:
+            caption: |
+              TODO test.
+            common_cbar: true
+            fontsize: 10
+            plot_kwargs:
+              default:
+                cmap: 'coolwarm'
 
-  # plot_mld:
-  #   additional_datasets: 
-  #     - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc,  reference_for_monitor_diags: true} 
-  #   description: Plot maps showing the mixed layer depth.
-  #   variables:
-  #     mlotst:
-  #       timerange: 20000601/20030901
-  #       mip: Omon #or Eday
-  #       preprocessor: ocean_preproc
-  #   scripts:
-  #     plot:
-  #       script: monitor/multi_datasets.py
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{mip}'
-  #       facet_used_for_labels: dataset
-  #       plots:
-  #         map:
-  #         #benchmarking_map:
-  #           caption: |
-  #             TODO test.
-  #           common_cbar: true
-  #           fontsize: 10
-  #           plot_kwargs:
-  #             default:
-  #               cmap: 'coolwarm'
+  plot_mld:
+    additional_datasets: 
+      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc,  reference_for_monitor_diags: true} 
+    description: Plot maps showing the mixed layer depth.
+    variables:
+      mlotst:
+        timerange: 20000601/20030901
+        mip: Omon #or Eday
+        preprocessor: ocean_preproc
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          map:
+          #benchmarking_map:
+            caption: |
+              TODO test.
+            common_cbar: true
+            fontsize: 10
+            plot_kwargs:
+              default:
+                cmap: 'coolwarm'
 
 
-  # plot_rsds:
-  #   description: Plot maps showing the shortwave downward radiation at the surface.
-  #   variables:
-  #     rsds:
-  #       timerange: 20000601/20030901
-  #       mip: day #or Amon
-  #       preprocessor: radiation_preproc
-  #   scripts:
-  #     plot:
-  #       script: monitor/multi_datasets.py
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{mip}'
-  #       facet_used_for_labels: dataset
-  #       plots:
-  #         map:
-  #           caption: |
-  #             TODO test.
-  #           common_cbar: true
-  #           fontsize: 10
-  #           plot_kwargs:
-  #             default:
-  #               cmap: 'coolwarm'
+  plot_rsds:
+    description: Plot maps showing the shortwave downward radiation at the surface.
+    variables:
+      rsds:
+        timerange: 20000601/20030901
+        mip: day #or Amon
+        preprocessor: radiation_preproc
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          map:
+            caption: |
+              TODO test.
+            common_cbar: true
+            fontsize: 10
+            plot_kwargs:
+              default:
+                cmap: 'coolwarm'
       
 
  

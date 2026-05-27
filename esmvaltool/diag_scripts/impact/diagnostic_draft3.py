@@ -630,7 +630,12 @@ class MultiDatasets(MonitorBase):
     
     def _get_bias_dataset(self, dataset_1: dict, dataset_2: dict) -> dict:
         """Get bias dataset (dataset_1 - dataset_2)."""
+        #ToDo: this is a quick fix, maybe fix the dataset properly
+        dataset_2["cube"].coord("latitude").coord_system = None
+        dataset_2["cube"].coord("longitude").coord_system = None
+       
         bias_cube = dataset_1["cube"] - dataset_2["cube"]
+
         bias_cube.metadata = dataset_1["cube"].metadata
         bias_cube.var_name = (
             None
