@@ -71,7 +71,7 @@ Example plots
    :width:   8cm
 
    Plot of sensitivity of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September to the annual mean global temperature change (K).
-   Models are shown on the left in blue, and the relationships between pairs of observational datasets are shown on the right in orange.
+   Models are shown on the left in blue, and the relationships between SIA-GMST pairs of observational datasets are shown on the right in orange.
    The shading around the position of each observational pair shows the standard error as computed by :func:`scipy.stats.linregress`.
 
    The dashed black line shows the observational mean, the shaded area denotes one one standard deviation of observational uncertainty, as calculated by Notz et al (2020).
