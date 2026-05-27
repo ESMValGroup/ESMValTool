@@ -181,9 +181,9 @@ def dyn_steric_regression(
 
     # Deal with dodgy land mask, which won't really matter in the end anyway
     if zos.attributes["source_id"] == "GISS-E2-1-H":
-        mask = np.full(zos.data.shape, np.nan)
+        mask = np.full(zos[0].shape, np.nan)
     else:
-        mask = zos.data.mask[0]
+        mask = zos.data.mask[0].astype(np.int8)
 
     fig = evaluate_regression(zostoga.data, zos.data, slopes, zos)
     fig.savefig(
