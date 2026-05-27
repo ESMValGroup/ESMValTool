@@ -93,11 +93,11 @@ class MultiDatasets(MonitorBase):
         }
         return{
             "threshold_conversion": {
-                "function": partial(self.convert_data_thresholded, "threshold_conversion", ),
-                "provenance": {
-                    "authors": ["caspers_laura"],
-                    "caption": "Converting daily data to count of days per year on which thresholds are exceeded.",
-                },
+                # "function": partial(self.convert_data_thresholded, "threshold_conversion", ),
+                # "provenance": {
+                #     "authors": ["caspers_laura"],
+                #     "caption": "Converting daily data to count of days per year on which thresholds are exceeded.",
+                # },
                 "default_settings": {
                     **default_settings,
                     
@@ -186,48 +186,9 @@ class MultiDatasets(MonitorBase):
                     "x_pos_stats_bias": 0.92,
                 },
             },
-            "benchmarking_map": {
-                "function": partial(
-                    self.create_2d_benchmarking_plot,
-                    "benchmarking_map",
-                ),
-                "coords": (["longitude", "latitude"],),
-                "provenance": {
-                    "authors": ["lauer_axel", "schlund_manuel"],
-                    "caption": "Map plot of {long_name} of dataset {alias}.",
-                    "plot_types": ["map"],
-                },
-                "pyplot_kwargs": {},
-                "default_settings": {
-                    **default_settings_2d,
-                    "cbar_kwargs": {"orientation": "horizontal", "aspect": 30},
-                    "gridline_kwargs": {},
-                    "plot_kwargs": {"default": {"extend": "both"}},
-                    "projection": "Robinson",
-                    "projection_kwargs": {"central_longitude": 10},
-                },
-            },
+           
 
-            "benchmarking_timeseries": {
-                "function": partial(
-                    self.create_1d_benchmarking_plot,
-                    "benchmarking_timeseries",
-                ),
-                "coords": (["time"],),
-                "provenance": {
-                    "authors": ["lauer_axel", "schlund_manuel"],
-                    "caption": (
-                        "Time series of {long_name} for various datasets."
-                    ),
-                    "plot_types": ["line"],
-                },
-                "pyplot_kwargs": {
-                    "xlabel": "time",
-                },
-                "default_settings": {**default_settings_1d},
-            },
-
-             "timeseries": {
+            "timeseries": {
                 "function": partial(self.create_1d_plot, "timeseries"),
                 "coords": (["time"],),
                 "provenance": {
@@ -278,13 +239,13 @@ class MultiDatasets(MonitorBase):
        
 
 
-        #load input data
-        self.input_data = self._load_and_preprocess_data()
-        self.grouped_input_data = group_metadata(
-            self.input_data,
-            self.cfg["group_variables_by"],
-            sort=self.cfg["facet_used_for_labels"],
-        )
+        # #load input data
+        # self.input_data = self._load_and_preprocess_data()
+        # self.grouped_input_data = group_metadata(
+        #     self.input_data,
+        #     self.cfg["group_variables_by"],
+        #     sort=self.cfg["facet_used_for_labels"],
+        # )
 
         #check for options/preproc options and initialize them
         if "options" in self.cfg:
@@ -310,6 +271,9 @@ class MultiDatasets(MonitorBase):
             ]
             for key, val in default_settings_opt.items():
                 self.options[options_type].setdefault(key, val)
+
+        
+
         
         # Check given plot types and set default settings for them
         for plot_type, plot_options in self.plots.items():
@@ -334,6 +298,14 @@ class MultiDatasets(MonitorBase):
             for key, val in default_settings.items():
                 self.plots[plot_type].setdefault(key, val)
            
+
+              #load input data
+        self.input_data = self._load_and_preprocess_data()
+        self.grouped_input_data = group_metadata(
+            self.input_data,
+            self.cfg["group_variables_by"],
+            sort=self.cfg["facet_used_for_labels"],
+        )
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -655,103 +627,7 @@ class MultiDatasets(MonitorBase):
             raise ValueError(msg) from exc
         return string
 
-    def _get_benchmark_datasets(self, datasets: list[dict]) -> list[dict]:
-        """Get dataset to be benchmarked."""
-        variable = datasets[0][self.cfg["group_variables_by"]]
-        benchmark_datasets = [
-            d for d in datasets if d.get("benchmark_dataset", False)
-        ]
-        if len(benchmark_datasets) >= 1:
-            return benchmark_datasets
-
-        msg = (
-            f"Expected at least 1 benchmark dataset (with 'benchmark_dataset: "
-            f"True' for variable '{variable}'), got "
-            f"{len(benchmark_datasets):d}"
-        )
-        raise ValueError(msg)
-
-    def _get_benchmark_mask(
-        self,
-        benchmark_dataset: dict,
-        percentile_datasets: list[dict],
-    ) -> Cube:
-        """Create mask for benchmarking cube depending on metric."""
-        metric = self._get_benchmark_metric(benchmark_dataset)
-        cube = benchmark_dataset["cube"]
-        percentile_cubes = [d["cube"] for d in percentile_datasets]
-
-        if metric == "bias":
-            maxabs_perc = np.maximum(
-                np.abs(percentile_cubes[0].data),  # largest percentile
-                np.abs(percentile_cubes[-1].data),  # smallest percentile
-            )
-            mask = np.where(np.abs(cube.data) >= maxabs_perc, 0, 1)
-        elif metric in ("emd", "rmse"):
-            mask = np.where(cube.data >= percentile_cubes[0].data, 0, 1)
-        elif metric == "pearsonr":
-            mask = np.where(cube.data <= percentile_cubes[0].data, 0, 1)
-        else:
-            msg = (
-                f"Could not create benchmarking mask, unknown benchmarking "
-                f"metric: '{metric}'"
-            )
-            raise ValueError(msg)
-
-        return cube.copy(mask)
-
-    def _get_benchmark_metric(self, dataset: dict) -> str:
-        """Get benchmarking metric."""
-        for metric in ("emd", "pearsonr", "rmse"):
-            if dataset["short_name"].startswith(f"{metric}_"):
-                return metric
-        metric = "bias"
-        logger.info(
-            "Could not determine metric from short_name, assuming "
-            "benchmarking metric = %s",
-            metric,
-        )
-        return metric
-
-    def _get_benchmark_percentiles(self, datasets: list[dict]) -> list[dict]:
-        """Get percentile datasets from multi-model statistics preprocessor."""
-        percentile_datasets = []
-        for dataset in datasets:
-            stat = dataset.get("multi_model_statistics")
-            if stat is not None and "MultiModelPercentile" in stat:
-                dataset["_percentile_int"] = int(
-                    stat.replace("MultiModelPercentile", ""),
-                )
-                percentile_datasets.append(dataset)
-
-        # Sort percentiles in descending order (highest percentile first)
-        percentile_datasets = list(
-            reversed(sorted_metadata(percentile_datasets, "_percentile_int")),
-        )
-
-        # Get number of percentiles expected depending on benchmarking metric
-        metric = self._get_benchmark_metric(datasets[0])
-        n_percentiles: dict[str, int] = {
-            "bias": 2,
-            "rmse": 1,
-            "pearsonr": 1,
-            "emd": 1,
-        }
-        if metric not in n_percentiles:
-            msg = f"Unknown benchmarking metric: '{metric}'."
-            raise ValueError(msg)
-
-        if len(percentile_datasets) >= n_percentiles[metric]:
-            return percentile_datasets
-
-        variable = datasets[0][self.cfg["group_variables_by"]]
-        msg = (
-            f"Expected at least {n_percentiles[metric]} percentile datasets "
-            f"(created with multi-model statistics preprocessor for variable "
-            f"'{variable}'), got {len(percentile_datasets):d}"
-        )
-        raise ValueError(msg)
-
+    
     def _get_bias_dataset(self, dataset_1: dict, dataset_2: dict) -> dict:
         """Get bias dataset (dataset_1 - dataset_2)."""
         bias_cube = dataset_1["cube"] - dataset_2["cube"]
@@ -941,7 +817,7 @@ class MultiDatasets(MonitorBase):
 
         return getattr(ccrs, projection)(**projection_kwargs)
 
-#TODO: Update the next function here:
+    #TODO: Update the next function here:
     def _get_provenance_record(
         self,
         plot_type: str,
@@ -1054,6 +930,10 @@ class MultiDatasets(MonitorBase):
                 z_coord.attributes["positive"] = "up"
              # Save ancestors
             dataset["ancestors"] = [filename]
+
+            if "threshold_conversion" in self.options:
+                cube =  self.convert_data_thresholded(cube)
+                logger.info("Converted the data by counting the days where the threshold is exceeded")
 
             if slices:
                 slice_coord_name = self.cfg["group_variables_by"]
@@ -1419,14 +1299,11 @@ class MultiDatasets(MonitorBase):
 
             
     def convert_data_thresholded(
-        self, 
-        options_type: str,
-        datasets: list[dict],
+        self,
+        cube,
         collapsed = False,
-    ) -> list[dict]:
-        for dataset in datasets:
-            cube = dataset["cube"]
-            var_unit = cube.units
+    ):
+        var_unit = cube.units
             #TODO: this condition is a bit hacky fix to prevent for this option to be executed several times, would be better to fix it nicely, directly calling this option only once before the plotting calls.
             # if len(cube.coords('day_of_year')) > 0:
             #     msg = (
@@ -1435,11 +1312,12 @@ class MultiDatasets(MonitorBase):
             #     warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
 
             # else:
-            cat.add_day_of_year(cube, "time")
-            cat.add_year(cube, "time")
+        cat.add_day_of_year(cube, "time")
+        cat.add_year(cube, "time")
 
-            # Ensuring that the data is daily, by regridding to daily timestep eventually. 
-            # Note that for absolute values like temperature one should take the max (accumulated: false), and for cummulated values like total precipitation one should accumulate the values (accumulated: true).  
+        for options_type in self.options:
+                # Ensuring that the data is daily, by regridding to daily timestep eventually. 
+                # Note that for absolute values like temperature one should take the max (accumulated: false), and for cummulated values like total precipitation one should accumulate the values (accumulated: true).  
             if self.options[options_type]["accumulated"]:
                 cube = cube.aggregated_by(["year", "day_of_year"], iris.analysis.SUM)
             else:
@@ -1453,45 +1331,44 @@ class MultiDatasets(MonitorBase):
             else:
                 cube = cube.aggregated_by("year", iris.analysis.COUNT, function = lambda values: values > threshold)
         
-            var_name = cube.var_name
-            var_long = cube.long_name
-            #var_comment = cube.comment
+        var_name = cube.var_name
+        var_long = cube.long_name
+        #var_comment = cube.comment
 
-            # ###todo, add this for maps:
-            # #count_cube = oldcube.collapsed("time", iris.analysis.COUNT, function = lambda values: values > threshold)
-            # #count_cube.data = (count_cube.data / time_length) * 360
-            # # count_cube.long_name = f"count_of_days_per_year_with_{var_name}_above_{threshold}_ADDUNITHERE"
-            #cube.var_name = f"{var_name}geq{threshold}count"
-            cube.standard_name = None
-            cube.rename(f"{var_name}geq{threshold}count")
-            cube.long_name = f"Average number of days per year on which the near-surface (usually, 2 meter) air temperature exceeds {threshold} {var_unit} at some point" #TODO: make auto insertions, also for °C...
-            # cube.comment = f"TODO..."
-            cube.units = "days/year"
+        # ###todo, add this for maps:
+        # #count_cube = oldcube.collapsed("time", iris.analysis.COUNT, function = lambda values: values > threshold)
+        # #count_cube.data = (count_cube.data / time_length) * 360
+        # # count_cube.long_name = f"count_of_days_per_year_with_{var_name}_above_{threshold}_ADDUNITHERE"
+        #cube.var_name = f"{var_name}geq{threshold}count"
+        cube.standard_name = None
+        cube.rename(f"{var_name}geq{threshold}count")
+        cube.long_name = f"Average number of days per year on which the {var_long} exceeds {threshold} {var_unit} at some point" #TODO: make auto insertions, also for °C...
+        # cube.comment = f"TODO..."
+        cube.units = "days/year"
         
-            #if len(cubes) == 1:
-            #    cube: Cube = count_cube
-            # cube: Cube = cubes[0]
-            dataset["cube"] = cube
-            dataset["standard_name"] = None
-            dataset["var_name"] =  f"{var_name}geq{threshold}count"
-            dataset["long_name"] = f"Number of days per year on which the {var_long} exceeds the threshold of {threshold} {var_unit}" #TODO: make auto insertions, also for °C...
-            #dataset["comment"] = f"Average number of days per year on which the {var_comment} exceeds the threshold of {threshold} {var_unit} at some point"
-            dataset["units"] = "days/year"
+            # #if len(cubes) == 1:
+            # #    cube: Cube = count_cube
+            # # cube: Cube = cubes[0]
+            # dataset["cube"] = cube
+            # dataset["standard_name"] = None
+            # dataset["var_name"] =  f"{var_name}geq{threshold}count"
+            # dataset["long_name"] = f"Number of days per year on which the {var_long} exceeds the threshold of {threshold} {var_unit}" #TODO: make auto insertions, also for °C...
+            # #dataset["comment"] = f"Average number of days per year on which the {var_comment} exceeds the threshold of {threshold} {var_unit} at some point"
+            # dataset["units"] = "days/year"
         
         ######################################################################   
            
             #TODO: put this in the map etc routine, such that the original cube remains intact for other kinds of plots...:
             #for maps etc. use the mean of the yearly datapoints:
-            if collapsed:
-                cube = cube.collapsed("time", iris.analysis.MEAN)
-                dataset["cube"] = cube
+        for plot_type in self.plots:
+            if "map" in plot_type:
+                    collapsed = True
+        if collapsed:
+            cube = cube.collapsed("time", iris.analysis.MEAN)
+            #   dataset["cube"] = cube
  
 
-          
-           
-
-            return datasets
-
+        return cube
 
 
 
@@ -1585,6 +1462,8 @@ class MultiDatasets(MonitorBase):
             multi_dataset_facets,
             datasets,
         )
+
+        
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -1608,21 +1487,23 @@ class MultiDatasets(MonitorBase):
             representative_dataset,
             list(datasets.values()),
         )
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
 
-        # Save one netCDF file per dataset
-        for label, dataset in datasets.items():
-            netcdf_path = self._get_netcdf_path(plot_path, suffix=label)
-            io.iris_save(dataset["cube"], netcdf_path)
-            provenance_record = self._get_provenance_record(
-                plot_type,
-                dataset,
-                [dataset],
-            )
-            provenance_record["ancestors"] = dataset["ancestors"]
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(netcdf_path, provenance_record)
+        # #TODO: FIX THIS: 
+        # with ProvenanceLogger(self.cfg) as provenance_logger:
+        #     provenance_logger.log(plot_path, provenance_record)
+
+        # # Save one netCDF file per dataset
+        # for label, dataset in datasets.items():
+        #     netcdf_path = self._get_netcdf_path(plot_path, suffix=label)
+        #     io.iris_save(dataset["cube"], netcdf_path)
+        #     provenance_record = self._get_provenance_record(
+        #         plot_type,
+        #         dataset,
+        #         [dataset],
+        #     )
+        #     provenance_record["ancestors"] = dataset["ancestors"]
+        #     with ProvenanceLogger(self.cfg) as provenance_logger:
+        #         provenance_logger.log(netcdf_path, provenance_record)
 
     def _save_plot(
         self,
@@ -1684,151 +1565,21 @@ class MultiDatasets(MonitorBase):
 
 
 
-    def create_1d_benchmarking_plot(
-        self,
-        plot_type: str,
-        datasets: list[dict],
-    ) -> None:
-        """Create 1D x vs. y benchmarking plot (lines or markers)."""
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
-        # Some options are not supported for benchmarking plots
-        self.plots[plot_type]["transpose_axes"] = False
-
-        # Plot benchmarking datasets
-        benchmark_datasets = self._get_benchmark_datasets(datasets)
-
-        """Adjust data."""
-        for options_type in self.options:
-            options_settings = self.options_settings[options_type]
-            options_function = options_settings["function"]
-            logger.info("Executing option %s", options_type)
-            
-            benchmark_datasets = options_function(datasets)
-        
-        # For threshold data, do the spatial mean here:
-        if "threshold_conversion" in self.options:
-            benchmark_datasets = self.thr_area_statistics(datasets = benchmark_datasets, operator = "mean")
-        self._plot_1d_data(plot_type, benchmark_datasets, axes)
-
-        # Plot envelope using percentile datasets
-        percentile_datasets = self._get_benchmark_percentiles(datasets)
-        ylims = axes.get_ylim()
-        max_percentile_cube = percentile_datasets[0]["cube"]
-        coords = self._check_cube_coords(max_percentile_cube, plot_type)
-        coord = max_percentile_cube.coord(coords[0], dim_coords=True)
-        if len(percentile_datasets) > 1:
-            min_percentile_cube = percentile_datasets[-1]["cube"]
-            self._check_cube_coords(min_percentile_cube, plot_type)
-        else:
-            min_data = np.full(
-                max_percentile_cube.shape,
-                ylims[0],
-                dtype=max_percentile_cube.dtype,
-            )
-            min_percentile_cube = max_percentile_cube.copy(min_data)
-        envelope_kwargs = dict(self.plots[plot_type]["envelope_kwargs"])
-        envelope_kwargs["axes"] = axes
-        iris.plot.fill_between(
-            coord,
-            min_percentile_cube,
-            max_percentile_cube,
-            **envelope_kwargs,
-        )
-
-        # Customize plot with user-defined settings
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        self._customize_plot(plot_type, axes, multi_dataset_facets)
-
-        # Save data
-        self._save_1d_data(plot_type, datasets, fig)
+   
 
     def create_1d_plot(self, plot_type: str, datasets: list[dict]) -> None:
         """Create 1D x vs. y plot (lines or markers)."""
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
-        """Adjust data."""
-        for options_type in self.options:
-            options_settings = self.options_settings[options_type]
-            options_function = options_settings["function"]
-            logger.info("Executing option %s", options_type)
-            
-            datasets = options_function(datasets)
-
-        # # For threshold data, do the spatial mean here:
-        # if self.options["threshold_conversion"]:
-        #     datasets_1d = self.thr_area_statistics(datasets = datasets, operator = "mean")
-        #     self._plot_1d_data(plot_type, datasets_1d, axes)
-        #     self._save_1d_data(plot_type, datasets_1d, fig)
-        # else:
+       
         self._plot_1d_data(plot_type, datasets, axes)
         self._save_1d_data(plot_type, datasets, fig)
 
-    def create_2d_benchmarking_plot(
-        self,
-        plot_type: str,
-        datasets: list[dict],
-    ) -> None:
-        for options_type in self.options:
-            options_settings = self.options_settings[options_type]
-            options_function = options_settings["function"]
-            logger.info("Executing option %s", options_type)
-            
-            datasets = options_function(datasets, collapsed = True)
-        """Create 2D benchmarking plot."""
-        benchmark_datasets = self._get_benchmark_datasets(datasets)
-        percentile_datasets = self._get_benchmark_percentiles(datasets)
-
-
-        # Some options are not supported for benchmarking plots
-        self.plots[plot_type]["legend_kwargs"] = False
-        self.plots[plot_type]["show_stats"] = False
-        self.plots[plot_type]["plot_func"] = "contourf"
-
-        # Create one plot per benchmark dataset
-        for dataset in benchmark_datasets:
-            fig, axes = self._plot_2d_data_1_panel(plot_type, dataset)
-
-            # Apply hatching (dots) to all points which are not outside the
-            # percentile range (the defintion of "outside" depends on the
-            # metric)
-            hatching_cube = self._get_benchmark_mask(
-                dataset,
-                percentile_datasets,
-            )
-            hatching_plot_kwargs = {
-                "axes": axes,
-                "colors": "none",
-                "hatches": ["......"],
-                "levels": [0.5, 1.5],
-            }
-            plot_hatching = self._plot_2d(
-                plot_type,
-                hatching_cube,
-                **hatching_plot_kwargs,
-            )
-            plot_hatching.set_edgecolor("black")
-            plot_hatching.set_linewidth(0.0)
-
-            # Save plot and netCDF files
-            save_datasets: dict[str, dict] = {}
-            for save_dataset in [dataset, *percentile_datasets]:
-                if "_percentile_int" in save_dataset:
-                    save_key = f"p{save_dataset['_percentile_int']}"
-                else:
-                    save_key = ""
-                save_datasets[save_key] = save_dataset
-            self._save_data(plot_type, dataset, save_datasets, fig)
+    
 
     def create_2d_plot(self, plot_type: str, datasets: list[dict]) -> None:
         """Create 2D plot."""
-        for options_type in self.options:
-            options_settings = self.options_settings[options_type]
-            options_function = options_settings["function"]
-            logger.info("Executing option %s", options_type)
-            
-            datasets = options_function(datasets, collapsed = True)
+       
         dataset_ref = self._get_reference_dataset(datasets)
         if dataset_ref is not None:
             logger.info(
@@ -1884,16 +1635,8 @@ class MultiDatasets(MonitorBase):
                 with mpl.rc_context(mpl_rc_params):
 
 
-    # """Adjust data."""
-  #                  for options_type in self.options:
-   #                     options_settings = self.options_settings[options_type]
-    #                    options_function = options_settings["function"]
-     #                   logger.info("Executing option %s", options_type)
-      #      
-       #                 adj_datas = options_function(datasets)
-        #                plot_function(adj_datas)
-         #           else
-                        plot_function()
+  
+                    plot_function()
 
 
 
