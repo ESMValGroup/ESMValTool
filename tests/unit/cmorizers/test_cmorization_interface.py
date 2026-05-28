@@ -22,12 +22,12 @@ def test_formatters_have_required_interface():
 
     # aeronet.py and noaa_gml_surface_flask*.py need pys2index
     do_not_run_formatters = [
-        '__init__.py',
-        'aeronet.py',
-        'noaa_gml_surface_flask.py',
-        'noaa_gml_surface_flask_ch4.py',
-        'noaa_gml_surface_flask_co2.py',
-        'noaa_gml_surface_flask_n2o.py',
+        "__init__.py",
+        "aeronet.py",
+        "noaa_gml_surface_flask.py",
+        "noaa_gml_surface_flask_ch4.py",
+        "noaa_gml_surface_flask_co2.py",
+        "noaa_gml_surface_flask_n2o.py",
     ]
     all_formatters = os.listdir(formatters_folder)
     to_run_formatters = [
