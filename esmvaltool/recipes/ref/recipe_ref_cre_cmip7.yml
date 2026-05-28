@@ -101,5 +101,5 @@ diagnostics:
             legend_kwargs:
                 loc: upper right
             plot_kwargs:
-              CERES-EBAF-4-2:
+              CERES-EBAF-4-2-1:
                 color: black
