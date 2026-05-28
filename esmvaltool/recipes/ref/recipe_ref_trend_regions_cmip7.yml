@@ -248,7 +248,7 @@ diagnostics:
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
           - {dataset: ERA-5, project: obs4MIPs, tier: 1,
-             reference_for_metric: true'}
+             reference_for_metric: true}
     scripts:
       plot:
         script: seaborn_diag.py
