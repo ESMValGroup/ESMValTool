@@ -1,6 +1,8 @@
 ---
 name: Test
 
+permissions: {}
+
 # runs on a push on main and at the end of every day
 on:
   push:
@@ -21,14 +23,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        environment: [test-py312, test-py313]
+        os:
+          - ubuntu-latest
+          - macos-latest
+        environment:
+          - test-py312
+          - test-py313
     name: ${{ matrix.os }} ${{ matrix.environment }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-      - uses: prefix-dev/setup-pixi@v0.9.5
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e  # v0.9.4
         with:
           frozen: true
           environments: ${{ matrix.environment }}
@@ -40,7 +47,7 @@ jobs:
         run: pytest -n 2 -m "not installation"
       - name: Upload artifacts
         if: ${{ always() }} # upload artifacts even if fail
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: Test_reports_${{ matrix.os }}_${{ matrix.environment }}
           path: test-reports
