@@ -181,7 +181,7 @@ diagnostics:
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2}
           - {dataset: ERA-5, project: obs4MIPs, tier: 1,
-             reference_for_metric: true'}
+             reference_for_metric: true}
     scripts:
       plot:
         script: seaborn_diag.py
