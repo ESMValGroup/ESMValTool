@@ -20,8 +20,22 @@ def test_formatters_have_required_interface():
 
     error = False
 
-    for formatter in os.listdir(formatters_folder):
-        if not formatter.endswith(".py") or formatter == "__init__.py":
+    # aeronet.py and noaa_gml_surface_flask*.py need pys2index
+    do_not_run_formatters = [
+        '__init__.py',
+        'aeronet.py',
+        'noaa_gml_surface_flask.py',
+        'noaa_gml_surface_flask_ch4.py',
+        'noaa_gml_surface_flask_co2.py',
+        'noaa_gml_surface_flask_n2o.py',
+    ]
+    all_formatters = os.listdir(formatters_folder)
+    to_run_formatters = [
+        f for f in all_formatters if f not in do_not_run_formatters
+    ]
+
+    for formatter in to_run_formatters:
+        if not formatter.endswith(".py"):
             continue
         module = formatter[:-3]
         member = importlib.import_module(
