@@ -294,11 +294,15 @@ def compute_vpd(
     # Differentiate filename structure for CMIP6/CMIP7 data
     if "tavg-h2m-hxy" in provenance["ancestors"][0]:
         basename = setup_basename_file(
-            provenance["ancestors"][0], "vpd", "atmos"
+            provenance["ancestors"][0],
+            "vpd",
+            "atmos",
         )
     else:
         basename = setup_basename_file(
-            provenance["ancestors"][0], "vpd", "Amon"
+            provenance["ancestors"][0],
+            "vpd",
+            "Amon",
         )
     msg = f"Saving vapor_pressure_deficit in {cfg['work_dir']}/{basename}"
     logger.info(msg)
