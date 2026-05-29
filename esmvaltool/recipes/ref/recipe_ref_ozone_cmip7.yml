@@ -92,25 +92,25 @@ datasets:
 #  - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical, alias: CNRM-ESM2-1}
   - project: CMIP7
     activity: CMIP
-    branding_suffix: tavg-al-hxy-u
+    branding_suffix: tavg-p19-hxy-air
     dataset: DUMMY-MODEL
     ensemble: r1i1p1f3
     exp: historical
     frequency: mon
     grid: g999
-    institute: MPI-M
+    institute: MOHC
     mip: atmosChem
     region: glb
 
 timerange_for_toz_monthly_data: &time_period_toz_monthly
 #  timerange: '1950/2014'  # can be specified, this is just an example
-  timerange: '1950/1999'  # can be specified, this is just an example
+  timerange: '1950/2014'  # can be specified, this is just an example
 timerange_for_toz_zonal_mean: &time_period_toz_zonalmean
 #  timerange: '1997/2014'  # is chosen to start with the start of the obs data
-  timerange: '1997/1999'  # is chosen to start with the start of the obs data
+  timerange: '1997/2014'  # is chosen to start with the start of the obs data
 timerange_for_ozone_profile: &time_period_o3_profile
 #  timerange: '1990/2000'  # can be specified, this is just an example
-  timerange: '1990/1999'  # can be specified, this is just an example
+  timerange: '1990/2014'  # can be specified, this is just an example
 
 
 diagnostics:
