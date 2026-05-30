@@ -132,9 +132,6 @@ diagnostics:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
         observations:
-          data_period: &data_period
-            start_year: *data_start
-            end_year: *data_end
           observation_period:
             start_year: 1979
             end_year: 2014
@@ -163,5 +160,3 @@ diagnostics:
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
-        observations:
-          data_period: *data_period

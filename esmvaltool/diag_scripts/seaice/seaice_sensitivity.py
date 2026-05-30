@@ -109,11 +109,53 @@ class Periods(NamedTuple):
     data_period: str
 
 
+def get_start_and_end_years_for_datasets(cfg):
+    """Check the recipe or the preprocessed cubes for start and end years."""
+    # List as sets as hopefully there is only one of each
+    start_years = set()
+    end_years = set()
+
+    # Iterate over all the datasets
+    datasets = cfg["input_data"].values()
+    for dataset in datasets:
+        # Read the start year from the recipe if possible
+        if "start_year" in dataset and "end_year" in dataset:
+
+            # Add to list
+            start_years.add(dataset["start_year"])
+            end_years.add(dataset["end_year"])
+            logger.info("Found start and end years specified for %s", dataset)
+
+        # Read from the cube if not
+        else:
+            cube = iris.load_cube(dataset["filename"])
+            points = cube.coord("time").points
+            units = cube.coord("time").units
+            datetimes = units.num2date(points)
+            start_year = min(datetimes).year
+            logger.info("Dataset %s starts at year %", dataset, start_year)
+            end_year = max(datetimes).year
+            logger.info("Dataset %s ends at year %", dataset, end_year)
+
+            # Add to list
+            start_years.add(start_year)
+            end_years.add(end_year)
+
+    # Warn if they aren't all the same
+    if len(start_years) > 1 or len(end_years) > 1:
+        logger.warning("Not all datasets model the same data period.")
+
+    # Take the largest possible range
+    start_year = min(start_years)
+    end_year = max(end_years)
+    logger.info("Using start year % and end year % as data period", start_year, end_year)
+
+    return start_year, end_year
+
+
 def retrieve_periods(cfg):
-    """Read from the observations section of the recipe."""
-    # This feeds through from the recipe in both diagnostics
-    data_start = cfg["observations"]["data_period"]["start_year"]
-    data_end = cfg["observations"]["data_period"]["end_year"]
+    """Retrieve both dataset and observational time ranges."""
+    data_start, data_end = get_start_and_end_years_for_datasets(cfg)
     data_period = f"{data_start}-{data_end}"
     logger.debug("Data period = %s", data_period)
 
@@ -122,7 +164,7 @@ def retrieve_periods(cfg):
     periods = [data_period]
 
     # This is only present in the arctic diagnostic
-    if "observation_period" in cfg["observations"]:
+    if "observations" in cfg:
         obs_start = cfg["observations"]["observation_period"]["start_year"]
         obs_end = cfg["observations"]["observation_period"]["end_year"]
         obs_period = f"{obs_start}-{obs_end}"
