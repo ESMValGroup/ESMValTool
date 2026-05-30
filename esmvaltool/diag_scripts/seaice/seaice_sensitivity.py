@@ -124,7 +124,7 @@ def get_start_and_end_years_for_datasets(cfg):
             # Add to list
             start_years.add(dataset["start_year"])
             end_years.add(dataset["end_year"])
-            logger.info("Found start and end years specified for %s", dataset)
+            logger.info("Found start and end years specified for %s", dataset["dataset"])
 
         # Read from the cube if not
         else:
@@ -133,9 +133,9 @@ def get_start_and_end_years_for_datasets(cfg):
             units = cube.coord("time").units
             datetimes = units.num2date(points)
             start_year = min(datetimes).year
-            logger.info("Dataset %s starts at year %", dataset, start_year)
+            logger.info("Dataset %s starts at year %", dataset["dataset"], start_year)
             end_year = max(datetimes).year
-            logger.info("Dataset %s ends at year %", dataset, end_year)
+            logger.info("Dataset %s ends at year %", dataset["dataset"], end_year)
 
             # Add to list
             start_years.add(start_year)
@@ -272,6 +272,8 @@ def fetch_cube(dataset, variable, time_range, cfg):
 
     # Read the time constraint from the period
     start_year, end_year = time_range.split("-")
+
+    # The constraint will only limit data if data outside the period is available
     time_constraint = iris.Constraint(
         time=lambda cell: int(start_year) <= cell.point.year <= int(end_year)
     )
