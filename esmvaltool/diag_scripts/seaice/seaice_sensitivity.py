@@ -120,11 +120,13 @@ def get_start_and_end_years_for_datasets(cfg):
     for dataset in datasets:
         # Read the start year from the recipe if possible
         if "start_year" in dataset and "end_year" in dataset:
-
             # Add to list
             start_years.add(dataset["start_year"])
             end_years.add(dataset["end_year"])
-            logger.info("Found start and end years specified for %s", dataset["dataset"])
+            logger.info(
+                "Found start and end years specified for %s",
+                dataset["dataset"],
+            )
 
         # Read from the cube if not
         else:
@@ -133,9 +135,13 @@ def get_start_and_end_years_for_datasets(cfg):
             units = cube.coord("time").units
             datetimes = units.num2date(points)
             start_year = min(datetimes).year
-            logger.info("Dataset %s starts at year %", dataset["dataset"], start_year)
+            logger.info(
+                "Dataset %s starts at year %", dataset["dataset"], start_year
+            )
             end_year = max(datetimes).year
-            logger.info("Dataset %s ends at year %", dataset["dataset"], end_year)
+            logger.info(
+                "Dataset %s ends at year %", dataset["dataset"], end_year
+            )
 
             # Add to list
             start_years.add(start_year)
@@ -148,7 +154,11 @@ def get_start_and_end_years_for_datasets(cfg):
     # Take the largest possible range
     start_year = min(start_years)
     end_year = max(end_years)
-    logger.info("Using start year % and end year % as data period", start_year, end_year)
+    logger.info(
+        "Using start year % and end year % as data period",
+        start_year,
+        end_year,
+    )
 
     return start_year, end_year
 
