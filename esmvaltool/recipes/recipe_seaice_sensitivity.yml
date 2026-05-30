@@ -21,7 +21,7 @@ documentation:
   maintainer:
     - parsons_naomi
 
-model_defaults: &model_defaults { ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
+model_defaults: &model_defaults { ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6, start_year: &data_start 1979, end_year: &data_end 2014}
 model_datasets: &model_datasets
   - {<<: *model_defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, label_dataset: True}
   - {<<: *model_defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, label_dataset: True}
@@ -40,7 +40,7 @@ model_datasets: &model_datasets
   - {<<: *model_defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
   - {<<: *model_defaults, dataset: MRI-ESM2-0, institute: MRI}
 
-obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2}
+obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2, start_year: *data_start, end_year: *data_end}
 tasa_obs: &tasa_obs
   - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }
   - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
@@ -53,21 +53,6 @@ antarctic_siconc_obs: &antarctic_siconc_obs
 
 
 preprocessors:
-  extract_test_period:
-    &extract_test_period
-    extract_time:
-      start_day: 1
-      start_month: 1
-      start_year: &data_start 1979
-      end_day: 31
-      end_month: 12
-      end_year: &data_end 2014
-
-  extract_sept:
-    &extract_sept
-    extract_month:
-      month: 9
-
   nh_total_area:
     &nh_total_area
     extract_region:
@@ -102,18 +87,20 @@ preprocessors:
     annual_statistics:
       operator: mean
 
+  extract_sept:
+    &extract_sept
+    extract_month:
+      month: 9
+
   pp_arctic_sept_sea_ice:
-    <<: *extract_test_period
     <<: *extract_sept
     <<: *nh_total_area
 
   pp_antarctic_avg_ann_sea_ice:
-    <<: *extract_test_period
     <<: *annual_mean
     <<: *sh_total_area
 
   pp_avg_ann_global_temp:
-    <<: *extract_test_period
     <<: *global_mean
     <<: *annual_mean
 
