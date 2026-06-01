@@ -83,6 +83,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from iris.coords import AuxCoord
 from iris.cube import Cube
 from iris.exceptions import ConstraintMismatchError
 from scipy.stats import linregress
@@ -390,6 +391,29 @@ def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
             getattr(plt, func)(arg)
 
 
+def _save(
+    cube_emissions: Cube,
+    cube_temperature: Cube,
+    group: str,
+    cfg: dict,
+) -> Path:
+    """Save data of temperature vs. emissions plot."""
+    logger.info("Saving data for group '%s'", group)
+    aux_coord_emissions = AuxCoord(
+        cube_emissions.data,
+        standard_name=cube_emissions.standard_name,
+        var_name=cube_emissions.var_name,
+        long_name=cube_emissions.long_name,
+        units=cube_emissions.units,
+        attributes=cube_emissions.attributes.locals,
+    )
+    cube = cube_temperature.copy()
+    cube.add_aux_coord(aux_coord_emissions, 0)
+    netcdf_path = Path(get_diagnostic_filename(group, cfg))
+    io.iris_save(cube, netcdf_path)
+    return netcdf_path
+
+
 def main(cfg: dict) -> None:
     """Run diagnostic."""
     cfg = _get_default_cfg(cfg)
@@ -399,7 +423,7 @@ def main(cfg: dict) -> None:
     input_data = _load_and_preprocess_data(cfg)
     grouped_anomaly_data = _get_grouped_anomaly_data(cfg, input_data)
 
-    # Plot data
+    # Plot temperature vs. emissions
     with mpl.rc_context(cfg["matplotlib_rc_params"]):
         plot_path = _plot(cfg, grouped_anomaly_data)
     provenance_record = {
@@ -413,6 +437,13 @@ def main(cfg: dict) -> None:
     provenance_record["caption"] = cfg["caption"]
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_path, provenance_record)
+
+    # Save temperature vs. emissions
+    provenance_record.pop("plot_types")
+    for group, (cube_e, cube_t) in grouped_anomaly_data.items():
+        netcdf_path = _save(cube_e, cube_t, group, cfg)
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(netcdf_path, provenance_record)
 
     # Calculate TCRE
     netcdf_path = _calculate_tcre(cfg, grouped_anomaly_data)
