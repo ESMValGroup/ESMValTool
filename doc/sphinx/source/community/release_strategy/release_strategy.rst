@@ -57,8 +57,6 @@ Upcoming releases
 +------------+-----------------------+------------------+
 |  Date      | Release manager       | Version          |
 +============+=======================+==================+
-| 2026 Q1    | DLR                   | 2.14.0           |
-+------------+-----------------------+------------------+
 | 2026 Q2    | ACCESS-NRI            | 2.15.0           |
 +------------+-----------------------+------------------+
 | 2026 Q4    | Met Office            | 2.16.0           |
@@ -74,6 +72,20 @@ Upcoming releases
 Past releases
 ^^^^^^^^^^^^^
 
+- 2.14.0 (Release Manager: `Manuel Schlund`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2026-02-02 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2026-02-16 | 2026-03-10 | :esmvalcore-release:`v2.14.0` released | :ref:`esmvalcore:changelog-v2-14-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2026-02-16 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2026-03-02 | 2026-03-13 | :release:`v2.14.0` released            |      :ref:`changelog-v2-14-0`       |
++------------+------------+----------------------------------------+-------------------------------------+
+
 - 2.13.0 (Release Manager: `Julien Lenhardt`_)
 
 +------------+------------+----------------------------------------+-------------------------------------+
@@ -81,11 +93,11 @@ Past releases
 +============+============+========================================+=====================================+
 | 2025-08-18 |            | ESMValCore `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2025-08-29 | 2025-10-16 | ESMValCore Release 2.13.0              | :ref:`esmvalcore:changelog-v2-13-0` |
+| 2025-08-29 | 2025-10-16 | :esmvalcore-release:`v2.13.0` released | :ref:`esmvalcore:changelog-v2-13-0` |
 +------------+------------+----------------------------------------+-------------------------------------+
 | 2025-09-01 |            | ESMValTool `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2025-09-12 | 2025-10-20 | ESMValTool Release 2.13.0              |      :ref:`changelog-v2-13-0`       |
+| 2025-09-12 | 2025-10-20 | :release:`v2.13.0` released            |      :ref:`changelog-v2-13-0`       |
 +------------+------------+----------------------------------------+-------------------------------------+
 
 - 2.12.0 (Release Manager: `Saskia Loosveldt Tomas`_)
@@ -617,17 +629,12 @@ Contact the feedstock maintainers if you want to become a maintainer yourself.
 9. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are three main Docker container images available for ESMValTool on
+There are two main Docker container images available for ESMValTool on
 `Dockerhub <https://hub.docker.com/r/esmvalgroup/esmvaltool/tags>`_:
 
 - ``esmvalgroup/esmvaltool:stable``, built from `docker/Dockerfile <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile>`_,
   this is a tag that is always the same as the latest released version.
   This image is only built by Dockerhub when a new release is created.
-- ``esmvalgroup/esmvaltool:development``, built from `docker/Dockerfile.dev <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.dev>`_,
-  this is a tag that always points to the latest development version of
-  ESMValTool.
-  This image is built by Dockerhub every time there is a new commit to the
-  ``main`` branch on Github.
 - ``esmvalgroup/esmvaltool:experimental``, built from `docker/Dockerfile.exp <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.exp>`_,
   this is a tag that always points to the latest development version of
   ESMValTool with the latest development version of ESMValCore.
@@ -637,7 +644,7 @@ There are three main Docker container images available for ESMValTool on
   This image is built by Dockerhub every time there is a new commit to the
   ESMValTool ``main`` branch on Github.
 
-In addition to the three images mentioned above, there is an image available
+In addition to the two images mentioned above, there is an image available
 for every release (e.g. ``esmvalgroup/esmvaltool:v2.5.0``).
 When working on the Docker images, always try to follow the
 `best practices <https://docs.docker.com/develop/develop-images/dockerfile_best-practices/>`__.
@@ -662,7 +669,7 @@ the container image for v2.5.0 of the tool run:
 
    git checkout v2.5.0
    git clean -x
-   docker build -t esmvalgroup/esmvaltool:v2.5.0 . -f docker/Dockerfile
+   docker build --pull -t esmvalgroup/esmvaltool:v2.5.0 . -f docker/Dockerfile
    docker push esmvalgroup/esmvaltool:v2.5.0
 
 and if it is the latest release that you are updating, also run
