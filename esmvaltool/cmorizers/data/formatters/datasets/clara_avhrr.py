@@ -84,7 +84,7 @@ def _create_masked_cube(cube, year, month, day):
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
     axis2def = {"T": "time", "X": "longitude", "Y": "latitude"}
-    axes = ["T", "X", "Y"]
+    axes = axis2def.keys()
 
     for axis in axes:
         coord_def = definition.coordinates.get(axis2def[axis])
