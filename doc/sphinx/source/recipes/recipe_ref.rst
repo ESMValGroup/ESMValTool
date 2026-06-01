@@ -19,7 +19,7 @@ Recipes are stored in `recipes/`
   Calculate equilibrium climate sensitivity (ECS)
 * :ref:`ref/recipe_ref_tcr.yml <recipes_tcr>`:
   Calculate transient climate response (TCR)
-* :ref:`recipe_tcre.yml <recipes_tcre>`:
+* :ref:`ref/recipe_ref_tcre.yml <recipes_tcre>`:
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
