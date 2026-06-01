@@ -298,10 +298,7 @@ def calculate_annual_trend(cube):
     logger.debug("Calculating annual trend for cube %s.", cube.name())
 
     # Depending on preprocessor, coord may be 'year' or 'time'
-    if "year" in cube.coords():
-        no_years = list(range(len(cube.coord("years").points)))
-    else:
-        no_years = list(range(len(cube.coord("time").points)))
+    no_years = np.arange(cube.coord("time").shape[0])
 
     # Return all of slope, intercept, rvalue, pvalue, stderr as hatching needs p
     return linregress(no_years, cube.data)
