@@ -136,11 +136,11 @@ def get_start_and_end_years_for_datasets(cfg):
             datetimes = units.num2date(points)
             start_year = min(datetimes).year
             logger.info(
-                "Dataset %s starts at year %", dataset["dataset"], start_year
+                "Dataset %s starts at year %", dataset["dataset"], start_year,
             )
             end_year = max(datetimes).year
             logger.info(
-                "Dataset %s ends at year %", dataset["dataset"], end_year
+                "Dataset %s ends at year %", dataset["dataset"], end_year,
             )
 
             # Add to list
@@ -185,7 +185,7 @@ def retrieve_periods(cfg):
             periods = [obs_period, data_period]
 
     return Periods(
-        periods=periods, obs_period=obs_period, data_period=data_period
+        periods=periods, obs_period=obs_period, data_period=data_period,
     )
 
 
@@ -244,7 +244,7 @@ def create_blank_dataframe(dataset_dict, columns):
 
     # Adjustment to account for multi-row headers
     df.columns = pd.MultiIndex.from_tuples(
-        [("", "", col) for col in df.columns]
+        [("", "", col,) for col in df.columns]
     )
 
     # Reindex to ensure all required columns are present
@@ -317,7 +317,7 @@ def calculate_direct_stats(dataset, time_range, cfg):
 
 
 def calculate_cross_dataset_stats(
-    tasa_dataset, siconc_dataset, time_range, cfg
+    tasa_dataset, siconc_dataset, time_range, cfg,
 ):
     """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
     logger.debug(
@@ -406,7 +406,7 @@ def add_values_to_df(df, period, cfg):
         tasa_cube = fetch_cube(gmst_dataset, "tasa", period, cfg)
         ann_tasa_trend = calculate_annual_trend(tasa_cube)
         logger.debug(
-            "Dataset %s tasa annual trend: %s", gmst_dataset, ann_tasa_trend
+            "Dataset %s tasa annual trend: %s", gmst_dataset, ann_tasa_trend,
         )
         # Add values to dataframe
         df.loc[combined_name, (period, "gmst_over_time", "slope")] = (
@@ -427,7 +427,7 @@ def add_values_to_df(df, period, cfg):
         siconc_cube = fetch_cube(sia_dataset, "siconc", period, cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         logger.debug(
-            "Dataset %s siconc annual trend: %s", sia_dataset, ann_siconc_trend
+            "Dataset %s siconc annual trend: %s", sia_dataset, ann_siconc_trend,
         )
         # Add values to dataframe
         df.loc[combined_name, (period, "sia_over_time", "slope")] = (
@@ -445,10 +445,10 @@ def add_values_to_df(df, period, cfg):
 
         # Calculate sensitivity of siconc to tasa
         cross_dataset_stats = calculate_cross_dataset_stats(
-            gmst_dataset, sia_dataset, period, cfg
+            gmst_dataset, sia_dataset, period, cfg,
         )
         logger.debug(
-            "Obs pair %s sensitivity: %s", combined_name, cross_dataset_stats
+            "Obs pair %s sensitivity: %s", combined_name, cross_dataset_stats,
         )
         # Add values to dataframe
         df.loc[combined_name, (period, "sia_over_gmst", "slope")] = (
@@ -729,7 +729,7 @@ def notz_style_plot_from_df(df, cfg):
 
                 # Shade around computed observations
                 std_err = df.loc[
-                    dataset, (period, "sia_over_gmst", "std_err_slope")
+                    dataset, (period, "sia_over_gmst", "std_err_slope",)
                 ]
                 ax.fill_between(
                     [obs_x - 0.05, obs_x + 0.05],
@@ -780,7 +780,7 @@ def main(cfg):
     # Add the data for each period
     for data_period in data_periods:
         logger.info(
-            "Calculating and writing values for period %s.", data_period
+            "Calculating and writing values for period %s.", data_period,
         )
         filled = add_values_to_df(df, data_period, cfg)
 
