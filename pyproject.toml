@@ -225,6 +225,9 @@ convention = "numpy"
 "gdal" = ">=3.9.0"
 "ipython" = "*"
 "imagehash" = "*"
+intake = ">=2.0.0"
+intake-esm = ">=2025.2.3"
+gcsfs = "*"
 "iris" = ">=3.11"
 "iris-esmf-regrid" = ">=0.10.0"  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
 "jinja2" = "*"
@@ -304,7 +307,7 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "defaul
 
 # Use the development version of ESMValCore to test new features and bug fixes.
 [tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
-"ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "main" }
+"ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "intake-esm-demo" }
 # Replace the line above with the following to use a local ESMValCore repository instead.
 # "ESMValCore" = { path = "../ESMValCore", editable = true }
 
