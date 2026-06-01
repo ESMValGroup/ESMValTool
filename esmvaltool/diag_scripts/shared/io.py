@@ -3,9 +3,12 @@
 import fnmatch
 import logging
 import os
+from collections.abc import Iterable
+from pathlib import Path
 from pprint import pformat
 
 import iris
+import iris.cube
 import numpy as np
 
 from .iris_helpers import unify_1d_cubes
@@ -201,22 +204,25 @@ def metadata_to_netcdf(cube, metadata):
     iris_save(cube, metadata["filename"])
 
 
-def iris_save(source, path):
+def iris_save(
+    source: iris.cube.Cube | iris.cube.CubeList | Iterable[iris.cube.Cube],
+    path: Path | str,
+) -> None:
     """Save :mod:`iris` objects with correct attributes.
 
     Parameters
     ----------
-    source : iris.cube.Cube or iterable of iris.cube.Cube
+    source:
         Cube(s) to be saved.
-    path : str
+    paths
         Path to the new file.
 
     """
     if isinstance(source, iris.cube.Cube):
-        source.attributes["filename"] = path
+        source.attributes["filename"] = str(path)
     else:
         for cube in source:
-            cube.attributes["filename"] = path
+            cube.attributes["filename"] = str(path)
     iris.save(source, path)
     logger.info("Wrote %s", path)
 
