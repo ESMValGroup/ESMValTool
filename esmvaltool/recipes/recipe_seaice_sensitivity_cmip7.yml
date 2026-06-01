@@ -21,40 +21,22 @@ documentation:
   maintainer:
     - parsons_naomi
 
-model_defaults: &model_defaults {activity: CMIP, project: CMIP7, exp: historical, }
+model_defaults: &model_defaults {activity: CMIP, project: CMIP7, exp: historical, start_year: &data_start 1979, end_year: &data_end 2020}
 model_datasets: &model_datasets
   - {<<: *model_defaults, dataset: UKCM2-0-LL, institute: MOHC, ensemble: r1i1p1f3, exp: 1pctCO2, grid: g100, label_dataset: True}
 
-obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2}
+obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2, start_year: *data_start, end_year: *data_end}
 tasa_obs: &tasa_obs
 #  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }
   - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
 
 arctic_siconc_obs: &arctic_siconc_obs
-  - { <<: *obs_defaults, dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
-  - { <<: *obs_defaults, dataset: HadISST, type: reanaly, version: 1, mip: OImon}
+  - { <<: *obs_defaults, dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon}
 
 antarctic_siconc_obs: &antarctic_siconc_obs
-  - { <<: *obs_defaults, dataset: OSI-450-sh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
-  - { <<: *obs_defaults, dataset: HadISST, type: reanaly, version: 1, mip: OImon}
-
+  - { <<: *obs_defaults, dataset: OSI-450-sh, type: reanaly, version: v3, mip: OImon}
 
 preprocessors:
-  extract_test_period:
-    &extract_test_period
-    extract_time:
-      start_day: 1
-      start_month: 1
-      start_year: &data_start 1900  # TODO: 1979
-      end_day: 31
-      end_month: 12
-      end_year: &data_end 1909  # TODO: 2021
-
-  extract_sept:
-    &extract_sept
-    extract_month:
-      month: 9
-
   nh_total_area:
     &nh_total_area
     extract_region:
@@ -89,18 +71,20 @@ preprocessors:
     annual_statistics:
       operator: mean
 
+  extract_sept:
+    &extract_sept
+    extract_month:
+      month: 9
+
   pp_arctic_sept_sea_ice:
-    <<: *extract_test_period
     <<: *extract_sept
     <<: *nh_total_area
 
   pp_antarctic_avg_ann_sea_ice:
-    <<: *extract_test_period
     <<: *annual_mean
     <<: *sh_total_area
 
   pp_avg_ann_global_temp:
-    <<: *extract_test_period
     <<: *global_mean
     <<: *annual_mean
 
@@ -140,9 +124,6 @@ diagnostics:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
         observations:
-          data_period: &data_period
-            start_year: *data_start
-            end_year: *data_end
           observation_period:
             start_year: 1979
             end_year: 2014
@@ -172,5 +153,3 @@ diagnostics:
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
-        observations:
-          data_period: *data_period
