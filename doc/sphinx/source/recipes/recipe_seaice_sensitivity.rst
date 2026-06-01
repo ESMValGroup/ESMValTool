@@ -63,7 +63,7 @@ All, some or no datasets may be labelled in the plots, using ``label_dataset: Tr
 
    This is because the linear regression of sea ice area against temperature
    is calculated directly for some values in the plots,
-   and so both types of dataset must have the same number of data points.
+   and so both types of observation must have the same number of data points.
 
 
 References
