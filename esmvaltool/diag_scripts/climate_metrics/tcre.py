@@ -83,8 +83,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from iris.coords import AuxCoord
-from iris.cube import Cube
+from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
 from scipy.stats import linregress
 
@@ -279,6 +278,7 @@ def _get_grouped_anomaly_data(
             cube_t_target.dtype,
         )
         cube_t_anomaly = cube_t_target.copy(cube_t_target.data - ref)
+        cube_t_anomaly.long_name = "{cube_t_anomaly.long_name} Anomaly"
 
         grouped_anomaly_data[group] = (cube_e_target, cube_t_anomaly)
 
@@ -399,18 +399,9 @@ def _save(
 ) -> Path:
     """Save data of temperature vs. emissions plot."""
     logger.info("Saving data for group '%s'", group)
-    aux_coord_emissions = AuxCoord(
-        cube_emissions.data,
-        standard_name=cube_emissions.standard_name,
-        var_name=cube_emissions.var_name,
-        long_name=cube_emissions.long_name,
-        units=cube_emissions.units,
-        attributes=cube_emissions.attributes.locals,
-    )
-    cube = cube_temperature.copy()
-    cube.add_aux_coord(aux_coord_emissions, 0)
+    cubes = CubeList([cube_emissions, cube_temperature])
     netcdf_path = Path(get_diagnostic_filename(group, cfg))
-    io.iris_save(cube, netcdf_path)
+    io.iris_save(cubes, netcdf_path)
     return netcdf_path
 
 
