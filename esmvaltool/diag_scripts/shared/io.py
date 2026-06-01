@@ -214,7 +214,7 @@ def iris_save(
     ----------
     source:
         Cube(s) to be saved.
-    paths
+    path:
         Path to the new file.
 
     """
