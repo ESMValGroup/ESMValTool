@@ -226,8 +226,8 @@ def create_df_columns(periods):
     )
 
     # Add equivalent of single-level columns for dataset info
-    first_columns = pd.MultiIndex.from_arrays(
-        [["", ""], ["", ""], ["label", "type"]],
+    first_columns = pd.MultiIndex.from_product(
+        [[""], [""], ["label", "type"]],
         names=["period", "regression", "statistic"],
     )
 
@@ -493,7 +493,7 @@ def roach_style_plot_from_df(df, cfg):
             "Trends in Annual Mean Temperature And September Arctic Sea Ice"
         )
         save_as = "September Arctic sea ice trends"
-    elif first_variable["diagnostic"] == "antarctic":
+    else:
         title = (
             "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice"
         )
@@ -589,7 +589,7 @@ def notz_style_plot_from_df(df, cfg):
     if first_variable["diagnostic"] == "arctic":
         title = "September Arctic sea-ice area sensitivity\ndSIA/dGMST"
         save_as = "September Arctic sea ice sensitivity"
-    elif first_variable["diagnostic"] == "antarctic":
+    else:
         title = "Annual Antarctic sea-ice area sensitivity\ndSIA/dGMST"
         save_as = "Annual Antarctic sea ice sensitivity"
 
