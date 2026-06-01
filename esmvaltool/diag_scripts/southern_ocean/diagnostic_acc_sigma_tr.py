@@ -15,14 +15,13 @@ Please consult the documentation for help with esmvaltool's functionalities
 and best coding practices.
 """
 # place your module imports here:
-# import gsw
+import gsw
 import xarray as xr
 import numpy as np
 
 # import cmocean
 
 import logging
-
 
 # operating system manipulations (e.g. path constructions)
 import os
@@ -38,7 +37,7 @@ from esmvalcore.preprocessor import area_statistics
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic, ProvenanceLogger
 
 # reuse tools already developed for ocean diagnostics
-# from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 
 # This part sends debug statements to stdout
 # logger = logging.getLogger(os.path.basename(__file__))
@@ -47,58 +46,93 @@ from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic, Prove
 # This outputs to the run/transect/script1/log.txt file
 logger = logging.getLogger(Path(__file__).stem)
 
-# uses a class style following the example of eady_growth_rate.py.
+# module checks
+logger.info("GSW version: %s", gsw.__version__)
 
 
-class TransectDiagnostic():
+def _get_data(cfg):
+
     '''
-        Class used to compute a transect of a velocity with
-            a sigma2 contour overlaid.
+        Get the data from the input files specified in the recipe.
+        Open the files and return a dictionary of xarray datasets.
     '''
-    def __init__(self, config):
-        self.config = config
 
-    def _get_data(self):
+    #TODO needs adjusting for multi dataset recipes
 
-        input_data = self.config["input_data"]
+    input_data = cfg["input_data"]
 
-        logger.info("Input data: %s", input_data)     
+    ds = {}
+    for filename, attributes in input_data.items():
+        logger.info("Loading %s", filename)
+        variable_name = attributes["short_name"]
+        ds[variable_name] = xr.open_dataset(filename)
 
-        filenames = input_data.keys()
-        logger.info("Filenames: %s", filenames)
-        
-        # groups = group_metadata(input_data, "variable_group", sort="dataset")
-        # for group_name in groups:
-        #     logger.info("Processing variable %s", group_name)
-        #     for attributes in groups[group_name]:
-        #         logger.info("Processing dataset %s", attributes["dataset"])
-        #         input_file = attributes["filename"]
-        #         logger.info("Loading data from %s", input_file)
+    return ds
+
+def _compute_sigma(ds):
+    ''' 
+        Compute the sigma2 variable from the input dataset.
+        Uses gsw.density.sigma2 from the gsw toolbox 
+            https://teos-10.github.io/GSW-Python/_modules/gsw/_wrapped_ufuncs.html#sigma2
+    '''
+
+    # logger.info("Numpy so is: %s", ds["so"]["so"].to_numpy())
+    # logger.info("Numpy thetao is: %s", ds["thetao"]["thetao"].to_numpy())
+
+    #TODO need to convert to absolute salinity and conservative temperature
+    p = gsw.p_from_z(-ds["lev"].to_numpy(), np.mean(ds["lat"].to_numpy()))
+    logger.info("Pressure levels: %s", p)
+
+    CT = gsw.CT_from_pt(ds["so"]["so"].to_numpy(), ds["thetao"]["thetao"].to_numpy())
+    logger.info("Conservative temperature: %s", CT)
+
+    SA = gsw.SA_from_SP(ds["so"]["so"].to_numpy(), 
+                        p, 
+                        ds["lon"].to_numpy(), 
+                        ds["lat"].to_numpy())
+
+    # compute sigma2
+    sigma2 = gsw.sigma2(SA, CT)
+
+    # create a new xarray dataset with the same coordinates as the input datasets
+    sigma2_ds = xr.Dataset(
+        {
+            "sigma2": (["lev", "lat"], sigma2)
+        },
+        coords={
+            "time": ds["so"]["time"],
+            "lev": ds["so"]["lev"],
+            "lat": ds["so"]["lat"],
+            "lon": ds["so"]["lon"]
+        },
+        attrs={
+            "short_name": "sigma2",
+            "long_name": "Potential density anomaly referenced to 2000 dbar",
+            "units": "kg/m^3",
+        }
+    )
+
+    return sigma2_ds
+
+def _plot_transect(ds):
+
+    pass
 
 
-        return input_data
+def main(cfg):
+    # get the data
+    datasets = _get_data(cfg)
 
-    def _compute_sigma(self, ds):
-        ''' 
-            Compute the sigma2 contour from the input dataset.
-        '''
+    logger.info("Datasets: %s", datasets)
 
-        pass
+    sigma2_ds = _compute_sigma(datasets)
 
-    def _plot_transect(self):
+    logger.info("Sigma2 dataset: %s", sigma2_ds)
 
-        pass
-
-    def call(self):
-        input_data = self._get_data()
-        return input_data
-
-def main():
-    """Run Eady Growth Rate diagnostic."""
-    with run_diagnostic() as config:
-        diagnostic = TransectDiagnostic(config).call()
+    # _plot_transect(sigma2_ds)
 
 
 
 if __name__ == "__main__":
-    main()
+    with run_diagnostic() as config:
+        main(config)

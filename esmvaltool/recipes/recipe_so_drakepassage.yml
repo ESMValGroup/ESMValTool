@@ -18,20 +18,16 @@ preprocessors:
   # ------------------------------------------------------------------------
   # Preprocessor settings for Drake Passage transect
   # ------------------------------------------------------------------------
-  # time_mean:
-  #   climate_statistics:
-  #     operator: 'mean'
-  #     period: 'full'
-
   drakepassage_transect: # does this order matter? No.
     climate_statistics:
       operator: 'mean'
       period: 'full'
-    extract_region: # probably needs changing
-      start_longitude: 293
-      end_longitude: 300
-      start_latitude: -65
-      end_latitude: -54
+    regrid:
+      target_grid: 1x1
+      scheme: area_weighted
+    extract_transect: # probably needs changing
+      longitude: 293.0
+      latitude: [-65., -54.]
 
 diagnostics:
   # ------------------------------------------------------------------------
