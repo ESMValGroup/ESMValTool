@@ -278,7 +278,7 @@ def _get_grouped_anomaly_data(
             cube_t_target.dtype,
         )
         cube_t_anomaly = cube_t_target.copy(cube_t_target.data - ref)
-        cube_t_anomaly.long_name = "{cube_t_anomaly.long_name} Anomaly"
+        cube_t_anomaly.long_name = f"{cube_t_anomaly.long_name} Anomaly"
 
         grouped_anomaly_data[group] = (cube_e_target, cube_t_anomaly)
 
@@ -433,22 +433,20 @@ def main(cfg: dict) -> None:
     provenance_record.pop("plot_types")
     for group, (cube_e, cube_t) in grouped_anomaly_data.items():
         netcdf_path = _save(cube_e, cube_t, group, cfg)
+        provenance_record["ancestors"] = [
+            d["filename"]
+            for d in group_metadata(input_data, cfg["groupby_facet"])[group]
+        ]
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(netcdf_path, provenance_record)
 
     # Calculate TCRE
     netcdf_path = _calculate_tcre(cfg, grouped_anomaly_data)
-    provenance_record = {
-        "authors": ["schlund_manuel"],
-        "ancestors": [d["filename"] for d in input_data],
-        "caption": (
-            "Transient Climate Response to Cumulative CO2 Emissions (TCRE) "
-            "for multiple datasets."
-        ),
-        "references": ["sanderson24gmd"],
-        "realms": ["atmos"],
-        "themes": ["carbon", "bgphys"],
-    }
+    provenance_record["ancestors"] = [d["filename"] for d in input_data]
+    provenance_record["caption"] = (
+        "Transient Climate Response to Cumulative CO2 Emissions (TCRE) for "
+        "multiple datasets."
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 
