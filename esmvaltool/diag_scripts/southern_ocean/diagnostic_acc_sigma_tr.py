@@ -79,17 +79,30 @@ def _compute_sigma(ds):
     # logger.info("Numpy so is: %s", ds["so"]["so"].to_numpy())
     # logger.info("Numpy thetao is: %s", ds["thetao"]["thetao"].to_numpy())
 
-    #TODO need to convert to absolute salinity and conservative temperature
-    p = gsw.p_from_z(-ds["lev"].to_numpy(), np.mean(ds["lat"].to_numpy()))
-    logger.info("Pressure levels: %s", p)
+    # pull the data and coords as numpy arrays
+    so = ds["so"]["so"].to_numpy()              # (lev, lat)
+    thetao = ds["thetao"]["thetao"].to_numpy()  # (lev, lat)
+    depth = ds["so"]["lev"].to_numpy()          # (lev,)
+    lat = ds["so"]["lat"].to_numpy()            # (lat,)
+    lon = float(ds["so"]["lon"])                # scalar transect longitude
 
-    CT = gsw.CT_from_pt(ds["so"]["so"].to_numpy(), ds["thetao"]["thetao"].to_numpy())
-    logger.info("Conservative temperature: %s", CT)
+    # broadcast depth and lat onto the full (lev, lat) transect grid so all
+    # operands match the 2D salinity/temperature fields (gsw broadcasts
+    # every argument together element-wise).
+    depth2d, lat2d = np.meshgrid(depth, lat, indexing="ij")  # both (lev, lat)
 
-    SA = gsw.SA_from_SP(ds["so"]["so"].to_numpy(), 
-                        p, 
-                        ds["lon"].to_numpy(), 
-                        ds["lat"].to_numpy())
+    # calculate pressure from depth (latitude-dependent)
+    p = gsw.p_from_z(-depth2d, lat2d)
+    logger.info("Pressure shape: %s", p.shape)
+
+    # TEOS-10 chain: SA (absolute salinity) -> CT (conservative temp) -> sigma2.
+    # calculate absolute salinity from practical salinity
+    SA = gsw.SA_from_SP(so, p, lon, lat2d)
+    logger.info("Absolute salinity shape: %s", SA.shape)
+
+    # calculate conservative temperature from potential temperature
+    CT = gsw.CT_from_pt(SA, thetao)
+    logger.info("Conservative temperature shape: %s", CT.shape)
 
     # compute sigma2
     sigma2 = gsw.sigma2(SA, CT)
@@ -128,6 +141,7 @@ def main(cfg):
     sigma2_ds = _compute_sigma(datasets)
 
     logger.info("Sigma2 dataset: %s", sigma2_ds)
+    
 
     # _plot_transect(sigma2_ds)
 
