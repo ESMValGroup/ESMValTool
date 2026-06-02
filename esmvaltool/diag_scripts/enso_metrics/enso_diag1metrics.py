@@ -6,7 +6,6 @@ import os
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
-from pprint import pformat
 from esmvalcore.preprocessor import (
     climate_statistics,
     extract_month,
@@ -23,8 +22,8 @@ from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     group_metadata,
     run_diagnostic,
-    save_figure,
     save_data,
+    save_figure,
     select_metadata,
 )
 
@@ -237,7 +236,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO lifecycle",
             dt_ls,
         )
-
+        # save - require months
         data_to_save.append(data_to_cube(obs, months, metric))
         data_to_save.append(data_to_cube(model, months, metric))
 
@@ -278,8 +277,6 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO seasonality",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(data_values[0], None, metric))
-        data_to_save.append(data_to_cube(data_values[1], None, metric))
 
     elif metric == "13asymmetry":
         model_skew = skew(input_pair[1][var_group[0]].data, axis=0)
@@ -294,8 +291,6 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO skewness",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(obs_skew, None, metric))
-        data_to_save.append(data_to_cube(model_skew, None, metric))
 
     elif metric == "14duration":
         model = sst_regressed(input_pair[1][var_group[0]])
@@ -316,8 +311,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO duration",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(data_values[0], None, metric))
-        data_to_save.append(data_to_cube(data_values[1], None, metric))
+
     elif metric == "15diversity":
         for datas in input_pair:  # obs 0, mod 1
             events = enso_events(datas[var_group[0]])
@@ -333,6 +327,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO diversity",
             dt_ls,
         )
+
+    if metric not in ["09pattern", "10lifecycle"]:
         data_to_save.append(data_to_cube(data_values[0], None, metric))
         data_to_save.append(data_to_cube(data_values[1], None, metric))
 
