@@ -4,7 +4,7 @@ documentation:
 
   description: |
     Recipe for calculating global warming level exceedances for individual model
-    and ensemble members.
+    and ensemble members. This recipe tests CMIP7 like data.
 
   authors:
     - swaminathan_ranjini
