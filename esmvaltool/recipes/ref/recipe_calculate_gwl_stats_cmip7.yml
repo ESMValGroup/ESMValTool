@@ -77,6 +77,7 @@ diagnostics:
     variables:
       tas_anomaly:
         short_name: tas
+        branding_suffix: tavg-h2m-hxy-u
         mip: atmos
         preprocessor: calculate_anomalies
     scripts:
@@ -108,7 +109,7 @@ diagnostics:
     variables:
       tas:
         branding_suffix: tavg-h2m-hxy-u
-        mip: Amon
+        mip: atmos
         preprocessor: multi_model_gwl_stats
     scripts:
       plot_gwl_stats:
