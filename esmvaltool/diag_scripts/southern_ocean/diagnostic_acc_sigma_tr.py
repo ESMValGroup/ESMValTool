@@ -152,10 +152,14 @@ def _plot_transect(ds, sigma, cfg):
                      yincrease=False, 
                      cmap="RdBu_r")
     
-    sigma2.plot.contour(ax=ax, x="lat", y="lev",
+    ct = sigma2.plot.contour(ax=ax, x="lat", y="lev",
                         yincrease=False,
-                        colors="k")
+                        colors="k",
+                        levels=np.arange(35.5,37.5,0.25))
+    
+    plt.clabel(ct, fontsize=10, inline=True)
 
+    ax.set_ylim(4250, -10)
     ax.set_xlabel("Latitude [degrees_north]")
     ax.set_ylabel("Depth [m]")
     ax.set_title("Drake Passage Zonal Velocity Transect with Sigma2 Contours")
