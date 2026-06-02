@@ -29,12 +29,12 @@ import sys
 from pathlib import Path
 
 # to manipulate iris cubes
-import iris
+# import iris
 import matplotlib.pyplot as plt
 from esmvalcore.preprocessor import area_statistics
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic, ProvenanceLogger
+from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic, ProvenanceLogger, save_figure
 
 # reuse tools already developed for ocean diagnostics
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
@@ -127,9 +127,41 @@ def _compute_sigma(ds):
 
     return sigma2_ds
 
-def _plot_transect(ds):
+def _plot_transect(ds, sigma, cfg):
+    '''
+        Plot the transect of zonal velocity with sigma2 contours overlaid.
 
-    pass
+        Pass in the ds input like ds["uo"]
+    '''
+
+    # extract data arrays
+    sigma2 = sigma["sigma2"]
+    uo = ds["uo"]
+
+    # create the figure and axis
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    uo.plot.contourf(ax=ax, x="lat", y="lev", 
+                     yincrease=False, 
+                     cmap="RdBu_r")
+    
+    sigma2.plot.contour(ax=ax, x="lat", y="lev", 
+                        yincrease=False,
+                        colors="k")
+
+    ax.set_title("Drake Passage Zonal Velocity Transect with Sigma2 Contours")
+
+    provenance = {
+        "caption": "Zonal velocity transect across Drake Passage with sigma2 contours.",
+        "statistics": ["mean"],
+        "domains": ["drake_passage_transect"],
+        "plot_types": ["contourf", "contour"],
+        "authors": ["Thomas Wilder"],
+        "ancestors": list(cfg["input_data"].keys()),
+    }
+
+    # save the figure
+    save_figure("drakepassage_sigma2_transect", provenance, cfg)
 
 
 def main(cfg):
@@ -143,7 +175,7 @@ def main(cfg):
     logger.info("Sigma2 dataset: %s", sigma2_ds)
     
 
-    # _plot_transect(sigma2_ds)
+    _plot_transect(datasets["uo"], sigma2_ds, cfg)
 
 
 
