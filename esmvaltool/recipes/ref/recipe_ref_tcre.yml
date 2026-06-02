@@ -54,7 +54,7 @@ diagnostics:
         additional_datasets:
           - {project: CMIP7, dataset: DUMMY-MODEL, mip: atmos, frequency: mon, region: glb, exp: esm-flat10, ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19591231}
     scripts:
-      calculate_tcre:
+      calculate:
         script: climate_metrics/tcre.py
         caption: |
             Global annual mean near-surface air temperature anomaly ΔT vs.
