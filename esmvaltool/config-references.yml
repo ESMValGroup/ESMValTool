@@ -732,6 +732,10 @@ authors:
     name: Wyser, Klaus
     institute: SMHI, Sweden
     orcid:
+  wilder_thomas:
+    name: Wilder, Thomas
+    institute: NCAS, UK
+    orcid:
   # Former developers
   braeu_melanie:
     name: Braeu, Melanie
