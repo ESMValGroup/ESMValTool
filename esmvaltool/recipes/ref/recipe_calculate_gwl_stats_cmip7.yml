@@ -89,7 +89,7 @@ diagnostics:
       exp: [historical, scen7-l]
       ensemble: r1i1p1f3
       grid: g999
-      activity: CMIP
+      activity: [CMIP,ScenarioMIP]
       institute: MOHC
       mip: atmos
       frequency: mon
