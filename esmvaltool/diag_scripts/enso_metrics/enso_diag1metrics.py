@@ -318,7 +318,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             results_lon = diversity(datas[var_group[1]], events)
             results_lon["enso"] = results_lon["nino"] + results_lon["nina"]
             data_values.append(iqr(results_lon["enso"]))
-        # compute(obs, mod)
+
         val = compute(data_values[0], data_values[1])
         fig = plot_level1(
             data_values,
@@ -468,7 +468,6 @@ def group_obs_models(obs, models, metric, var_preproc, cfg):
 def save_plotdata(plotdata, metric, pairs, cfg):
     """Save both obs and model plotted data."""
     for i, cube in enumerate(plotdata):
-        # logger.info("%s, saving data \n %s", metric, pformat(pairs[i]))
         files = [attr["filename"] for attr in pairs[i]]
         data_prov = get_provenance_record(metric, files)
         datafile = [
