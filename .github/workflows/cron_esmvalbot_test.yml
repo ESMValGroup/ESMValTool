@@ -1,5 +1,9 @@
 name: Run Esmvalbot Test
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   # push:
   #   branches:
@@ -18,9 +22,10 @@ jobs:
     runs-on: 'ubuntu-latest'
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Create empty commit on branch
         run: |
           git config user.name 'Valeriu Predoi'
@@ -30,7 +35,7 @@ jobs:
       # as comment in the PR
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Auto PR
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: empty message
