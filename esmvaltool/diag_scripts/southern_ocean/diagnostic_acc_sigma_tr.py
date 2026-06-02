@@ -49,6 +49,10 @@ logger = logging.getLogger(Path(__file__).stem)
 # module checks
 logger.info("GSW version: %s", gsw.__version__)
 
+##### helper functions for the diagnostic go here #####
+
+
+##### key functions for the diagnostic go here #####
 
 def _get_data(cfg):
 
@@ -141,14 +145,19 @@ def _plot_transect(ds, sigma, cfg):
     # create the figure and axis
     fig, ax = plt.subplots(figsize=(10, 6))
 
+    # produces the grey background for bathymetry
+    ax.set_facecolor("grey")
+
     uo.plot.contourf(ax=ax, x="lat", y="lev", 
                      yincrease=False, 
                      cmap="RdBu_r")
     
-    sigma2.plot.contour(ax=ax, x="lat", y="lev", 
+    sigma2.plot.contour(ax=ax, x="lat", y="lev",
                         yincrease=False,
                         colors="k")
 
+    ax.set_xlabel("Latitude [degrees_north]")
+    ax.set_ylabel("Depth [m]")
     ax.set_title("Drake Passage Zonal Velocity Transect with Sigma2 Contours")
 
     provenance = {
