@@ -47,7 +47,7 @@ def plot_level1(input_data, cfg, provenance):
             cube,
         )
 
-        if dataset["project"] == "CMIP6":
+        if dataset["project"].startswith("CMIP"):
             qplt.plot(cube, label=dataset["dataset"])
             model_data = cube.data
         else:
@@ -201,9 +201,10 @@ def main(cfg):
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
-        logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
+        datasets = [attr["dataset"] for attr in var_attr]
+        logger.info("%s : %d, %s", grp, len(var_attr), datasets)
         pairs = [var_attr[-1]]  # obs to list
-        prov = provenance_record(grp, list(cfg["input_data"].keys()))
+        prov = provenance_record(grp, [attr["filename"] for attr in var_attr])
         for metadata in var_attr:
             logger.info("iterate though datasets\n %s", pformat(metadata))
             if metadata["project"].startswith("CMIP"):

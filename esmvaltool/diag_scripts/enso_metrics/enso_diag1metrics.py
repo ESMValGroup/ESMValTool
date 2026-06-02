@@ -6,6 +6,7 @@ import os
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
+from pprint import pformat
 from esmvalcore.preprocessor import (
     climate_statistics,
     extract_month,
@@ -23,6 +24,7 @@ from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
     save_figure,
+    save_data,
     select_metadata,
 )
 
@@ -458,8 +460,26 @@ def group_obs_models(obs, models, metric, var_preproc, cfg):
                 figure=output[1],
                 dpi=300,
             )
+
+            # save data_cubes output[2]
+            save_plotdata(output[2], metric, [obs, attributes], cfg)
+
         # clear value,fig
         output = None
+
+
+def save_plotdata(plotdata, metric, pairs, cfg):
+    """Save both obs and model plotted data."""
+    for i, cube in enumerate(plotdata):
+        # logger.info("%s, saving data \n %s", metric, pformat(pairs[i]))
+        files = [attr["filename"] for attr in pairs[i]]
+        data_prov = get_provenance_record(metric, files)
+        datafile = [
+            pairs[i][0]["dataset"],
+            pairs[i][0]["short_name"],
+            metric,
+        ]
+        save_data("_".join(datafile), data_prov, cfg, cube)
 
 
 def get_provenance_record(metric, ancestor_files):

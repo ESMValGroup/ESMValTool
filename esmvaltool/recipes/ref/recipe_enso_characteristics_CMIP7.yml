@@ -28,8 +28,8 @@ datasets:
     region: glb
 
   # observations - use one
-  # - {dataset: NOAA-ERSSTv5, version: v5, project: OBS6, type: reanaly, tier: 2, mip: Omon}
-  - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+  # - {dataset: NOAA-ERSSTv5, version: v5, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2021}
+  - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2018}
 
 preprocessors:
   ssta_enso: &base_enso  # pattern, lifecycle w/o month, duration, diversity

@@ -48,6 +48,7 @@ def plotmaps_level3(input_data, itcz=False):
         "ts": np.arange(20, 31, 1),
         "tauu": np.arange(-80, 90, 10),
     }
+    cubes = []
     for plt_pos, dataset in enumerate(input_data, start=121):
         logger.info(
             "dataset: %s - %s",
@@ -56,6 +57,8 @@ def plotmaps_level3(input_data, itcz=False):
         )
         cube, cbar_label, x_label = load_seacycle_stat(dataset, itcz)
 
+        # return cubes to save
+        cubes.append(cube)
         ax1 = plt.subplot(plt_pos)
         cf1 = iplt.contourf(
             cube,
@@ -78,7 +81,7 @@ def plotmaps_level3(input_data, itcz=False):
     cbar = fig.colorbar(cf1, cax=cax, orientation="horizontal", extend="both")
     cbar.set_label(cbar_label)
 
-    return fig
+    return fig, cubes
 
 
 def load_seacycle_stat(dataset, itcz=False):
@@ -176,7 +179,7 @@ def save_plotdata(plotdata, group, pairs, cfg):
         datafile = [
             pairs[i]["dataset"],
             pairs[i]["short_name"],
-            pairs[i]["preprocessor"],
+            group,
         ]
         save_data("_".join(datafile), data_prov, cfg, cube)
 
@@ -193,7 +196,8 @@ def main(cfg):
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
-        logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
+        datasets = [attr["dataset"] for attr in var_attr]
+        logger.info("%s : %d, %s", grp, len(var_attr), datasets)
         if grp in ["pr_seacycle", "sst_seacycle", "tauu_seacycle"]:
             for metadata in var_attr:
                 # create pairs, add obs first to list
@@ -201,8 +205,8 @@ def main(cfg):
                 logger.info("iterate though datasets\n %s", pformat(metadata))
                 if metadata["project"].startswith("CMIP"):
                     pairs.append(metadata)
-                    fig = plotmaps_level3(pairs, itcz=False)
-                    # save_plotdata(data_cubes, grp, pairs, cfg)
+                    fig, data_cubes = plotmaps_level3(pairs, itcz=False)
+                    save_plotdata(data_cubes, grp, pairs, cfg)
                     filename = "_".join(
                         [
                             metadata["dataset"],
@@ -224,7 +228,8 @@ def main(cfg):
                     if grp == "pr_seacycle":
                         # replace pr with doubleITCZ
                         grp_itcz = "doubleITCZ_seacycle"
-                        fig = plotmaps_level3(pairs, itcz=True)
+                        fig, data_cubes = plotmaps_level3(pairs, itcz=True)
+                        save_plotdata(data_cubes, grp_itcz, pairs, cfg)
                         filename = "_".join(
                             [
                                 metadata["dataset"],
