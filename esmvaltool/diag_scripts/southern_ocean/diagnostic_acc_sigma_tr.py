@@ -165,7 +165,7 @@ def _plot_transect(ds, sigma, cfg):
         "statistics": ["mean"],
         "domains": ["drake_passage_transect"],
         "plot_types": ["contourf", "contour"],
-        "authors": ["Thomas Wilder"],
+        "authors": ["wilder_thomas"],
         "ancestors": list(cfg["input_data"].keys()),
     }
 

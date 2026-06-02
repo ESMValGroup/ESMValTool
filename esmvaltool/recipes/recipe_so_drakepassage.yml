@@ -9,7 +9,7 @@ documentation:
     Drake Passage zonal velocity transect with sigma contour
 
   authors:
-    - demora_lee
+    - wilder_thomas
 
 datasets:
   - dataset: HadGEM3-GC31-LL
