@@ -303,7 +303,6 @@ def calculate_annual_trend(cube):
     """Calculate the linear trend of a cube over time using scipy.stats.linregress."""
     logger.debug("Calculating annual trend for cube %s.", cube.name())
 
-    # Depending on preprocessor, coord may be 'year' or 'time'
     no_years = np.arange(cube.coord("time").shape[0])
 
     # Return all of slope, intercept, rvalue, pvalue, stderr as hatching needs p
