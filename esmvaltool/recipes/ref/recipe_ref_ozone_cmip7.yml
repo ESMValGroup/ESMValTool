@@ -37,7 +37,7 @@ preprocessors:
       operator: mean
     extract_region:
       start_latitude: 60
-      end_latitude: 85
+      end_latitude: 80
       start_longitude: 0
       end_longitude: 360
     extract_month:
@@ -168,7 +168,7 @@ diagnostics:
               OBS:
                 color: black
             pyplot_kwargs:
-              title: Total Column Ozone, 60-85N, March
+              title: Total Column Ozone, 60-80N, March
 
   lat_time_mapplot:
     variables:
