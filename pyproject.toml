@@ -358,12 +358,7 @@ platforms = ["linux-64"]
 "nco" = "*"
 "imagemagick" = "*"
 
-# Feature for running diagnostics that also require pys2index.
-[tool.pixi.feature.pys2index]
-platforms = ["linux-64"]
-
 [tool.pixi.feature.pys2index.dependencies]
-"python" = ">=3.12,<3.14"
 "pys2index" = "*"
 
 # Feature for running diagnostics that also require R.
