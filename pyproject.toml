@@ -298,7 +298,7 @@ test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312"
 test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "py313" }
 test-py314 = { features = ["py314", "esmvalcore", "test"], solve-group = "default" }
 # Special environment to have pys2index installed (Python<3.14)
-esmvaltool-pys2index = { features = ["esmvalcore", "pys2index"], solve-group = "pys2index" }
+esmvaltool-pys2index = { features = ["esmvalcore", "pys2index"], solve-group = ["py312", "py313", "ncl", "esmvaltool"] }
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
