@@ -283,13 +283,13 @@ platforms = ["linux-64", "osx-arm64"]
 default = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
 esmvaltool-python = { features = ["esmvalcore"], solve-group = "default" }
 # Environment for running diagnostics that also require NCL.
-esmvaltool-ncl-dev = { features = ["esmvalcore", "ncl", "dev", "doc", "test"], solve-group = "ncl" }
+esmvaltool-ncl-dev = { features = ["esmvalcore", "ncl", "dev", "doc", "pys2index", "test"], solve-group = "ncl" }
 esmvaltool-ncl = { features = ["esmvalcore", "ncl", "pys2index"], solve-group = "ncl" }
 # Environment for running diagnostics that also require R.
 esmvaltool-r-dev = { features = ["esmvalcore", "r", "dev", "doc", "test"], solve-group = "r" }
 esmvaltool-r = { features = ["esmvalcore", "r"], solve-group = "r" }
 # Environment for running any diagnostic.
-esmvaltool-dev = { features = ["esmvalcore", "ncl", "r", "dev", "doc", "test"], solve-group = "esmvaltool" }
+esmvaltool-dev = { features = ["esmvalcore", "ncl", "r", "dev", "doc", "pys2index", "test"], solve-group = "esmvaltool" }
 esmvaltool = { features = ["esmvalcore", "ncl", "pys2index", "r"], solve-group = "esmvaltool" }
 # Environment with the development version of ESMValCore for testing new features and bug fixes.
 esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
