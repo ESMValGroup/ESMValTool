@@ -15,11 +15,11 @@ Available recipes
 
 Recipes are stored in `recipes/`
 
-* :ref:`recipe_ecs.yml <recipes_ecs>`:
+* :ref:`ref/recipe_ref_ecs.yml <recipes_ecs>`:
   Calculate equilibrium climate sensitivity (ECS)
-* :ref:`recipe_tcr.yml <recipes_tcr>`:
+* :ref:`ref/recipe_ref_tcr.yml <recipes_tcr>`:
   Calculate transient climate response (TCR)
-* :ref:`recipe_tcre.yml <recipes_tcre>`:
+* :ref:`ref/recipe_ref_tcre.yml <recipes_tcre>`:
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
@@ -40,7 +40,8 @@ Recipes are stored in `recipes/`
   total column ozone vs. annual cycle map plot, altitude vs. zonal mean
   ozone profile climatology map plot
 * :ref:`ref/recipe_ref_fire.yml <recipe_ref_fire>`:
-   Maps of burnt area fraction, fire weather control, and fuel load continuity control.
+  Maps of burnt area fraction, fire weather control, and fuel load continuity
+  control.
 
 
 Example plots:
