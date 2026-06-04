@@ -7,6 +7,9 @@ datasets:
     last_access: 2025-07-26
     info: |
       Aerosol Optical Depth information from a worldwide network of stations.
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   AGCD:
     tier: 2
@@ -1260,6 +1263,9 @@ datasets:
     info: |
       Download the following archive:
       ch4_surface-flask_ccgg_text.tar.gz
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   NOAA-GML-SURFACE-FLASK-CO2:
     tier: 2
@@ -1268,6 +1274,9 @@ datasets:
     info: |
       Download the following archive:
       co2_surface-flask_ccgg_text.tar.gz
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   NOAAGlobalTemp:
     tier: 2
@@ -1292,6 +1301,9 @@ datasets:
     info: |
       Download the following archive:
       n2o_surface-flask_ccgg_text.tar.gz
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   NSIDC-0116-sh:
     tier: 3
