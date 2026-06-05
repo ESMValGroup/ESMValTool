@@ -80,7 +80,12 @@ def fix_cube_attributes(cube):
         print(cube.attributes)
     return cube
 
-def compute_cube_diff(cfg, dict1, dict2, output_basename, skew=None):
+def load_and_update_dict(metadata, variable, target_dict):
+    """Load data for variable and update target_dict if successful."""
+    if (item := load_data(metadata, variable, get_filenames=True)):
+        target_dict.update(item)
+
+def compute_cube_diff(cfg, dict1, dict2, output_basename):
     """
     Compute the difference between two cubes or skewness of the result and return a dictionary of results.
     1 minus 2.
@@ -100,24 +105,24 @@ def compute_cube_diff(cfg, dict1, dict2, output_basename, skew=None):
     diff_cube = cube1 - cube2
     logger.info(f"Computed difference for {dataset1}")
 
-    if skew:
-        skew_value = scipy.stats.skew(diff_cube.data, bias=False)
-        logger.info(f"Computed skewness for {dataset1}")
+    # if skew:
+    #     skew_value = scipy.stats.skew(diff_cube.data, bias=False)
+    #     logger.info(f"Computed skewness for {dataset1}")
 
-        # Create a scalar cube to hold the skewness value
-        skew_cube = iris.cube.Cube(
-            np.array(skew_value),
-            long_name="Skewness of difference",
-            var_name="skewness",
-            units="1",
-            attributes=dict(diff_cube.attributes))
+    #     # Create a scalar cube to hold the skewness value
+    #     skew_cube = iris.cube.Cube(
+    #         np.array(skew_value),
+    #         long_name="Skewness of difference",
+    #         var_name="skewness",
+    #         units="1",
+    #         attributes=dict(diff_cube.attributes))
 
-        result_cube = skew_cube
-    else:
-        result_cube = diff_cube
+    #     result_cube = skew_cube
+    # else:
+    #     result_cube = diff_cube
 
     diff_results[dataset1] = {
-        'cube': result_cube,
+        'cube': diff_cube,
         'filename': files
     }
 
@@ -125,10 +130,44 @@ def compute_cube_diff(cfg, dict1, dict2, output_basename, skew=None):
     save_prefix = get_prefix(files)
     save_string = f"{save_prefix}_{output_basename}_{dataset1}"
     provenance_record = get_provenance_record(save_string, files)
-    #result_cube = fix_cube_attributes(result_cube)
-    save_data(save_string, provenance_record, cfg, result_cube)
+    save_data(save_string, provenance_record, cfg, diff_cube)
 
     return diff_results
+
+def compute_cube_skew(cfg, input_dict, output_basename):
+    """
+    Compute the skewness of cube and return a dictionary of results.
+    """
+
+    (dataset, info), = input_dict.items()
+    cube = info['cube'] 
+    file = info['filename']
+
+    skew_results = {}
+    skew_value = scipy.stats.skew(cube.data, bias=False)
+    logger.info(f"Computed skewness for cube")
+
+    # Create a scalar cube to hold the skewness value
+    skew_cube = iris.cube.Cube(
+        np.array(skew_value),
+        long_name="Skewness of cube",
+        var_name="skewness",
+        units="1",
+        attributes=dict(cube.attributes))
+
+    skew_results[dataset] = {
+        'cube': skew_cube,
+        'filename': file
+    }
+
+    # Save output
+    save_prefix = get_prefix(file)
+    save_string = f"{save_prefix}_{output_basename}_{dataset}"
+    provenance_record = get_provenance_record(save_string, file)
+    save_data(save_string, provenance_record, cfg, skew_cube)
+
+    return skew_results
+
 
 def iso_depth_3d(CT_cube, t):
     """
@@ -171,7 +210,7 @@ def iso_depth_3d(CT_cube, t):
             p_profile = p[:, j, i]
 
             # Check for missing data
-            if ma.is_masked(CT_profile) or ma.is_masked(p_profile) or np.all(CT_profile.mask):
+            if np.all(CT_profile.mask):  #ma.is_masked(CT_profile) or ma.is_masked(p_profile) or np.all(CT_profile.mask):
                 continue  # Skip if all values are masked
 
             # Find the index where CT crosses the isotherm t
@@ -255,7 +294,7 @@ def iso_depth_4d(CT_cube, t, time_measure):
                 p_profile = p[t_idx, :, j, i]
 
                 # Check for missing data
-                if ma.is_masked(CT_profile) or ma.is_masked(p_profile) or np.all(CT_profile.mask):
+                if np.all(CT_profile.mask):  #ma.is_masked(CT_profile) or ma.is_masked(p_profile) or np.all(CT_profile.mask):
                     continue  # Skip if all values are masked
 
                 # Find the index where CT crosses the isotherm t
@@ -276,14 +315,36 @@ def iso_depth_4d(CT_cube, t, time_measure):
                 # Compute isotherm depth
                 iso_depth_array[t_idx, j, i] = p_profile[idx_max] + len_inter
 
-    # Create new cube with the same lat/lon and time coordinates
-    iso_cube = iris.cube.Cube(
-        iso_depth_array,
-        long_name=f'Isotherm Depth ({t} $^\circ$C)',
-        units=p_coord.units,
-        dim_coords_and_dims=[(CT_cube.coord(time_measure), 0)],
-        aux_coords_and_dims=[(CT_cube.coord('latitude'), (1,2)), (CT_cube.coord('longitude'), (1,2))]
-    )
+        lat_coord = CT_cube.coord('latitude')
+        lon_coord = CT_cube.coord('longitude')
+        is_2d_coords = lat_coord.ndim == 2
+
+        # Then use it when creating the cube:
+        if is_2d_coords:
+            iso_cube = iris.cube.Cube(
+                iso_depth_array,
+                long_name=f'Isotherm Depth ({t} $^\\circ$C)',
+                units=p_coord.units,
+                dim_coords_and_dims=[(CT_cube.coord(time_measure), 0)],
+                aux_coords_and_dims=[(lat_coord, (1,2)), (lon_coord, (1,2))]
+            )
+        else:
+            iso_cube = iris.cube.Cube(
+                iso_depth_array,
+                long_name=f'Isotherm Depth ({t} $^\\circ$C)',
+                units=p_coord.units,
+                dim_coords_and_dims=[(CT_cube.coord(time_measure), 0)],
+                aux_coords_and_dims=[(lat_coord, 1), (lon_coord, 2)]
+            )
+
+    # # Create new cube with the same lat/lon and time coordinates
+    # iso_cube = iris.cube.Cube(
+    #     iso_depth_array,
+    #     long_name=f'Isotherm Depth ({t} $^\\circ$C)',
+    #     units=p_coord.units,
+    #     dim_coords_and_dims=[(CT_cube.coord(time_measure), 0)],
+    #     aux_coords_and_dims=[(CT_cube.coord('latitude'), (1,2)), (CT_cube.coord('longitude'), (1,2))]
+    # )
 
     return iso_cube
 
@@ -340,6 +401,7 @@ def iso_depth(CT_cube, t, time_measure=None):
 
     # Loop through time (if 4D), latitude, and longitude
     for t_idx in time_range:
+        print(f"Processing time index {t_idx} of {CT.shape[0] if is_4d else 1}")
         for j in range(CT.shape[lat_idx]):  # Latitude
             for i in range(CT.shape[lon_idx]):  # Longitude
                 # Extract vertical profile
@@ -351,7 +413,7 @@ def iso_depth(CT_cube, t, time_measure=None):
                     p_profile = p[:, j, i]
 
                 # Check for missing data
-                if ma.is_masked(CT_profile) or ma.is_masked(p_profile) or np.all(CT_profile.mask):
+                if np.all(CT_profile.mask):  #ma.is_masked(CT_profile) or ma.is_masked(p_profile) or np.all(CT_profile.mask):
                     continue
 
                 # Find where CT crosses the isotherm t
@@ -388,7 +450,7 @@ def iso_depth(CT_cube, t, time_measure=None):
         if is_2d_coords:
             iso_cube = iris.cube.Cube(
                 iso_depth_array,
-                long_name=f'Isotherm Depth ({t} $^\circ$C)',
+                long_name=f'Isotherm Depth ({t} $^\\circ$C)',
                 units=p_coord.units,
                 dim_coords_and_dims=[(CT_cube.coord(time_measure), 0)],
                 aux_coords_and_dims=[(lat_coord, (1, 2)), 
@@ -397,7 +459,7 @@ def iso_depth(CT_cube, t, time_measure=None):
         else:
             iso_cube = iris.cube.Cube(
                 iso_depth_array,
-                long_name=f'Isotherm Depth ({t} $^\circ$C)',
+                long_name=f'Isotherm Depth ({t} $^\\circ$C)',
                 units=p_coord.units,
                 dim_coords_and_dims=[(CT_cube.coord(time_measure), 0)],
                 aux_coords_and_dims=[(lat_coord, 1), 
@@ -407,7 +469,7 @@ def iso_depth(CT_cube, t, time_measure=None):
         if is_2d_coords:
             iso_cube = iris.cube.Cube(
                 iso_depth_array,
-                long_name=f'Isotherm Depth ({t} $^\circ$C)',
+                long_name=f'Isotherm Depth ({t} $^\\circ$C)',
                 units=p_coord.units,
                 aux_coords_and_dims=[(lat_coord, (0, 1)), 
                                      (lon_coord, (0, 1))]
@@ -415,7 +477,7 @@ def iso_depth(CT_cube, t, time_measure=None):
         else:
             iso_cube = iris.cube.Cube(
                 iso_depth_array,
-                long_name=f'Isotherm Depth ({t} $^\circ$C)',
+                long_name=f'Isotherm Depth ({t} $^\\circ$C)',
                 units=p_coord.units,
                 aux_coords_and_dims=[(lat_coord, 0), 
                                      (lon_coord, 1)]

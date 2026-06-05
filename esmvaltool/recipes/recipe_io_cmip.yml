@@ -1,0 +1,261 @@
+# ESMValTool
+# recipe_modes_of_variability.yml
+---
+documentation:
+  title: |
+    Metrics for the Indian Ocean. 
+
+  description: |
+    Recipe for calculating the Dipole Mode Index. 
+
+  authors:
+    - righi_mattia
+
+datasets:
+   - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f3, start_year: 1990, end_year: 2010, grid: gn}
+   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, start_year: 1990, end_year: 2010, grid: gn}
+   - {dataset: CMCC-ESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   #- {dataset: AWI-CM-1-1-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data 
+   #- {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data 
+   #- {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data 
+   #- {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   - {dataset: CAS-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   #- {dataset: IITM-ESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #no thetao exists
+   - {dataset: CMCC-CM2-HR4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   #- {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} ## might work, try again later
+   #- {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data #esmvalcore.cmor.check.CMORCheckError: There were errors in variable thetao:
+ #Generic level coordinate olevel with out_name lev has wrong standard_name or is not set.
+ #lev: units should be m, not unknown
+
+   - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+     #- {dataset: ICON-ESM-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   #- {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+   #- {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data ## errors
+   #- {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+   #- {dataset: NorCPM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} # grids vary
+
+   # These are the ones I've not got data for yet - IITM-ESM MPI-ESM-1-2-HAM ICON-ESM-LR MPI-ESM1-2-HR MPI-ESM1-2-LR
+   #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, mip: Amon, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+   #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, mip: Omon, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+   #- {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+
+preprocessors:
+  west_pole_abs_son:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+    convert_units:
+      units: celsius    
+  east_pole_abs_son:
+    extract_region:
+      start_longitude: 80
+      end_longitude: 100
+      start_latitude: -10
+      end_latitude: 0
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+    convert_units:
+      units: celsius  
+  east_pole_anomalies_son:
+    extract_region:
+      start_longitude: 80
+      end_longitude: 100
+      start_latitude: -10
+      end_latitude: 0
+    anomalies:
+      period: month
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false    
+    area_statistics:
+      operator: mean
+    extract_season:
+      season: SON
+  west_pole_anomalies_son:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    anomalies:
+      period: month
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false    
+    area_statistics:
+      operator: mean
+    extract_season:
+      season: SON
+  east_pole_timeseries:
+    extract_region:
+      start_longitude: 80
+      end_longitude: 100
+      start_latitude: -10
+      end_latitude: 0
+    area_statistics:
+      operator: mean
+    extract_season:
+      season: SON
+    convert_units:
+      units: celsius    
+  west_pole_3d_son:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    extract_volume:
+      z_min: 0.
+      z_max: 200.
+      interval_bounds: 'closed'
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+    convert_units:
+      units: celsius    
+  east_pole_3d_son:
+    extract_region:
+      start_longitude: 80
+      end_longitude: 100
+      start_latitude: -10
+      end_latitude: 0
+    extract_volume:
+      z_min: 0.
+      z_max: 200.
+      interval_bounds: 'closed'
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+    convert_units:
+      units: celsius   
+  extract_ceio_son:
+    extract_region:
+      start_longitude: 70
+      end_longitude: 90
+      start_latitude: -5
+      end_latitude: 5
+    extract_levels:
+      levels: [100000.]
+      scheme: linear
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+  extract_sctr_region:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: -5
+    extract_volume:
+      z_min: 0.
+      z_max: 200.
+      interval_bounds: 'closed'
+    convert_units:
+      units: celsius
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+
+
+diagnostics:
+  cmip_scatter:
+    variables:
+      west_ssts:
+        short_name: tos
+        mip: Omon
+        preprocessor: west_pole_abs_son
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+      east_ssts:
+        short_name: tos
+        mip: Omon
+        preprocessor: east_pole_abs_son
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+      east_ssts_ts:
+        short_name: tos
+        mip: Omon
+        preprocessor: east_pole_timeseries
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+      west_temps:
+        short_name: thetao
+        mip: Omon
+        preprocessor: west_pole_3d_son
+        additional_datasets:
+          - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, version: 4.2.2, tier: 2, start_year: 1990, end_year: 2010}
+      east_temps:
+        short_name: thetao
+        mip: Omon
+        preprocessor: east_pole_3d_son
+        additional_datasets:
+          - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, version: 4.2.2, tier: 2, start_year: 1990, end_year: 2010}
+      eq_winds:
+        short_name: ua
+        mip: Amon
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        preprocessor: extract_ceio_son
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, mip: Amon, start_year: 1990, end_year: 2010, type: reanaly, version: 1, tier: 2}
+      sctr_temps:
+        short_name: thetao
+        mip: Omon
+        preprocessor: extract_sctr_region
+        additional_datasets:
+          - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, version: 4.2.2, tier: 2, start_year: 1990, end_year: 2010}
+      east_anoms:
+        short_name: tos
+        mip: Omon
+        preprocessor: east_pole_anomalies_son
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+      west_anoms:
+        short_name: tos
+        mip: Omon
+        preprocessor: west_pole_anomalies_son
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+
+    
+    scripts: 
+      iod_script:
+        script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/tilt_scatter.py
