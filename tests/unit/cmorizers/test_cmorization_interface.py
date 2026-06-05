@@ -42,8 +42,7 @@ def test_formatters_have_required_interface(formatter: str) -> None:
                 "py2index is not available, skipping test for "
                 f"{os.path.join(formatters_folder, formatter)}.",
             )
-        else:
-            raise
+        raise
     spec = inspect.getfullargspec(member.__getattribute__("cmorization"))
     try:
         assert len(spec.args) == len(arg_names)
