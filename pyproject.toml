@@ -357,6 +357,7 @@ platforms = ["linux-64"]
 "imagemagick" = "*"
 
 [tool.pixi.feature.pys2index.dependencies]
+platforms = ["linux-64"]
 "pys2index" = "*"
 
 # Feature for running diagnostics that also require R.
