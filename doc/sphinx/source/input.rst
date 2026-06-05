@@ -82,7 +82,7 @@ Observations
 
 Observational and reanalysis products in the standard CF/CMOR format used in
 CMIP and required by ESMValTool are available via the obs4MIPs and ana4mips
-projects at the ESGF (e.g., https://pcmdi.github.io/obs4MIPs/).
+projects hosted by ESGF (e.g., https://pcmdi.github.io/obs4MIPs/).
 Their use is strongly recommended, when possible.
 
 Other datasets not available in these archives can be obtained by the user from
