@@ -1,3 +1,5 @@
+"""Compute Wheeler-Kiladis spectra for the MJO diagnostics."""
+
 import logging
 import math
 import os
@@ -16,21 +18,9 @@ from esmvaltool.diag_scripts.shared import save_figure
 
 
 class WKSpectra:
+    """Compute, smooth, and plot Wheeler-Kiladis spectra."""
+
     def __init__(self, cfg: dict, attributes: dict, check_missing: bool = True):
-        """
-        Initialize the WKSpectra object.
-
-        Parameters
-        ----------
-        cfg : dict
-            Configuration dictionary.
-        attributes : dict
-            Dictionary containing dataset attributes and cube.
-        check_missing : bool, optional
-            If True, interpolate missing data in the cube along longitude.
-        """
-        import os
-
         self.cfg = cfg # Store the configuration dictionary
         self.spd = 1 # samples per day (1 for daily data, 4 for 6-hourly data and so on)
         self.nDayWin = 96  # Wheeler-Kiladis [WK] temporal window length (days)
@@ -54,16 +44,7 @@ class WKSpectra:
         logging.info("self.cube: %s", self.cube)
 
     def interpolate_along_axis(self, cube, coord_name):
-        """
-        Interpolate masked values in a masked 3D array along a specified axis.
-
-        Parameters:
-        arr (np.ma.MaskedArray): The masked array with missing values.
-        axis (int): The axis along which to perform the interpolation.
-
-        Returns:
-        np.ndarray: The array with interpolated values along the specified axis.
-        """
+        """Interpolate masked values along a named cube coordinate."""
         interpolated_cube = cube.copy()
 
         # Get the shape of the array
@@ -114,7 +95,7 @@ class WKSpectra:
         return interpolated_cube
 
     def split_time(self, date):
-        """Split date string into yyyy, mm, dd integers"""
+        """Split a date-like value into year, month, and day integers."""
         d = str(date)
         year = int(d[0:4])
         month = int(d[5:7])
@@ -122,7 +103,7 @@ class WKSpectra:
         return year, month, day
 
     def get_dates(self, time):
-        """splits the iris time coordinate into yyyy, mm, dd"""
+        """Extract year, month, and day arrays from an Iris time coordinate."""
         if time.units.calendar == "gregorian":
             dates = unit.num2date(
                 time.points, str(time.units), unit.CALENDAR_GREGORIAN
@@ -148,7 +129,7 @@ class WKSpectra:
         return year, month, day
 
     def makecube_season_pow(self, var, wave, freq, name="spectra"):
-        """Make a cube of seasonal power."""
+        """Build a 2D Iris cube for seasonal power."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
         # var_cube.long_name = long_name
@@ -360,7 +341,7 @@ class WKSpectra:
         return varf
 
     def make_spec_cube(self, var, lat, wave, freq):
-        """Make a 3D cube of Latitude, wavenumber & frequency dimensions."""
+        """Build a 3D Iris cube with latitude, frequency, and wavenumber axes."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
         lat_coord = iris.coords.DimCoord(lat, long_name="latitude")
@@ -375,7 +356,7 @@ class WKSpectra:
         return var_cube
 
     def make_cube(self, var, wave, freq):
-        """Make a 2D cube of wavenumber & frequency dimensions."""
+        """Build a 2D Iris cube with frequency and wavenumber axes."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
         wave_coord = iris.coords.DimCoord(wave, long_name="wavenumber")
@@ -387,7 +368,7 @@ class WKSpectra:
         return var_cube
 
     def closest_index(self, array, value):
-        """Find the closest index to a given value in an array."""
+        """Return the index of the array value closest to the target value."""
         return (np.abs(array - value)).argmin()
 
     def compute_background(self, peeAS, wave, freq, minwav4smth, maxwav4smth):
@@ -563,6 +544,7 @@ class WKSpectra:
         return Afreq, Apzwn
 
     def spread_colorbar(self, C):
+        """Interpolate a sparse RGB table to 256 colors."""
         x = np.linspace(0, 256, len(C))
         xnew = np.arange(256)
         fr = scipy.interpolate.interp1d(x, C[:, 0])
@@ -574,6 +556,7 @@ class WKSpectra:
         return C
 
     def get_colors(self, reverse=False):
+        """Return the diagnostic colormap, optionally reversed."""
         # Provided RGB values
         rgb_values_str = (
             ";R   G   B\n"
@@ -621,6 +604,49 @@ class WKSpectra:
                 cm = mpl.colors.ListedColormap(C[::-1, :] / 256.0)
         return cm
 
+    def _setup_spectrum_plot(self, spec, freq, wave, levels, title):
+        """Create a standard spectrum contour plot and return its figure and axes."""
+        plt.clf()
+        minfrq4plt = 0.0
+        maxfrq4plt = 0.8
+        minwav4plt = -15
+        maxwav4plt = 15
+
+        minfrq = minfrq4plt
+        maxfrq = min([maxfrq4plt, max(freq)])
+        F, W = np.meshgrid(wave, freq)
+
+        cmap = self.get_colors()
+        norm = colors.BoundaryNorm(levels, len(cmap.colors))
+
+        fig, ax = plt.subplots()
+        contour_set = ax.contourf(
+            F, W, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
+        )
+        bar = fig.colorbar(contour_set, ax=ax)
+        bar.locator = ticker.FixedLocator(levels)
+        bar.formatter = ticker.FixedFormatter(levels)
+        bar.update_ticks()
+
+        ax.set_xlim(minwav4plt, maxwav4plt)
+        ax.set_ylim(minfrq, maxfrq)
+        ax.plot([0, 0], [0, 0.5], "k--", lw=0.5)
+
+        for frq in [80, 30, 6, 3]:
+            ax.plot([-15, 15], [1.0 / frq, 1.0 / frq], "k--", lw=0.5)
+            ax.text(-14.7, 1.0 / frq, f"{frq} days", {"color": "k"})
+
+        ax.set_title(title)
+        ax.set_xlabel("Westward     Zonal Wave Number     Eastward")
+        ax.set_ylabel("Frequency (CPD)")
+        return fig, ax
+
+    def _plot_dispersion_curves(self, ax, Apzwn, Afreq, start_index, stop_index):
+        """Overlay theoretical dispersion curves on a spectrum plot."""
+        for i in range(start_index, stop_index):
+            for j in range(3):
+                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], "k", lw=0.5)
+
     def get_provenance_record(
         self, caption
     ):  # Credit to AutoAssess _plot_mo_metrics.py
@@ -655,74 +681,17 @@ class WKSpectra:
         title="",
         figname="specAntiSym_test.ps",
     ):
-        plt.clf()  # Not sure this is still needed
-        minfrq4plt = 0.0
-        maxfrq4plt = 0.8
-        minwav4plt = -15
-        maxwav4plt = 15
-
-        minfrq = minfrq4plt
-        maxfrq = min([maxfrq4plt, max(freq)])
-        F, W = np.meshgrid(wave, freq)
-
-        cmap = self.get_colors()
-
-        norm = colors.BoundaryNorm(levels, len(cmap.colors))
-
-        # Initialize the plot
-        fig, ax = plt.subplots()
-
-        CS = ax.contourf(
-            F, W, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
-        )
-        bar = fig.colorbar(CS, ax=ax)
-
-        tick_locs = levels
-        tick_labels = levels
-        bar.locator = ticker.FixedLocator(tick_locs)
-        bar.formatter = ticker.FixedFormatter(tick_labels)
-        bar.update_ticks()
-
-        # set axes range
-        ax.set_xlim(minwav4plt, maxwav4plt)
-        ax.set_ylim(minfrq, maxfrq)
-
-        # Lines
-        ax.plot([0, 0], [0, 0.5], "k--", lw=0.5)
-
-        # Line markers of periods
-        frqs = [80, 30, 6, 3]
-        for frq in frqs:
-            ax.plot([-15, 15], [1.0 / frq, 1.0 / frq], "k--", lw=0.5)
-            ax.text(-14.7, 1.0 / frq, str(frq) + " days", {"color": "k"})
-
-        ax.set_title(title)
-        ax.set_xlabel("Westward     Zonal Wave Number     Eastward")
-        ax.set_ylabel("Frequency (CPD)")
-
-        # Symmetric waves
-        # Equatorial Rossby
-        for i in range(3):
-            for j in range(3):
-                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], "k", lw=0.5)
+        fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
+        self._plot_dispersion_curves(ax, Apzwn, Afreq, 0, 3)
 
         ax.text(-10.0, 0.15, "MRG", {"color": "k", "backgroundcolor": "w"})
         ax.text(-3.0, 0.58, "n=2 IG", {"color": "k", "backgroundcolor": "w"})
         ax.text(6.0, 0.4, "n=0 EIG", {"color": "k", "backgroundcolor": "w"})
         ax.text(-3.0, 0.475, "h=12", {"color": "k", "backgroundcolor": "w"})
 
-        # Add provenance information
-        caption = f"{figname}, [or other caption for antisymmetric]"  # TODO
+        caption = f"{figname}, [or other caption for antisymmetric]"
         provenance_dict = self.get_provenance_record(caption)
-
-        # Save the figure (also closes it)
-        save_figure(
-            figname,
-            provenance_dict,
-            self.cfg,
-            figure=fig,
-            close=True,
-        )
+        save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
 
     def plot_symmetric(
@@ -736,73 +705,17 @@ class WKSpectra:
         title="",
         figname="specSym_test.ps",
     ):
-        plt.clf()  # Again, maybe not needed
-        minfrq4plt = 0.0
-        maxfrq4plt = 0.8
-        minwav4plt = -15
-        maxwav4plt = 15
-
-        minfrq = minfrq4plt
-        maxfrq = min([maxfrq4plt, max(freq)])
-        F, W = np.meshgrid(wave, freq)
-
-        cmap = self.get_colors()
-        norm = colors.BoundaryNorm(levels, len(cmap.colors))
-
-        # Initialize the plot
-        fig, ax = plt.subplots()
-
-        CS = ax.contourf(
-            F, W, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
-        )
-        bar = fig.colorbar(CS, ax=ax)
-
-        tick_locs = levels
-        tick_labels = levels
-        bar.locator = ticker.FixedLocator(tick_locs)
-        bar.formatter = ticker.FixedFormatter(tick_labels)
-        bar.update_ticks()
-
-        # set axes range
-        ax.set_xlim(minwav4plt, maxwav4plt)
-        ax.set_ylim(minfrq, maxfrq)
-
-        # Lines
-        ax.plot([0, 0], [0, 0.5], "k--", lw=0.5)
-
-        # Line markers of periods
-        frqs = [80, 30, 6, 3]
-        for frq in frqs:
-            ax.plot([-15, 15], [1.0 / frq, 1.0 / frq], "k--", lw=0.5)
-            ax.text(-14.7, 1.0 / frq, str(frq) + " days", {"color": "k"})
-
-        ax.set_title(title)  #
-        ax.set_xlabel("Westward     Zonal Wave Number     Eastward")
-        ax.set_ylabel("Frequency (CPD)")
-
-        # Symmetric waves
-        # Equatorial Rossby
-        for i in range(3, 6):
-            for j in range(3):
-                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], "k", lw=0.5)
+        fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
+        self._plot_dispersion_curves(ax, Apzwn, Afreq, 3, 6)
 
         ax.text(11.5, 0.4, "Kelvin", {"color": "k", "backgroundcolor": "w"})
         ax.text(-10.7, 0.07, "n=1 ER", {"color": "k", "backgroundcolor": "w"})
         ax.text(-3.0, 0.45, "n=1 IG", {"color": "k", "backgroundcolor": "w"})
         ax.text(-14.0, 0.46, "h=12", {"color": "k", "backgroundcolor": "w"})
 
-        # Add provenance information
-        caption = f"{figname}, [or other caption for symmetric]"  # TODO
+        caption = f"{figname}, [or other caption for symmetric]"
         provenance_dict = self.get_provenance_record(caption)
-
-        # Save the figure (also closes it)
-        save_figure(
-            figname,
-            provenance_dict,
-            self.cfg,
-            figure=fig,
-            close=True,
-        )
+        save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
 
     def wkSpaceTime(self):
