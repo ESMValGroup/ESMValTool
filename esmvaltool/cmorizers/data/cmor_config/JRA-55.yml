@@ -4,7 +4,7 @@ attributes:
   dataset_id: JRA-55
   version: '1'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'https://rda.ucar.edu/datasets/ds628.1/'
   reference: 'jra_55'

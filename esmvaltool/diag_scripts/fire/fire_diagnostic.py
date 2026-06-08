@@ -251,7 +251,7 @@ def compute_vpd(
     tas.convert_units("degrees_C")
     # Compute vpd
     e_s = 0.6108 * da.exp(
-        da.divide(17.2694 * tas.core_data(), tas.core_data() + 237.3)
+        da.divide(17.2694 * tas.core_data(), tas.core_data() + 237.3),
     )
     # Convert kPa to Pa
     data = 1000.0 * da.multiply(1 - 0.01 * hurs.core_data(), e_s)
@@ -341,7 +341,15 @@ def main(cfg: dict) -> None:
         vars_file = {}
         for i, attributes in enumerate(group):
             logger.info("Variable %s", attributes["short_name"])
-            vars_file[attributes["short_name"]] = attributes
+            # Fallback for CMIP7 data for tasmax
+            short_name_key = (
+                "tasmax"
+                if attributes.get("branding_suffix")
+                and attributes["short_name"] == "tas"
+                and "tmax" in attributes["branding_suffix"]
+                else attributes["short_name"]
+            )
+            vars_file[short_name_key] = attributes
             # Save model information for output plot name
             if i == 0:
                 plot_file_info = "_".join(

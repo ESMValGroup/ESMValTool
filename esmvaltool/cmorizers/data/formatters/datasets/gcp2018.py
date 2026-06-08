@@ -88,7 +88,7 @@ def _extract_variable(variable_name, var, cfg, data_table, out_dir):
         )
     else:
         raise NotImplementedError(
-            f"Derivation of '{variable_name}' not possible yet"
+            f"Derivation of '{variable_name}' not possible yet",
         )
     for _ in range(2):
         new_data = np.expand_dims(new_data, -1)
@@ -119,7 +119,11 @@ def _extract_variable(variable_name, var, cfg, data_table, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -135,7 +139,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             module="openpyxl",
         )
         data_table = pd.read_excel(
-            filepath, sheet_name="Global Carbon Budget", index_col=0
+            filepath,
+            sheet_name="Global Carbon Budget",
+            index_col=0,
         )
 
     # Run the cmorization

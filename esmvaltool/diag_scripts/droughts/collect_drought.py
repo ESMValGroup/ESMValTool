@@ -247,7 +247,7 @@ def _plot_multi_model_maps(
                 "unit": "%",
                 "filename": "Percentage_difference_of_No_of_Events",
                 "drought_numbers_level": np.arange(-100, 110, 10),
-            }
+            },
         )
         plot_map_spei_multi(
             cfg,
@@ -263,7 +263,7 @@ def _plot_multi_model_maps(
                 "drought_char": "Duration of drought events",
                 "filename": "Percentage_difference_of_Dur_of_Events",
                 "drought_numbers_level": np.arange(-100, 110, 10),
-            }
+            },
         )
         plot_map_spei_multi(
             cfg,
@@ -279,7 +279,7 @@ def _plot_multi_model_maps(
                 "drought_char": "Severity Index of drought events",
                 "filename": "Percentage_difference_of_Sev_of_Events",
                 "drought_numbers_level": np.arange(-50, 60, 10),
-            }
+            },
         )
         plot_map_spei_multi(
             cfg,
@@ -297,7 +297,7 @@ def _plot_multi_model_maps(
                 + " of drought events",
                 "filename": "Percentage_difference_of_Avr_of_Events",
                 "drought_numbers_level": np.arange(-50, 60, 10),
-            }
+            },
         )
         plot_map_spei_multi(
             cfg,
@@ -314,7 +314,7 @@ def _plot_multi_model_maps(
                 "drought_char": "Number of drought events per year",
                 "filename": tstype + "_No_of_Events_per_year",
                 "drought_numbers_level": np.arange(0, 0.4, 0.05),
-            }
+            },
         )
         if tstype == "Observations":
             data_dict["datasetname"] = "Mean"
@@ -335,7 +335,7 @@ def _plot_multi_model_maps(
                 "drought_char": "Duration of drought events [month]",
                 "filename": tstype + "_Dur_of_Events",
                 "drought_numbers_level": np.arange(0, 6, 1),
-            }
+            },
         )
         plot_map_spei_multi(
             cfg,
@@ -352,7 +352,7 @@ def _plot_multi_model_maps(
                 "drought_char": "Severity Index of drought events",
                 "filename": tstype + "_Sev_index_of_Events",
                 "drought_numbers_level": np.arange(0, 9, 1),
-            }
+            },
         )
         plot_map_spei_multi(
             cfg,
@@ -370,7 +370,7 @@ def _plot_multi_model_maps(
                 "drought_char": namehlp,
                 "filename": namehlp2,
                 "drought_numbers_level": np.arange(-2.8, -1.8, 0.2),
-            }
+            },
         )
         plot_map_spei_multi(
             cfg,
@@ -402,7 +402,7 @@ def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
             "unit": "month",
             "drought_char": "Number of drought events per year",
             "input_filenames": input_filenames,
-        }
+        },
     )
     plot_map_spei(cfg, cube2, np.arange(0, 6, 1), name_dict)
     # plot the average severity index of drought events
@@ -415,7 +415,7 @@ def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
             "unit": "1",
             "drought_char": "Number of drought events per year",
             "input_filenames": input_filenames,
-        }
+        },
     )
     plot_map_spei(cfg, cube2, np.arange(0, 9, 1), name_dict)
     # plot the average spei of drought events
@@ -430,7 +430,7 @@ def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
             "unit": "1",
             "drought_char": "Number of drought events per year",
             "input_filenames": input_filenames,
-        }
+        },
     )
     plot_map_spei(cfg, cube2, np.arange(-2.8, -1.8, 0.2), name_dict)
 
@@ -498,7 +498,7 @@ def plot_map_spei_multi(
             "60°E",
             "120°E",
             "180°E",
-        ]
+        ],
     )
     axx.set_yticks(np.linspace(-90, 90, 7))
     axx.set_yticklabels(["90°S", "60°S", "30°S", "0°", "30°N", "60°N", "90°N"])

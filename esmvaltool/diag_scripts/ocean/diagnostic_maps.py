@@ -111,14 +111,14 @@ def make_map_plots(
                     layer,
                     str(cube_layer.coords("depth")[0].units),
                     ")",
-                ]
+                ],
             )
         plt.title(title)
 
         # Determine image filename:
         if multi_model:
             path = diagtools.folder(cfg["plot_dir"]) + os.path.basename(
-                filename
+                filename,
             ).replace(".nc", "_map_" + str(layer_index) + image_extention)
             caption = "Multimodel map of " + title
         else:
@@ -212,13 +212,18 @@ def make_map_contour(
             logger.warning("Not able to add coastlines")
         try:
             plt.gca().add_feature(
-                cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8]
+                cartopy.feature.LAND,
+                zorder=10,
+                facecolor=[0.8, 0.8, 0.8],
             )
         except AttributeError:
             logger.warning("Not able to add coastlines")
         # Add legend
         diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.02, loc="below"
+            plot_details,
+            plt.gca(),
+            column_width=0.02,
+            loc="below",
         )
 
         # Add title to plot
@@ -231,7 +236,8 @@ def make_map_contour(
         # Determine image filename:
         if multi_model:
             path = os.path.join(
-                diagtools.folder(cfg["plot_dir"]), os.path.basename(filename)
+                diagtools.folder(cfg["plot_dir"]),
+                os.path.basename(filename),
             )
             path = path.replace(".nc", "_contour_map_" + str(layer_index))
             path = path + image_extention
@@ -349,7 +355,9 @@ def multi_model_contours(
                 except AttributeError:
                     logger.warning("Not able to add coastlines")
                 plt.gca().add_feature(
-                    cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8]
+                    cartopy.feature.LAND,
+                    zorder=10,
+                    facecolor=[0.8, 0.8, 0.8],
                 )
                 land_drawn = True
 
@@ -371,7 +379,11 @@ def multi_model_contours(
             metadata[filename],
             prefix="MultipleModels_",
             suffix="_".join(
-                ["_contour_map_", str(threshold), str(layer) + image_extention]
+                [
+                    "_contour_map_",
+                    str(threshold),
+                    str(layer) + image_extention,
+                ],
             ),
             metadata_id_list=[
                 "field",
@@ -386,7 +398,9 @@ def multi_model_contours(
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9.0, 6.0)
         diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15
+            plot_details,
+            plt.gca(),
+            column_width=0.15,
         )
 
         logger.info("Saving plots to %s", path)

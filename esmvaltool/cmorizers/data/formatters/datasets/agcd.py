@@ -98,7 +98,11 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
 
         logger.info("Saving file")
         utils.save_variable(
-            cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+            cube,
+            var,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )
 
 

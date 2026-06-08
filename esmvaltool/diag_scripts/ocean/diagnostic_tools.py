@@ -37,7 +37,7 @@ def get_obs_projects():
     sensible.
 
     Returns
-    ---------
+    -------
     list
         Returns a list of strings of the various types of observational data.
     """
@@ -61,7 +61,7 @@ def folder(name):
         A list of nested directories, or a path to a directory.
 
     Returns
-    ---------
+    -------
     str
         Returns a string of a full (potentially new) path of the directory.
     """
@@ -92,7 +92,7 @@ def get_input_files(cfg, index=""):
         the index of the file in the cfg file.
 
     Returns
-    ---------
+    -------
     dict
         A dictionary of the input files and their linked details.
     """
@@ -160,7 +160,9 @@ def bgc_units(cube, name):
 
     if new_units != "":
         logger.info(
-            " ".join(["Changing units from", str(cube.units), "to", new_units])
+            " ".join(
+                ["Changing units from", str(cube.units), "to", new_units],
+            ),
         )
         cube.convert_units(new_units)
 
@@ -191,7 +193,7 @@ def match_model_to_key(
          function, in diagnostics_tools.py.
 
     Returns
-    ---------
+    -------
     dict
         A dictionary of the input files and their linked details.
     """
@@ -213,6 +215,7 @@ def cube_time_to_float(cube):
     Convert from time coordinate into decimal time.
 
     Takes an iris time coordinate and returns a list of floats.
+
     Parameters
     ----------
     cube: iris.cube.Cube
@@ -321,7 +324,10 @@ def decadal_average(cube):
     iris.cube
     """
     iris.coord_categorisation.add_categorised_coord(
-        cube, "decade", "time", get_decade
+        cube,
+        "decade",
+        "time",
+        get_decade,
     )
     return cube.aggregated_by("decade", iris.analysis.MEAN)
 
@@ -381,7 +387,7 @@ def get_colour_from_cmap(number, total, cmap="jet"):
     if number > total:
         raise ValueError(
             f"The cannot be larger than the total length "
-            f" of the list ie: {number} > {total}"
+            f" of the list ie: {number} > {total}",
         )
 
     if total > 1:
@@ -434,7 +440,7 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc="right"):
                 box.y0,
                 box.width * (1.0 - column_width * ncols),
                 box.height,
-            ]
+            ],
         )
 
     if loc.lower() == "below":
@@ -446,7 +452,7 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc="right"):
                 box.y0 + (nrows * column_width),
                 box.width,
                 box.height - (nrows * column_width),
-            ]
+            ],
         )
 
     # Add emply plots to dummy axis.
@@ -497,7 +503,7 @@ def get_image_format(cfg, default="png"):
         the opened global config dictionary, passed by ESMValTool.
 
     Returns
-    ---------
+    -------
     str
         The image format extention.
     """
@@ -520,8 +526,8 @@ def get_image_format(cfg, default="png"):
                     image_extention,
                     "not in matplot:",
                     ", ".join(matplotlib_image_formats),
-                ]
-            )
+                ],
+            ),
         )
 
     image_extention = "." + image_extention
@@ -556,7 +562,7 @@ def get_image_path(
         A list of strings to add to the file path. It loads these from the cfg.
 
     Returns
-    ---------
+    -------
     str
         The ultimate image path
 
@@ -613,7 +619,7 @@ def make_cube_layer_dict(cube):
         the opened dataset as a cube.
 
     Returns
-    ---------
+    -------
     dict
         A dictionary of layer name : layer cube.
     """
@@ -672,7 +678,7 @@ def get_cube_range(cubes):
         A list of cubes.
 
     Returns
-    ----------
+    -------
     list:
         A list of two values: the overall minumum and maximum values of the
         list of cubes.
@@ -699,7 +705,7 @@ def get_cube_range_diff(cubes):
         A list of cubes.
 
     Returns
-    ----------
+    -------
     list:
         A list of two values: the maximum deviation from zero and its opposite.
     """
@@ -720,7 +726,7 @@ def get_array_range(arrays):
         A list of numpy.array.
 
     Returns
-    ----------
+    -------
     list:
         A list of two values, the overall minumum and maximum values of the
         list of cubes.

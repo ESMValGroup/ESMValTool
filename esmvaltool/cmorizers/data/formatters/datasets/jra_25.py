@@ -133,7 +133,11 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -154,7 +158,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
             # Now get list of files
             filepattern = os.path.join(
-                in_dir + "/" + var["file"].format(year=year)
+                in_dir + "/" + var["file"].format(year=year),
             )
             print("*** " + filepattern)
             in_files = glob.glob(filepattern)

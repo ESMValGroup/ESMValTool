@@ -13,7 +13,7 @@ import yaml
 from esmvaltool.diag_scripts.shared import io
 
 with open(
-    os.path.join(os.path.dirname(__file__), "configs", "test_io.yml")
+    os.path.join(os.path.dirname(__file__), "configs", "test_io.yml"),
 ) as file_:
     CONFIG = yaml.safe_load(file_)
 
@@ -26,7 +26,9 @@ def test_has_necessary_attributes(mock_logger, data):
         metadata = data["input"]
         kwargs = data.get("kwargs", {})
         has_atts = io._has_necessary_attributes(
-            metadata, log_level=log_level, **kwargs
+            metadata,
+            log_level=log_level,
+            **kwargs,
         )
         assert has_atts == data["output"]
         logger_func = getattr(mock_logger, log_level)
@@ -237,7 +239,8 @@ TEST_NETCDF_TO_METADATA = [
 
 
 @pytest.mark.parametrize(
-    "cubes,walk_out,root,output,n_logger", TEST_NETCDF_TO_METADATA
+    "cubes,walk_out,root,output,n_logger",
+    TEST_NETCDF_TO_METADATA,
 )
 @mock.patch.object(io, "get_all_ancestor_files", autospec=True)
 @mock.patch.object(io, "logger", autospec=True)
@@ -444,7 +447,8 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
         iris.coords.DimCoord(np.arange(3.0) - 3.0, long_name=coord_name),
         iris.coords.DimCoord(np.arange(2.0) + 2.0, long_name=coord_name),
         iris.coords.DimCoord(
-            np.array([-7.0, -3.0, -2.71, 3.0, 314.15]), long_name=coord_name
+            np.array([-7.0, -3.0, -2.71, 3.0, 314.15]),
+            long_name=coord_name,
         ),
     ]
     cubes = OrderedDict(
@@ -479,7 +483,7 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
                     dim_coords_and_dims=[(coords[2], 0)],
                 ),
             ),
-        ]
+        ],
     )
     dataset_dim = iris.coords.AuxCoord(list(cubes.keys()), long_name="dataset")
     dim_1 = coords[0].copy([-7.0, -3.0, -2.71, -2.0, -1.0, 2.0, 3.0, 314.15])
@@ -488,7 +492,7 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
             [np.nan, 1.0, np.nan, np.nan, -1.0, np.nan, np.nan, np.nan],
             [np.nan, np.nan, np.nan, np.nan, np.nan, 100.0, 101.0, np.nan],
             [33.0, 22.0, np.nan, np.nan, np.nan, np.nan, np.nan, -77.0],
-        ]
+        ],
     )
     output_dims = [(dataset_dim, 0), (dim_1, 1)]
 
@@ -575,7 +579,7 @@ def test_save_scalar_data(mock_logger, mock_save, var_attrs, attrs, aux_coord):
             ("model1", np.nan),
             ("model2", 1.0),
             ("model3", 3.14),
-        ]
+        ],
     )
     dataset_dim = iris.coords.AuxCoord(list(data.keys()), long_name="dataset")
     output_data = np.ma.masked_invalid([np.nan, 1.0, 3.14])

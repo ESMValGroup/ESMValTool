@@ -1,0 +1,26 @@
+---
+# Common global attributes for CMORizer output
+attributes:
+  dataset_id: ESACCI-SNOW
+  version: 'v2.0'
+  tier: 2
+  type: sat
+  project_id: OBS6
+  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow'
+  reference: "esacci-snow"
+  comment: ""
+
+# Variables to CMORize
+variables:
+  snc:
+    mip: day
+    raw: scfg
+    file: 'scfg/{year}????-ESACCI-L3C_SNOW-SCFG-AVHRR_MERGED-fv2.0.nc'
+#  snc_unc:
+#    mip: day
+#    raw: scfg_unc
+#    file: 'scfg/{year}????-ESACCI-L3C_SNOW-SCFG-AVHRR_MERGED-fv2.0.nc'
+  snw:
+    mip: day
+    raw: swe
+    file: 'swe/{year}????-ESACCI-L3C_SNOW-SWE-*-fv2.0.nc'

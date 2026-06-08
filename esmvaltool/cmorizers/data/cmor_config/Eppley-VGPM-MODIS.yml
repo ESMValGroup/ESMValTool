@@ -4,7 +4,7 @@ attributes:
   dataset_id: Eppley-VGPM-MODIS
   version: 'R2018'
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS
   source: 'http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf/'
   reference: "eppley-vgpm-modis"

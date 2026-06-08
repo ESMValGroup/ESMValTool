@@ -63,7 +63,8 @@ def get_provenance_record(caption, ancestor_files, **kwargs):
 def plot_data(cfg, cube):
     """Create scatterplot for cube."""
     logger.debug(
-        "Plotting scatterplot for cube %s", cube.summary(shorten=True)
+        "Plotting scatterplot for cube %s",
+        cube.summary(shorten=True),
     )
     (_, axes) = plt.subplots()
     project = cube.attributes.get("project")
@@ -88,7 +89,11 @@ def plot_data(cfg, cube):
         title += f" for {project}"
     axes.set_title(title)
     axes.tick_params(
-        axis="x", which="both", bottom=False, top=False, labelbottom=False
+        axis="x",
+        which="both",
+        bottom=False,
+        top=False,
+        labelbottom=False,
     )
     axes.set_ylabel(f"{cube.var_name.upper()} / {cube.units}")
     axes.set_ylim(cfg.get("y_range"))
@@ -150,13 +155,14 @@ def main(cfg):
     # Provenance
     project = cube.attributes.get("project")
     caption = "{}{} for multiple datasets.".format(
-        cube.long_name, "" if project is None else f" for {project}"
+        cube.long_name,
+        "" if project is None else f" for {project}",
     )
     provenance_record = get_provenance_record(caption, [input_file])
     provenance_record.update(
         {
             "plot_types": ["scatter"],
-        }
+        },
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)

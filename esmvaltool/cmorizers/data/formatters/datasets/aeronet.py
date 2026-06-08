@@ -12,6 +12,10 @@ Last access
 Download and processing instructions
     Download the following file:
     https://aeronet.gsfc.nasa.gov/data_push/V3/AOD/AOD_Level20_Monthly_V3.tar.gz
+
+NOTE this formatter is currently not working for Python 3.14 since pys2index is
+not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+from conda-forge.
 """
 
 import logging
@@ -46,7 +50,7 @@ UNITS_HEADER = (
 DATA_QUALITY_LEVEL = "lev20"
 
 CONTACT_PATTERN = re.compile(
-    "Contact: PI=(?P<names>[^;]*); PI Email=(?P<emails>.*)"
+    "Contact: PI=(?P<names>[^;]*); PI Email=(?P<emails>.*)",
 )
 
 
@@ -56,7 +60,7 @@ def compress_column(data_frame, name):
     if len(compressed) != 1:
         raise ValueError(
             f"Data frame column '{name}' must only contain"
-            f" one unique value, found {len(compressed)}"
+            f" one unique value, found {len(compressed)}",
         )
     return compressed[0]
 
@@ -94,7 +98,7 @@ def parse_contact(contact):
         [
             f'"{name}" <{email}>'
             for name, email in zip(names, emails, strict=True)
-        ]
+        ],
     )
     return mailboxes
 
@@ -106,27 +110,27 @@ def load_file(filesystem, path_like):
         if aeronet_header != AERONET_HEADER:
             raise ValueError(
                 f"File header identifier is '{aeronet_header}',"
-                f" expected '{AERONET_HEADER}'"
+                f" expected '{AERONET_HEADER}'",
             )
         station_name = file.readline().strip()
         level_header = file.readline().strip()
         if level_header != LEVEL_HEADER:
             raise ValueError(
                 f"File level string is '{level_header}',"
-                f" expected '{LEVEL_HEADER}'"
+                f" expected '{LEVEL_HEADER}'",
             )
         level_description = file.readline().strip()
         if level_description != LEVEL_DESCRIPTION:
             raise ValueError(
                 f"File data description string is"
-                f" '{level_description}', expected '{LEVEL_DESCRIPTION}'"
+                f" '{level_description}', expected '{LEVEL_DESCRIPTION}'",
             )
         contact_string = file.readline().strip()
         units_header = file.readline().strip()
         if units_header != UNITS_HEADER:
             raise ValueError(
                 f"File units info string is '{units_header}',"
-                f" expected '{UNITS_HEADER}'"
+                f" expected '{UNITS_HEADER}'",
             )
         data_frame = pd.read_csv(
             file,
@@ -144,7 +148,7 @@ def load_file(filesystem, path_like):
     if data_quality_level != DATA_QUALITY_LEVEL:
         raise ValueError(
             f"File data quality level is '{data_quality_level}',"
-            f" expected '{DATA_QUALITY_LEVEL}'"
+            f" expected '{DATA_QUALITY_LEVEL}'",
         )
     station = AeronetStation(
         station_name,
@@ -228,7 +232,7 @@ def assemble_cube(stations, idx, wavelengths=None):
     )
     if len(all_data_columns) != 1:
         raise ValueError(
-            "Station data frames has different sets of column names."
+            "Station data frames has different sets of column names.",
         )
     aod_columns, _, _ = sort_data_columns(all_data_columns[0])
     if wavelengths is None:
@@ -278,7 +282,7 @@ def assemble_cube(stations, idx, wavelengths=None):
     )
     times = date_index.to_pydatetime()
     time_points = np.array(
-        [datetime(year=t.year, month=t.month, day=15) for t in times]
+        [datetime(year=t.year, month=t.month, day=15) for t in times],
     )
     time_bounds_lower = times
     time_bounds_upper = np.array(
@@ -289,7 +293,7 @@ def assemble_cube(stations, idx, wavelengths=None):
                 day=1,
             )
             for t in times
-        ]
+        ],
     )
     time_bounds = np.stack([time_bounds_lower, time_bounds_upper], axis=-1)
     time_units = cf_units.Unit("days since 1850-01-01", calendar="standard")
@@ -337,7 +341,9 @@ def assemble_cube(stations, idx, wavelengths=None):
     )
     num_days_ancillary = iris.coords.AncillaryVariable(
         data=da.ma.masked_array(
-            num_days, da.isnan(num_days), fill_value=1.0e20
+            num_days,
+            da.isnan(num_days),
+            fill_value=1.0e20,
         ),
         standard_name=None,
         long_name="Number of days",
@@ -346,7 +352,9 @@ def assemble_cube(stations, idx, wavelengths=None):
     )
     num_points_ancillary = iris.coords.AncillaryVariable(
         data=da.ma.masked_array(
-            num_days, da.isnan(num_points), fill_value=1.0e20
+            num_days,
+            da.isnan(num_points),
+            fill_value=1.0e20,
         ),
         standard_name="number_of_observations",
         long_name="Number of observations",
@@ -401,15 +409,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     tar_file_system = TarFileSystem(f"{in_dir}/{raw_filename}")
     paths = tar_file_system.glob("AOD/AOD20/MONTHLY/*.lev20")
     versions = np.unique(
-        np.array([os.path.basename(p).split("_")[1] for p in paths], dtype=str)
+        np.array(
+            [os.path.basename(p).split("_")[1] for p in paths],
+            dtype=str,
+        ),
     )
     if len(versions) != 1:
         raise ValueError(
-            "All station datasets in tar file must have same version."
+            "All station datasets in tar file must have same version.",
         )
     version = versions[0]
     wavelengths = sorted(
-        [var["wavelength"] for var in cfg["variables"].values()]
+        [var["wavelength"] for var in cfg["variables"].values()],
     )
     cube = build_cube(tar_file_system, paths, wavelengths)
 

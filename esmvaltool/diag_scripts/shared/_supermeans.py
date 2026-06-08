@@ -62,14 +62,13 @@ def get_supermean(name, season, data_dir, obs_flag=None):
     if season in ["djf", "mam", "jja", "son"]:
         supermeans_cube = periodic_mean(cube, period="season")
         return supermeans_cube.extract(iris.Constraint(season=season))
-    elif season == "ann":
+    if season == "ann":
         return periodic_mean(cube)
-    else:
-        raise ValueError(
-            "Argument 'season' must be one of "
-            "['ann', 'djf', 'mam', 'jja', 'son']. "
-            "It is: " + str(season)
-        )
+    raise ValueError(
+        "Argument 'season' must be one of "
+        "['ann', 'djf', 'mam', 'jja', 'son']. "
+        "It is: " + str(season),
+    )
 
 
 def contains_full_climate_years(cube):
@@ -92,7 +91,7 @@ def contains_full_climate_years(cube):
     format_ = "YYYY-%m-%d %H:%M:%S"
 
     if not cube.coord("time").has_bounds():
-        raise NoBoundsError()
+        raise NoBoundsError
 
     def _num2date(num):
         return cf_units.num2date(num, origin, calendar)
@@ -122,11 +121,10 @@ def contains_full_climate_years(cube):
             and end in year_boundaries
             for start, end in bounding_datetimes
         )
-    else:
-        start = _num2date(cube.coord("time").bounds[0][0]).strftime(format_)
-        end = _num2date(cube.coord("time").bounds[-1][1]).strftime(format_)
-        year_boundary = "YYYY-12-01 00:00:00"
-        return start == year_boundary and end == year_boundary
+    start = _num2date(cube.coord("time").bounds[0][0]).strftime(format_)
+    end = _num2date(cube.coord("time").bounds[-1][1]).strftime(format_)
+    year_boundary = "YYYY-12-01 00:00:00"
+    return start == year_boundary and end == year_boundary
 
 
 def is_24h_sampled(cube):
@@ -190,12 +188,11 @@ def periodic_mean(cube, period=None):
         else:
             _cube.remove_coord("start_hour")
             _cube = time_average_by(_cube)
+    elif time_points_per_day > 1:
+        _cube = time_average_by(_cube, [period, "start_hour"])
     else:
-        if time_points_per_day > 1:
-            _cube = time_average_by(_cube, [period, "start_hour"])
-        else:
-            _cube.remove_coord("start_hour")
-            _cube = time_average_by(_cube, period)
+        _cube.remove_coord("start_hour")
+        _cube = time_average_by(_cube, period)
 
     return _cube
 
@@ -237,7 +234,11 @@ def start_hour_from_bounds(coord, _, bounds):
 
 
 def _add_categorised_coord(
-    cube, name, from_coord, category_function, units="1"
+    cube,
+    name,
+    from_coord,
+    category_function,
+    units="1",
 ):
     """
     Add categorized coordinate.
@@ -321,7 +322,7 @@ def time_average_by(cube, periods="time"):
     # multiply each time slice by its duration
     idx_obj = [None] * cube.data.ndim
     idx_obj[cube.coord_dims("time")[0]] = slice(
-        None
+        None,
     )  # [None, slice(None), None] == [np.newaxis, :, np.newaxis]
     cube.data *= durations_cube.data[tuple(idx_obj)]
 
@@ -331,7 +332,8 @@ def time_average_by(cube, periods="time"):
     else:
         cube = cube.aggregated_by(periods, iris.analysis.SUM)
         durations_cube = durations_cube.aggregated_by(
-            periods, iris.analysis.SUM
+            periods,
+            iris.analysis.SUM,
         )
 
     # divide by aggregated weights
@@ -343,7 +345,8 @@ def time_average_by(cube, periods="time"):
     # correct cell methods
     cube.cell_methods = orig_cell_methods
     time_averaging_method = iris.coords.CellMethod(
-        method="mean", coords=periods
+        method="mean",
+        coords=periods,
     )
     cube.add_cell_method(time_averaging_method)
 

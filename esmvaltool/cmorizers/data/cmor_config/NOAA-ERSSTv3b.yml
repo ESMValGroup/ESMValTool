@@ -8,7 +8,7 @@ attributes:
   dataset_id: NOAA-ERSSTv3b
   version: 'v3b'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/'
   reference: 'ersstv3b'
   comment: ''
