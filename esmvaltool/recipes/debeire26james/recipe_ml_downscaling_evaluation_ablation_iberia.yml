@@ -16,84 +16,84 @@ documentation:
 datasets:
   #NEXTGEMS reference (ground truth) passed as OBS6
   - {dataset: HIGHRES-REF-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
-# SFM baseline
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
-  - {dataset: SFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
-# PCSFM Standard gradient update
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
-  - {dataset: PCSFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
-# # PCSFM ConFIG gradient update
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
-# # PCSFM ConFIG Downweight gradient update
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
-  - {dataset: PCSFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
-# PCSFM ConFIG Downweight gradient update and 200k warmup
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
-  - {dataset: PCSFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
-# PCSFM ConFIG Downweight gradient update with split HUS and PR loss
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
-  # - {dataset: PCSFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# AFM baseline
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+  - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+# PCAFM Standard gradient update
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+  - {dataset: PCAFM-Standard, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+# # PCAFM ConFIG gradient update
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+# # PCAFM ConFIG Downweight gradient update
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+  - {dataset: PCAFM-ConFIG-DW, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+# PCAFM ConFIG Downweight gradient update and 200k warmup
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+  - {dataset: PCAFM-2M, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+# PCAFM ConFIG Downweight gradient update with split HUS and PR loss
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: PCAFM-ConFIG-DW-Splitloss-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
     
 
 preprocessors:
@@ -289,7 +289,7 @@ diagnostics:
     scripts:
       spatial_metrics: #calculates bias (relative bias for "pr"), crps, spatial correlation and variance ratio of "reference vs. downscaled fields"
         script: regional_downscaling/ml_downscaling_evaluation.py
-        ml_methods: ["SFM-baseline-2M","PCSFM-Standard","PCSFM-ConFIG","PCSFM-ConFIG-DW","PCSFM-2M"]
+        ml_methods: ["AFM-baseline-2M","PCAFM-Standard","PCAFM-ConFIG","PCAFM-ConFIG-DW","PCAFM-2M"]
         reference: HIGHRES-REF-Iberia
         analysis_type: spatial_metrics
         compute_relbias_pr: false  # Set to false for arid regions with very low pr (like Sahara)
@@ -297,27 +297,27 @@ diagnostics:
         pool_factor: 10  # Coarsening factor to calculate conservation error (10x10 grid cells)
       energy_spectrum: #plot energy spectrum of "reference vs. downscaled fields"
         script: regional_downscaling/ml_downscaling_evaluation.py
-        ml_methods: ["SFM-baseline-2M","PCSFM-Standard","PCSFM-ConFIG","PCSFM-ConFIG-DW","PCSFM-2M"]
+        ml_methods: ["AFM-baseline-2M","PCAFM-Standard","PCAFM-ConFIG","PCAFM-ConFIG-DW","PCAFM-2M"]
         reference: HIGHRES-REF-Iberia
         analysis_type: energy_spectrum
       log_density: #plot log probability density of "reference vs. downscaled fields"
         script: regional_downscaling/ml_downscaling_evaluation.py
-        ml_methods: ["SFM-baseline-2M","PCSFM-Standard","PCSFM-ConFIG","PCSFM-ConFIG-DW","PCSFM-2M"]
+        ml_methods: ["AFM-baseline-2M","PCAFM-Standard","PCAFM-ConFIG","PCAFM-ConFIG-DW","PCAFM-2M"]
         reference: HIGHRES-REF-Iberia
         analysis_type: log_density
       # temporal_structure: #calculate error between ACF at lag -1
       #   script: regional_downscaling/ml_downscaling_evaluation.py
-      #   ml_methods: ["SFM-baseline","PCSFM"]
+      #   ml_methods: ["AFM-baseline","PCAFM"]
       #   reference: HIGHRES-REF-Iberia
       #   analysis_type: temporal_structure
       calibration: #rank histogram and MCB (miscalibration) for ensemble calibration evaluation
         script: regional_downscaling/ml_downscaling_evaluation.py
-        ml_methods: ["SFM-baseline-2M","PCSFM-Standard","PCSFM-ConFIG","PCSFM-ConFIG-DW","PCSFM-2M"]
+        ml_methods: ["AFM-baseline-2M","PCAFM-Standard","PCAFM-ConFIG","PCAFM-ConFIG-DW","PCAFM-2M"]
         reference: HIGHRES-REF-Iberia
         analysis_type: calibration
       # create_animation: #creates a animation of "reference vs. downscaled fields" snapshots per snapshots
       #   script: regional_downscaling/ml_downscaling_evaluation.py
-      #   ml_methods: ["SFM-baseline","PCSFM"]
+      #   ml_methods: ["AFM-baseline","PCAFM"]
       #   reference: HIGHRES-REF-Iberia
       #   analysis_type: create_animation
       #   animation_start_time: 800           # Start time index (800)
@@ -342,7 +342,7 @@ diagnostics:
     scripts:
       quantile_MAE: #plot MAE between quantiles of "reference vs. downscaled fields"
         script: regional_downscaling/ml_downscaling_evaluation.py
-        ml_methods: ["SFM-baseline-2M","PCSFM-Standard","PCSFM-ConFIG","PCSFM-ConFIG-DW","PCSFM-2M"]
+        ml_methods: ["AFM-baseline-2M","PCAFM-Standard","PCAFM-ConFIG","PCAFM-ConFIG-DW","PCAFM-2M"]
         reference: HIGHRES-REF-Iberia
         analysis_type: quantile_MAE
         compute_wbgt: true  # Set to true if computing Summer WBGT (wet bulb global temperature) from tas, huss, ps
@@ -355,8 +355,8 @@ diagnostics:
       heatmap:
         script: regional_downscaling/ml_downscaling_heatmap.py
         ancestors: ['downscaling_evaluation_6M/spatial_metrics', 'downscaling_evaluation_6M/energy_spectrum', 'downscaling_evaluation_6M/log_density', 'downscaling_evaluation_6M/calibration', 'quantileMAE_6M/quantile_MAE'] #'downscaling_evaluation/temporal_structure'
-        method1: ["PCSFM-Standard","PCSFM-ConFIG","PCSFM-ConFIG-DW","PCSFM-2M"]           # Numerator method (change as needed)
-        method2: "SFM-baseline-2M"    # Denominator method (change as needed)
+        method1: ["PCAFM-Standard","PCAFM-ConFIG","PCAFM-ConFIG-DW","PCAFM-2M"]           # Numerator method (change as needed)
+        method2: "AFM-baseline-2M"    # Denominator method (change as needed)
         region_name: "Iberic Peninsula (unseen during training)" #used as Supertitle
         heatmap_vmin: 0.80         # Minimum value for colormap
         heatmap_vmax: 1.20         # Maximum value for colormap
