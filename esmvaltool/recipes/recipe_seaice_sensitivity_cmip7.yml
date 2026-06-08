@@ -21,6 +21,7 @@ documentation:
   maintainer:
     - parsons_naomi
 
+# The default period has been chosen to end in 2020 as this is the last year available in the sea ice observations
 model_defaults: &model_defaults {activity: CMIP, project: CMIP7, exp: historical, start_year: &data_start 1979, end_year: &data_end 2020}
 model_datasets: &model_datasets
   - {<<: *model_defaults, dataset: MOCK-MODEL-LL, institute: MOHC, ensemble: r1i1p1f3, exp: 1pctCO2, grid: g100, label_dataset: True}
