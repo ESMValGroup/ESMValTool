@@ -3,7 +3,6 @@
 import logging
 import math
 import os
-import sys
 
 import cf_units as unit
 import iris
@@ -14,7 +13,7 @@ import matplotlib.ticker as ticker
 import numpy as np
 import scipy
 
-from esmvaltool.diag_scripts.shared import save_figure
+from esmvaltool.diag_scripts.shared import save_data, save_figure
 
 
 class WKSpectra:
@@ -209,9 +208,10 @@ class WKSpectra:
 
             return varSA
         else:
-            logging.info("Modify the code to accommodate other axes...")
-            logging.info("Exiting...")
-            sys.exit(0)
+            logging.error(
+                "Only axis == 1 is supported. Modify the code to accommodate other axes."
+            )
+            raise ValueError("decompose_sym_asym axis != 1")
 
     def taper(self, ts, alpha=0.1, iopt=0):
         """
@@ -713,7 +713,8 @@ class WKSpectra:
         ax.text(-3.0, 0.45, "n=1 IG", {"color": "k", "backgroundcolor": "w"})
         ax.text(-14.0, 0.46, "h=12", {"color": "k", "backgroundcolor": "w"})
 
-        caption = f"{figname}, [or other caption for symmetric]"
+        # Add provenance information
+        caption = f"{figname}, [or other caption for symmetric]"  # TODO
         provenance_dict = self.get_provenance_record(caption)
         save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
@@ -762,9 +763,9 @@ class WKSpectra:
 
         if lon_taper > 0.0 or lonR - lonL != 360.0:
             logging.error(
-                "Code does currently allow lon_taper>0 or (lonR-lonL)<360"
+                "Code does currently allow lon_taper>0 or (lonR-lonL)<360."
             )
-            sys.exit(0)
+            raise ValueError("wkSpaceTime lon_taper>0 or (lonR-lonL)<360")
 
         nDayTot = ntim / self.spd  # of days (total) for input variable
         nSampTot = nDayTot * self.spd  # of samples (total)
@@ -777,9 +778,14 @@ class WKSpectra:
         N = nSampWin  # convenience [historical]
 
         if nDayTot < self.nDayWin:
-            logging.error("nDayTot=%s is less the nDayWin=%s", nDayTot, self.nDayWin)
-            logging.error("This is not allowed !!")
-            sys.exit(0)
+            logging.error(
+                "nDayTot=%s is not allowed to be less than nDayWin=%s",
+                nDayTot,
+                self.nDayWin,
+            )
+            raise ValueError(
+                f"nDayTot ({nDayTot}) is less than nDayWin ({self.nDayWin})"
+            )
         # -------------------------------------------------------------------
         #  Remove dominant signals
         # (a) Explicitly remove *long term* linear trend
@@ -832,7 +838,7 @@ class WKSpectra:
             logging.error(
                 "Length of the variable is shorter than 365. Can not continue!"
             )
-            sys.exit(1)
+            raise ValueError(f"nDayTot ({nDayTot}) is less than 365")
 
         # -------------------------------------------------------------------
         #  Decompose to Symmetric and Asymmetric parts
@@ -1033,7 +1039,7 @@ class WKSpectra:
         # Anti-symmetric
         title = f"{self.label}_{self.varname} \n  Anti-symmetric log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Raw_Spec_Asym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_anti_symmetric(
             psumanti,
             freq,
@@ -1044,15 +1050,20 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumanti_cube, ncname)
+
+        # Add provenance information
+        caption = f"{self.varname}_Raw_Spec_Asym"
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(forename, provenance_dict, self.cfg, psumanti_cube)
 
         # Symmetric
         title = (
             f"{self.label}_{self.varname} \n Symmetric log(power) [15S-15N]"
         )
         forename = f"{self.runid}_{self.varname}_Raw_Spec_Sym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_symmetric(
             psumsym,
             freq,
@@ -1063,15 +1074,25 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumsym_cube, ncname)
+
+        # Add provenance information
+        caption = f"{self.varname}_Raw_Spec_Sym"
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(forename, provenance_dict, self.cfg, psumsym_cube)
 
         # Background spectra
         title = f"{self.label} {self.varname} \n Background power log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_BG_Spec"
-        figname = f"{forename}.png"
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumb_cube, ncname)
+        figname = f"{forename}"
+
+        # Add provenance information
+        caption = f"{self.varname}_BG_Spec"
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(forename, provenance_dict, self.cfg, psumb_cube)
 
         # *************************************************************
         #  Fig 3a, 3b:  psum_nolog/psumb_nolog  [ratio]
@@ -1175,7 +1196,7 @@ class WKSpectra:
 
         title = f"{self.label} {self.varname} \n Anti-symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Asym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_anti_symmetric(
             psumanti_nolog,
             freq,
@@ -1186,8 +1207,15 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumanti_nolog_cube, ncname)
+
+        # Add provenance information
+        caption = f"{self.varname}_Ratio_Spec_Asym"
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(
+            forename, provenance_dict, self.cfg, psumanti_nolog_cube
+        )
 
         # Symmetric
         # Define contour levels for plots
@@ -1280,7 +1308,7 @@ class WKSpectra:
 
         title = f"{self.label} {self.varname} \n Symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Sym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_symmetric(
             psumsym_nolog,
             freq,
@@ -1291,8 +1319,15 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumsym_nolog_cube, ncname)
+
+        # Add provenance information
+        caption = f"{self.varname}_Ratio_Spec_Sym"
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(
+            forename, provenance_dict, self.cfg, psumsym_nolog_cube
+        )
 
     def mjo_wavenum_freq_season(self, seaName):
         #
@@ -1443,7 +1478,7 @@ class WKSpectra:
         ax.set_ylabel("Zonal wavenumber")
 
         # Add provenance information
-        caption = f"{figname}, [or other caption for wavenum freq season plot]"  # TODO
+        caption = os.path.basename(figname)
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -1465,8 +1500,13 @@ class WKSpectra:
             forename = (
                 f"{self.runid}_{self.varname}_wavenum_freq_season_{season}"
             )
-            ncname = os.path.join(self.work_dir, f"{forename}.nc")
-            iris.save(pow_cube, ncname)
+
+            # Add provenance information
+            caption = f"{self.varname}_wavenum_freq_season_{season}"
+            provenance_dict = self.get_provenance_record(caption)
+
+            # Save the cube
+            save_data(forename, provenance_dict, self.cfg, pow_cube)
 
             # Define contour levels for plots
             levels_dict = {
@@ -1477,7 +1517,7 @@ class WKSpectra:
             }
 
             title = f"{self.label} \n {season}  daily {self.varname} [10S-10N]"
-            figname = os.path.join(self.plot_dir, f"{forename}.png")
+            figname = os.path.join(self.plot_dir, f"{forename}")
             self.mjo_wavenum_freq_season_plot(
                 pow_cube,
                 levels=levels_dict[self.varname],
