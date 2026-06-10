@@ -22,6 +22,9 @@ from esmvalcore._task import write_ncl_settings
 from esmvalcore.config import CFG
 from esmvalcore.config._dask import get_distributed_client
 from esmvalcore.config._logging import configure_logging
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.table import Table
 
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
@@ -624,26 +627,41 @@ class DataCommand:
     def __init__(self) -> None:
         self._info = yaml.safe_load(DATASETS_FILE.read_text(encoding="utf8"))
         self.formatter = _Formatter(self._info)
+        self._console = Console(soft_wrap=True)
 
     def _has_downloader(self, dataset: str) -> Literal["Yes", "No"]:
         return "Yes" if self.formatter.has_downloader(dataset) else "No"
 
     def list(self) -> None:
         """List all supported datasets."""
-        print()
-        print(f"| {'Dataset name':30} | Tier | Auto-download | Last access |")
-        print("-" * 71)
+        table = Table(title="Datasets that can be CMORized with ESMValTool")
+        table.add_column("Dataset")
+        table.add_column("Tier")
+        table.add_column("Auto-download")
+        table.add_column("Last access")
+
         for dataset, dataset_info in self._info["datasets"].items():
             date = datetime.datetime.strptime(
                 str(dataset_info["last_access"]),
                 "%Y-%m-%d",
             )
-            print(
-                f"| {dataset:30} | {dataset_info['tier']:4} "
-                f"| {self._has_downloader(dataset):13} "
-                f"|  {date.strftime('%Y-%m-%d')} |",
+            age = datetime.datetime.now(datetime.UTC).year - date.year
+            shade = max(100, 255 - age * 15)
+            color = f"rgb({shade},{shade},{shade})"
+            tier = dataset_info["tier"]
+            unrestricted_tier = 2
+            has_downloader = self._has_downloader(dataset)
+            table.add_row(
+                dataset,
+                f"[green]{tier}[/green]"
+                if tier == unrestricted_tier
+                else f"[orange3]{tier}[/orange3]",
+                f"[green]{has_downloader}[/green]"
+                if has_downloader == "Yes"
+                else f"[red]{has_downloader}[/red]",
+                f"[{color}]{date.strftime('%Y-%m-%d')}[/{color}]",
             )
-        print("-" * 71)
+        self._console.print(table)
 
     def info(self, dataset: str) -> None:
         """Show detailed info about a specific dataset.
@@ -654,13 +672,14 @@ class DataCommand:
             dataset to show
         """
         dataset_info = self._info["datasets"][dataset]
-        print(dataset)
-        print()
-        print(f"Tier: {dataset_info['tier']}")
-        print(f"Source: {dataset_info['source']}")
-        print(f"Automatic download: {self._has_downloader(dataset)}")
-        print()
-        print(dataset_info["info"])
+        lines = [f"# {dataset}"]
+        lines.append(f"- Dataset: `{dataset}`")
+        lines.append(f"- Tier: {dataset_info['tier']}")
+        lines.append(f"- Source: {dataset_info['source']}")
+        lines.append(f"- Automatic download: {self._has_downloader(dataset)}")
+        lines.append("")
+        lines.append(dataset_info["info"])
+        self._console.print(Markdown("\n".join(lines)))
 
     def download(
         self,
