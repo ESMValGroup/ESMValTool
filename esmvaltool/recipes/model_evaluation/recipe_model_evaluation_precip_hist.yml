@@ -1,0 +1,70 @@
+# ESMValTool
+# recipe_model_evaluation_precip_hist.yml
+---
+documentation:
+  title: Histogram of precipitation.
+
+  description: >
+    Creates a 1D histogram for precipitation.
+
+  authors:
+    - bock_lisa
+
+  maintainer:
+    - bock_lisa
+
+
+timerange: &timerange
+  timerange: 19790101/19801231
+
+
+datasets:
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
+     tier: 3, alias: ERA5}
+
+
+REGRIDDING_SETTINGS: &regridding
+  regrid:
+    target_grid: 2x2
+    scheme:
+      reference: esmf_regrid.schemes:ESMFAreaWeighted
+
+
+preprocessors:
+
+  tropics:
+    custom_order: true
+    <<: *regridding
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    hourly_statistics:
+      hours: 3
+      operator: mean
+    convert_units:
+      units: mm hour-1
+    histogram:
+      bins: 150
+      bin_range: [0, 15.]
+      normalization: integral
+
+
+diagnostics:
+
+  plot_precipitation_histograms_tropics:
+    description: Plot precipitation histogram (Tropics).
+    variables:
+      pr:
+        mip: 3hr
+        preprocessor: tropics
+        <<: *timerange
+    scripts:
+      plot:
+        script: plot_histogram.py
+        suptitle: Simulated Precipitation (Tropics 30S-30N)
+        log_y: true
+        xlabel: Precipitation rate (mm hour-1)
+        ylabel: Density

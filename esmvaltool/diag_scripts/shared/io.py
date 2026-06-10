@@ -3,9 +3,12 @@
 import fnmatch
 import logging
 import os
+from collections.abc import Iterable
+from pathlib import Path
 from pprint import pformat
 
 import iris
+import iris.cube
 import numpy as np
 
 from .iris_helpers import unify_1d_cubes
@@ -27,7 +30,9 @@ iris.FUTURE.save_split_attrs = True
 
 
 def _has_necessary_attributes(
-    metadata, only_var_attrs=False, log_level="debug"
+    metadata,
+    only_var_attrs=False,
+    log_level="debug",
 ):
     """Check if dataset metadata has necessary attributes."""
     output = True
@@ -100,7 +105,7 @@ def get_ancestor_file(cfg, pattern):
     if len(files) != 1:
         raise ValueError(
             f"Expected to find exactly one ancestor file for pattern "
-            f"'{pattern}', got {len(files):d}:\n{pformat(files)}"
+            f"'{pattern}', got {len(files):d}:\n{pformat(files)}",
         )
     return files[0]
 
@@ -199,22 +204,25 @@ def metadata_to_netcdf(cube, metadata):
     iris_save(cube, metadata["filename"])
 
 
-def iris_save(source, path):
+def iris_save(
+    source: iris.cube.Cube | iris.cube.CubeList | Iterable[iris.cube.Cube],
+    path: Path | str,
+) -> None:
     """Save :mod:`iris` objects with correct attributes.
 
     Parameters
     ----------
-    source : iris.cube.Cube or iterable of iris.cube.Cube
+    source:
         Cube(s) to be saved.
-    path : str
+    path:
         Path to the new file.
 
     """
     if isinstance(source, iris.cube.Cube):
-        source.attributes["filename"] = path
+        source.attributes["filename"] = str(path)
     else:
         for cube in source:
-            cube.attributes["filename"] = path
+            cube.attributes["filename"] = str(path)
     iris.save(source, path)
     logger.info("Wrote %s", path)
 
@@ -257,11 +265,13 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     if not cubes:
         raise ValueError("Cannot save 1D data, no cubes given")
     if not _has_necessary_attributes(
-        [var_attrs], only_var_attrs=True, log_level="error"
+        [var_attrs],
+        only_var_attrs=True,
+        log_level="error",
     ):
         raise ValueError(
             f"Cannot save 1D data to {path} because necessary variable "
-            f"attributes are missing"
+            f"attributes are missing",
         )
     datasets = list(cubes.keys())
     cube_list = iris.cube.CubeList(list(cubes.values()))
@@ -317,11 +327,13 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     if not data:
         raise ValueError("Cannot save scalar data, no data given")
     if not _has_necessary_attributes(
-        [var_attrs], only_var_attrs=True, log_level="error"
+        [var_attrs],
+        only_var_attrs=True,
+        log_level="error",
     ):
         raise ValueError(
             f"Cannot save scalar data to {path} because necessary variable "
-            f"attributes are missing"
+            f"attributes are missing",
         )
     dataset_coord = iris.coords.AuxCoord(list(data), long_name="dataset")
     if attributes is None:

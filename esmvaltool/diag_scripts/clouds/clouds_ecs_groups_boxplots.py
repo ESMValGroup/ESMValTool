@@ -58,9 +58,7 @@ def read_data(filename):
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    if cube.var_name == "cli":
-        cube.convert_units("g/kg")
-    elif cube.var_name == "clw":
+    if cube.var_name == "cli" or cube.var_name == "clw":
         cube.convert_units("g/kg")
 
     cube = iris.util.squeeze(cube)
@@ -73,10 +71,7 @@ def compute_diff(filename1, filename2):
     cube1 = iris.load_cube(filename1)
     cube2 = iris.load_cube(filename2)
 
-    if cube1.var_name == "cli":
-        cube1.convert_units("g/kg")
-        cube2.convert_units("g/kg")
-    elif cube1.var_name == "clw":
+    if cube1.var_name == "cli" or cube1.var_name == "clw":
         cube1.convert_units("g/kg")
         cube2.convert_units("g/kg")
 
@@ -100,7 +95,7 @@ def compute_diff_temp(input_data, group, var, dataset):
     )
     if not var_data_2:
         raise ValueError(
-            f"No '{var}' data for '{dataset_name}' in '{group[1]}' available"
+            f"No '{var}' data for '{dataset_name}' in '{group[1]}' available",
         )
 
     input_file_2 = var_data_2[0]["filename"]
@@ -119,11 +114,11 @@ def compute_diff_temp(input_data, group, var, dataset):
     )
     if not tas_data_1:
         raise ValueError(
-            f"No 'tas' data for '{dataset_name}' in '{group[0]}' available"
+            f"No 'tas' data for '{dataset_name}' in '{group[0]}' available",
         )
     if not tas_data_2:
         raise ValueError(
-            f"No 'tas' data for '{dataset_name}' in '{group[1]}' available"
+            f"No 'tas' data for '{dataset_name}' in '{group[1]}' available",
         )
     input_file_tas_1 = tas_data_1[0]["filename"]
     input_file_tas_2 = tas_data_2[0]["filename"]
@@ -160,7 +155,9 @@ def create_data_frame(input_data, cfg):
 
             for group_names in cfg["group_by"]:
                 logger.info(
-                    "Processing group %s of variable %s", group_names[0], var
+                    "Processing group %s of variable %s",
+                    group_names[0],
+                    var,
                 )
 
                 for dataset in groups[var + "_" + group_names[0]]:
@@ -168,7 +165,10 @@ def create_data_frame(input_data, cfg):
 
                     if dataset_name not in cfg["exclude_datasets"]:
                         cube_diff = compute_diff_temp(
-                            input_data, group_names, var, dataset
+                            input_data,
+                            group_names,
+                            var,
+                            dataset,
                         )
 
                         group_name = group_names[0].split("_")[1] + " ECS"
@@ -191,7 +191,11 @@ def plot_boxplot(data_frame, input_data, cfg):
     sns.set_style("darkgrid")
     sns.set(font_scale=2)
     sns.boxplot(
-        data=data_frame, x="Variable", y="Data", hue="Group", palette=PALETTE
+        data=data_frame,
+        x="Variable",
+        y="Data",
+        hue="Group",
+        palette=PALETTE,
     )
     plt.ylabel("Relative change (%/K)")
     if "y_range" in cfg:
@@ -199,12 +203,13 @@ def plot_boxplot(data_frame, input_data, cfg):
     plt.title(cfg["title"])
 
     provenance_record = get_provenance_record(
-        ancestor_files=[d["filename"] for d in input_data]
+        ancestor_files=[d["filename"] for d in input_data],
     )
 
     # Save plot
     plot_path = get_plot_filename(
-        "boxplot" + "_" + cfg["filename_attach"], cfg
+        "boxplot" + "_" + cfg["filename_attach"],
+        cfg,
     )
     plt.savefig(plot_path)
     logger.info("Wrote %s", plot_path)
@@ -217,7 +222,8 @@ def plot_boxplot(data_frame, input_data, cfg):
 def main(cfg):
     """Run diagnostic."""
     cfg.setdefault(
-        "exclude_datasets", ["MultiModelMean", "MultiModelP5", "MultiModelP95"]
+        "exclude_datasets",
+        ["MultiModelMean", "MultiModelP5", "MultiModelP95"],
     )
     cfg.setdefault("title", "Test")
 

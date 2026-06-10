@@ -1,0 +1,10 @@
+#  doi's may reject requests from link checkers
+https://doi.org/
+
+# embedded video url fails
+https://www.youtube.com/embed/
+
+# SSL certificate verification failed
+# These links work, avoiding subsequent tests in new link check issues (Jan-2026)
+https://blog.esciencecenter.nl/easy-ipcc-powered-by-esmvalcore-19a0b6366ea7
+https://blog.esciencecenter.nl/esmvaltool-recipes-for-solid-climate-science-da5b33814f69

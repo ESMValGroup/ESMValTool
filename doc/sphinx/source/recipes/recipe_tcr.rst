@@ -23,14 +23,15 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-   * recipe_tcr.yml
+* recipe_tcr.yml
+* ref/recipe_ref_tcr.yml
 
 
 Diagnostics are stored in diag_scripts/
 
-   * climate_metrics/tcr.py
-   * climate_metrics/create_barplot.py
-   * climate_metrics/create_scatterplot.py
+* climate_metrics/tcr.py
+* climate_metrics/create_barplot.py
+* climate_metrics/create_scatterplot.py
 
 
 User settings in recipe

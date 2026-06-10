@@ -75,7 +75,7 @@ Example plots
 .. figure::  /recipes/figures/seaice_drift/drift-strength.png
    :align:   center
 
-Scatter plots of modelled (red) and observed (blue) monthly mean
-sea-ice drift speed against sea-ice concentration (left panel) and sea-ice
-thickness (right panel) temporally averaged over the period 1979–2005 and
-spatially averaged over the SCICEX box.
+   Scatter plots of modelled (red) and observed (blue) monthly mean
+   sea-ice drift speed against sea-ice concentration (left panel) and sea-ice
+   thickness (right panel) temporally averaged over the period 1979–2005 and
+   spatially averaged over the SCICEX box.

@@ -48,7 +48,7 @@ def get_input_cubes(metadata):
         short_name = attributes["short_name"]
         if short_name in all_vars:
             raise ValueError(
-                f"Multiple input files found for variable '{short_name}'."
+                f"Multiple input files found for variable '{short_name}'.",
             )
         filename = attributes["filename"]
         logger.info("Loading variable %s", short_name)
@@ -166,7 +166,7 @@ def main(cfg):
                 cfg["basin"],
                 str(int(output_data["time_start"][0])),
                 str(int(output_data["time_end"][0])),
-            ]
+            ],
         )
         output_name = get_diagnostic_filename(basename, cfg, extension="mat")
         sio.savemat(output_name, output_data)

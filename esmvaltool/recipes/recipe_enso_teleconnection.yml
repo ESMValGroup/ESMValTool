@@ -1,0 +1,132 @@
+# ESMValTool
+---
+documentation:
+  description: ENSO CLIVAR metrics - ENSO teleconnections
+  title: CLIVAR ENSO teleconnections metrics
+  authors:
+    - chun_felicity
+    - planton_yann
+    - beucher_romain
+    - sullivan_arnold
+    - chung_christine
+  maintainer:
+    - chun_felicity
+
+datasets:
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+  # observations
+  # - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+
+
+preprocessors:
+  base_enso: &base_enso
+    custom_order: true
+    convert_units:
+      units: degC
+    anomalies:
+      period: monthly
+    detrend:  # tropflux nan/inf values
+      dimension: time
+      method: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &nino34
+      start_longitude: 190.
+      end_longitude: 240.
+      start_latitude: -5.
+      end_latitude: 5.
+
+  enso_sst:
+    <<: *base_enso
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+
+  global_pr:
+    <<: *base_enso
+    convert_units:
+      units: mm/day
+    extract_region: &glb
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -60.
+      end_latitude: 60.
+  global_sst:
+    <<: *base_enso
+    extract_region:
+      <<: *glb
+
+  mask_sea:
+    extract_time:  # one time step
+      start_year: 1979
+      start_month: 1
+      start_day: 1
+      end_year: 1979
+      end_month: 1
+      end_day: 31
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      <<: *glb
+    mask_landsea:
+      mask_out: sea
+
+  nino34_sstadec:
+    <<: *base_enso
+    extract_region: &nino34_ssta
+      start_longitude: 150.
+      end_longitude: 270.
+      start_latitude: -5.
+      end_latitude: 5.
+    rolling_window_statistics:
+      coordinate: time
+      operator: mean
+      window_length: 5
+    area_statistics:
+      operator: mean
+    extract_month:
+      month: 12
+
+diagnostics:
+  diagnostic_metrics:
+    description: run preprocessors on variables for ENSO metrics
+    variables:
+      tos_enso:
+        short_name: ts
+        mip: Amon
+        preprocessor: enso_sst
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3}
+
+      tos_global:
+        short_name: ts
+        mip: Amon
+        preprocessor: global_sst
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3}
+
+      pr_global:
+        short_name: pr
+        mip: Amon
+        preprocessor: global_pr
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: sat, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+
+      ts_enso_events:
+        short_name: ts
+        mip: Amon
+        preprocessor: nino34_sstadec
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3}
+      enso_mask:
+        short_name: ts
+        mip: Amon
+        preprocessor: mask_sea
+
+    scripts:
+      plot_script:
+        script: enso_metrics/teleconnections_metrics.py

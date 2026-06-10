@@ -25,13 +25,17 @@ def tetens_derivative(tas):
 
     # Saturated vapour pressure at 273 Kelvin
     e0_const = iris.coords.AuxCoord(
-        np.float32(6.112), long_name="Saturated vapour pressure", units="hPa"
+        np.float32(6.112),
+        long_name="Saturated vapour pressure",
+        units="hPa",
     )
     emp_a = np.float32(17.67)  # empirical constant a
 
     # Empirical constant b in Tetens formula
     emp_b = iris.coords.AuxCoord(
-        np.float32(243.5), long_name="Empirical constant b", units="degC"
+        np.float32(243.5),
+        long_name="Empirical constant b",
+        units="degC",
     )
     exponent = iris.analysis.maths.exp(emp_a * tas / (tas + emp_b))
     return (exponent * e0_const / (tas + emp_b) ** 2) * (emp_a * emp_b)
@@ -57,7 +61,9 @@ def get_constants(psl):
     )
     # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
     rd_const = iris.coords.AuxCoord(
-        np.float32(287.0), long_name="Gas constant dry air", units="J K-1 kg-1"
+        np.float32(287.0),
+        long_name="Gas constant dry air",
+        units="J K-1 kg-1",
     )
 
     # Latent heat of vaporization in J kg-1 (or J m-2 day-1)
@@ -78,12 +84,16 @@ def get_constants(psl):
 
     # source='De Bruin (2016), section 4a',
     beta = iris.coords.AuxCoord(
-        np.float32(20), long_name="Correction Constant", units="W m-2"
+        np.float32(20),
+        long_name="Correction Constant",
+        units="W m-2",
     )
 
     # source = 'De Bruin (2016), section 4a',
     cs_const = iris.coords.AuxCoord(
-        np.float32(110), long_name="Empirical constant", units="W m-2"
+        np.float32(110),
+        long_name="Empirical constant",
+        units="W m-2",
     )
 
     # source = De Bruin (10.1175/JHM-D-15-0006.1), page 1376

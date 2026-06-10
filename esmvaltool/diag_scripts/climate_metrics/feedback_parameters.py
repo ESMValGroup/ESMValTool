@@ -172,7 +172,7 @@ def _check_array_shapes(list_of_arrays, var):
     if len(shapes) > 1:
         raise ValueError(
             f"Expected cubes with identical shapes for multi-model mean "
-            f"calculation of '{var}', got {shapes}"
+            f"calculation of '{var}', got {shapes}",
         )
 
 
@@ -184,29 +184,28 @@ def _check_cube_dimensions(cube):
         raise ValueError(
             f"This diagnostic supports only 1D (time), 2D (time + other "
             f"dimension) or 3D (time + 2 other dimensions) input data, got "
-            f"{ndim}D data"
+            f"{ndim}D data",
         )
     coord_0_name = cube.coord(dimensions=(0,), dim_coords=True).name()
     if coord_0_name != "time":
         raise ValueError(
             f"This diagnostic expects 'time' as dimension 0 for every cube, "
-            f"got '{coord_0_name}' for cube\n{cube}"
+            f"got '{coord_0_name}' for cube\n{cube}",
         )
     if NDIMS.get(var) is None:
         NDIMS[var] = ndim
-    else:
-        if ndim != NDIMS[var]:
-            raise ValueError(
-                "This diagnostic supports only '{}' data with consistent "
-                "numbers of dimension, got mixed data".format(
-                    "radiation" if var is None else var
-                )
-            )
+    elif ndim != NDIMS[var]:
+        raise ValueError(
+            "This diagnostic supports only '{}' data with consistent "
+            "numbers of dimension, got mixed data".format(
+                "radiation" if var is None else var,
+            ),
+        )
     if NDIMS.get("tas", 0) > NDIMS.get("rad", 4):
         raise ValueError(
             f"This diagnostic expects temperature data to have smaller number "
             f"of dimensions than radiation data, got {NDIMS['tas']}D data for "
-            f"temperature and {NDIMS['rad']}D data for radiation"
+            f"temperature and {NDIMS['rad']}D data for radiation",
         )
     if ndim < 2:
         return
@@ -217,21 +216,24 @@ def _check_cube_dimensions(cube):
     ]
     if COORDS.get(var) is None:
         COORDS[var] = coords
-    else:
-        if coords != COORDS[var]:
-            raise ValueError(
-                "This diagnostic expects identical coordinate names for all "
-                "'{}' data, got {} and {}".format(
-                    "radiation" if var is None else var, coords, COORDS[var]
-                )
-            )
+    elif coords != COORDS[var]:
+        raise ValueError(
+            "This diagnostic expects identical coordinate names for all "
+            "'{}' data, got {} and {}".format(
+                "radiation" if var is None else var,
+                coords,
+                COORDS[var],
+            ),
+        )
 
 
 def _create_feedback_file(feedback_cube, dataset_name, cfg, description=None):
     """Save feedback parameter plot vs. remaining dimensions."""
     var = feedback_cube.var_name
     filename = "{}_vs_{}_{}".format(
-        VAR_NAMES.get(var, var), "-".join(COORDS["rad"]), dataset_name
+        VAR_NAMES.get(var, var),
+        "-".join(COORDS["rad"]),
+        dataset_name,
     )
     attrs = {
         "dataset": dataset_name,
@@ -301,11 +303,11 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
     if feedback_cube.ndim == 1:
         iplt.plot(feedback_cube)
         plt.xlabel(
-            f"{COORDS['rad'][0]} / {cube.coord(COORDS['rad'][0]).units.origin}"
+            f"{COORDS['rad'][0]} / {cube.coord(COORDS['rad'][0]).units.origin}",
         )
         plt.ylabel(
             f"{NICE_SYMBOLS.get(var, var)} / "
-            f"{NICE_UNITS.get(feedback_cube.units.origin, 'unknown')}"
+            f"{NICE_UNITS.get(feedback_cube.units.origin, 'unknown')}",
         )
         colorbar = None
     elif feedback_cube.ndim == 2:
@@ -313,7 +315,7 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
         colorbar = plt.colorbar(orientation="horizontal")
         colorbar.set_label(
             f"{NICE_SYMBOLS.get(var, var)} / "
-            f"{NICE_UNITS.get(feedback_cube.units.origin, 'unknown')}"
+            f"{NICE_UNITS.get(feedback_cube.units.origin, 'unknown')}",
         )
         ticks = [-8.0, -6.0, -4.0, -2.0, 0.0, 2.0, 4.0, 6.0, 8.0]
         colorbar.set_ticks(ticks)
@@ -323,11 +325,11 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
         else:
             plt.xlabel(
                 f"{COORDS['rad'][0]} / "
-                f"{cube.coord(COORDS['rad'][0]).units.origin}"
+                f"{cube.coord(COORDS['rad'][0]).units.origin}",
             )
             plt.ylabel(
                 f"{COORDS['rad'][1]} / "
-                f"{cube.coord(COORDS['rad'][1]).units.origin}"
+                f"{cube.coord(COORDS['rad'][1]).units.origin}",
             )
     else:
         raise ValueError(f"Cube dimension {feedback_cube.ndim} not supported")
@@ -335,7 +337,9 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
     # Appearance
     title = f"{SHORTER_NAMES.get(var, var)} for {dataset_name}"
     filename = "{}_vs_{}_{}".format(
-        VAR_NAMES.get(var, var), "-".join(COORDS["rad"]), dataset_name
+        VAR_NAMES.get(var, var),
+        "-".join(COORDS["rad"]),
+        dataset_name,
     )
     if description is not None:
         title += f" ({description})"
@@ -351,7 +355,11 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
 
 
 def _create_regression_file(
-    tas_cube, cube, dataset_name, cfg, description=None
+    tas_cube,
+    cube,
+    dataset_name,
+    cfg,
+    description=None,
 ):
     """Save regression plot as netcdf file for a given dataset."""
     var = cube.var_name
@@ -371,7 +379,8 @@ def _create_regression_file(
     if var in ("rtmt", "rtnt"):
         attrs["ECS"] = -reg.intercept / (2.0 * reg.slope)
     tas_coord = iris.coords.AuxCoord(
-        tas_cube.data, **extract_variables(cfg, as_iris=True)["tas"]
+        tas_cube.data,
+        **extract_variables(cfg, as_iris=True)["tas"],
     )
     cube = iris.cube.Cube(
         cube.data,
@@ -385,7 +394,11 @@ def _create_regression_file(
 
 
 def _create_regression_plot(
-    tas_cube, cube, dataset_name, cfg, description=None
+    tas_cube,
+    cube,
+    dataset_name,
+    cfg,
+    description=None,
 ):
     """Create regression plot."""
     var = cube.var_name
@@ -458,7 +471,10 @@ def _create_table(table, cfg, description=None):
 
     # Create netcdf file
     cubes = _get_cube_list_for_table(
-        cell_data, row_labels, col_labels, col_units
+        cell_data,
+        row_labels,
+        col_labels,
+        col_units,
     )
     filename = "summary_table"
     if description is not None:
@@ -523,7 +539,7 @@ def _dict_to_array(dict_):
         [
             [dict_.get(row, {}).get(col, np.nan) for col in col_labels]
             for row in row_labels
-        ]
+        ],
     )
     col_units = [UNITS.get(var, "unknown") for var in col_labels]
     return (cell_data, row_labels, col_labels, col_units)
@@ -538,7 +554,9 @@ def _get_anomaly_data(input_data, year_idx=None):
         grouped_data = group_metadata(var_data, "dataset")
         for dataset_name, datasets in grouped_data.items():
             logger.debug(
-                "Calculating '%s' anomaly for dataset '%s'", var, dataset_name
+                "Calculating '%s' anomaly for dataset '%s'",
+                var,
+                dataset_name,
             )
             data_4x = select_metadata(datasets, exp=EXP_4XCO2[project])
             data_pic = select_metadata(datasets, exp="piControl")
@@ -547,12 +565,12 @@ def _get_anomaly_data(input_data, year_idx=None):
             if not data_4x:
                 raise ValueError(
                     f"No '{EXP_4XCO2[project]}' data available for '{var}' of "
-                    f"'{dataset_name}'"
+                    f"'{dataset_name}'",
                 )
             if not data_pic:
                 raise ValueError(
                     f"No 'piControl' data available for '{var}' of "
-                    f"'{dataset_name}'"
+                    f"'{dataset_name}'",
                 )
 
             # Calculate anomaly, extract correct years and save it
@@ -567,7 +585,7 @@ def _get_anomaly_data(input_data, year_idx=None):
                         data_pic[0]["filename"],
                     ],
                     "cube": cube,
-                }
+                },
             )
     msg = "" if not COORDS else f" with additional coordinates {COORDS['rad']}"
     logger.info(
@@ -672,7 +690,7 @@ def _get_mmm_tas(rad_var, rad_datasets, tas_datasets):
         if not tas_data:
             raise ValueError(
                 f"No 'tas' data for dataset '{dataset_name}' available for "
-                f"multi-model mean calculation"
+                f"multi-model mean calculation",
             )
         cube = tas_data[0]["cube"]
         ancestors.extend(tas_data[0]["ancestors"])
@@ -744,10 +762,12 @@ def _get_tas_var(dataset_name, rad_var):
 def _vectorized_linregress(x_arr, y_arr):
     """Vectorized version if :func:`scipy.stats.linregress`."""
     slope = np.vectorize(
-        lambda x, y: stats.linregress(x, y).slope, signature="(n),(n)->()"
+        lambda x, y: stats.linregress(x, y).slope,
+        signature="(n),(n)->()",
     )
     intercept = np.vectorize(
-        lambda x, y: stats.linregress(x, y).intercept, signature="(n),(n)->()"
+        lambda x, y: stats.linregress(x, y).intercept,
+        signature="(n),(n)->()",
     )
     return (slope(x_arr, y_arr), intercept(x_arr, y_arr))
 
@@ -774,7 +794,8 @@ def _write_scalar_data(data, ancestor_files, cfg, description=None):
         caption = "{long_name} for multiple climate models".format(**var_attr)
         if description is not None:
             filename = "{}_{}".format(
-                var_attr["short_name"], description.replace(" ", "_")
+                var_attr["short_name"],
+                description.replace(" ", "_"),
             )
             attributes = {"Description": description}
             caption += f" for {description}."
@@ -787,7 +808,7 @@ def _write_scalar_data(data, ancestor_files, cfg, description=None):
         if not data[idx]:
             raise ValueError(
                 f"Cannot write file {path}, no data for variable "
-                f"'{var_attr['short_name']}' given"
+                f"'{var_attr['short_name']}' given",
             )
 
         # Scalar data
@@ -827,7 +848,12 @@ def _write_scalar_data(data, ancestor_files, cfg, description=None):
 
 
 def _write_provenance(
-    netcdf_path, plot_path, caption, ancestors, cfg, **kwargs
+    netcdf_path,
+    plot_path,
+    caption,
+    ancestors,
+    cfg,
+    **kwargs,
 ):
     """Write provenance information for a single dataset cube."""
     provenance_record = _get_provenance_record(caption)
@@ -835,7 +861,7 @@ def _write_provenance(
         {
             "ancestors": ancestors,
             **kwargs,
-        }
+        },
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
@@ -855,7 +881,9 @@ def calculate_ecs(input_data, cfg, description=None):
         dataset_name = dataset["dataset"]
         logger.debug("Calculating ECS%s of dataset '%s'", msg, dataset_name)
         rtnt_data = select_metadata(
-            input_data, short_name="rtnt", dataset=dataset_name
+            input_data,
+            short_name="rtnt",
+            dataset=dataset_name,
         )
         if not rtnt_data:
             logger.debug(
@@ -869,7 +897,7 @@ def calculate_ecs(input_data, cfg, description=None):
         if rtnt_cube.ndim > 2:
             raise ValueError(
                 f"Calculating ECS is only supported for cubes with less than "
-                f"3 dimensions, got {rtnt_cube.ndim:d}D cube"
+                f"3 dimensions, got {rtnt_cube.ndim:d}D cube",
             )
         ancestors.extend(dataset["ancestors"] + rtnt_data[0]["ancestors"])
         coords = [
@@ -880,18 +908,21 @@ def calculate_ecs(input_data, cfg, description=None):
 
         # Calculate ECS (using linear regression)
         reg = _vectorized_linregress(
-            _get_data_time_last(tas_cube), _get_data_time_last(rtnt_cube)
+            _get_data_time_last(tas_cube),
+            _get_data_time_last(rtnt_cube),
         )
         ecs[dataset_name] = iris.cube.Cube(
-            -reg[1] / (2 * reg[0]), dim_coords_and_dims=coords
+            -reg[1] / (2 * reg[0]),
+            dim_coords_and_dims=coords,
         )
         feedback_parameter[dataset_name] = iris.cube.Cube(
-            reg[0], dim_coords_and_dims=coords
+            reg[0],
+            dim_coords_and_dims=coords,
         )
     ancestors = list(set(ancestors))
     if not ecs:
         logger.info(
-            "No 'rtmt' or 'rtnt' data available, skipping ECS calculation"
+            "No 'rtmt' or 'rtnt' data available, skipping ECS calculation",
         )
         return
 
@@ -909,7 +940,7 @@ def check_input_data(cfg):
     if len(projects) > 1:
         raise ValueError(
             f"This diagnostic supports only unique 'project' attributes, got "
-            f"{projects}"
+            f"{projects}",
         )
     project = projects[0]
     if project not in EXP_4XCO2:
@@ -919,7 +950,7 @@ def check_input_data(cfg):
     if exps != {"piControl", EXP_4XCO2[project]}:
         raise ValueError(
             f"This diagnostic needs 'piControl' and '{EXP_4XCO2[project]}' "
-            f"experiments, got {exps}"
+            f"experiments, got {exps}",
         )
 
 
@@ -941,22 +972,29 @@ def plot_feedback_parameters(input_data, cfg, description=None):
             )
             if not tas_data:
                 raise ValueError(
-                    f"No 'tas' data for '{dataset_name}' available"
+                    f"No 'tas' data for '{dataset_name}' available",
                 )
             cube = dataset["cube"]
             tas_cube = tas_data[0]["cube"]
             if cube.ndim not in (2, 3):
                 raise ValueError(
                     f"Feedback plots are not supported for {cube.ndim:d}D "
-                    f"input data, this requires 2D or 3D data"
+                    f"input data, this requires 2D or 3D data",
                 )
 
             # Create plot
             (plot_path, feedback_cube) = _create_feedback_plot(
-                tas_cube, cube, dataset_name, cfg, description=description
+                tas_cube,
+                cube,
+                dataset_name,
+                cfg,
+                description=description,
             )
             (netcdf_path, caption) = _create_feedback_file(
-                feedback_cube, dataset_name, cfg, description=description
+                feedback_cube,
+                dataset_name,
+                cfg,
+                description=description,
             )
 
             # Provenance
@@ -997,13 +1035,13 @@ def plot_regressions(input_data, cfg, description=None):
             )
             if not tas_data:
                 raise ValueError(
-                    f"No 'tas' data for '{dataset_name}' available"
+                    f"No 'tas' data for '{dataset_name}' available",
                 )
             tas_cube = tas_data[0]["cube"]
             if dataset["cube"].ndim > 1:
                 raise ValueError(
                     "Regression plots are not supported for input data with "
-                    "more than one dimension (which should be time)"
+                    "more than one dimension (which should be time)",
                 )
 
             # Save plot and netcdf file
@@ -1064,7 +1102,8 @@ def preprocess_data(cfg, year_idx=None):
             dataset["short_name"] = "rtnt"
     if RTMT_DATASETS:
         logger.info(
-            "Using 'rtmt' instead of 'rtnt' for datasets '%s'", RTMT_DATASETS
+            "Using 'rtmt' instead of 'rtnt' for datasets '%s'",
+            RTMT_DATASETS,
         )
 
     # Calculate anomalies for every dataset
@@ -1093,7 +1132,7 @@ def set_default_cfg(cfg):
     if cfg["only_consider_mmm"] and not cfg["calculate_mmm"]:
         logger.warning(
             "Automatically setting 'calculate_mmm' to 'True' since "
-            "'only_consider_mmm' is set to 'True'"
+            "'only_consider_mmm' is set to 'True'",
         )
         cfg["calculate_mmm"] = True
     return cfg
@@ -1118,7 +1157,8 @@ def main(cfg):
             calculate_ecs(input_data, cfg, description=descr)
         else:
             logger.info(
-                "No ECS calculation for %iD data available", NDIMS["rad"]
+                "No ECS calculation for %iD data available",
+                NDIMS["rad"],
             )
 
         # Plots

@@ -19,6 +19,7 @@ preprocessors:
   global_mean_monthly:
     monthly_statistics:
       operator: mean
+      keep_group_coordinates: true
 
     regrid:
       target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,

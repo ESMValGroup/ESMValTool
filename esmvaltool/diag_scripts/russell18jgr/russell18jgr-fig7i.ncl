@@ -155,9 +155,9 @@ begin
       if (all(ismissing(fx_var))) then
         fx_variable = "areacello"
         error_msg("f", "russell_fig-7i.ncl", " ", "areacello file for " + \
-                  datasetnames(iii) + " not found in the metadata file," + \
-                  + " not found in the metadata file, please specify " \
-                  + "'areacello' as supplementary variable in the recipe.")
+                  datasetnames(iii) + \
+                  " not found in the metadata file, please specify " + \
+                  "'areacello' as supplementary variable in the recipe.")
       end if
       areacello_2d = fx_var
       delete(fx_var)

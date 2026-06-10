@@ -10,14 +10,19 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -46,7 +51,7 @@ def download_dataset(
             "time_aggregation": "month_average",
             "day": ["01"],
         },
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -57,16 +62,28 @@ def download_dataset(
 
     for sensor in ["combined_passive_and_active", "passive", "active"]:
         monthly_downloaders[sensor] = get_downloader(
-            config, dataset, dataset_info, overwrite, sensor, "month"
+            original_data_dir,
+            dataset,
+            dataset_info,
+            overwrite,
+            sensor,
+            "month",
         )
         daily_downloaders[sensor] = get_downloader(
-            config, dataset, dataset_info, overwrite, sensor, "day"
+            original_data_dir,
+            dataset,
+            dataset_info,
+            overwrite,
+            sensor,
+            "day",
         )
     while loop_date <= end_date:
         for sensor, downloader in monthly_downloaders.items():
             pattern = f"cds-satellite-soil-moisture_cdr_{sensor}_monthly"
             downloader.download(
-                loop_date.year, loop_date.month, file_pattern=pattern
+                loop_date.year,
+                loop_date.month,
+                file_pattern=pattern,
             )
         loop_date += relativedelta.relativedelta(months=1)
 
@@ -79,7 +96,9 @@ def download_dataset(
                 [
                     f"{i + 1:02d}"
                     for i in range(
-                        calendar.monthrange(loop_date.year, loop_date.month)[1]
+                        calendar.monthrange(loop_date.year, loop_date.month)[
+                            1
+                        ],
                     )
                 ],
                 f"cds-satellite-soil-moisture_cdr_{sensor}_daily",
@@ -89,14 +108,19 @@ def download_dataset(
 
 
 def get_downloader(
-    config, dataset, dataset_info, overwrite, sensor, frequency
+    original_data_dir,
+    dataset,
+    dataset_info,
+    overwrite,
+    sensor,
+    frequency,
 ):
     """Create download request.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -123,7 +147,7 @@ def get_downloader(
             "version": "v201912.0.0",
             "time_aggregation": f"{frequency}_average",
         },
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,

@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 2
   version: 'v3'
-  modeling_realm: reanaly
+  type: reanaly
   source: 'https://psl.noaa.gov/data/gridded/data.20thC_ReanV3.html'
   reference: 'noaa-cires-20cr-v3'
   comment: |

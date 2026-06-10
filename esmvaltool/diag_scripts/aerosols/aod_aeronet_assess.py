@@ -60,7 +60,10 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     """
     # Plot model data
     cf_plot = iplt.contourf(
-        md_data, plot_dict["Levels"], colors=plot_dict["Colours"], extend="max"
+        md_data,
+        plot_dict["Levels"],
+        colors=plot_dict["Colours"],
+        extend="max",
     )
 
     # Latitude and longitude of stations.
@@ -189,12 +192,14 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     for season in aeronet_obs_cube.slices_over("clim_season"):
         # Match Aeronet obs season with model season number
         model_sn = [c.lower() for c in clim_seas].index(
-            season.coord("clim_season").points[0]
+            season.coord("clim_season").points[0],
         )
         model_season = model_data[model_sn]
 
         logger.info(
-            "Analysing AOD for %s: %s", {model_id}, {clim_seas[model_sn]}
+            "Analysing AOD for %s: %s",
+            {model_id},
+            {clim_seas[model_sn]},
         )
 
         # Generate statistics required - area-weighted mean
@@ -235,7 +240,7 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
                 label=label,
                 markersize=15,
                 markerfacecolor=col_scatter[model_sn],
-            )
+            ),
         )
 
         # Plot contours overlaid with obs for this run and season
@@ -267,7 +272,10 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
             "Season": clim_seas[model_sn],
         }
         plot_aod_mod_obs(
-            model_season, seas_anet_obs, aeronet_obs_cube, plot_dict
+            model_season,
+            seas_anet_obs,
+            aeronet_obs_cube,
+            plot_dict,
         )
 
         figures.append(fig_cf)
@@ -288,7 +296,9 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     ax_scatter.set_ylabel(model_id + " AOD", fontsize=fontsizedict["axis"])
 
     ax_scatter.tick_params(
-        axis="both", which="major", labelsize=fontsizedict["ticklabel"]
+        axis="both",
+        which="major",
+        labelsize=fontsizedict["ticklabel"],
     )
 
     ax_scatter.set_title(
@@ -309,7 +319,7 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     return figures, fig_scatter
 
 
-def preprocess_aod_obs_dataset(obs_dataset):
+def preprocess_aod_obs_dataset(obs_dataset, thresholds):
     """Calculate a multiannual seasonal mean AOD climatology.
 
     Observational AOD timeseries data from AeroNET are used to generate a
@@ -324,6 +334,11 @@ def preprocess_aod_obs_dataset(obs_dataset):
     ----------
     obs_dataset : ESMValTool dictionary. Holds meta data for the observational
         AOD dataset.
+    thresholds : Minimum days,months, seasons and years threshold dictionary; with keys
+        - min_days_per_mon
+        - min_mon_per_seas
+        - min_seas_per_year
+        - min_seas_per_clim
 
     Returns
     -------
@@ -332,19 +347,15 @@ def preprocess_aod_obs_dataset(obs_dataset):
     """
     obs_cube = iris.load_cube(obs_dataset[0]["filename"])
 
-    # Set up thresholds for generating the multi annual seasonal mean
-    min_days_per_mon = 1
-    min_mon_per_seas = 3
-    min_seas_per_year = 4
-    min_seas_per_clim = 5
-
     # Add the clim_season and season_year coordinates.
     iris.coord_categorisation.add_year(obs_cube, "time", name="year")
 
     iris.coord_categorisation.add_season(obs_cube, "time", name="clim_season")
 
     iris.coord_categorisation.add_season_year(
-        obs_cube, "time", name="season_year"
+        obs_cube,
+        "time",
+        name="season_year",
     )
 
     # Copy obs cube and mask all months with fewer
@@ -352,8 +363,9 @@ def preprocess_aod_obs_dataset(obs_dataset):
     num_days_var = obs_cube.ancillary_variable("Number of days")
     masked_months_obs_cube = obs_cube.copy(
         data=ma.masked_where(
-            num_days_var.data < min_days_per_mon, obs_cube.data
-        )
+            num_days_var.data < thresholds["min_days_per_mon"],
+            obs_cube.data,
+        ),
     )
 
     # Aggregate (mean) by season.
@@ -370,7 +382,7 @@ def preprocess_aod_obs_dataset(obs_dataset):
         function=lambda values: ~ma.getmask(values),
     )
     annual_seasonal_mean.data = ma.masked_where(
-        annual_seasonal_count.data < min_mon_per_seas,
+        annual_seasonal_count.data < thresholds["min_mon_per_seas"],
         annual_seasonal_mean.data,
     )
 
@@ -389,7 +401,7 @@ def preprocess_aod_obs_dataset(obs_dataset):
         function=lambda values: ~ma.getmask(values),
     )
     multi_annual_seasonal_mean.data = ma.masked_where(
-        clim_season_agg_count.data < min_seas_per_clim,
+        clim_season_agg_count.data < thresholds["min_seas_per_clim"],
         multi_annual_seasonal_mean.data,
     )
     year_agg_count = multi_annual_seasonal_mean.aggregated_by(
@@ -399,11 +411,11 @@ def preprocess_aod_obs_dataset(obs_dataset):
     )
 
     counter = range(
-        len(multi_annual_seasonal_mean.coord("clim_season").points)
+        len(multi_annual_seasonal_mean.coord("clim_season").points),
     )
     for iseas in counter:
         multi_annual_seasonal_mean.data[iseas, :] = ma.masked_where(
-            year_agg_count.data[0, :] < min_seas_per_year,
+            year_agg_count.data[0, :] < thresholds["min_seas_per_year"],
             multi_annual_seasonal_mean.data[iseas, :],
         )
 
@@ -425,11 +437,17 @@ def main(config):
     datasets = group_metadata(input_data.values(), "dataset")
 
     # Default wavelength
-    wavel = "440"
+    wavel = config.get("wavel", "440")
+    thresholds = {
+        "min_days_per_mon": int(config.get("min_days_per_mon", 1)),
+        "min_mon_per_seas": int(config.get("min_mon_per_seas", 3)),
+        "min_seas_per_year": int(config.get("min_seas_per_year", 4)),
+        "min_seas_per_clim": int(config.get("min_seas_per_clim", 5)),
+    }
 
     # Produce climatology for observational dataset
     obs_dataset = datasets.pop(config["observational_dataset"])
-    obs_cube = preprocess_aod_obs_dataset(obs_dataset)
+    obs_cube = preprocess_aod_obs_dataset(obs_dataset, thresholds)
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
@@ -467,7 +485,10 @@ def main(config):
 
             # Analysis and plotting for model-obs comparison
             figures, fig_scatter = aod_analyse(
-                cube, obs_cube, seasons, wavel=wavel
+                cube,
+                obs_cube,
+                seasons,
+                wavel=wavel,
             )
 
         # Save the scatter plot

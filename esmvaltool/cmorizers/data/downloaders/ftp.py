@@ -1,9 +1,12 @@
 """Downloader for FTP repositories."""
 
+from __future__ import annotations
+
 import ftplib
 import logging
 import os
 import re
+from typing import TYPE_CHECKING
 
 from progressbar import (
     ETA,
@@ -16,6 +19,12 @@ from progressbar import (
 
 from .downloader import BaseDownloader
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from esmvaltool.cmorizers.data.typing import DatasetInfo
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,29 +33,39 @@ class FTPDownloader(BaseDownloader):
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
-    server : str
+    original_data_dir:
+        Directory where original data will be stored.
+    server:
         FTP server URL
-    dataset : str
+    dataset:
         Dataset to download
-    dataset_info : dict
+    dataset_info:
         Dataset information from the datasets.yml file
-    overwrite : bool
+    overwrite:
         Overwrite already downloaded files
+    user:
+        Username
+    passwd:
+        Password
     """
 
     def __init__(
         self,
-        config,
-        server,
-        dataset,
-        dataset_info,
-        overwrite,
-        user=None,
-        passwd=None,
+        original_data_dir: Path,
+        server: str,
+        dataset: str,
+        dataset_info: DatasetInfo,
+        *,
+        overwrite: bool,
+        user: str | None = None,
+        passwd: str | None = None,
     ):
-        super().__init__(config, dataset, dataset_info, overwrite)
+        super().__init__(
+            original_data_dir=original_data_dir,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
         self._client = None
         self.server = server
         self.user = user
@@ -140,7 +159,9 @@ class FTPDownloader(BaseDownloader):
         """
         os.makedirs(os.path.join(self.local_folder, sub_folder), exist_ok=True)
         local_path = os.path.join(
-            self.local_folder, sub_folder, os.path.basename(server_path)
+            self.local_folder,
+            sub_folder,
+            os.path.basename(server_path),
         )
         if not self.overwrite and os.path.isfile(local_path):
             logger.info("File %s already downloaded. Skipping...", server_path)
@@ -188,8 +209,8 @@ class CCIDownloader(FTPDownloader):
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir:
+        Directory where original data will be stored.
     dataset : str
         Dataset to download
     dataset_info : dict
@@ -198,9 +219,20 @@ class CCIDownloader(FTPDownloader):
         Overwrite already downloaded files
     """
 
-    def __init__(self, config, dataset, dataset_info, overwrite):
+    def __init__(
+        self,
+        original_data_dir: Path,
+        dataset: str,
+        dataset_info: DatasetInfo,
+        *,
+        overwrite: bool,
+    ) -> None:
         super().__init__(
-            config, "anon-ftp.ceda.ac.uk", dataset, dataset_info, overwrite
+            original_data_dir=original_data_dir,
+            server="anon-ftp.ceda.ac.uk",
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
         )
         self.ftp_name = self.dataset_name[7:]
 

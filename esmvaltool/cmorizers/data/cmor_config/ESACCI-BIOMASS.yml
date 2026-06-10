@@ -1,0 +1,18 @@
+attributes:
+  project_id: 'OBS6'
+  dataset_id: 'ESACCI-BIOMASS'
+  tier: 2
+  type: sat
+  institution: 'GAMMA Remote Sensing'
+  reference: 'esacci-biomass'
+  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/'
+  title: 'ESA CCI Biomass'
+  version: 'v6.0'
+  comment: ''
+variables:
+  agb:
+    mip: Lyr
+    frequency: yr
+    long_name: 'Above-ground biomass'
+    raw: agb
+    filename: ESACCI-BIOMASS-L4-AGB-MERGED-10000m-fv6.0.nc

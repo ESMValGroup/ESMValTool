@@ -10,7 +10,7 @@ attributes:
   dataset_id: MLS-AURA
   version: '004'
   tier: 3
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: 'https://disc.gsfc.nasa.gov/datasets/ML2RHI_004/summary;https://disc.gsfc.nasa.gov/datasets/ML2T_004/summary'
   reference: 'mls-aura'

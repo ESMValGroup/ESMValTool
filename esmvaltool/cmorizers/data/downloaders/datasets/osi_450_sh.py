@@ -8,14 +8,19 @@ from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -32,7 +37,7 @@ def download_dataset(
     if end_date is None:
         end_date = datetime(2020, 12, 1)
     downloader = FTPDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         server="osisaf.met.no",
         dataset=dataset,
         dataset_info=dataset_info,

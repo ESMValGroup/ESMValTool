@@ -29,7 +29,7 @@ hyint_etccdi_preproc <-
       sfile_tmp0 <- cdo("delvar", args = "time_bnds", input = sfile)
       gridf <- tempfile()
       cdo("griddes", input = hyint_file, stdout = gridf)
-      sfile_tmp1 <- cdo("remapscon2",
+      sfile_tmp1 <- cdo("remapcon",
         args = gridf,
         input = sfile_tmp0
       )

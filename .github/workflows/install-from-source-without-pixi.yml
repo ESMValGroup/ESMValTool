@@ -1,0 +1,75 @@
+---
+name: Install from source without using pixi
+
+permissions: {}
+
+# runs on a push on main and at the end of every day
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 4 * * *"
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  esmvaltool-python:
+    runs-on: ${{ matrix.os }}
+    if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    name: Install esmvaltool from source on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # Create a conda-lock file, independent of pixi, with the ESMValTool dependencies:
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+        with:
+          environment-name: create-lock-file
+          create-args: >-
+            python
+            pixi-to-conda-lock
+            pyyaml
+      - name: Create lock file
+        run: |
+          pixi-to-conda-lock pixi.lock --environment esmvaltool-python
+      - name: Remove ESMValTool source entry from the lock file.
+        # It needs to be removed because it is not a valid conda package.
+        shell: micromamba run -n create-lock-file python {0}
+        run: |
+          import pathlib
+          import yaml
+
+          txt = pathlib.Path("esmvaltool-python.conda-lock.yml").read_text(encoding="utf-8")
+          content = yaml.safe_load(txt)
+          content = {
+              k: v if k != "package" else [p for p in v if p["name"] != "esmvaltool"]
+              for k, v in content.items()
+          }
+          pathlib.Path("conda-lock.yml").write_text(yaml.safe_dump(content), encoding="utf-8")
+      # Create a conda environment from the lock file and pip-install ESMValTool from source:
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+        with:
+          environment-name: esmvaltool-python
+          environment-file: conda-lock.yml
+          post-cleanup: none
+      - name: Install ESMValTool from source and remove the source code to verify that the installation works without it.
+        run: |
+          pip install --no-deps . && rm -r esmvaltool
+      # Verify installation:
+      - name: Verify installation
+        run: |
+          pip check
+          esmvaltool --help
+          esmvaltool version
+          esmvaltool recipes list

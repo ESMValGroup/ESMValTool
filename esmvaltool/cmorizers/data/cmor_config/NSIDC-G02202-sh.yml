@@ -5,7 +5,7 @@ attributes:
   dataset_id: NSIDC-G02202-sh
   version: '4'
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'https://nsidc.org/data/g02202/versions/4'
   reference: 'nsidc-g02202'

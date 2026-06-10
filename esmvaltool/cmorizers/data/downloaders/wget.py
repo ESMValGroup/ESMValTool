@@ -1,10 +1,16 @@
 """wget based downloader."""
 
+from __future__ import annotations
+
 import logging
-import os
 import subprocess
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from .downloader import BaseDownloader
+
+if TYPE_CHECKING:
+    from esmvaltool.cmorizers.data.typing import DatasetInfo
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +31,13 @@ class WGetDownloader(BaseDownloader):
         if self.overwrite:
             raise ValueError(
                 "Overwrite does not work with downloading directories through "
-                "wget. Please, remove the unwanted data manually"
+                "wget. Please, remove the unwanted data manually",
             )
         command = (
             ["wget"]
             + wget_options
-            + self.overwrite_options
             + [
+                "--no-clobber",
                 f"--directory-prefix={self.local_folder}",
                 "--recursive",
                 "--no-directories",
@@ -41,7 +47,7 @@ class WGetDownloader(BaseDownloader):
         logger.debug(command)
         subprocess.check_output(command)
 
-    def download_file(self, server_path, wget_options):
+    def download_file(self, server_path, wget_options, output_filename=None):
         """Download file.
 
         Parameters
@@ -50,19 +56,44 @@ class WGetDownloader(BaseDownloader):
             Path to remote file
         wget_options: list(str)
             Extra options for wget
+        output_filename: str, optional
+            Name of the downloaded file. If not given, use the one given by
+            ``server_path``.
+
         """
+        output_dir = Path(self.local_folder)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        if output_filename is None:
+            output_path = output_dir / Path(server_path).name
+        else:
+            output_path = output_dir / output_filename
+        output_options = []
+
+        # If no specific output filename is desired (i.e., the option -O can be
+        # omitted), wget can be used with the --no-clobber and
+        # --directory-prefix options to avoid overwriting data. Otherwise, we
+        # will need to check file existence manually here (-O and --no-clobber
+        # do not work well together).
+        if not self.overwrite and output_filename is None:
+            output_options.append(f"--directory-prefix={output_dir!s}")
+            output_options.append("--no-clobber")
+        else:
+            if (
+                not self.overwrite
+                and output_filename is not None
+                and output_path.exists()
+            ):
+                logger.info("File %s exists, skipping download", output_path)
+                return
+            output_options.append("-O")
+            output_options.append(str(output_path))
+
         command = (
             ["wget"]
             + wget_options
-            + self.overwrite_options
-            + [
-                f"--directory-prefix={self.local_folder}",
-                "--no-directories",
-                server_path,
-            ]
+            + output_options
+            + ["--no-directories", server_path]
         )
-        if self.overwrite:
-            command.append(f"-O {os.path.basename(server_path)}")
         logger.debug(command)
         subprocess.check_output(command)
 
@@ -80,21 +111,24 @@ class WGetDownloader(BaseDownloader):
         logger.debug(command)
         subprocess.check_output(command)
 
-    @property
-    def overwrite_options(self):
-        """Get overwrite options as configured in downloader."""
-        if not self.overwrite:
-            return [
-                "--no-clobber",
-            ]
-        return []
-
 
 class NASADownloader(WGetDownloader):
     """Downloader for the NASA repository."""
 
-    def __init__(self, config, dataset, dataset_info, overwrite):
-        super().__init__(config, dataset, dataset_info, overwrite)
+    def __init__(
+        self,
+        original_data_dir: Path,
+        dataset: str,
+        dataset_info: DatasetInfo,
+        *,
+        overwrite: bool,
+    ) -> None:
+        super().__init__(
+            original_data_dir=original_data_dir,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
 
         self._wget_common_options = [
             "--load-cookies=~/.urs_cookies",
@@ -136,5 +170,6 @@ class NASADownloader(WGetDownloader):
         if wget_options is None:
             wget_options = []
         super().download_file(
-            server_path, self._wget_common_options + wget_options
+            server_path,
+            self._wget_common_options + wget_options,
         )

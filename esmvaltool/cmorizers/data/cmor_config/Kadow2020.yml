@@ -4,7 +4,7 @@ attributes:
   dataset_id: Kadow2020
   version: '5.0.1.0'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'http://users.met.fu-berlin.de/~ChristopherKadow/'
   reference: 'kadow20natgeosc'

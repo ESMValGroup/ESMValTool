@@ -168,7 +168,7 @@ diagnostics:
         mip: Amon
         preprocessor: full_climatology_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+          - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2,
              timerange: '2003/2017', reference_for_monitor_diags: true}
     scripts:
       plot:

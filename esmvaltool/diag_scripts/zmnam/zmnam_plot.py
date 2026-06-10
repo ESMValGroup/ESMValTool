@@ -15,10 +15,14 @@ from cartopy.util import add_cyclic_point
 
 
 def zmnam_plot(
-    file_gh_mo, datafolder, figfolder, src_props, fig_fmt, hemisphere
+    file_gh_mo,
+    datafolder,
+    figfolder,
+    src_props,
+    fig_fmt,
+    hemisphere,
 ):
     """Plotting of timeseries and maps for zmnam diagnostics."""
-
     if hemisphere == "NH":
         index_name = "NAM"
     if hemisphere == "SH":
@@ -104,7 +108,7 @@ def zmnam_plot(
             date_list[0 : len(time_mo) + 1 : 60],
         )
         plt.title(
-            str(int(lev[i_lev])) + " Pa  " + src_props[1] + " " + src_props[2]
+            str(int(lev[i_lev])) + " Pa  " + src_props[1] + " " + src_props[2],
         )
         plt.xlabel("Time")
         plt.ylabel("Zonal mean " + index_name)
@@ -155,7 +159,7 @@ def zmnam_plot(
             + " Pa  "
             + src_props[1]
             + " "
-            + src_props[2]
+            + src_props[2],
         )
         plt.xlabel("Zonal mean " + index_name)
         plt.ylabel("Normalized probability")
@@ -199,7 +203,8 @@ def zmnam_plot(
             ortho = ccrs.Orthographic(central_longitude=0, central_latitude=90)
         if min(lat) < 0.0:  # SH
             ortho = ccrs.Orthographic(
-                central_longitude=0, central_latitude=-90
+                central_longitude=0,
+                central_latitude=-90,
             )
         ccrs.Geodetic()
 
@@ -246,19 +251,20 @@ def zmnam_plot(
 
         mpl.rcParams["contour.negative_linestyle"] = "dashed"
 
-        for cmap in inv_map.collections:
-            cmap.set_visible(False)
+        inv_map.set_visible(False)
 
         # Add contour labels over white boxes
         kwargs = {"fontsize": 8, "fmt": "%1.0f"}
         if mpl.__version__.split(".") >= ["3", "3"]:
             kwargs["zorder"] = 30  # new in matplotlib version 3.3
-        plt.clabel(inv_map, **kwargs)
+        clabs = plt.clabel(inv_map, **kwargs)
         # work around https://github.com/SciTools/cartopy/issues/1554
         # in cartopy 0.18
-        clabs = inv_map.labelTextsList
         bbox_dict = dict(
-            boxstyle="square,pad=0", edgecolor="none", fc="white", zorder=25
+            boxstyle="square,pad=0",
+            edgecolor="none",
+            fc="none",
+            zorder=25,
         )
         clabs = [txt.set_bbox(bbox_dict) for txt in clabs]
 
@@ -314,12 +320,10 @@ def zmnam_plot(
         file_out.contact = "F. Serva (federico.serva@artov.ismar.cnr.it); \
         C. Cagnazzo (chiara.cagnazzo@cnr.it)"
 
-        #
         file_out.createDimension("time", None)
         file_out.createDimension("plev", np.size(lev))
         file_out.createDimension("lat", np.size(lat))
         file_out.createDimension("lon", np.size(lon))
-        #
         time_var = file_out.createVariable("time", "d", ("time",))
         if time_lnam:
             time_var.setncattr("long_name", time_lnam)
@@ -328,7 +332,6 @@ def zmnam_plot(
         time_var.setncattr("units", time_uni)
         time_var.setncattr("calendar", time_cal)
         time_var[:] = 0  # singleton
-        #
         lev_var = file_out.createVariable("plev", "d", ("plev",))
         if lev_lnam:
             lev_var.setncattr("long_name", lev_lnam)
@@ -338,20 +341,18 @@ def zmnam_plot(
         lev_var.setncattr("positive", lev_pos)
         lev_var.setncattr("axis", lev_axi)
         lev_var[:] = lev[:]
-        #
         lat_var = file_out.createVariable("lat", "d", ("lat",))
         lat_var.setncattr("units", lat_uni)
         lev_var.setncattr("axis", lat_axi)
         lat_var[:] = lat[:]
-        #
         lon_var = file_out.createVariable("lon", "d", ("lon",))
         lon_var.setncattr("units", lon_uni)
         lon_var.setncattr("axis", lon_axi)
         lon_var[:] = lon[:]
-        #
         regr_var = file_out.createVariable("regr", "f", ("plev", "lat", "lon"))
         regr_var.setncattr(
-            "long_name", "Zonal mean annular mode regression map"
+            "long_name",
+            "Zonal mean annular mode regression map",
         )
         regr_var.setncattr("index_type", index_name)
         regr_var.setncattr(

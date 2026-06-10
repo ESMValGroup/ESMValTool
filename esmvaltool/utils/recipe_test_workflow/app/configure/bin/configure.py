@@ -27,7 +27,7 @@ def main():
     user_config_path = os.environ["USER_CONFIG_PATH"]
     print(
         f"Writing the user configuration file to '{user_config_path}' with "
-        "values: "
+        "values: ",
     )
     pprint.PrettyPrinter().pprint(config_values)
     write_yaml(user_config_path, config_values)
@@ -73,7 +73,7 @@ def get_config_values_from_task_env():
     }
     print(
         "The configuration values defined in the environment for the "
-        "'configure' task: "
+        "'configure' task: ",
     )
     pprint.PrettyPrinter().pprint(config_values_from_task_env)
     return config_values_from_task_env
@@ -98,7 +98,7 @@ def validate_user_config_file(user_config_file_content):
     """
     errors = [
         "There were validation errors in your user configuration file. "
-        "Details are provided below.\n"
+        "Details are provided below.\n",
     ]
     for user_config_key, usr_config_value in user_config_file_content.items():
         try:
@@ -106,20 +106,20 @@ def validate_user_config_file(user_config_file_content):
         except KeyError as err:
             errors.append(
                 f"Key Error for {user_config_key.upper()}. May not be a valid "
-                f"ESMValTool user configuration key\nERROR: {err}\n"
+                f"ESMValTool user configuration key\nERROR: {err}\n",
             )
         else:
             try:
                 print(
                     f"Validating {user_config_key.upper()} with value "
                     f'"{usr_config_value}" using function '
-                    f"{validation_function.__name__.upper()}."
+                    f"{validation_function.__name__.upper()}.",
                 )
                 validation_function(usr_config_value)
             except ValidationError as err:
                 errors.append(
                     f"Validation error for {user_config_key.upper()} with "
-                    f'value "{usr_config_value}"\nERROR: {err}\n'
+                    f'value "{usr_config_value}"\nERROR: {err}\n',
                 )
     if len(errors) > 1:
         raise ValidationError("\n".join(errors))

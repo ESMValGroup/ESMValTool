@@ -28,7 +28,6 @@ import numpy as np
 from dask import array as da
 from dateutil import relativedelta
 from esmvalcore.cmor._fixes.common import OceanFixGrid
-from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import monthly_statistics
 from iris.coords import AuxCoord
 
@@ -58,7 +57,9 @@ def _create_nan_cube(cube, year, month, day):
         microsecond=0,
     )
     newtime_num = cf_units.date2num(
-        newtime, dataset_time_unit, dataset_time_calender
+        newtime,
+        dataset_time_unit,
+        dataset_time_calender,
     )
     nan_cube.coord("time").points = float(newtime_num)
 
@@ -97,7 +98,11 @@ def _create_areacello(cfg, cube, glob_attrs, out_dir):
     utils.fix_var_metadata(arcube, var_info)
     utils.set_global_atts(arcube, glob_attrs)
     utils.save_variable(
-        arcube, var_info.short_name, out_dir, glob_attrs, zlib=True
+        arcube,
+        var_info.short_name,
+        out_dir,
+        glob_attrs,
+        zlib=True,
     )
 
 
@@ -133,8 +138,10 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip_day"]
     attributes["raw"] = var["raw"]
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip_day"], var["short_name"])
+    definition = cfg["cmor_table"].get_variable(
+        var["mip_day"],
+        var["short_name"],
+    )
 
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
@@ -205,7 +212,10 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
                 loop_date.year,
             )
             nan_cube = _create_nan_cube(
-                new_list[0], loop_date.year, loop_date.month, loop_date.day
+                new_list[0],
+                loop_date.year,
+                loop_date.month,
+                loop_date.day,
             )
             full_list.append(nan_cube)
         loop_date += relativedelta.relativedelta(days=1)
@@ -254,7 +264,11 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     version = attributes["version"]
     attributes["version"] = f"{version}-{region}"
     save_variable(
-        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        unlimited_dimensions=["time"],
     )
 
     # calculate monthly means
@@ -267,9 +281,16 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     version = attributes["version"]
     attributes["mip"] = var["mip_mon"]
-    definition = cmor_table.get_variable(var["mip_mon"], var["short_name"])
+    definition = cfg["cmor_table"].get_variable(
+        var["mip_mon"],
+        var["short_name"],
+    )
     save_variable(
-        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        unlimited_dimensions=["time"],
     )
 
     # create and save areacello
@@ -321,7 +342,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     )
                 else:
                     _extract_variable(
-                        in_files, var, cfg, out_dir, loop_date.year, region
+                        in_files,
+                        var,
+                        cfg,
+                        out_dir,
+                        loop_date.year,
+                        region,
                     )
 
                 loop_date += relativedelta.relativedelta(years=1)

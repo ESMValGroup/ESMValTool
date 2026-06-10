@@ -6,7 +6,7 @@ attributes:
   dataset_id: CDS-UERRA
   version: 'UERRA-HARMONIE'
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-uerra-europe-soil-levels?tab=form'
   reference: 'cds-uerra'

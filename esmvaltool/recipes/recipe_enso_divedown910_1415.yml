@@ -1,0 +1,138 @@
+# ESMValTool
+---
+documentation:
+  description: Reproducing basic ENSO pattern, lifecycle, duration, diversity dive down figures
+  title: ENSO CLIVAR metrics - ENSO characteristics dive downs
+  authors:
+    - chun_felicity
+    - planton_yann
+    - beucher_romain
+    - sullivan_arnold
+    - chung_christine
+  maintainer:
+    - chun_felicity
+
+datasets:
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+  # observations
+  # - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+  - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+
+preprocessors:
+  ssta_enso: &base_enso  # pattern, lifecycle w/o month, duration, diversity
+    custom_order: true
+    convert_units:
+      units: degC
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &nino34
+      start_longitude: 190.
+      end_longitude: 240.
+      start_latitude: -5.
+      end_latitude: 5.
+    rolling_window_statistics:
+      coordinate: time
+      operator: mean
+      window_length: 5
+    anomalies:
+      period: monthly
+
+  ssta_ninoarea:  # lifecycle duration
+    <<: *base_enso
+    area_statistics:
+      operator: mean
+
+  ssta_dec_area:  # pattern diversity
+    <<: *base_enso
+    area_statistics:
+      operator: mean
+    extract_month:
+      month: 12
+
+  ssta_meridional:  # lifecycle duration
+    <<: *base_enso  # diversity more smoothing longitude and extract month
+    extract_region: &eqp  # lifecycle 160 280
+      start_longitude: 150.
+      end_longitude: 280.  # div 270
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+
+  ssta_pattern2:  # pattern
+    <<: *base_enso
+    extract_region:
+      <<: *eqp
+    extract_month:
+      month: 12
+    meridional_statistics:
+      operator: mean
+
+  ssta_pattern_map:  # pattern level 2,4
+    <<: *base_enso
+    extract_region:
+      start_longitude: 150.
+      end_longitude: 270.
+      start_latitude: -15.
+      end_latitude: 15.
+    extract_month:
+      month: 12
+
+  enso_amplitude:
+    <<: *base_enso
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: std_dev
+      period: full
+
+  enso_seas_asym:  # boreal season in script, climate stddev
+    custom_order: true
+    extract_region:
+      <<: *nino34
+    convert_units:
+      units: degC
+    anomalies:
+      period: monthly
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+  diagnostic_metrics:
+    description: run preprocessors on variables for ENSO metrics
+    variables:
+
+      tos_patdiv1:  # pattern-all, diversity
+        short_name: tos
+        mip: Omon
+        preprocessor: ssta_dec_area
+      tos_lifdur1:  # lifecycle-all duration
+        short_name: tos
+        mip: Omon
+        preprocessor: ssta_ninoarea
+      tos_lifdurdiv2:  # diversity lifecycle2,4
+        short_name: tos
+        mip: Omon
+        preprocessor: ssta_meridional
+      tos_pat2:  # pattern 3,1
+        short_name: tos
+        mip: Omon
+        preprocessor: ssta_pattern2
+      tos_pat_map:  # pattern 2,4 map
+        short_name: tos
+        mip: Omon
+        preprocessor: ssta_pattern_map
+
+    scripts:
+      pattern_script:
+        script: enso_metrics/enso_divedowns/pattern_9.py
+
+      lifecycle_script:
+        script: enso_metrics/enso_divedowns/lifecycle_10.py
+
+      durationdiversity_script:
+        script: enso_metrics/enso_divedowns/durdiver_1415.py

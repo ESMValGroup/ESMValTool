@@ -7,7 +7,7 @@ attributes:
   dataset_id: GHCN-CAMS
   version: '1'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'https://www.esrl.noaa.gov/psd/data/gridded/data.ghcncams.html'
   reference: 'ghcn-cams'

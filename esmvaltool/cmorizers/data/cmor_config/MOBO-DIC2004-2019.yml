@@ -4,7 +4,7 @@ attributes:
   dataset_id: MOBO-DIC2004-2019
   version: '2.3'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'https://www.nodc.noaa.gov/archive/arc0211/0277099/2.3/data/0-data/'
   reference: 'mobo_dic2004_2019'

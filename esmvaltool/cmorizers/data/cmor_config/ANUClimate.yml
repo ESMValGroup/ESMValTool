@@ -6,7 +6,7 @@ attributes:
   dataset_id: ANUClimate
   version: 'v2-0'
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   # resolution: '0.01 degree'
   source: 'https://dx.doi.org/10.25914/60a10aa56dd1b'
   reference: 'anuclimate2'

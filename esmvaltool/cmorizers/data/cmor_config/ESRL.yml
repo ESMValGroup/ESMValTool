@@ -11,7 +11,7 @@ input_filename_pattern: 'co2_*_surface-*_1_ccgg_*.txt'
 attributes:
   dataset_id: ESRL
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'https://www.esrl.noaa.gov/gmd/dv/data/'
   reference: 'esrl'

@@ -1,6 +1,13 @@
 """Downloader base class."""
 
-import os
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from esmvaltool.cmorizers.data.typing import DatasetInfo
 
 
 class BaseDownloader:
@@ -8,43 +15,37 @@ class BaseDownloader:
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
-    dataset : str
+    original_data_dir:
+        Directory where original data will be stored.
+    dataset:
         Dataset to download
-    dataset_info : dict
+    dataset_info:
         Dataset information from the datasets.yml file
-    overwrite : bool
+    overwrite:
         Overwrite already downloaded files
     """
 
-    def __init__(self, config, dataset, dataset_info, overwrite):
-        self._config = config
+    def __init__(
+        self,
+        original_data_dir: Path,
+        dataset: str,
+        dataset_info: DatasetInfo,
+        *,
+        overwrite: bool,
+    ) -> None:
+        self.original_data_dir = original_data_dir
         self.tier = dataset_info["tier"]
         self.dataset = dataset
         self.dataset_info = dataset_info
         self.overwrite = overwrite
 
     @property
-    def local_folder(self):
+    def local_folder(self) -> str:
         """Folder to store the downloader date.
 
         Returns
         -------
-        str
+        :
             Path to the download folder
         """
-        return os.path.join(
-            self.rawobs_folder, f"Tier{self.tier}", self.dataset
-        )
-
-    @property
-    def rawobs_folder(self):
-        """RAWOBS base path.
-
-        Returns
-        -------
-        str
-            Path to the RAWOBS folder
-        """
-        return self._config["rootpath"]["RAWOBS"][0]
+        return str(self.original_data_dir / f"Tier{self.tier}" / self.dataset)

@@ -72,7 +72,11 @@ def _extract_variable(raw_var, cmor_info, attrs, filepaths, out_dir):
 
     utils.set_global_atts(cube, attrs)
     utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        var,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -97,8 +101,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         cmor_info = cmor_table.get_variable(var_info["mip"], var)
         raw_var = var_info.get("raw", var)
         _extract_variable(
-            raw_var, cmor_info, glob_attrs, filepaths[0], out_dir
+            raw_var,
+            cmor_info,
+            glob_attrs,
+            filepaths[0],
+            out_dir,
         )
         _extract_variable(
-            raw_var, cmor_info, glob_attrs, filepaths[1], out_dir
+            raw_var,
+            cmor_info,
+            glob_attrs,
+            filepaths[1],
+            out_dir,
         )

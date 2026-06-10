@@ -8,14 +8,19 @@ from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -28,7 +33,7 @@ def download_dataset(
         Overwrite already downloaded files
     """
     downloader = FTPDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         server="ftp.climserv.ipsl.polytechnique.fr",
         dataset=dataset,
         dataset_info=dataset_info,
@@ -45,7 +50,7 @@ def download_dataset(
     while loop_date <= end_date:
         year = loop_date.year
         downloader.set_cwd(
-            f"/cfmip/GOCCP_v3/3D_CloudFraction/grid_2x2xL40/{year}/avg/"
+            f"/cfmip/GOCCP_v3/3D_CloudFraction/grid_2x2xL40/{year}/avg/",
         )
         downloader.download_folder(
             ".",

@@ -1,15 +1,15 @@
 ---
 # Filename
-filename: 'CERES_EBAF-TOA_Ed4.1_Subset_200003-202203.nc'
+filename: 'CERES_EBAF-TOA_Ed4.2.1_Subset_200003-202511.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: CERES-EBAF
-  version: 'Ed4.1'
+  version: 'Ed4.2.1'
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS
-  source: 'https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAF4Selection.jsp'
+  source: 'https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp'
   reference: 'ceres-ebaf'
   comment: ''
 
@@ -27,3 +27,12 @@ variables:
   rlutcs:
     mip: Amon
     raw: toa_lw_clr_c_mon
+  rsdt:
+    mip: Amon
+    raw: solar_mon
+  rtmt:
+    mip: Amon
+    raw: toa_net_all_mon
+  rtnt:
+    mip: Amon
+    raw: toa_net_all_mon

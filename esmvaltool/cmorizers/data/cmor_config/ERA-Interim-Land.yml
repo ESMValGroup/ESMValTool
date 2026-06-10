@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 3
   version: '1'
-  modeling_realm: reanaly
+  type: reanaly
   source: 'https://apps.ecmwf.int/datasets/data/interim-land/type=an/'
   reference: 'era-interim-land'
   comment: |

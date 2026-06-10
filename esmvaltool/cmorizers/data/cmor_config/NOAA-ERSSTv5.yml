@@ -8,7 +8,7 @@ attributes:
   dataset_id: NOAA-ERSSTv5
   version: 'v5'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   source: 'https://doi.org/10.7289/V5T72FNM'
   reference: 'ersstv5'
   comment: ''

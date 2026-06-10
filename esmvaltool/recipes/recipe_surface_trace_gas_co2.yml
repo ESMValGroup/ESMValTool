@@ -1,0 +1,62 @@
+# ESMValTool
+# recipe_surface_trace_gas_co2.yml
+---
+documentation:
+  description: |
+    Recipe to plot diagnostics of CO2 surface concentration.
+
+  title: Recipe that runs a surface CO2 concentration diagnostic
+
+  authors:
+    - lenhardt_julien
+
+  maintainer:
+    - lenhardt_julien
+
+  projects:
+    - esmval
+    - esm2025
+
+preprocessors:
+  ma_surface:
+    extract_surface_from_atm:
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: nearest
+
+diagnostics:
+
+    diagnostic_surface_concentration_co2:
+      description: Visualise CO2 surface concentration through seasonal maps,
+        seasonal cycle time series, amplitude and growth.
+
+      variables:
+
+        co2s:
+          mip: Amon
+          short_name: co2s
+          start_year: 2000
+          end_year: 2014
+          additional_datasets:
+            - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, tier: 2, type: ground, version: 1, alias: NOAA-GML-SURFACE-FLASK-CO2}
+
+        co2s_model:
+          mip: Amon
+          short_name: co2
+          start_year: 2000
+          end_year: 2014
+          preprocessor: ma_surface
+          supplementary_variables:
+            - short_name: ps
+          additional_datasets:
+            - {dataset: CNRM-ESM2-1, project: CMIP6, mip: Amon, exp: esm-hist, ensemble: r1i1p1f3, grid: gr, alias: CNRM-ESM2-1}
+
+      scripts:
+        co2-surface-trace-gas:
+          script: surface_trace_gases/diagnostic_surface_trace_gases.py
+          observational_dataset: NOAA-GML-SURFACE-FLASK-CO2
+          trace_gas: co2
+          plots: ["seas_maps", "timeserie_lat", "sensitivity_ampl_growth", "taylor_diag"]
+          min_mon_per_seas: 3
+          min_seas_per_year: 4
+          min_seas_per_clim: 5

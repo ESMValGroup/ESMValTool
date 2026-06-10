@@ -143,7 +143,16 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         )
         # Compute conversion between zonal and eddy KE
         ke2kz[:, t_t, :, :] = mkkekz(
-            ua_tan, va_tan, wap_tan, ua_tmn, va_tmn, lev, y_l, nlat, ntp, nlev
+            ua_tan,
+            va_tan,
+            wap_tan,
+            ua_tmn,
+            va_tmn,
+            lev,
+            y_l,
+            nlat,
+            ntp,
+            nlev,
         )
         # Compute conversion between stationary and transient eddy APE
         at2as[:, t_t, :, :] = mkatas(
@@ -161,7 +170,14 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         )
         # Compute conversion between stationary and transient eddy KE
         kt2ks[:, t_t, :, :] = mkktks(
-            ua_tan, va_tan, ua_tmn, va_tmn, y_l, nlat, ntp, nlev
+            ua_tan,
+            va_tan,
+            ua_tmn,
+            va_tmn,
+            y_l,
+            nlat,
+            ntp,
+            nlev,
         )
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
     table(ek_tgmn, ntp, "TOT. KIN. EN.    ", logfile, flag=0)
@@ -187,12 +203,30 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     a2k_stgmn = globall_cg(a2k_st, g_w, d_s, dims)
     table(a2k_stgmn, ntp, "KE -> APE (stat)", logfile, flag=1)
     ae2az_st = mkaeaz(
-        va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev, y_l, gam_tmn, nlat, nlev
+        va_tmn,
+        wap_tmn,
+        ta_tmn,
+        ta_tmn,
+        ta_gmn,
+        lev,
+        y_l,
+        gam_tmn,
+        nlat,
+        nlev,
     )
     ae2az_stgmn = globall_cg(ae2az_st, g_w, d_s, dims)
     table(ae2az_stgmn, ntp, "AZ <-> AE (stat)", logfile, flag=1)
     ke2kz_st = mkkekz(
-        ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat, ntp, nlev
+        ua_tmn,
+        va_tmn,
+        wap_tmn,
+        ua_tmn,
+        va_tmn,
+        lev,
+        y_l,
+        nlat,
+        ntp,
+        nlev,
     )
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
     # table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', logfile, flag=1)
@@ -595,7 +629,7 @@ def makek(u_t, v_t):
     ck2 = v_t * np.conj(v_t)
     e_k = np.real(ck1 + ck2)
     e_k[:, :, 0] = 0.5 * np.real(
-        u_t[:, :, 0] * u_t[:, :, 0] + v_t[:, :, 0] * v_t[:, :, 0]
+        u_t[:, :, 0] * u_t[:, :, 0] + v_t[:, :, 0] * v_t[:, :, 0],
     )
     return e_k
 
@@ -615,7 +649,7 @@ def makea(t_t, t_g, gam):
         * 0.5
         * np.real(
             (t_t[:, :, 0] - t_g[:, np.newaxis])
-            * (t_t[:, :, 0] - t_g[:, np.newaxis])
+            * (t_t[:, :, 0] - t_g[:, np.newaxis]),
         )
     )
     return ape
@@ -635,13 +669,13 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     a2k = -np.real(
         R
         / p_l[:, np.newaxis, np.newaxis]
-        * (t_t * np.conj(wap) + np.conj(t_t) * wap)
+        * (t_t * np.conj(wap) + np.conj(t_t) * wap),
     )
     a2k[:, :, 0] = -np.real(
         R
         / p_l[:, np.newaxis]
         * (t_t[:, :, 0] - t_g[:, np.newaxis])
-        * (wap[:, :, 0] - w_g[:, np.newaxis])
+        * (wap[:, :, 0] - w_g[:, np.newaxis]),
     )
     return a2k
 
@@ -852,10 +886,14 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     t_v = np.fft.fft(tvr, axis=2)
     t_w = np.fft.fft(twr, axis=2)
     c_1 = t_u * np.conj(ttt[:, :, np.newaxis]) - ttt[
-        :, :, np.newaxis
+        :,
+        :,
+        np.newaxis,
     ] * np.conj(t_u)
     c_6 = t_w * np.conj(ttt[:, :, np.newaxis]) - ttt[
-        :, :, np.newaxis
+        :,
+        :,
+        np.newaxis,
     ] * np.conj(t_w)
     c_2 = np.zeros([nlev, nlat, ntp - 1])
     c_3 = np.zeros([nlev, nlat, ntp - 1])
@@ -866,39 +904,39 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
                 t_v[:, i_l, :]
                 / (AA * (lat[i_l + 1] - lat[i_l]))
                 * np.conj(
-                    ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]
-                )
+                    ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis],
+                ),
             )
             c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :])
                 / (AA * (lat[i_l + 1] - lat[i_l]))
-                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis])
+                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]),
             )
         elif i_l == nlat - 1:
             c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :]
                 / (AA * (lat[i_l] - lat[i_l - 1]))
                 * np.conj(
-                    ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]
-                )
+                    ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis],
+                ),
             )
             c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :])
                 / (AA * (lat[i_l] - lat[i_l - 1]))
-                * (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis])
+                * (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]),
             )
         else:
             c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :]
                 / (AA * (lat[i_l + 1] - lat[i_l - 1]))
                 * np.conj(
-                    ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]
-                )
+                    ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis],
+                ),
             )
             c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :])
                 / (AA * (lat[i_l + 1] - lat[i_l - 1]))
-                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis])
+                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]),
             )
     for l_l in range(nlev):
         if l_l == 0:
@@ -1038,11 +1076,14 @@ def pr_output(varo, varname, filep, nc_f):
             fourc.extr_lat(nc_fid, w_nc_fid, "lat")
             w_nc_fid.createDimension("wave", ntp)
             w_nc_dim = w_nc_fid.createVariable(
-                "wave", nc_fid.variables["wave"].dtype, ("wave",)
+                "wave",
+                nc_fid.variables["wave"].dtype,
+                ("wave",),
             )
             for ncattr in nc_fid.variables["wave"].ncattrs():
                 w_nc_dim.setncattr(
-                    ncattr, nc_fid.variables["wave"].getncattr(ncattr)
+                    ncattr,
+                    nc_fid.variables["wave"].getncattr(ncattr),
                 )
         w_nc_fid.variables["wave"][:] = wave[0:ntp]
         w_nc_var = w_nc_fid.createVariable(varname, "f8", ("lat", "wave"))
@@ -1151,7 +1192,10 @@ def preproc_lec(model, wdir, pdir, input_data):
         tadiag_file = wdir + "/ta_filled.nc"
         ncfile = wdir + "/fourier_coeff.nc"
         cdo.selyear(
-            y_ro, input=energy3_file, options="-b F32", output=enfile_yr
+            y_ro,
+            input=energy3_file,
+            options="-b F32",
+            output=enfile_yr,
         )
         cdo.selyear(y_ro, input=tas_file, options="-b F32", output=tasfile_yr)
         fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
@@ -1257,7 +1301,7 @@ def varatts(w_nc_var, varname, tres, vres):
                 "level_desc": vatt,
                 "var_desc": "APE -> KE",
                 "statistic": tatt,
-            }
+            },
         )
     elif varname == "ek":
         w_nc_var.setncatts(
@@ -1267,7 +1311,7 @@ def varatts(w_nc_var, varname, tres, vres):
                 "level_desc": vatt,
                 "var_desc": "APE -> KE",
                 "statistic": tatt,
-            }
+            },
         )
     elif varname == "a2k":
         w_nc_var.setncatts(
@@ -1277,7 +1321,7 @@ def varatts(w_nc_var, varname, tres, vres):
                 "level_desc": vatt,
                 "var_desc": "APE <-> KE",
                 "statistic": tatt,
-            }
+            },
         )
     elif varname == "k":
         w_nc_var.setncatts(
@@ -1287,7 +1331,7 @@ def varatts(w_nc_var, varname, tres, vres):
                 "level_desc": vatt,
                 "var_desc": "APE -> KE",
                 "statistic": tatt,
-            }
+            },
         )
 
 
@@ -1331,27 +1375,27 @@ def write_to_tab(logfile, name, vared, varzon):
     vartot = varzon + vared[0]
     with open(logfile, "a+") as log:
         log.write(
-            f" {name} TOTAL    {vartot[0]: 4.3f}  {vartot[1]: 4.3f}  {vartot[2]: 4.3f}\n"
+            f" {name} TOTAL    {vartot[0]: 4.3f}  {vartot[1]: 4.3f}  {vartot[2]: 4.3f}\n",
         )
         log.write("--------------------------------------\n")
         log.write(
-            f" {name} ZONAL    {varzon[0]: 4.3f}  {varzon[1]: 4.3f}  {varzon[2]: 4.3f}\n"
+            f" {name} ZONAL    {varzon[0]: 4.3f}  {varzon[1]: 4.3f}  {varzon[2]: 4.3f}\n",
         )
         log.write("--------------------------------------\n")
         log.write(
-            f" {name} EDDY     {vared[0][0]: 4.3f}  {vared[0][1]: 4.3f}  {vared[0][2]: 4.3f}\n"
+            f" {name} EDDY     {vared[0][0]: 4.3f}  {vared[0][1]: 4.3f}  {vared[0][2]: 4.3f}\n",
         )
         log.write("--------------------------------------\n")
         log.write(
-            f" {name} EDDY(LW) {vared[1][0]: 4.3f}  {vared[1][1]: 4.3f}  {vared[1][2]: 4.3f}\n"
+            f" {name} EDDY(LW) {vared[1][0]: 4.3f}  {vared[1][1]: 4.3f}  {vared[1][2]: 4.3f}\n",
         )
         log.write("--------------------------------------\n")
         log.write(
-            f" {name} EDDY(SW) {vared[2][0]: 4.3f}  {vared[2][1]: 4.3f}  {vared[2][2]: 4.3f}\n"
+            f" {name} EDDY(SW) {vared[2][0]: 4.3f}  {vared[2][1]: 4.3f}  {vared[2][2]: 4.3f}\n",
         )
         log.write("--------------------------------------\n")
         log.write(
-            f" {name} EDDY(KW) {vared[3][0]: 4.3f}  {vared[3][1]: 4.3f}  {vared[3][2]: 4.3f}\n"
+            f" {name} EDDY(KW) {vared[3][0]: 4.3f}  {vared[3][1]: 4.3f}  {vared[3][2]: 4.3f}\n",
         )
         log.write("--------------------------------------\n")
         log.close()

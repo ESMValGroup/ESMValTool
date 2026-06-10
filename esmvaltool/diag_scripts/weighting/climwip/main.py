@@ -40,7 +40,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def aggregate_obs_data(
-    data_array: "xr.DataArray", operator: str = "median"
+    data_array: "xr.DataArray",
+    operator: str = "median",
 ) -> "xr.DataArray":
     """Reduce data array along ensemble dimension.
 
@@ -57,14 +58,17 @@ def aggregate_obs_data(
 
 
 def visualize_and_save_independence(
-    independence: "xr.DataArray", cfg: dict, ancestors: list
+    independence: "xr.DataArray",
+    cfg: dict,
+    ancestors: list,
 ):
     """Visualize independence."""
     variable = independence.variable_group
     labels = list(independence.model_ensemble.values)
 
     figure, axes = plt.subplots(
-        figsize=(15, 15), subplot_kw={"aspect": "equal"}
+        figsize=(15, 15),
+        subplot_kw={"aspect": "equal"},
     )
     chart = sns.heatmap(
         independence,
@@ -82,7 +86,9 @@ def visualize_and_save_independence(
     plt.close(figure)
 
     filename_data = get_diagnostic_filename(
-        f"independence_{variable}", cfg, extension="nc"
+        f"independence_{variable}",
+        cfg,
+        extension="nc",
     )
     independence.to_netcdf(filename_data)
 
@@ -92,7 +98,8 @@ def visualize_and_save_independence(
 
 
 def calculate_performance(
-    model_data: "xr.DataArray", obs_data: "xr.DataArray"
+    model_data: "xr.DataArray",
+    obs_data: "xr.DataArray",
 ) -> "xr.DataArray":
     """Calculate performance.
 
@@ -124,10 +131,16 @@ def barplot(metric: "xr.DataArray", label: str, filename: str):
 
     figure, axes = plt.subplots(figsize=(15, 10))
     chart = sns.barplot(
-        x="model_ensemble", y=name, data=metric_df, ax=axes, color="blue"
+        x="model_ensemble",
+        y=name,
+        data=metric_df,
+        ax=axes,
+        color="blue",
     )
     chart.set_xticklabels(
-        chart.get_xticklabels(), rotation=45, horizontalalignment="right"
+        chart.get_xticklabels(),
+        rotation=45,
+        horizontalalignment="right",
     )
     if variable_group == "weight":
         chart.set_title("Performance weights")
@@ -141,7 +154,9 @@ def barplot(metric: "xr.DataArray", label: str, filename: str):
 
 
 def visualize_and_save_performance(
-    performance: "xr.DataArray", cfg: dict, ancestors: list
+    performance: "xr.DataArray",
+    cfg: dict,
+    ancestors: list,
 ):
     """Visualize performance."""
     label = "RMS error"
@@ -152,7 +167,9 @@ def visualize_and_save_performance(
     barplot(performance, label, filename_plot)
 
     filename_data = get_diagnostic_filename(
-        f"performance_{variable_group}", cfg, extension="nc"
+        f"performance_{variable_group}",
+        cfg,
+        extension="nc",
     )
     performance.to_netcdf(filename_data)
 
@@ -162,7 +179,8 @@ def visualize_and_save_performance(
 
 
 def split_ensemble_members(
-    dataset: "xr.DataArray", groups: dict
+    dataset: "xr.DataArray",
+    groups: dict,
 ) -> "xr.DataArray":
     """Split combined ensemble members of the same model."""
     model_ensemble = []
@@ -184,7 +202,9 @@ def split_ensemble_members(
 
 
 def visualize_and_save_weights(
-    weights: "xr.DataArray", cfg: dict, ancestors: list
+    weights: "xr.DataArray",
+    cfg: dict,
+    ancestors: list,
 ):
     """Visualize weights."""
     label = "Weights"
@@ -220,10 +240,12 @@ def main(cfg):
     models, observations = read_metadata(cfg)
 
     independence_contributions, independence_sigma = parse_contributions_sigma(
-        "independence", cfg
+        "independence",
+        cfg,
     )
     performance_contributions, performance_sigma = parse_contributions_sigma(
-        "performance", cfg
+        "performance",
+        cfg,
     )
 
     if not (independence_contributions or performance_contributions):
@@ -233,7 +255,7 @@ def main(cfg):
                 "performance_contributions field need to be set and contain at",
                 "least one variable group with weight > 0 otherwise no weights",
                 "can be calculated!",
-            ]
+            ],
         )
         raise OSError(errmsg)
 
@@ -247,7 +269,8 @@ def main(cfg):
         logger.info("Reading model data for %s", variable_group)
         if variable_group.endswith("_ANOM"):
             model_data, model_data_files = read_model_data_ancestor(
-                cfg, variable_group
+                cfg,
+                variable_group,
             )
         else:
             datasets_model = models[variable_group]
@@ -265,7 +288,8 @@ def main(cfg):
         logger.info("Reading model data for %s", variable_group)
         if variable_group.endswith("_ANOM"):
             model_data, model_data_files = read_model_data_ancestor(
-                cfg, variable_group
+                cfg,
+                variable_group,
             )
         else:
             datasets_model = models[variable_group]
@@ -275,7 +299,8 @@ def main(cfg):
         datasets_obs = observations[variable_group]
         if variable_group.endswith("_ANOM"):
             obs_data, obs_data_files = read_observation_data_ancestor(
-                cfg, variable_group
+                cfg,
+                variable_group,
             )
         else:
             obs_data, obs_data_files = read_observation_data(datasets_obs)
@@ -284,7 +309,9 @@ def main(cfg):
         logger.info("Calculating performance for %s", variable_group)
         performance = calculate_performance(model_data, obs_data)
         visualize_and_save_performance(
-            performance, cfg, model_data_files + obs_data_files
+            performance,
+            cfg,
+            model_data_files + obs_data_files,
         )
         logger.debug(performance.values)
         performances[variable_group] = performance
@@ -298,15 +325,18 @@ def main(cfg):
         logger.info("Computing overall mean independence")
         independence = xr.Dataset(independences)
         overall_independence = compute_overall_mean(
-            independence, independence_contributions
+            independence,
+            independence_contributions,
         )
         visualize_and_save_independence(
-            overall_independence, cfg, model_ancestors
+            overall_independence,
+            cfg,
+            model_ancestors,
         )
         if independence_sigma is None:
             raise NotImplementedError(
                 "`independence_sigma` must be set if "
-                "`independence_contributions` is set"
+                "`independence_contributions` is set",
             )
     else:
         overall_independence = None
@@ -315,10 +345,13 @@ def main(cfg):
         logger.info("Computing overall mean performance")
         performance = xr.Dataset(performances)
         overall_performance = compute_overall_mean(
-            performance, performance_contributions
+            performance,
+            performance_contributions,
         )
         visualize_and_save_performance(
-            overall_performance, cfg, model_ancestors + obs_ancestors
+            overall_performance,
+            cfg,
+            model_ancestors + obs_ancestors,
         )
         if performance_sigma is None:
             performance_sigma = calibrate_performance_sigma(
@@ -336,7 +369,7 @@ def main(cfg):
             ["model_ensemble", "model_ensemble_reference"],
         )
         overall_performance, groups_performance = combine_ensemble_members(
-            overall_performance
+            overall_performance,
         )
         # one of them could be empty if metric is not calculated
         groups = {**groups_independence, **groups_performance}
@@ -353,7 +386,9 @@ def main(cfg):
         weights = split_ensemble_members(weights, groups)
 
     visualize_and_save_weights(
-        weights, cfg, ancestors=model_ancestors + obs_ancestors
+        weights,
+        cfg,
+        ancestors=model_ancestors + obs_ancestors,
     )
     logger.debug(weights.values)
 

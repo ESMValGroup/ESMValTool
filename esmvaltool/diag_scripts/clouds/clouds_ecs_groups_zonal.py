@@ -127,9 +127,7 @@ def compute_diagnostic(filename):
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    if cube.var_name == "cli":
-        cube.convert_units("g/kg")
-    elif cube.var_name == "clw":
+    if cube.var_name == "cli" or cube.var_name == "clw":
         cube.convert_units("g/kg")
 
     logger.debug("Reading %s", filename)
@@ -143,10 +141,7 @@ def compute_diff(filename1, filename2):
     cube1 = iris.load_cube(filename1)
     cube2 = iris.load_cube(filename2)
 
-    if cube1.var_name == "cli":
-        cube1.convert_units("g/kg")
-        cube2.convert_units("g/kg")
-    elif cube1.var_name == "clw":
+    if cube1.var_name == "cli" or cube1.var_name == "clw":
         cube1.convert_units("g/kg")
         cube2.convert_units("g/kg")
 
@@ -171,7 +166,7 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
     )
     if not var_data_2:
         raise ValueError(
-            f"No '{var}' data for '{dataset_name}' in '{group[1]}' available"
+            f"No '{var}' data for '{dataset_name}' in '{group[1]}' available",
         )
 
     input_file_2 = var_data_2[0]["filename"]
@@ -208,12 +203,12 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
     if not ta_data_1:
         raise ValueError(
             f"No temperature data for '{dataset_name}' "
-            f"in '{group[0]}' available"
+            f"in '{group[0]}' available",
         )
     if not ta_data_2:
         raise ValueError(
             f"No temperature data for '{dataset_name}' "
-            f"in '{group[1]}' available"
+            f"in '{group[1]}' available",
         )
     input_file_ta_1 = ta_data_1[0]["filename"]
     input_file_ta_2 = ta_data_2[0]["filename"]
@@ -244,7 +239,9 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
         logger.debug("Computing field mean")
         grid_areas = iris.analysis.cartography.area_weights(cube_diff)
         cube_diff = cube_diff.collapsed(
-            ["longitude", "latitude"], iris.analysis.MEAN, weights=grid_areas
+            ["longitude", "latitude"],
+            iris.analysis.MEAN,
+            weights=grid_areas,
         )
     else:
         raise ValueError(f"Plot type {plot_type} is not implemented.")
@@ -275,7 +272,11 @@ def plot_diagnostic(cube, legend, plot_type):
     else:
         lat = cube.coord("latitude")
         qplt.plot(
-            lat, cube, label=cube_label, color=line_color, linestyle=line_dash
+            lat,
+            cube,
+            label=cube_label,
+            color=line_color,
+            linestyle=line_dash,
         )
 
     logger.info("Plotting %s", legend)
@@ -293,9 +294,7 @@ def plot_diagnostic_diff(cube, legend, plot_type):
         cube.units = cube.units / "kg m-3"
         cube.data = cube.core_data() / 1000.0
         cube.convert_units("mm day-1")
-    elif cube.var_name == "cli":
-        cube.convert_units("g/kg")
-    elif cube.var_name == "clw":
+    elif cube.var_name == "cli" or cube.var_name == "clw":
         cube.convert_units("g/kg")
 
     if plot_type == "height":
@@ -311,7 +310,11 @@ def plot_diagnostic_diff(cube, legend, plot_type):
     else:
         lat = cube.coord("latitude")
         qplt.plot(
-            lat, cube, label=cube_label, color=line_color, linestyle=line_dash
+            lat,
+            cube,
+            label=cube_label,
+            color=line_color,
+            linestyle=line_dash,
         )
 
     logger.info("Plotting %s", legend)
@@ -331,10 +334,7 @@ def plot_errorband(cube1, cube2, legend, plot_type):
         cube2.units = cube2.units / "kg m-3"
         cube2.data = cube2.core_data() / 1000.0
         cube2.convert_units("mm day-1")
-    elif cube1.var_name == "cli":
-        cube1.convert_units("g/kg")
-        cube2.convert_units("g/kg")
-    elif cube1.var_name == "clw":
+    elif cube1.var_name == "cli" or cube1.var_name == "clw":
         cube1.convert_units("g/kg")
         cube2.convert_units("g/kg")
 
@@ -401,7 +401,7 @@ def main(cfg):
                         cube = cube.collapsed("longitude", iris.analysis.MEAN)
                     elif plot_type == "height":
                         grid_areas = iris.analysis.cartography.area_weights(
-                            cube
+                            cube,
                         )
                         cube = cube.collapsed(
                             ["longitude", "latitude"],
@@ -410,7 +410,7 @@ def main(cfg):
                         )
                     else:
                         raise ValueError(
-                            f"Plot type {plot_type} is not implemented."
+                            f"Plot type {plot_type} is not implemented.",
                         )
 
                     cubes[dataset_name] = cube
@@ -466,7 +466,10 @@ def main(cfg):
                 dataset_names.append(dataset_name)
 
                 cube_diff = compute_diff_temp(
-                    input_data, group_name, dataset, plot_type
+                    input_data,
+                    group_name,
+                    dataset,
+                    plot_type,
                 )
 
                 cubes_diff[dataset_name] = cube_diff
@@ -497,7 +500,8 @@ def main(cfg):
 
     short_name = input_data[0]["short_name"]
     provenance_record = get_provenance_record(
-        short_name, ancestor_files=[d["filename"] for d in input_data]
+        short_name,
+        ancestor_files=[d["filename"] for d in input_data],
     )
 
     if plot_type == "height":

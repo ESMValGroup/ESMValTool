@@ -4,7 +4,7 @@ attributes:
   dataset_id: HadCRUT5
   version: '5.0.1.0'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'https://crudata.uea.ac.uk/cru/data/temperature/'
   reference: 'hadcrut5'

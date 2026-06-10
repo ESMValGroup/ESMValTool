@@ -30,14 +30,18 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
         dataset_selection = select_metadata(input_data, short_name=short_name)
     else:
         dataset_selection = select_metadata(
-            input_data, short_name=short_name, project=cmip_type
+            input_data,
+            short_name=short_name,
+            project=cmip_type,
         )
 
     # get the obs datasets if specified in recipe
     if "observational_datasets" in cfg:
         obs_selection = [
             select_metadata(
-                input_data, short_name=short_name, dataset=obs_dataset
+                input_data,
+                short_name=short_name,
+                dataset=obs_dataset,
             )[0]
             for obs_dataset in cfg["observational_datasets"]
         ]
@@ -62,12 +66,12 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
 
     if cfg["control_model"] not in alias_selection:
         raise ValueError(
-            f"Control dataset {cfg['control_model']} not in datasets"
+            f"Control dataset {cfg['control_model']} not in datasets",
         )
 
     if cfg["exper_model"] not in alias_selection:
         raise ValueError(
-            f"Experiment dataset {cfg['exper_model']} not in datasets"
+            f"Experiment dataset {cfg['exper_model']} not in datasets",
         )
 
     # pick control and experiment dataset

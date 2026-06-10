@@ -28,7 +28,7 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_tcre.yml
-* ref/recipe_tcre.yml
+* ref/recipe_ref_tcre.yml
 
 Diagnostics are stored in diag_scripts/
 

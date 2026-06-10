@@ -83,7 +83,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from iris.cube import Cube
+from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
 from scipy.stats import linregress
 
@@ -182,23 +182,23 @@ def _get_default_cfg(cfg: dict) -> dict:
         raise ValueError(
             f"Option 'calc_tcre_period' needs to be a sequence of exactly 2 "
             f"integers, got '{cfg['calc_tcre_period']}' of type "
-            f"{type(cfg['calc_tcre_period'])}"
+            f"{type(cfg['calc_tcre_period'])}",
         )
     if len(cfg["calc_tcre_period"]) != 2:
         raise ValueError(
             f"Option 'calc_tcre_period' needs to be a sequence of exactly 2 "
-            f"integers, got '{cfg['calc_tcre_period']}'"
+            f"integers, got '{cfg['calc_tcre_period']}'",
         )
     if any(not isinstance(i, int) for i in cfg["calc_tcre_period"]):
         raise ValueError(
             f"Option 'calc_tcre_period' needs to be a sequence of exactly 2 "
-            f"integers, got '{cfg['calc_tcre_period']}'"
+            f"integers, got '{cfg['calc_tcre_period']}'",
         )
     if cfg["calc_tcre_period"][0] >= cfg["calc_tcre_period"][1]:
         raise ValueError(
             f"Invalid value for option 'calc_tcre_period': the first integer "
             f"needs to be smaller than the second, got "
-            f"'{cfg['calc_tcre_period']}'"
+            f"'{cfg['calc_tcre_period']}'",
         )
 
     return cfg
@@ -218,31 +218,37 @@ def _get_grouped_anomaly_data(
         exp_control = cfg["exp_control"]
         exp_target = cfg["exp_target"]
         data_e_target = select_metadata(
-            group_data, short_name=var_e, exp=exp_target
+            group_data,
+            short_name=var_e,
+            exp=exp_target,
         )
         data_t_target = select_metadata(
-            group_data, short_name=var_t, exp=exp_target
+            group_data,
+            short_name=var_t,
+            exp=exp_target,
         )
         data_t_control = select_metadata(
-            group_data, short_name=var_t, exp=exp_control
+            group_data,
+            short_name=var_t,
+            exp=exp_control,
         )
         if len(data_e_target) != 1:
             raise ValueError(
                 f"Expected exactly 1 dataset for emissions (variable name "
                 f"'{var_e}') of experiment '{exp_target}' for group "
-                f"'{group}', got {len(data_e_target)}"
+                f"'{group}', got {len(data_e_target)}",
             )
         if len(data_t_target) != 1:
             raise ValueError(
                 f"Expected exactly 1 dataset for temperature (variable name "
                 f"'{var_t}') of experiment '{exp_target}' for group "
-                f"'{group}', got {len(data_t_target)}"
+                f"'{group}', got {len(data_t_target)}",
             )
         if len(data_t_control) != 1:
             raise ValueError(
                 f"Expected exactly 1 dataset for temperature (variable name "
                 f"'{var_t}') of experiment '{exp_control}' for group "
-                f"'{group}', got {len(data_t_control)}"
+                f"'{group}', got {len(data_t_control)}",
             )
         data_e_target = data_e_target[0]
         data_t_target = data_t_target[0]
@@ -255,13 +261,13 @@ def _get_grouped_anomaly_data(
             raise ValueError(
                 f"Expected identical shapes for all data of group '{group}', "
                 f"got {cube_e_target.shape} for {data_e_target['filename']} "
-                f"and {cube_t_target.shape} for {data_t_target['filename']}"
+                f"and {cube_t_target.shape} for {data_t_target['filename']}",
             )
         if cube_e_target.shape != cube_t_control.shape:
             raise ValueError(
                 f"Expected identical shapes for all data of group '{group}', "
                 f"got {cube_e_target.shape} for {data_e_target['filename']} "
-                f"and {cube_t_control.shape} for {data_t_control['filename']}"
+                f"and {cube_t_control.shape} for {data_t_control['filename']}",
             )
 
         # Calculate temperature anomaly of target experiment relative to linear
@@ -269,9 +275,10 @@ def _get_grouped_anomaly_data(
         time_points = cube_t_control.coord("time").points
         reg = linregress(time_points, cube_t_control.data)
         ref = (reg.slope * time_points + reg.intercept).astype(
-            cube_t_target.dtype
+            cube_t_target.dtype,
         )
         cube_t_anomaly = cube_t_target.copy(cube_t_target.data - ref)
+        cube_t_anomaly.long_name = f"{cube_t_anomaly.long_name} Anomaly"
 
         grouped_anomaly_data[group] = (cube_e_target, cube_t_anomaly)
 
@@ -309,30 +316,30 @@ def _load_and_preprocess_data(cfg: dict) -> list[dict]:
             var_name = dataset["short_name"]
             try:
                 cube = cubes.extract_cube(
-                    iris.NameConstraint(var_name=var_name)
+                    iris.NameConstraint(var_name=var_name),
                 )
             except ConstraintMismatchError as exc:
                 var_names = [c.var_name for c in cubes]
                 raise ValueError(
                     f"Cannot load data: multiple variables ({var_names}) "
                     f"are available in file {filename}, but not the "
-                    f"requested '{var_name}'"
+                    f"requested '{var_name}'",
                 ) from exc
 
         if cube.ndim != 1:
             raise ValueError(
-                f"Expcected 1D data for {filename}, got {cube.ndim}D data"
+                f"Expcected 1D data for {filename}, got {cube.ndim}D data",
             )
         if not cube.coords("time", dim_coords=True):
             raise ValueError(
-                f"Dimensional coordinate 'time' not found for {filename}"
+                f"Dimensional coordinate 'time' not found for {filename}",
             )
         if cube.shape[0] < cfg["calc_tcre_period"][1]:
             raise ValueError(
                 f"The index given by calc_tcre_period needs to be smaller or "
                 f"equal to the array size of {filename}, got "
                 f"{cfg['calc_tcre_period'][1]} and {cube.shape[0]}, "
-                f"respectively"
+                f"respectively",
             )
 
         ih.unify_time_coord(cube)
@@ -384,6 +391,20 @@ def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
             getattr(plt, func)(arg)
 
 
+def _save(
+    cube_emissions: Cube,
+    cube_temperature: Cube,
+    group: str,
+    cfg: dict,
+) -> Path:
+    """Save data of temperature vs. emissions plot."""
+    logger.info("Saving data for group '%s'", group)
+    cubes = CubeList([cube_emissions, cube_temperature])
+    netcdf_path = Path(get_diagnostic_filename(group, cfg))
+    io.iris_save(cubes, netcdf_path)
+    return netcdf_path
+
+
 def main(cfg: dict) -> None:
     """Run diagnostic."""
     cfg = _get_default_cfg(cfg)
@@ -393,7 +414,7 @@ def main(cfg: dict) -> None:
     input_data = _load_and_preprocess_data(cfg)
     grouped_anomaly_data = _get_grouped_anomaly_data(cfg, input_data)
 
-    # Plot data
+    # Plot temperature vs. emissions
     with mpl.rc_context(cfg["matplotlib_rc_params"]):
         plot_path = _plot(cfg, grouped_anomaly_data)
     provenance_record = {
@@ -408,19 +429,24 @@ def main(cfg: dict) -> None:
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_path, provenance_record)
 
+    # Save temperature vs. emissions
+    provenance_record.pop("plot_types")
+    for group, (cube_e, cube_t) in grouped_anomaly_data.items():
+        netcdf_path = _save(cube_e, cube_t, group, cfg)
+        provenance_record["ancestors"] = [
+            d["filename"]
+            for d in group_metadata(input_data, cfg["groupby_facet"])[group]
+        ]
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(netcdf_path, provenance_record)
+
     # Calculate TCRE
     netcdf_path = _calculate_tcre(cfg, grouped_anomaly_data)
-    provenance_record = {
-        "authors": ["schlund_manuel"],
-        "ancestors": [d["filename"] for d in input_data],
-        "caption": (
-            "Transient Climate Response to Cumulative CO2 Emissions (TCRE) "
-            "for multiple datasets."
-        ),
-        "references": ["sanderson24gmd"],
-        "realms": ["atmos"],
-        "themes": ["carbon", "bgphys"],
-    }
+    provenance_record["ancestors"] = [d["filename"] for d in input_data]
+    provenance_record["caption"] = (
+        "Transient Climate Response to Cumulative CO2 Emissions (TCRE) for "
+        "multiple datasets."
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 

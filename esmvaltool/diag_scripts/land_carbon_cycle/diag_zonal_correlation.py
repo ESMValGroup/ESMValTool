@@ -10,7 +10,7 @@ import sys
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.stats as stats
+from scipy import stats
 
 import esmvaltool.diag_scripts.land_carbon_cycle.plot_utils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
@@ -140,10 +140,12 @@ def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
         num_valid_points = sum(~np.isnan(dat_x + dat_y + dat_z))
         if num_valid_points > min_points:
             corr_dat[lat_index, 1] = partial_corr(
-                np.vstack((dat_x, dat_y, dat_z)).T, fig_config
+                np.vstack((dat_x, dat_y, dat_z)).T,
+                fig_config,
             )
             corr_dat[lat_index, 0] = partial_corr(
-                np.vstack((dat_x, dat_z, dat_y)).T, fig_config
+                np.vstack((dat_x, dat_z, dat_y)).T,
+                fig_config,
             )
     return corr_dat
 
@@ -215,7 +217,10 @@ def _fix_axis(x_lab, fig_config, axlw=0.4, rem_list=("top", "right")):
 
 
 def _plot_zonal_correlation(
-    plot_path, zonal_correlation_mod, zonal_correlation_obs, diag_config
+    plot_path,
+    zonal_correlation_mod,
+    zonal_correlation_obs,
+    diag_config,
 ):
     """
     Make the line plots of zonal correlations from all models.
@@ -231,7 +236,7 @@ def _plot_zonal_correlation(
     models = list(zonal_correlation_mod.keys())
     nmodels = len(models)
     models = sorted(models, key=str.casefold)
-    multimodel_stats = "MultiModelMedian MultiModelMean".split()
+    multimodel_stats = ["MultiModelMedian", "MultiModelMean"]
     for _mm in multimodel_stats:
         if _mm in models:
             models.append(models.pop(models.index(_mm)))
@@ -354,7 +359,7 @@ def _plot_zonal_correlation(
         r_tau_pr_c_tas_all[:, row_m] = r_mod[:, 1]
 
     r_mmod, r_mmod_std_low, r_mmod_std_hi = _get_multimodel_stats(
-        r_tau_tas_c_pr_all
+        r_tau_tas_c_pr_all,
     )
     sp1.plot(
         np.ma.masked_equal(r_mmod, np.nan),
@@ -373,7 +378,7 @@ def _plot_zonal_correlation(
     )
 
     r_mmod, r_mmod_std_low, r_mmod_std_hi = _get_multimodel_stats(
-        r_tau_pr_c_tas_all
+        r_tau_pr_c_tas_all,
     )
 
     sp2.plot(
@@ -410,7 +415,8 @@ def main(diag_config):
         diag_config - nested dictionary of metadata
     """
     model_data_dict = group_metadata(
-        diag_config["input_data"].values(), "dataset"
+        diag_config["input_data"].values(),
+        "dataset",
     )
     fig_config = _get_fig_config(diag_config)
     zonal_correlation_mod = {}
@@ -479,7 +485,10 @@ def main(diag_config):
 
     plot_path = get_plot_filename(base_name, diag_config)
     _plot_zonal_correlation(
-        plot_path, zonal_correlation_mod, zonal_correlation_obs, diag_config
+        plot_path,
+        zonal_correlation_mod,
+        zonal_correlation_obs,
+        diag_config,
     )
 
     with ProvenanceLogger(diag_config) as provenance_logger:

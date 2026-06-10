@@ -48,7 +48,7 @@ def _get_filepath(in_dir, basename):
         if filename.endswith(basename):
             return os.path.join(in_dir, filename)
     raise OSError(
-        f"Cannot find input file ending with '{basename}' in '{in_dir}'"
+        f"Cannot find input file ending with '{basename}' in '{in_dir}'",
     )
 
 
@@ -62,7 +62,11 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     cube = utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        var,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 

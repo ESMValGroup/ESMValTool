@@ -2,7 +2,7 @@
 
 import os
 
-from esmvaltool.utils.testing.regression.compare import (
+from esmvaltool.utils.develop.compare import (
     get_recipe_name_from_file,
 )
 
