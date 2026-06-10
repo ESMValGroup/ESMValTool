@@ -134,6 +134,9 @@ preprocessors:
 diagnostics:
 
   plot_days_tmax_40:
+  # TODO: this is not working yet, maybe also look into https://github.com/ESMValGroup/ESMValCore/issues/2892
+  # additional_datasets: 
+  #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 201, raw_name: mx2t, short_name: tasmax, units: K, tier: 3, mip: day,  reference_for_monitor_diags: true} #maybe change to tres: 1H? #todo: check entries, in part. if type fc is reasonable choice...
     description: Map showing number of days where the temperature exceeds 40°C.
     variables:
       tasmax:
@@ -163,6 +166,9 @@ diagnostics:
           #       cmap: 'coolwarm'
 
   plot_days_tmin_0:
+  # TODO: this is not working yet, maybe also look into https://github.com/ESMValGroup/ESMValCore/issues/2892
+  # additional_datasets: 
+  #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 202, raw_name: mn2t, short_name: tasmin, units: K, tier: 3, mip: day,  reference_for_monitor_diags: true} #maybe change to tres: 1H? #todo: check entries, in part. if type fc is reasonable choice...
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
@@ -186,6 +192,8 @@ diagnostics:
           
 
   plot_days_prmaxthreshold1:
+    # additional_datasets: 
+    #   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, color: blue}
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
@@ -209,6 +217,8 @@ diagnostics:
          
 
   plot_days_prmaxthreshold10:
+    # additional_datasets: 
+    #   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, color: blue}
     description: Map showing number of days where the rain rate exceeds xx mm.
     variables:
       pr:
@@ -253,7 +263,7 @@ diagnostics:
             inverted: false
             accumulated: false #todo: check this
             threshold: 100
-            operators: [max]
+            operators: [max, mean, min]
            
         plots:
           timeseries:
@@ -346,6 +356,8 @@ diagnostics:
           timeseries:
 
   timeseries_rsds:
+    # additional_datasets: 
+    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 169, raw_name: ssrd, short_name: rsds, units: Jm-2, tier: 3, mip: day}
     description: Plot timeseries showing the shortwave downward radiation at the surface.
     variables:
       rsds:
