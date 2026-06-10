@@ -57,6 +57,15 @@ Only one ensemble member is used for each model.
 
 All, some or no datasets may be labelled in the plots, using ``label_dataset: True`` in the recipe settings.
 
+.. note::
+
+   **The same time range must be used for all observational datasets specified.**
+
+   This is because the linear regression of sea ice area against temperature
+   is calculated directly for some values in the plots,
+   and so both types of observation must have the same number of data points.
+
+
 References
 ----------
 
@@ -71,6 +80,8 @@ Example plots
    :width:   8cm
 
    Plot of sensitivity of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September to the annual mean global temperature change (K).
+   Models are shown on the left in blue, and the relationships between SIA-GMST pairs of observational datasets are shown on the right in orange.
+   The shading around the position of each observational pair shows the standard error as computed by :func:`scipy.stats.linregress`.
 
    The dashed black line shows the observational mean, the shaded area denotes one one standard deviation of observational uncertainty, as calculated by Notz et al (2020).
    The dotted grey lines reflect Notz et al estimate of a plausible range incorporating both internal variability and observational uncertainty.
@@ -89,4 +100,5 @@ plausible  1.28 million km2 K-1
 
    Plot of the trend of annually averaged southern hemisphere sea ice area (millions of square kilometres) over time against the trend of annually and globally averaged air temperature near the surface (degrees Kelvin) over time. The values plotted are 10 times the annual trend, which was calculated using :func:`scipy.stats.linregress`, for consistency with the decadal values used in the published plot.
 
-   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.
+   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates that the trend of sea ice area over time has a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.
+   Models are shown as circles and observational datasets are shown as squares.

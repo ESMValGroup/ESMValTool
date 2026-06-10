@@ -1,4 +1,7 @@
 name: Link Checker for Pull requests
+
+permissions: {}
+
 on:
   pull_request:
     branches:
@@ -9,10 +12,12 @@ jobs:
     outputs:
       files: ${{ steps.changed-doc-files.outputs.all_changed_files }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Get changed doc files
         id: changed-doc-files
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
           # Avoid using single or double quotes for multiline patterns
           files: |
@@ -28,12 +33,13 @@ jobs:
         file: ${{ fromJSON(needs.changedFiles.outputs.files) }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2
+          persist-credentials: false
       - name: Link Checker for changed files
         id: lychee
-        uses: lycheeverse/lychee-action@v2
+        uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411  # v2.8.0
         with:
           #  This token is included to avoid github.com requests rate limiting
           token: ${{ secrets.TOKEN_GITHUB }}
