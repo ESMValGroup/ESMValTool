@@ -74,8 +74,9 @@ def enso_composite(n34):
         cube_data = {}
         for enso_epoch in years_of_interest:
             year_enso = iris.Constraint(
-                time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-                in enso_epoch,
+                time=lambda cell, enso_epoch=enso_epoch: (
+                    cell.point.year in enso_epoch
+                ),
             )
             cube_2 = n34.extract(year_enso)  # extract rolling 6
             yr = enso_epoch[2]

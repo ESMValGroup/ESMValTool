@@ -43,8 +43,9 @@ def sst_regressed_2d(event_years, n34_area, n34_dec):
     for yr in event_years:
         enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
         year_enso = iris.Constraint(
-            time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-            in enso_epoch,
+            time=lambda cell, enso_epoch=enso_epoch: (
+                cell.point.year in enso_epoch
+            ),
         )
 
         n34_area_selected.append(n34_area.extract(year_enso).data)
@@ -150,8 +151,9 @@ def enso_composite_plot(model_n34, line):
         for yr in years:
             enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
             year_enso = iris.Constraint(
-                time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-                in enso_epoch,
+                time=lambda cell, enso_epoch=enso_epoch: (
+                    cell.point.year in enso_epoch
+                ),
             )
             cube_2 = model_n34.extract(year_enso)  # extract rolling 6yr
             cube_data.append(cube_2.data.data)
@@ -167,8 +169,9 @@ def sst_2d(event_years, n34_area):
     for yr in event_years:
         enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
         year_enso = iris.Constraint(
-            time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-            in enso_epoch,
+            time=lambda cell, enso_epoch=enso_epoch: (
+                cell.point.year in enso_epoch
+            ),
         )
         n34_area_selected.append(n34_area.extract(year_enso).data)
 

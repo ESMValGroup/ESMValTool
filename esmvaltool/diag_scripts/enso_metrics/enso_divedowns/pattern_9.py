@@ -304,7 +304,6 @@ def get_provenance_record(metric_level, ancestor_files):
         "09pattern_4": (
             "Composite SSTA patterns for El Niño and La Niña in the equatorial Pacific"
         ),
-
     }
     record = {
         "caption": captions.get(metric_level),
