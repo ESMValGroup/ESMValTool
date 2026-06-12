@@ -573,11 +573,7 @@ class MultiDatasets(MonitorBase):
             else:
                 axes.grid(**gridline_kwargs)
 
-        # Legend
-        # legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        # if legend_kwargs is not False:
-        #     axes.legend(**legend_kwargs)
-
+       
         # Rasterization
         if self.plots[plot_type]["rasterize"]:
             self._set_rasterized([axes])
@@ -959,7 +955,39 @@ class MultiDatasets(MonitorBase):
     ) -> None:
         """Plot 1D data."""
         # Plot all datasets in one single figure
+
         coord_label = "unkown coordinate"
+
+        def plot_1d_data(
+            cube: Cube,
+            operator: str,
+            label_dataset: str,
+            linestyle: dict,
+            dataset_colors: dict,
+            plot_type: str,
+            axes: Axes,
+        ) -> None:
+            """Plot single dataset/operator in the plot"""
+
+            linestyle_op = linestyle[operator]
+            label = f"{label_dataset} - {operator}" 
+            
+            
+           
+            coords = self._check_cube_coords(cube, plot_type)
+            coord = cube.coord(coords[0], dim_coords=True)
+            coord_label = f"{coord.name()} [{coord.units}]"
+
+            plot_kwargs.setdefault("label", label)
+            plot_kwargs["axes"] = axes
+            if self.plots[plot_type]["transpose_axes"]:
+                iris.plot.plot(cube, coord, linestyle=linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
+            else:
+                iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
+
+
+
+        
         linestyle = {}
         linestyle_iter = iter(['--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))])
 
@@ -981,7 +1009,7 @@ class MultiDatasets(MonitorBase):
                 else:
                     linestyle[operator] = next(linestyle_iter, '--')
 
-        
+        operators=[] 
 
         for dataset in datasets:
 
@@ -997,33 +1025,17 @@ class MultiDatasets(MonitorBase):
 
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)         
 
-            operators=[] #todo: check: is it reasonable to initialize this array new for every dataset? or maybe just do it once.. Might be relevant for additional datasets though...
-
+            
             if "threshold_conversion" in self.options:
                 oldcube = cube
                 operators = self.options["threshold_conversion"]["operators"]
                 if len(operators)==0:
                     operators = ['mean']
                 for operator in operators:
-                    #todo: put this next part in a function that is called by both, this and the next case
-
-                    print(f"the operator is {operator}")
-                    linestyle_op = linestyle[operator]
-                    label = f"{label_dataset} - {operator}" 
-                    
                     
                     cube = self.thr_area_statistics(oldcube, operator = operator) 
-                    coords = self._check_cube_coords(cube, plot_type)
-                    coord = cube.coord(coords[0], dim_coords=True)
-                    coord_label = f"{coord.name()} [{coord.units}]"
-
-                    plot_kwargs.setdefault("label", label)
-                    plot_kwargs["axes"] = axes
-                    if self.plots[plot_type]["transpose_axes"]:
-                        iris.plot.plot(cube, coord, linestyle=linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
-                    else:
-                        iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
-
+                    plot_1d_data(cube, operator, label_dataset, linestyle, dataset_colors, plot_type, axes)
+                    
             else:
                 
                 operator_list = [cm.method for cm in cube.cell_methods if 'latitude' in cm.coord_names] # list of all cell methods accociated to latitude coord
@@ -1040,23 +1052,8 @@ class MultiDatasets(MonitorBase):
                             linestyle[operator] = next(linestyle_iter, '--')
                         operators.append(operator)    
                     
-                    linestyle_op = linestyle[operator]
+                    plot_1d_data(cube, operator, label_dataset, linestyle, dataset_colors, plot_type, axes)
                     
-
-
-                    label = f"{label_dataset} - {operator}"
-                
-                    coords = self._check_cube_coords(cube, plot_type)
-                    coord = cube.coord(coords[0], dim_coords=True)
-                    coord_label = f"{coord.name()} [{coord.units}]"
-
-                    plot_kwargs.setdefault("label", label)
-                    plot_kwargs["axes"] = axes
-
-                    if self.plots[plot_type]["transpose_axes"]:
-                        iris.plot.plot(cube, coord, linestyle=linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
-                    else:
-                        iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
                 else:
                     label = label_dataset
            

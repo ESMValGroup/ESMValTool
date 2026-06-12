@@ -61,25 +61,24 @@ preprocessors:
 
 
 
-  radiation_preproc_timeline:
+  radiation_preproc_timeline: &radiation_preproc_config
     area_statistics:
       operator: mean
     annual_statistics:
       operator: mean  
 
   radiation_preproc_timeline_min:
+    <<: *radiation_preproc_config
     area_statistics:
       operator: min
-    annual_statistics:
-      operator: mean  
+     
 
   radiation_preproc_timeline_max:
+    <<: *radiation_preproc_config
     area_statistics:
-      operator: max
-    annual_statistics:
-      operator: mean  
+      operator: max  
 
-  ocean_preproc_timeline:
+  ocean_preproc_timeline: &ocean_preproc_config
     custom_order: true
     regrid:
       target_grid: 2x2
@@ -93,28 +92,14 @@ preprocessors:
       operator: mean
 
   ocean_preproc_timeline_max:
-    custom_order: true 
-    regrid:
-      target_grid: 2x2
-      scheme: linear
+    <<: *ocean_preproc_config
     area_statistics:
       operator: max
-    # mask_landsea:
-    #   mask_out: land
-    annual_statistics:
-      operator: mean
 
   ocean_preproc_timeline_min:
-    custom_order: true
-    regrid:
-      target_grid: 2x2
-      scheme: linear
+    <<: *ocean_preproc_config
     area_statistics:
       operator: min
-    # mask_landsea:
-    #   mask_out: land
-    annual_statistics:
-      operator: mean
 
 
   zostoga_preproc_timeline:
@@ -144,7 +129,7 @@ diagnostics:
         mip: day
         preprocessor: temperature_preproc
     scripts:
-      diag_number_of_exceeding_days:
+      diag_number_of_exceeding_days: &exceeding_day_config
         script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
@@ -177,18 +162,13 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *exceeding_day_config
         options:
-          threshold_conversion:
-            inverted: true
-            accumulated: false
-            threshold: 0
-            operators: [max, mean, min]
-        plots:
-          timeseries:
+            threshold_conversion:
+              inverted: true
+              accumulated: false
+              threshold: 0
+              operators: [max, mean, min]
           
 
   plot_days_prmaxthreshold1:
@@ -200,12 +180,9 @@ diagnostics:
         timerange: 20000601/20030901
         mip: day
         preprocessor: precipitation_preproc
-    scripts:
-      diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+    scripts: 
+      diag_number_of_exceeding_days: 
+        <<: *exceeding_day_config
         options:
           threshold_conversion:
             inverted: false
@@ -227,18 +204,14 @@ diagnostics:
         preprocessor: precipitation_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *exceeding_day_config
         options:
-          threshold_conversion:
-            inverted: false
-            accumulated: false
-            threshold: 10 #1,10
-            operators: [max, mean, min]
-        plots:
-          timeseries:
+            threshold_conversion:
+              inverted: false
+              accumulated: false
+              threshold: 10
+              operators: [max, mean, min]
+      
          
         
           
@@ -246,7 +219,7 @@ diagnostics:
   plot_snwe_10:
     additional_datasets:
       - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
-    description: Map showing number of days there is more than 10 cm of smow water equivalent.
+    description: Map showing number of days there is more than 10 cm of snow water equivalent.
     variables:
       snw:
         timerange: 20000601/20030901
@@ -254,19 +227,14 @@ diagnostics:
         preprocessor: snow_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *exceeding_day_config
         options:
           threshold_conversion:
             inverted: false
             accumulated: false #todo: check this
             threshold: 100
             operators: [max, mean, min]
-           
-        plots:
-          timeseries:
+  
           
   ########## data is already a global mean, thus no area statistics possible
   timeseries_zostoga:
@@ -277,7 +245,7 @@ diagnostics:
         mip: Omon
         preprocessor: zostoga_preproc_timeline
     scripts:
-      thermosteric_sealevel_mean:
+      thermosteric_sealevel_mean: &timeseries_config
         script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
@@ -318,14 +286,8 @@ diagnostics:
         mip: Oday
         preprocessor: ocean_preproc_timeline_min
     scripts:
-      plot:
-        #script: monitor/multi_datasets.py
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
-        plots:
-          timeseries:
+      plot: *timeseries_config
+        
 
   timeseries_mld:
     additional_datasets: 
@@ -347,13 +309,7 @@ diagnostics:
         mip: Omon
         preprocessor: ocean_preproc_timeline_min
     scripts:
-      plot:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
-        plots:
-          timeseries:
+      plot: *timeseries_config
 
   timeseries_rsds:
     # additional_datasets: 
@@ -376,10 +332,5 @@ diagnostics:
         preprocessor: radiation_preproc_timeline_max
       
     scripts:
-      plot:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
-        plots:
-          timeseries:
+      plot: *timeseries_config
+        

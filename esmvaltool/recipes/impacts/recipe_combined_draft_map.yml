@@ -58,14 +58,14 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    
     regrid_time:
+    #needed to extract a timeframe here, in order for the time coordinate of the observations to match:
     extract_time:
       start_year: 2001
       start_month: 2
       start_day: 3
-      end_year: 2004
-      end_month: 4
+      end_year: 2003
+      end_month: 8
       end_day: 6
     # mask_landsea:
     #   mask_out: sea
@@ -106,7 +106,7 @@ diagnostics:
         mip: day
         preprocessor: temperature_preproc
     scripts:
-      diag_number_of_exceeding_days:
+      diag_number_of_exceeding_days: &exceeding_day_config
         script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
@@ -127,6 +127,10 @@ diagnostics:
                 cmap: 'coolwarm'
 
   plot_days_tmin_0:
+  # TODO: this is not working yet, maybe also look into https://github.com/ESMValGroup/ESMValCore/issues/2892
+  # additional_datasets: 
+  #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 202, raw_name: mn2t, short_name: tasmin, units: K, tier: 3, mip: day,  reference_for_monitor_diags: true} #maybe change to tres: 1H? #todo: check entries, in part. if type fc is reasonable choice...
+
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
@@ -135,18 +139,13 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *exceeding_day_config
         options:
           threshold_conversion:
             inverted: true
             accumulated: false
-            threshold: 0
-           
+            threshold: 0 
         plots:
-          # timeseries:
           map:
             caption: 'Number of days per year with temperatures drops below 0°C for {dataset}.'
             common_cbar: true
@@ -156,6 +155,8 @@ diagnostics:
                 cmap: 'coolwarm'
 
   plot_days_prmaxthreshold1:
+    # additional_datasets: 
+    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, mip: day, grib_id: 228, raw_name: tp, short_name: pr, units: m, tier: 3, timerange: 20000101/20040101,  reference_for_monitor_diags: true} #  start_year: 2000, end_year: 2003 units: m, mip: 1hr,
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
@@ -164,17 +165,13 @@ diagnostics:
         preprocessor: precipitation_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *exceeding_day_config
         options:
           threshold_conversion:
             inverted: false
             accumulated: false
             threshold: 1 #1,10
         plots:
-          # timeseries:
           map:     
             #TODO: include actual threshold number in this caption:
             caption: 'Number of days per year with rain rate exceeding threshold for {dataset}.'
@@ -186,6 +183,8 @@ diagnostics:
 
 
   plot_days_prmaxthreshold10:
+    # additional_datasets: 
+    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 228, raw_name: tp, short_name: pr, units: m, tier: 3, mip: day,  reference_for_monitor_diags: true}
     description: Map showing number of days where the rain rate exceeds xx mm.
     variables:
       pr:
@@ -194,10 +193,7 @@ diagnostics:
         preprocessor: precipitation_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *exceeding_day_config
         options:
           threshold_conversion:
             inverted: false
@@ -229,18 +225,14 @@ diagnostics:
         preprocessor: snow_preproc
     scripts:
       diag_number_of_exceeding_days:
-        script: impact/diagnostic_draft3.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *exceeding_day_config
         options:
           threshold_conversion:
             inverted: false
             accumulated: false
             threshold: 100
-           
         plots:
-          # timeseries:
+          #timeseries:
           map:
             caption: 'Number of days per year with ... for {dataset}.'
             common_cbar: true
@@ -276,9 +268,10 @@ diagnostics:
   #               cmap: 'coolwarm'
 
 
-#####Todo fix the following three:
 
   plot_sst:
+    additional_datasets: 
+      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: tos, raw_name: sosstsst, raw_units: deg_C, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc, reference_for_monitor_diags: true}
     description: Plot maps showing the sea surface temperature.
     variables:
       tos:
@@ -286,15 +279,14 @@ diagnostics:
         mip: Oday
         preprocessor: ocean_preproc
     scripts:
-      plot:
+      plot: &map_config
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
         plots:
           map:
-            caption: |
-              TODO test.
+            caption: Sea surface temperature for {dataset}.
             common_cbar: true
             fontsize: 10
             plot_kwargs:
@@ -312,15 +304,10 @@ diagnostics:
         preprocessor: ocean_preproc
     scripts:
       plot:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *map_config
         plots:
           map:
-          #benchmarking_map:
-            caption: |
-              TODO test.
+            caption: Mixed layer depth for {dataset}.
             common_cbar: true
             fontsize: 10
             plot_kwargs:
@@ -329,6 +316,8 @@ diagnostics:
 
 
   plot_rsds:
+    # additional_datasets: 
+    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 169, raw_name: ssrd, short_name: rsds, units: Jm-2, tier: 3, mip: day,  reference_for_monitor_diags: true}
     description: Plot maps showing the shortwave downward radiation at the surface.
     variables:
       rsds:
@@ -337,14 +326,10 @@ diagnostics:
         preprocessor: radiation_preproc
     scripts:
       plot:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        <<: *map_config
         plots:
           map:
-            caption: |
-              TODO test.
+            caption: Surface Downward Shortwave Radiation for {dataset}.
             common_cbar: true
             fontsize: 10
             plot_kwargs:
