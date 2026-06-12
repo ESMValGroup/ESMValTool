@@ -109,8 +109,7 @@ diagnostics:
           *arctic_siconc_obs
       tas: &tas
         preprocessor: pp_avg_ann_global_temp
-        realm: &tas_realm atmos
-        mip: *tas_realm
+        mip: atmos
         frequency: mon
         region: glb
         branding_suffix: tavg-h2m-hxy-u
