@@ -95,8 +95,7 @@ diagnostics:
     variables:
       siconc: &siconc
         preprocessor: pp_arctic_sept_sea_ice
-        realm: &siconc_realm seaIce
-        mip: *siconc_realm
+        mip: seaIce
         frequency: mon
         region: glb
         branding_suffix: tavg-u-hxy-u
