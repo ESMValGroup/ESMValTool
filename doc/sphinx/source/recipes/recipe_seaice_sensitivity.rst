@@ -25,18 +25,36 @@ Diagnostic is in `diag_scripts/seaice/`
 Recipe settings
 ~~~~~~~~~~~~~~~
 
-Years to be evaluated are specified in the ``extract_test_period`` preprocessor. Arctic sea ice is evaluated using data from September, and Antarctic sea ice is evaluated using annually meaned data. This can be amended by changing the preprocessor for each variable (shown below).
+Years to be evaluated are specified with the ``start_year`` and ``end_year`` keywords in the model dataset section, which are automatically duplicated into the observational datasets section.
+
+.. code-block:: yaml
+
+    model_defaults: &model_defaults { ..., start_year: &data_start 1979, end_year: &data_end 2014}
+
+Pre-calculated values for the mean sensitivity of sea ice area to global warming (and an associated standard deviation and plausible range) can be entered be for both arctic and antarctic diagnostics (more details are given in the "References" section below).
+
+.. code-block:: yaml
+
+    diagnostics:
+      arctic:
+        scripts:
+          sea_ice_sensitivity_script:
+            observations:
+              observation_period:
+                start_year:
+                end_year:
+              sea_ice_sensitivity:
+                mean:
+                standard deviation:
+                plausible range:
+
+If the years to be evaluated differ from those specified for pre-calculated observational values for either hemisphere, then the "observational period" is assumed to be a subset of the dataset evaluation period and all statistics will be calculated for both periods, with these results shown as two halves of the sensitivity (one dimensional) plot. The two dimensional plot will only use values from the entire evaluation period.
+
+Arctic sea ice is evaluated using data from September, and Antarctic sea ice is evaluated using annually meaned data. This can be amended by changing the preprocessor for each variable (shown below).
 
 .. code-block:: yaml
 
     pp_arctic_sept_sea_ice:
-      extract_time:
-        start_day: 1
-        start_month: 1
-        start_year: 1979
-        end_day: 31
-        end_month: 12
-        end_year: 2014
       extract_month:
         month: 9
       extract_region:
