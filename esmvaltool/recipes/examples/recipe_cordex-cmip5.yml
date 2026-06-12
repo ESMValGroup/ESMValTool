@@ -22,7 +22,7 @@ preprocessors:
     mask_landsea:
       mask_out: sea
     regrid:
-      target_grid: RCA4
+      target_grid: EUR-11
       scheme: 'linear'
     multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
      span: overlap
@@ -39,10 +39,6 @@ datasets:
     institute: CLMcom
     rcm_version: v1
     mip: day
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: ALADIN53
@@ -50,9 +46,7 @@ datasets:
     ensemble: r1i1p1
     institute: CNRM
     rcm_version: v1 # non-monotonic coordinates, ts values seem wrong (in celsius when they should be kelvin) and sftlf has wrong values (should be %, is units). correct coordinates seem to be the ones in sftlf. false easting and false northing should be 0
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+
   - project: CORDEX
     domain: EUR-11
     dataset: RACMO22E
@@ -60,9 +54,7 @@ datasets:
     ensemble: r1i1p1
     institute: KNMI
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -70,10 +62,7 @@ datasets:
     ensemble: r1i1p1
     institute: SMHI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: CCLM4-8-17
@@ -81,10 +70,7 @@ datasets:
     ensemble: r12i1p1
     institute: CLMcom
     rcm_version: v1 #fails due to assuming in the fixes all variables have a time coordinate
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RACMO22E
@@ -92,9 +78,7 @@ datasets:
     ensemble: r12i1p1
     institute: KNMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -102,20 +86,17 @@ datasets:
     ensemble: r12i1p1
     institute: SMHI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
-  - project: CORDEX
-    domain: EUR-11
-    dataset: RACMO22E
-    driver: ICHEC-EC-EARTH
-    ensemble: r1i1p1
-    institute: KNMI
-    rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
+
+
+  # - project: CORDEX   #dataset not available
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+  #   use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -123,20 +104,7 @@ datasets:
     ensemble: r3i1p1
     institute: DMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r1i1p1
-  - project: CORDEX
-    domain: EUR-11
-    dataset: HIRHAM5
-    driver: ICHEC-EC-EARTH
-    ensemble: r3i1p1
-    institute: DMI
-    rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RACMO22E
@@ -144,9 +112,7 @@ datasets:
     ensemble: r3i1p1
     institute: KNMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2015
@@ -154,10 +120,6 @@ datasets:
     ensemble: r1i1p1
     institute: GERICS
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: RACMO22E
@@ -165,9 +127,7 @@ datasets:
     ensemble: r1i1p1
     institute: KNMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -175,10 +135,7 @@ datasets:
     ensemble: r1i1p1
     institute: SMHI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: CCLM4-8-17
@@ -186,10 +143,7 @@ datasets:
     ensemble: r1i1p1
     institute: CLMcom
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RACMO22E
@@ -197,9 +151,7 @@ datasets:
     ensemble: r1i1p1
     institute: KNMI
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -207,10 +159,7 @@ datasets:
     ensemble: r1i1p1
     institute: SMHI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: truez
   - project: CORDEX
     domain: EUR-11
     dataset: CCLM4-8-17
@@ -218,10 +167,6 @@ datasets:
     ensemble: r1i1p1
     institute: CLMcom
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: RACMO22E
@@ -229,9 +174,7 @@ datasets:
     ensemble: r1i1p1
     institute: KNMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2009
@@ -239,10 +182,6 @@ datasets:
     ensemble: r1i1p1
     institute: MPI-CSC
     rcm_version: v1 # Differences between the original grid and the standardised grid are above 10e-4 degrees
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -250,10 +189,6 @@ datasets:
     ensemble: r1i1p1
     institute: SMHI
     rcm_version: v1a
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2009
@@ -261,10 +196,6 @@ datasets:
     ensemble: r2i1p1
     institute: MPI-CSC
     rcm_version: v1 # Differences between the original grid and the standardised grid are above 10e-4 degrees
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2015
@@ -272,10 +203,6 @@ datasets:
     ensemble: r3i1p1
     institute: GERICS
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -283,9 +210,6 @@ datasets:
     ensemble: r1i1p1
     institute: DMI
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: RACMO22E
@@ -293,9 +217,7 @@ datasets:
     ensemble: r1i1p1
     institute: KNMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2015
@@ -303,10 +225,6 @@ datasets:
     ensemble: r1i1p1
     institute: GERICS
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2015
@@ -314,10 +232,6 @@ datasets:
     ensemble: r1i1p1
     institute: GERICS
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -325,10 +239,6 @@ datasets:
     ensemble: r1i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -336,10 +246,7 @@ datasets:
     ensemble: r12i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -347,10 +254,7 @@ datasets:
     ensemble: r1i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -358,10 +262,7 @@ datasets:
     ensemble: r3i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -369,10 +270,7 @@ datasets:
     ensemble: r1i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -380,10 +278,6 @@ datasets:
     ensemble: r1i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -391,10 +285,6 @@ datasets:
     ensemble: r2i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -402,10 +292,6 @@ datasets:
     ensemble: r3i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: COSMO-crCLIM-v1-1
@@ -413,10 +299,6 @@ datasets:
     ensemble: r1i1p1
     institute: CLMcom-ETH
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: ALADIN63
@@ -424,9 +306,6 @@ datasets:
     ensemble: r1i1p1
     institute: CNRM
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: ALADIN63
@@ -434,9 +313,7 @@ datasets:
     ensemble: r1i1p1
     institute: CNRM
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: ALADIN63
@@ -444,9 +321,6 @@ datasets:
     ensemble: r1i1p1
     institute: CNRM
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: ALADIN63
@@ -454,9 +328,6 @@ datasets:
     ensemble: r1i1p1
     institute: CNRM
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -464,9 +335,6 @@ datasets:
     ensemble: r1i1p1
     institute: DMI
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -474,9 +342,7 @@ datasets:
     ensemble: r12i1p1
     institute: DMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -484,9 +350,7 @@ datasets:
     ensemble: r1i1p1
     institute: DMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -494,9 +358,7 @@ datasets:
     ensemble: r1i1p1
     institute: DMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -504,9 +366,6 @@ datasets:
     ensemble: r1i1p1
     institute: DMI
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: HIRHAM5
@@ -514,19 +373,6 @@ datasets:
     ensemble: r1i1p1
     institute: DMI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-  - project: CORDEX
-    domain: EUR-11
-    dataset: HIRHAM5
-    driver: NCC-NorESM1-M
-    ensemble: r1i1p1
-    institute: DMI
-    rcm_version: v3
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2015
@@ -534,10 +380,6 @@ datasets:
     ensemble: r1i1p1
     institute: GERICS
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: REMO2015
@@ -545,10 +387,7 @@ datasets:
     ensemble: r1i1p1
     institute: GERICS
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: HadREM3-GA7-05
@@ -556,9 +395,6 @@ datasets:
     ensemble: r1i1p1
     institute: MOHC
     rcm_version: v2
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: HadREM3-GA7-05
@@ -566,9 +402,7 @@ datasets:
     ensemble: r12i1p1
     institute: MOHC
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: HadREM3-GA7-05
@@ -576,9 +410,7 @@ datasets:
     ensemble: r1i1p1
     institute: MOHC
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: HadREM3-GA7-05
@@ -586,9 +418,6 @@ datasets:
     ensemble: r1i1p1
     institute: MOHC
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -596,10 +425,7 @@ datasets:
     ensemble: r1i1p1
     institute: SMHI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+    use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -607,32 +433,21 @@ datasets:
     ensemble: r3i1p1
     institute: SMHI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
-  # - project: CORDEX
-  #   domain: EUR-11
-  #   dataset: RCA4
-  #   driver: MPI-M-MPI-ESM-LR
-  #   ensemble: r2i1p1
-  #   institute: SMHI
-  #   rcm_version: v1
-  #   supplementary_variables:
-  #     - short_name: sftlf
-  #       mip: fx
-  #       ensemble: r0i0p0
-  # - project: CORDEX
-  #   domain: EUR-11
-  #   dataset: RCA4
-  #   driver: MPI-M-MPI-ESM-LR
-  #   ensemble: r3i1p1
-  #   institute: SMHI
-  #   rcm_version: v1
-  #   supplementary_variables:
-  #     - short_name: sftlf
-  #       mip: fx
-  #       ensemble: r0i0p0
+    use_standard_grid: true
+  # - project: CORDEX  #dataset not available
+    # domain: EUR-11
+    # dataset: RCA4
+    # driver: MPI-M-MPI-ESM-LR
+    # ensemble: r2i1p1
+    # institute: SMHI
+    # rcm_version: v1
+  # - project: CORDEX  #dataset not available
+    # domain: EUR-11
+    # dataset: RCA4
+    # driver: MPI-M-MPI-ESM-LR
+    # ensemble: r3i1p1
+    # institute: SMHI
+    # rcm_version: v1
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -640,13 +455,6 @@ datasets:
     ensemble: r1i1p1
     institute: SMHI
     rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
-
-
-
 diagnostics:
   bias:
     variables:

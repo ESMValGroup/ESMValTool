@@ -21,18 +21,18 @@ preprocessors:
     mask_landsea:
       mask_out: sea
     regrid:
-      target_grid: HIRHAM5
+      target_grid: EUR-11
       scheme: 'linear'
     distance_metric:
       metric: weighted_rmse
-    # multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
-    #  span: overlap
-    #  statistics:
-    #    - operator: mean
-    #    - operator: percentile
-    #      percent: 50
-    #  groupby: ['project']
-    #  exclude: [reference_dataset]
+    multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
+     span: overlap
+     statistics:
+       - operator: mean
+       - operator: percentile
+         percent: 50
+     groupby: ['project']
+     exclude: [reference_dataset]
   pp:
     custom_order: true
     monthly_statistics:
@@ -41,221 +41,638 @@ preprocessors:
       period: full
       operator: mean
     regrid:
-      target_grid: HIRHAM5
+      target_grid: EUR-11
       scheme: 'linear'
     distance_metric:
       metric: weighted_rmse
-    # multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
-    #  span: overlap
-    #  statistics:
-    #    - operator: mean
-    #    - operator: percentile
-    #      percent: 50
-    #  groupby: ['project']
-    #  exclude: [reference_dataset]
+    multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
+     span: overlap
+     statistics:
+       - operator: mean
+       - operator: percentile
+         percent: 50
+     groupby: ['project']
+     exclude: [reference_dataset]
 
 datasets:
+
 ###########################
 # FULL SET OF DATASETS - TO BE UNCOMENTED WHEN ALL DATASETS ARE FIXED
 ###########################
-datasets:
-- project: CORDEX
-  dataset: ALADIN63
-  domain: EUR-11
-  driver: CNRM-CERFACS-CNRM-CM5
-  ensemble: r1i1p1
-  institute: CNRM
-  rcm_version: v2
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: ALADIN63
-  domain: EUR-11
-  driver: MOHC-HadGEM2-ES
-  ensemble: r1i1p1
-  institute: CNRM
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: CNRM-CERFACS-CNRM-CM5
-  ensemble: r1i1p1
-  institute: DMI
-  rcm_version: v2
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: ICHEC-EC-EARTH
-  ensemble: r12i1p1
-  institute: DMI
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: ICHEC-EC-EARTH
-  ensemble: r1i1p1
-  institute: DMI
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: ICHEC-EC-EARTH
-  ensemble: r3i1p1
-  institute: DMI
-  rcm_version: v2
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-    #  ensemble: r1i1p1
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: IPSL-IPSL-CM5A-MR
-  ensemble: r1i1p1
-  institute: DMI
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: MOHC-HadGEM2-ES
-  ensemble: r1i1p1
-  institute: DMI
-  rcm_version: v2
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: MPI-M-MPI-ESM-LR
-  ensemble: r1i1p1
-  institute: DMI
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HIRHAM5
-  domain: EUR-11
-  driver: NCC-NorESM1-M
-  ensemble: r1i1p1
-  institute: DMI
-  rcm_version: v3
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HadREM3-GA7-05
-  domain: EUR-11
-  driver: CNRM-CERFACS-CNRM-CM5
-  ensemble: r1i1p1
-  institute: MOHC
-  rcm_version: v2
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HadREM3-GA7-05
-  domain: EUR-11
-  driver: ICHEC-EC-EARTH
-  ensemble: r12i1p1
-  institute: MOHC
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HadREM3-GA7-05
-  domain: EUR-11
-  driver: MOHC-HadGEM2-ES
-  ensemble: r1i1p1
-  institute: MOHC
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HadREM3-GA7-05
-  domain: EUR-11
-  driver: MPI-M-MPI-ESM-LR
-  ensemble: r1i1p1
-  institute: MOHC
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: HadREM3-GA7-05
-  domain: EUR-11
-  driver: NCC-NorESM1-M
-  ensemble: r1i1p1
-  institute: MOHC
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-- project: CORDEX
-  dataset: REMO2015
-  domain: EUR-11
-  driver: CNRM-CERFACS-CNRM-CM5
-  ensemble: r1i1p1
-  institute: GERICS
-  rcm_version: v2
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-      ensemble: r0i0p0
-- project: CORDEX
-  dataset: REMO2015
-  domain: EUR-11
-  driver: IPSL-IPSL-CM5A-MR
-  ensemble: r1i1p1
-  institute: GERICS
-  rcm_version: v1
-  supplementary_variables:
-    - short_name: sftlf
-      mip: fx
-      ensemble: r0i0p0
+  - project: CORDEX
+    domain: EUR-11
+    dataset: CCLM4-8-17
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: CLMcom
+    rcm_version: v1
+    mip: day
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN53
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v1 # non-monotonic coordinates, ts values seem wrong (in celsius when they should be kelvin) and sftlf has wrong values (should be %, is units). correct coordinates seem to be the ones in sftlf. false easting and false northing should be 0
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: SMHI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: CCLM4-8-17
+    driver: ICHEC-EC-EARTH
+    ensemble: r12i1p1
+    institute: CLMcom
+    rcm_version: v1 #fails due to assuming in the fixes all variables have a time coordinate
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: ICHEC-EC-EARTH
+    ensemble: r12i1p1
+    institute: KNMI
+    rcm_version: v1 
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: ICHEC-EC-EARTH
+    ensemble: r12i1p1
+    institute: SMHI
+    rcm_version: v1
+    use_standard_grid: true
+  # - project: CORDEX #dataset not available
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+    # use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: ICHEC-EC-EARTH
+    ensemble: r3i1p1
+    institute: DMI
+    rcm_version: v1
+    use_standard_grid: true
+  # - project: CORDEX #repeadted dataset
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r3i1p1
+  #   institute: DMI
+  #   rcm_version: v2
+    # use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: ICHEC-EC-EARTH
+    ensemble: r3i1p1
+    institute: KNMI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: IPSL-IPSL-CM5A-LR
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: IPSL-IPSL-CM5A-MR
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: IPSL-IPSL-CM5A-MR
+    ensemble: r1i1p1
+    institute: SMHI
+    rcm_version: v1 
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: CCLM4-8-17
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: CLMcom
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: SMHI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: CCLM4-8-17
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: CLMcom
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2009
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: MPI-CSC
+    rcm_version: v1 # Differences between the original grid and the standardised grid are above 10e-4 degrees
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: SMHI
+    rcm_version: v1a
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2009
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r2i1p1
+    institute: MPI-CSC
+    rcm_version: v1 # Differences between the original grid and the standardised grid are above 10e-4 degrees
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r3i1p1
+    institute: GERICS
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: DMI
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: NOAA-GFDL-GFDL-ESM2G
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: ICHEC-EC-EARTH
+    ensemble: r12i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: ICHEC-EC-EARTH
+    ensemble: r1i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: ICHEC-EC-EARTH
+    ensemble: r3i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r2i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r3i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: COSMO-crCLIM-v1-1
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: CLMcom-ETH
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: DMI
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: ICHEC-EC-EARTH
+    ensemble: r12i1p1
+    institute: DMI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: ICHEC-EC-EARTH
+    ensemble: r1i1p1
+    institute: DMI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: IPSL-IPSL-CM5A-MR
+    ensemble: r1i1p1
+    institute: DMI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: DMI
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HIRHAM5
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: DMI
+    rcm_version: v1
+    use_standard_grid: true
+  # - project: CORDEX  #repeated dataset, earlier V2
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v3
+    # use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: IPSL-IPSL-CM5A-MR
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HadREM3-GA7-05
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: MOHC
+    rcm_version: v2
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HadREM3-GA7-05
+    driver: ICHEC-EC-EARTH
+    ensemble: r12i1p1
+    institute: MOHC
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HadREM3-GA7-05
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: MOHC
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: HadREM3-GA7-05
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: MOHC
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: ICHEC-EC-EARTH
+    ensemble: r1i1p1
+    institute: SMHI
+    rcm_version: v1
+    use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: ICHEC-EC-EARTH
+    ensemble: r3i1p1
+    institute: SMHI
+    rcm_version: v1
+    use_standard_grid: true
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r2i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+    # use_standard_grid: true
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r3i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+    # use_standard_grid: true
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RCA4
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: SMHI
+    rcm_version: v1
+    use_standard_grid: true
+
+
+###########################
+# FULL SET OF DATASETS - TO BE UNCOMENTED WHEN ALL DATASETS ARE FIXED
+###########################
+# datasets:
+# - project: CORDEX
+#   dataset: ALADIN63
+#   domain: EUR-11
+#   driver: CNRM-CERFACS-CNRM-CM5
+#   ensemble: r1i1p1
+#   institute: CNRM
+#   rcm_version: v2
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: ALADIN63
+#   domain: EUR-11
+#   driver: MOHC-HadGEM2-ES
+#   ensemble: r1i1p1
+#   institute: CNRM
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: CNRM-CERFACS-CNRM-CM5
+#   ensemble: r1i1p1
+#   institute: DMI
+#   rcm_version: v2
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: ICHEC-EC-EARTH
+#   ensemble: r12i1p1
+#   institute: DMI
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: ICHEC-EC-EARTH
+#   ensemble: r1i1p1
+#   institute: DMI
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: ICHEC-EC-EARTH
+#   ensemble: r3i1p1
+#   institute: DMI
+#   rcm_version: v2
+#   use_standard_grid: true
+#     #  ensemble: r1i1p1
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: IPSL-IPSL-CM5A-MR
+#   ensemble: r1i1p1
+#   institute: DMI
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: MOHC-HadGEM2-ES
+#   ensemble: r1i1p1
+#   institute: DMI
+#   rcm_version: v2
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: MPI-M-MPI-ESM-LR
+#   ensemble: r1i1p1
+#   institute: DMI
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HIRHAM5
+#   domain: EUR-11
+#   driver: NCC-NorESM1-M
+#   ensemble: r1i1p1
+#   institute: DMI
+#   rcm_version: v3
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HadREM3-GA7-05
+#   domain: EUR-11
+#   driver: CNRM-CERFACS-CNRM-CM5
+#   ensemble: r1i1p1
+#   institute: MOHC
+#   rcm_version: v2
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HadREM3-GA7-05
+#   domain: EUR-11
+#   driver: ICHEC-EC-EARTH
+#   ensemble: r12i1p1
+#   institute: MOHC
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HadREM3-GA7-05
+#   domain: EUR-11
+#   driver: MOHC-HadGEM2-ES
+#   ensemble: r1i1p1
+#   institute: MOHC
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HadREM3-GA7-05
+#   domain: EUR-11
+#   driver: MPI-M-MPI-ESM-LR
+#   ensemble: r1i1p1
+#   institute: MOHC
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: HadREM3-GA7-05
+#   domain: EUR-11
+#   driver: NCC-NorESM1-M
+#   ensemble: r1i1p1
+#   institute: MOHC
+#   rcm_version: v1
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: REMO2015
+#   domain: EUR-11
+#   driver: CNRM-CERFACS-CNRM-CM5
+#   ensemble: r1i1p1
+#   institute: GERICS
+#   rcm_version: v2
+#   use_standard_grid: true
+# - project: CORDEX
+#   dataset: REMO2015
+#   domain: EUR-11
+#   driver: IPSL-IPSL-CM5A-MR
+#   ensemble: r1i1p1
+#   institute: GERICS
+#   rcm_version: v1
+#   use_standard_grid: true
 
 
 
 diagnostics:
   bias:
     variables:
-      ts: &ts
-        variable: ts
-        mip: day
-        exp: historical
-        timerange: 2003/2005
-        preprocessor: ts_pp
-        split: Ref1
-        reference_dataset: ESACCI-LST
-        additional_datasets:
-          - {project: OBS, tier: 2 , dataset: ESACCI-LST, type: sat, version: '1.00', mip: Amon, reference_for_metric: true}
-      ts_2:
-        <<: *ts
-        short_name: ts
-        split: Ref2
-        reference_dataset: NCEP-NCAR-R1
-        additional_datasets:
-        # ERA5 data on DKRZ was not available for this period, used an arbitrary reanalysis instead
-          - {project: OBS6, tier: 2 , dataset: NCEP-NCAR-R1, type: reanaly, version: 1, mip: Amon, reference_for_metric: true}
       clt:
         variable: clt
         mip: day
@@ -286,6 +703,24 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {project: OBS6, tier: 2 , dataset: ESACCI-CLOUD, type: sat, version: v3.0-AVHRR-AMPM, mip: Amon, reference_for_metric: true}
+      ts: &ts
+        variable: ts
+        mip: day
+        exp: historical
+        timerange: 2003/2005
+        preprocessor: ts_pp
+        split: Ref1
+        reference_dataset: ESACCI-LST
+        additional_datasets:
+          - {project: OBS, tier: 2 , dataset: ESACCI-LST, type: sat, version: '1.00', mip: Amon, reference_for_metric: true}
+      ts_2:
+        <<: *ts
+        short_name: ts
+        split: Ref2
+        reference_dataset: NCEP-NCAR-R1
+        additional_datasets:
+        # ERA5 data on DKRZ was not available for this period, used an arbitrary reanalysis instead
+          - {project: OBS6, tier: 2 , dataset: NCEP-NCAR-R1, type: reanaly, version: 1, mip: Amon, reference_for_metric: true}
 
 
     scripts:
@@ -296,7 +731,7 @@ diagnostics:
         group_by: project
         normalize: "centered_median"
         default_split: Ref1
-        nan_color: null
+        nan_color: "#bdbdbd" 
         plot_kwargs:
           vmin: -0.5
           vmax: +0.5
