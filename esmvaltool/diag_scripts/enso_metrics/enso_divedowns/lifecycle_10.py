@@ -348,10 +348,27 @@ def format_longitude(x, _pos):
     return f"{int(x)}°E"
 
 
-def get_provenance_record(caption, ancestor_files):
+def get_provenance_record(metric_level, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+    captions = {
+        "10lifecycle_2": (
+            "Spatial-temporal structure of sea surface temperature anomalies "
+            "(SSTA) associated with ENSO in the equatorial Pacific "
+            "(5°S-5°N average)"
+        ),
+        "10lifecycle_3": (
+            "Temporal lifecycle of sea surface temperature anomalies "
+            "(SSTA) during La Niña and El Niño in the central equatorial "
+            "Pacific (Niño3.4 averaged)"
+        ),
+        "10lifecycle_4": (
+            "Spatial-temporal structure of sea surface temperature anomalies "
+            "(SSTA) during La Niña and El Niño in the equatorial Pacific "
+            "(5°S-5°N average)"
+        ),
+    }
     record = {
-        "caption": caption,
+        "caption": captions.get(metric_level),
         "statistics": ["anomaly"],
         "domains": ["eq"],
         "plot_types": ["line"],
@@ -453,7 +470,7 @@ def main(cfg):
 
             for i, fig in enumerate(figs):
                 prov_record = get_provenance_record(
-                    f"ENSO metrics {metric} level {i + 2}",
+                    f"{metric}_{i + 2}",
                     dt_files,
                 )
 

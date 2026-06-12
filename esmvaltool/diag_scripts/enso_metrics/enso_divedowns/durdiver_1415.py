@@ -247,10 +247,23 @@ def format_longitude(x, _pos):
     return f"{int(x)}°E"
 
 
-def get_provenance_record(caption, ancestor_files):
+def get_provenance_record(metric, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+    captions = {
+        "14duration": (
+            "Distributions of durations of ENSO events "
+            "The black and blue boxplots show respectively the reference and "
+            "the model, the left and right panels show respectively La Niña "
+            "distributions and the El Niño distributions "
+        ),
+        "15diversity": (
+            "Distributions of the zonal location of the maximum SSTA during "
+            "La Niña events (top left), El Niño events (top right) "
+            " and all ENSO events (bottom)."
+        ),
+    }
     record = {
-        "caption": caption,
+        "caption": captions.get(metric),
         "statistics": ["anomaly"],
         "domains": ["eq"],
         "plot_types": ["line"],
@@ -351,7 +364,7 @@ def main(cfg):
 
             dt_files = obs_files + [ds["filename"] for ds in models]
             prov_record = get_provenance_record(
-                f"ENSO metrics {metric} dive down",
+                metric,
                 dt_files,
             )
 

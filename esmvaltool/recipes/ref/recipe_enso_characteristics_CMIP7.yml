@@ -18,7 +18,7 @@ datasets:
   - dataset: DUMMY-MODEL #mock CMIP7 data
     project: CMIP7
     exp: historical
-    ensemble: r1i1p1f3
+    ensemble: r1i1p1f1
     grid: g999
     activity: CMIP
     institute: CCCma
@@ -29,11 +29,13 @@ datasets:
 
   # observations - use one
   # - {dataset: NOAA-ERSSTv5, version: v5, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2021}
-  - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2018}
+  - {dataset: TROPFLUX, version: v2, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2021}
 
 preprocessors:
   ssta_enso: &base_enso  # pattern, lifecycle w/o month, duration, diversity
     custom_order: true
+    # mask_landsea:
+    #   mask_out: land
     convert_units:
       units: degC
     regrid:
@@ -101,6 +103,80 @@ preprocessors:
     area_statistics:
       operator: mean
 
+  ssta_pattern_map:  # pattern level 2,4
+    <<: *base_enso
+    extract_region:
+      start_longitude: 150.
+      end_longitude: 270.
+      start_latitude: -15.
+      end_latitude: 15.
+    extract_month:
+      month: 12
+
+
+  ssta_seasamp: &seas_amp  # seas4 w meri
+    custom_order: true
+    convert_units:
+      units: degC
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 150.
+      end_longitude: 280.
+      start_latitude: -5.
+      end_latitude: 5.
+    anomalies:
+      period: monthly
+
+  enso_amp3:
+    <<: *seas_amp
+    extract_region: &latext
+      start_longitude: 120.
+      end_longitude: 280.
+      start_latitude: -15.
+      end_latitude: 15.
+    climate_statistics:
+      operator: std_dev
+      period: full
+
+  enso_seas_2:
+    <<: *seas_amp
+    extract_region:
+      start_longitude: 190.
+      end_longitude: 240.
+      start_latitude: -5.
+      end_latitude: 5.
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: std_dev
+      period: monthly
+
+  enso_seas_3:
+    <<: *seas_amp
+    extract_region:
+      start_longitude: 130.
+      end_longitude: 280.
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+    climate_statistics:
+      operator: std_dev
+      period: monthly
+
+  enso_seas_4:
+    <<: *seas_amp
+    meridional_statistics:
+      operator: mean
+
+  enso_asymmetry:
+    <<: *seas_amp
+    extract_region:  # extract again for lvl2 (5 lats)
+      <<: *latext
+      end_longitude: 290.
+
 
 diagnostics:
   diagnostic_metrics:
@@ -127,6 +203,50 @@ diagnostics:
         short_name: tos
         preprocessor: ssta_pattern2
 
+      tos_pat_map:  # pattern 2,4 map
+        short_name: tos
+        mip: Omon
+        preprocessor: ssta_pattern_map
+
     scripts:
-      plot_script:
+      metrics_script:
         script: enso_metrics/enso_diag1metrics.py
+
+
+      pattern_script:
+        script: enso_metrics/enso_divedowns/pattern_9.py
+
+      lifecycle_script:
+        script: enso_metrics/enso_divedowns/lifecycle_10.py
+
+      durationdiversity_script:
+        script: enso_metrics/enso_divedowns/durdiver_1415.py
+
+  diagnostic_seas_skew_amp:
+    description: Assymetry, amplitude, seasonality divedowns
+    variables:
+      tos_seas_area:  # seasonality
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_seas_2
+      tos_seas_meri:  # seasonality
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_seas_3
+      tos_seas_split:  # seasonality
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_seas_4
+
+      tos_amp:  # amplitude
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_amp3  # amp2 tos_seas_split
+      tos_asym:
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_asymmetry
+
+    scripts:
+      seas_asym_amp_script:
+        script: enso_metrics/enso_divedowns/ampseasskew_1113.py

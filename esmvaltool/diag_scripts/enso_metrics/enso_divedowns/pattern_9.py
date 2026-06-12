@@ -292,10 +292,22 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     return fig2, fig3, fig4
 
 
-def get_provenance_record(caption, ancestor_files):
+def get_provenance_record(metric_level, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+    captions = {
+        "09pattern_2": (
+            "Sea surface temperature anomalies (SSTA) associated with ENSO in the equatorial Pacific"
+        ),
+        "09pattern_3": (
+            "Sea surface temperature anomalies (SSTA) during La Niña and El Niño in the equatorial Pacific"
+        ),
+        "09pattern_4": (
+            "Composite SSTA patterns for El Niño and La Niña in the equatorial Pacific"
+        ),
+
+    }
     record = {
-        "caption": caption,
+        "caption": captions.get(metric_level),
         "statistics": ["anomaly"],
         "domains": ["eq"],
         "plot_types": ["line"],
@@ -393,7 +405,7 @@ def main(cfg):
             dt_files = obs_files + [ds["filename"] for ds in models]
             for i, fig in enumerate(figs):
                 prov_record = get_provenance_record(
-                    f"ENSO metrics {metric} level {i + 2}",
+                    f"{metric}_{i + 2}",
                     dt_files,
                 )
 
