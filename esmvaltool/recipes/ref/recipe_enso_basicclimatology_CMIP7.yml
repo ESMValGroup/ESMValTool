@@ -50,7 +50,7 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    extract_region: 
+    extract_region:
       <<: *double
 
   ITCZ_bias:
