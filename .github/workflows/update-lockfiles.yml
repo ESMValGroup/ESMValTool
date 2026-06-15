@@ -6,6 +6,9 @@ permissions:
   pull-requests: write
 
 on:
+  push:
+    branches:
+      - force_lockfile_generation
   workflow_dispatch:
   schedule:
     - cron: 0 5 1 * *
