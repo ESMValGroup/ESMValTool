@@ -186,9 +186,6 @@ class WKSpectra:
         nlat = var.shape[axis]  # get the number of latitude points
 
         N2 = nlat // 2
-        N = N2
-        if nlat % 2 == 1:
-            N = N2 + 1  # offset to handle the Equator
 
         if axis == 1:
             for nl in np.arange(0, N2):
