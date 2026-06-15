@@ -429,11 +429,11 @@ class WKSpectra:
         re = 6.37122e06  # [m]   average radius of earth
         g = 9.80665  # [m/s] gravity at 45 deg lat used by the WMO
         omega = 7.292e-05  # [1/s] earth's angular vel
-        Un = 0.0  # since Un = U*T/L
+        #U = 0.0
+        #Un = 0.0  # since Un = U*T/L
         ll = 2.0 * pi * re * math.cos(abs(rlat))
         Beta = 2.0 * omega * math.cos(abs(rlat)) / re
-        maxwn = nPlanetaryWave
-
+        
         Apzwn = np.zeros(
             [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
         )
@@ -444,7 +444,7 @@ class WKSpectra:
         for ww in range(1, nWaveType + 1):  # wave type
             for ed in range(1, nEquivDepth + 1):  # equivalent depth
                 he = Ahe[ed - 1]
-                T = 1.0 / math.sqrt(Beta) * (g * he) ** (0.25)
+                #T = 1.0 / math.sqrt(Beta) * (g * he) ** (0.25)
                 L = (g * he) ** (0.25) / math.sqrt(Beta)
 
                 for wn in range(
