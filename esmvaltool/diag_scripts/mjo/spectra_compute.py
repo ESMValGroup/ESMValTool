@@ -372,33 +372,32 @@ class WKSpectra:
         [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
         """
         psumb = np.sum(peeAS, axis=0)  # sum over all latitudes
-        N, mlon = psumb.shape
-        smthlen = maxwav4smth - minwav4smth + 1
+        N, _mlon = psumb.shape
 
         for tt in range(N // 2 + 1, N):
             if freq[tt] < 0.1:
-                for i in range(1, 6):
+                for _i in range(1, 6):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
                             psumb[tt, minwav4smth : maxwav4smth + 1]
                         )
                     )
             if freq[tt] >= 0.1 and freq[tt] < 0.2:
-                for i in range(1, 11):
+                for _i in range(1, 11):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
                             psumb[tt, minwav4smth : maxwav4smth + 1]
                         )
                     )
             if freq[tt] >= 0.2 and freq[tt] < 0.3:
-                for i in range(1, 21):
+                for _i in range(1, 21):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
                             psumb[tt, minwav4smth : maxwav4smth + 1]
                         )
                     )
             if freq[tt] >= 0.3:
-                for i in range(1, 41):
+                for _i in range(1, 41):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
                             psumb[tt, minwav4smth : maxwav4smth + 1]
@@ -409,8 +408,7 @@ class WKSpectra:
 
         # smth frequency up to .8 cycles per day
         for nw in range(minwav4smth, maxwav4smth + 1):
-            smthlen = pt8cpd - (N // 2 + 1) + 1
-            for i in range(1, 11):
+            for _i in range(1, 11):
                 psumb[N // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
                     psumb[N // 2 + 1 : pt8cpd + 1, nw]
                 )
@@ -431,7 +429,6 @@ class WKSpectra:
         re = 6.37122e06  # [m]   average radius of earth
         g = 9.80665  # [m/s] gravity at 45 deg lat used by the WMO
         omega = 7.292e-05  # [1/s] earth's angular vel
-        U = 0.0
         Un = 0.0  # since Un = U*T/L
         ll = 2.0 * pi * re * math.cos(abs(rlat))
         Beta = 2.0 * omega * math.cos(abs(rlat)) / re
@@ -487,7 +484,7 @@ class WKSpectra:
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
                         # do some corrections to the above calculated frequency.......
-                        for i in range(1, 6):
+                        for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
@@ -511,7 +508,7 @@ class WKSpectra:
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
                         # do some corrections to the above calculated frequency.......
-                        for i in range(1, 6):
+                        for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
