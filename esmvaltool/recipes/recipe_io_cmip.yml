@@ -11,36 +11,51 @@ documentation:
   authors:
     - righi_mattia
 
-datasets:
-   - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f3, start_year: 1990, end_year: 2010, grid: gn}
-   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, start_year: 1990, end_year: 2010, grid: gn}
-   - {dataset: CMCC-ESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
-   #- {dataset: AWI-CM-1-1-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data 
-   #- {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data 
-   #- {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data 
+datasets:  ## working
+  - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f3, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CMCC-ESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CAS-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CMCC-CM2-HR4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CanESM5-CanOE, project: CMIP6, exp: historical, ensemble: r1i1p2f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CMCC-CM2-SR5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: CESM2-WACCM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  - {dataset: E3SM-1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+
+
+# issues
+
+  #- {dataset: UKESM1-1-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn, institute: MOHC} 
+  #- {dataset: AWI-CM-1-1-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #- {dataset: NorESM2-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+ # - {dataset: ICON-ESM-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}  #ValueError: expected 0 or 2 bound values per cell
+  #- {dataset: AWI-CM-1-1-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data # still downloading
+  #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
    #- {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
-   - {dataset: CAS-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
-   - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
-   #- {dataset: IITM-ESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #no thetao exists
-   - {dataset: CMCC-CM2-HR4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
-   - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
    #- {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} ## might work, try again later
    #- {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data #esmvalcore.cmor.check.CMORCheckError: There were errors in variable thetao:
  #Generic level coordinate olevel with out_name lev has wrong standard_name or is not set.
  #lev: units should be m, not unknown
-
-   - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
-     #- {dataset: ICON-ESM-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
-   - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+      #- {dataset: ICON-ESM-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
    #- {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
-   #- {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data ## errors
+  #- {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #have data ## errors
    #- {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
    #- {dataset: NorCPM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} # grids vary
 
    # These are the ones I've not got data for yet - IITM-ESM MPI-ESM-1-2-HAM ICON-ESM-LR MPI-ESM1-2-HR MPI-ESM1-2-LR
-   #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, mip: Amon, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+
    #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, mip: Omon, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
    #- {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+     #- {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #esmvalcore.cmor.check.CMORCheckError: There were errors in variable thetao:
+  #- {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn} #esmvalcore.cmor.check.CMORCheckError: There were errors in variable thetao:
+
 
 preprocessors:
   west_pole_abs_son:
@@ -58,10 +73,12 @@ preprocessors:
       season: SON
     convert_units:
       units: celsius    
+    mask_landsea:
+      mask_out: land
   east_pole_abs_son:
     extract_region:
-      start_longitude: 80
-      end_longitude: 100
+      start_longitude: 90
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 0
     area_statistics:
@@ -73,10 +90,76 @@ preprocessors:
       season: SON
     convert_units:
       units: celsius  
+    mask_landsea:
+      mask_out: land
+  IO_abs_son:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 110
+      start_latitude: -10
+      end_latitude: 10
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+    convert_units:
+      units: celsius  
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_landsea:
+      mask_out: land
+  IO_abs_annual:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 110
+      start_latitude: -10
+      end_latitude: 10
+    climate_statistics:
+      operator: mean
+      period: full
+    convert_units:
+      units: celsius 
+    regrid:
+      target_grid: 1x1
+      scheme: linear 
+    mask_landsea:
+      mask_out: land
+  east_pole_monthly:
+    extract_region:
+      start_longitude: 90
+      end_longitude: 110
+      start_latitude: -10
+      end_latitude: 0
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+    convert_units:
+      units: celsius  
+    mask_landsea:
+      mask_out: land
+  west_pole_monthly:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+    convert_units:
+      units: celsius  
+    mask_landsea:
+      mask_out: land
   east_pole_anomalies_son:
     extract_region:
-      start_longitude: 80
-      end_longitude: 100
+      start_longitude: 90
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 0
     anomalies:
@@ -93,6 +176,8 @@ preprocessors:
       operator: mean
     extract_season:
       season: SON
+    mask_landsea:
+      mask_out: land
   west_pole_anomalies_son:
     extract_region:
       start_longitude: 50
@@ -113,18 +198,41 @@ preprocessors:
       operator: mean
     extract_season:
       season: SON
+    mask_landsea:
+      mask_out: land
+  nino34_anomalies_djf:
+    extract_region:
+      start_longitude: -170
+      end_longitude: -120
+      start_latitude: -5
+      end_latitude: 5 
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: DJF
+    convert_units:
+      units: celsius  
+    mask_landsea:
+      mask_out: land
   east_pole_timeseries:
     extract_region:
-      start_longitude: 80
-      end_longitude: 100
+      start_longitude: 90
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 0
     area_statistics:
       operator: mean
     extract_season:
       season: SON
+    seasonal_statistics:
+      operator: mean
     convert_units:
-      units: celsius    
+      units: celsius  
+    mask_landsea:
+      mask_out: land  
   west_pole_3d_son:
     extract_region:
       start_longitude: 50
@@ -141,11 +249,13 @@ preprocessors:
     extract_season:
       season: SON
     convert_units:
-      units: celsius    
+      units: celsius 
+    mask_landsea:
+      mask_out: land   
   east_pole_3d_son:
     extract_region:
-      start_longitude: 80
-      end_longitude: 100
+      start_longitude: 90
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 0
     extract_volume:
@@ -159,13 +269,51 @@ preprocessors:
       season: SON
     convert_units:
       units: celsius   
-  extract_ceio_son:
+    mask_landsea:
+      mask_out: land
+  IO_atm_son:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 110 
+      start_latitude: -10
+      end_latitude: 10
+    extract_levels:     ## Can't use uas as no matching obs for this variable
+      levels: [100000.]
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: season
+    extract_season:
+      season: SON
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_landsea:
+      mask_out: land
+  IO_atm_annual:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 110 
+      start_latitude: -10
+      end_latitude: 10
+    extract_levels:     ## Can't use uas as no matching obs for this variable
+      levels: [100000.]
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_landsea:
+      mask_out: land
+  ceio_atm_son:
     extract_region:
       start_longitude: 70
       end_longitude: 90
       start_latitude: -5
       end_latitude: 5
-    extract_levels:
+    extract_levels:     ## Can't use uas as no matching obs for this variable
       levels: [100000.]
       scheme: linear
     area_statistics:
@@ -175,7 +323,21 @@ preprocessors:
       period: season
     extract_season:
       season: SON
-  extract_sctr_region:
+  ceio_atm_monthly:
+    extract_region:
+      start_longitude: 70
+      end_longitude: 90
+      start_latitude: -5
+      end_latitude: 5
+    extract_levels:     ## Can't use uas as no matching obs for this variable
+      levels: [100000.]
+      scheme: linear
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+  sctr_3d_son:
     extract_region:
       start_longitude: 50
       end_longitude: 70
@@ -192,7 +354,25 @@ preprocessors:
       period: season
     extract_season:
       season: SON
-
+    mask_landsea:
+      mask_out: land
+  eq_region_3d_seas:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -2
+      end_latitude: 2    
+    extract_volume:
+      z_min: 0.
+      z_max: 200.
+      interval_bounds: 'closed'
+    convert_units:
+      units: celsius
+    climate_statistics:
+      operator: mean
+      period: season
+    mask_landsea:
+      mask_out: land
 
 diagnostics:
   cmip_scatter:
@@ -203,59 +383,268 @@ diagnostics:
         preprocessor: west_pole_abs_son
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, prosacctject: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
       east_ssts:
         short_name: tos
         mip: Omon
         preprocessor: east_pole_abs_son
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
-      east_ssts_ts:
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+      east_sst_son:
         short_name: tos
         mip: Omon
         preprocessor: east_pole_timeseries
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
       west_temps:
         short_name: thetao
         mip: Omon
         preprocessor: west_pole_3d_son
         additional_datasets:
           - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, version: 4.2.2, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
       east_temps:
         short_name: thetao
         mip: Omon
         preprocessor: east_pole_3d_son
         additional_datasets:
           - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, version: 4.2.2, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
       eq_winds:
         short_name: ua
         mip: Amon
         supplementary_variables:
         - short_name: areacella
           skip: true
-        preprocessor: extract_ceio_son
+        preprocessor: ceio_atm_son
         additional_datasets:
           - {dataset: NCEP, project: OBS, mip: Amon, start_year: 1990, end_year: 2010, type: reanaly, version: 1, tier: 2}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr1}
       sctr_temps:
         short_name: thetao
         mip: Omon
-        preprocessor: extract_sctr_region
+        preprocessor: sctr_3d_son
         additional_datasets:
           - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, version: 4.2.2, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
       east_anoms:
         short_name: tos
         mip: Omon
         preprocessor: east_pole_anomalies_son
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
       west_anoms:
         short_name: tos
         mip: Omon
         preprocessor: west_pole_anomalies_son
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+      nino_anoms:
+        short_name: tos
+        mip: Omon
+        preprocessor: nino34_anomalies_djf
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
 
     
     scripts: 
-      iod_script:
-        script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/tilt_scatter.py
+      scatter_script:
+        script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/tilt_scatter_portrait.py
+  
+  # taylor_plotting:
+  #   variables:
+  #     IO_wind_son:
+  #       short_name: ua
+  #       mip: Amon
+  #       supplementary_variables:
+  #       - short_name: areacella
+  #         skip: true
+  #       preprocessor: IO_atm_son
+  #       additional_datasets:
+  #         - {dataset: NCEP, project: OBS, mip: Amon, start_year: 1990, end_year: 2010, type: reanaly, version: 1, tier: 2}
+  #         - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #     IO_wind_annual:
+  #       short_name: ua
+  #       mip: Amon
+  #       supplementary_variables:
+  #       - short_name: areacella
+  #         skip: true
+  #       preprocessor: IO_atm_annual
+  #       additional_datasets:
+  #         - {dataset: NCEP, project: OBS, mip: Amon, start_year: 1990, end_year: 2010, type: reanaly, version: 1, tier: 2}
+  #         - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #         - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+  #     IO_sst_son:
+  #       short_name: tos
+  #       mip: Omon
+  #       preprocessor: IO_abs_son
+  #       additional_datasets:
+  #         - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+  #         - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #     IO_sst_annual:
+  #       short_name: tos
+  #       mip: Omon
+  #       preprocessor: IO_abs_annual
+  #       additional_datasets:
+  #         - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+  #         - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+
+  #   scripts: 
+  #     taylor_script:
+  #       script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/taylor_plots_cmip.py
+
+
+
+
+  monthly_plotting:
+    variables:
+      ceio_wind_monthly:
+        short_name: ua
+        mip: Amon
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        preprocessor: ceio_atm_monthly
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, mip: Amon, start_year: 1990, end_year: 2010, type: reanaly, version: 1, tier: 2}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gr1}
+      east_sst_monthly:
+        short_name: tos
+        mip: Omon
+        preprocessor: east_pole_monthly
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+      west_sst_monthly:
+        short_name: tos
+        mip: Omon
+        preprocessor: west_pole_monthly
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1990, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+          #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+
+    scripts: 
+      monthly_ts_script:
+        script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/monthly_plots_cmip.py
+
+
+
+  # eq_region_analysis:
+  #   variables: 
+  #     eq_region:
+  #       short_name: thetao
+  #       preprocessor: eq_region_3d_seas
+  #       mip: Omon
+  #       additional_datasets:
+  #         - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, version: 4.2.2, tier: 2, start_year: 1990, end_year: 2010}
+  #         - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         #- {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+  #         #- {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1990, end_year: 2010, grid: gn}
+
+    
+  #   scripts: 
+  #     eq_scripts:
+  #       script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/eq_therm_cmip.py
+

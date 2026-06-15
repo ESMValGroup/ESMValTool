@@ -119,13 +119,22 @@ def plot_ts(cfg, plot_dict, title, output_basename):
         logger.info(f"Plotting thermocline for {season}")
 
         plt.figure(figsize=(10, 5))
-        colors = plt.cm.tab10(np.linspace(0, 1, len(plot_dict)))
+        mohc_colors = [
+            'tab:orange',
+            'tab:red',
+            'tab:green',
+            'tab:brown',
+            'tab:pink',
+            'tab:olive',
+            'tab:gray',
+        ]
+        mohc_idx = 0
         multimodel_lons = np.linspace(45, 100, 300)
         multimodel_profiles = []
 
         input_filenames = set()
     
-        for i, (dataset, dict_info) in enumerate(plot_dict.items()):
+        for dataset, dict_info in plot_dict.items():
             cube = dict_info['cube']
             file = dict_info['filename']
             input_filenames.update(file if isinstance(file, list) else [file])
@@ -148,9 +157,10 @@ def plot_ts(cfg, plot_dict, title, output_basename):
                 linewidth = 2.5
                 alpha = 1.0
             elif is_mohc_dataset(dataset):
-                color = colors[i]
+                color = mohc_colors[mohc_idx % len(mohc_colors)]
+                mohc_idx += 1
                 linewidth = 1.2
-                alpha = 0.3
+                alpha = 0.6
             else:
                 # Skip plotting non-MOHC model lines while still using them for multimodel stats.
                 continue
@@ -201,7 +211,7 @@ def plot_ts(cfg, plot_dict, title, output_basename):
         save_title = f'{output_basename}_{season}'
         provenance_record = get_provenance_record(save_title, list(input_filenames))
         save_figure(save_title, provenance_record, cfg)
-        logger.info(f"Scatter plot saved: {output_basename}")
+        logger.info(f"Scatter plot saved: {save_title}")
         plt.close()
 
 

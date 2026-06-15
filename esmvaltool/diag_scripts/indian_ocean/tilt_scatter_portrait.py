@@ -76,17 +76,24 @@ def save_scalar_bias(cfg, metric_key, dataset, value, ancestors):
 def build_bias_table(cfg, diagnostics):
     """Build and save model-by-diagnostic bias matrix and plot a heatmap."""
     metric_names = [
+        'CEIO zonal wind bias',
         'EEIO mean SST bias',
         'WEIO mean SST bias',
         'WEIO-EEIO SST gradient bias',
-        'CEIO zonal wind bias',
-        'equatorial D20 tilt bias',
-        'SCTR D20 bias',
         'DMI standard deviation bias',
         'DMI skewness bias',
+        'equatorial D20 tilt bias',
+        'SCTR D20 bias',
     ]
 
-    model_names = sorted(diagnostics.keys())
+    model_names = sorted(
+        diagnostics.keys(),
+        key=lambda model: (
+            diagnostics[model].get('CEIO zonal wind bias', np.inf),
+            diagnostics[model].get('EEIO mean SST bias', np.inf),
+            model,
+        ),
+    )
     if not model_names:
         logger.warning("No model diagnostics available for bias portrait plot.")
         return
@@ -149,43 +156,24 @@ def build_bias_table(cfg, diagnostics):
 
 
 def plot_bias_heatmap(cfg, matrix, model_names, metric_names, ancestors):
-    """Plot a model-by-diagnostic bias heatmap with optional clustering."""
+    """Plot a model-by-diagnostic bias heatmap with fixed model ordering."""
     ordered_matrix = matrix.copy()
     ordered_models = list(model_names)
-    clustered = False
 
-    try:
-        from scipy.cluster.hierarchy import linkage, leaves_list
-        from scipy.spatial.distance import pdist
-
-        cluster_data = ordered_matrix.copy()
-        col_means = np.nanmean(cluster_data, axis=0)
-        fill_cols = np.where(np.isnan(col_means), 0.0, col_means)
-        inds = np.where(np.isnan(cluster_data))
-        cluster_data[inds] = fill_cols[inds[1]]
-
-        if len(ordered_models) > 2:
-            z = linkage(pdist(cluster_data, metric='euclidean'), method='average')
-            order = leaves_list(z)
-            ordered_matrix = ordered_matrix[order, :]
-            ordered_models = [ordered_models[i] for i in order]
-            clustered = True
-    except Exception as exc:
-        logger.info(f"Hierarchical clustering unavailable, using original order: {exc}")
-
-    fig, ax = plt.subplots(figsize=(15, max(6, len(ordered_models) * 0.35)))
+    fig_width = max(8, len(metric_names) * 1.1)
+    fig_height = max(8, len(ordered_models) * 0.45)
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     finite_vals = ordered_matrix[np.isfinite(ordered_matrix)]
     vmax = np.nanmax(np.abs(finite_vals)) if finite_vals.size else 1.0
     vmax = 1.0 if vmax == 0 else vmax
     norm = TwoSlopeNorm(vmin=-vmax, vcenter=0.0, vmax=vmax)
 
-    img = ax.imshow(ordered_matrix, aspect='auto', cmap='RdBu_r', norm=norm)
+    img = ax.imshow(ordered_matrix, aspect='equal', cmap='BrBG', norm=norm)
     ax.set_xticks(np.arange(len(metric_names)))
     ax.set_xticklabels(metric_names, rotation=45, ha='right', fontsize=10)
     ax.set_yticks(np.arange(len(ordered_models)))
     ax.set_yticklabels(ordered_models, fontsize=9)
-    title_suffix = ' (hierarchical clustering)' if clustered else ''
-    ax.set_title(f'Model-by-diagnostic bias portrait{title_suffix}', fontsize=14)
+    ax.set_title('Model-by-diagnostic bias portrait', fontsize=14)
     ax.set_xlabel('Diagnostics')
     ax.set_ylabel('Models')
 
@@ -263,9 +251,10 @@ def scat_mean_vs_std(cfg, xy_dict, x_label, y_label, title, output_basename):
         file = xy_info['filename']
         input_filenames.update(file if isinstance(file, list) else [file])
         cube = xy_info['cube']
+        
         mean_val = cube.collapsed('time', iris.analysis.MEAN).data
         std_val = cube.collapsed('time', iris.analysis.STD_DEV).data
-
+        print(f"Processing dataset: {dataset}, file: {file}, mean: {mean_val}, std: {std_val}")  # Debug statement
         color = 'k' if 'HadISST' in dataset else colors[i]
         label = 'Obs' if 'HadISST' in dataset else dataset
         plt.scatter(mean_val, std_val, color=color, label=label, alpha=0.7,s=80)
@@ -274,6 +263,8 @@ def scat_mean_vs_std(cfg, xy_dict, x_label, y_label, title, output_basename):
         all_means.append(mean_val)
         all_stds.append(std_val)
 
+    print(f"All means: {all_means}")  # Debug statement
+    print(f"All stds: {all_stds}")  # Debug statement
     # Calculate and log correlation
     if all_means and all_stds:
         correlation = np.corrcoef(all_means, all_stds)[0, 1]
@@ -552,8 +543,8 @@ def main(cfg):
     scat_plot(cfg, eq_winds, sctr_t20d, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'SCTR 20$^\\circ$C isotherm depth / m', 'SON', 'winds_vs_sctr')
     scat_plot(cfg, sst_grad, nino_anoms, 'SST gradient / $^\\circ$C', 'Nino 3.4 SST / $^\\circ$C', 'SST gradient-SON, Nino-DJF', 'dmi_vs_nino')
 
-
-    scat_mean_vs_std(cfg, east_ts, 'SST mean in EEIO / $^\\circ$C', 'STD of EEIO SST / $^\\circ$C', 'SON', 'east_sst_mean_vs_std')
+    print('East SST son data:', east_sst_son)  # Debug statement
+    scat_mean_vs_std(cfg, east_sst_son, 'SST mean in EEIO / $^\\circ$C', 'STD of EEIO SST / $^\\circ$C', 'SON', 'east_sst_mean_vs_std')
 
 if __name__ == '__main__':
 
