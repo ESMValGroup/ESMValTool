@@ -107,7 +107,7 @@ class WKSpectra:
             dates = unit.num2date(
                 time.points, str(time.units), unit.CALENDAR_GREGORIAN
             )
-        if time.units.calendar == "standard":
+        elif time.units.calendar == "standard":
             dates = unit.num2date(
                 time.points, str(time.units), unit.CALENDAR_STANDARD
             )
@@ -115,16 +115,11 @@ class WKSpectra:
             dates = unit.num2date(
                 time.points, str(time.units), time.units.calendar
             )
-        try:
-            dates
-        except NameError:
-            logging.error("%s WASN'T defined after all!", dates)  # todo
-        else:
-            year = np.zeros(len(dates), dtype=int)
-            month = np.zeros(len(dates), dtype=int)
-            day = np.zeros(len(dates), dtype=int)
-            for i, date in enumerate(dates):
-                year[i], month[i], day[i] = self.split_time(date)
+        year = np.zeros(len(dates), dtype=int)
+        month = np.zeros(len(dates), dtype=int)
+        day = np.zeros(len(dates), dtype=int)
+        for i, date in enumerate(dates):
+            year[i], month[i], day[i] = self.split_time(date)
         return year, month, day
 
     def makecube_season_pow(self, var, wave, freq, name="spectra"):
