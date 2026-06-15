@@ -452,7 +452,7 @@ class WKSpectra:
                 ):  # planetary wave number
                     s = -20.0 * (wn - 1) * 2.0 / (nPlanetaryWave - 1) + 20.0
                     k = 2.0 * pi * s / ll
-                    kn = k * L
+                    #kn = k * L
 
                     # Anti-symmetric curves
                     if ww == 1:  # MRG wave
@@ -519,7 +519,7 @@ class WKSpectra:
                     P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
                     dps = deif / k
                     R = L
-                    Rdeg = (180.0 * R) / (pi * 6.37e6)
+                    #Rdeg = (180.0 * R) / (pi * 6.37e6)
                     Apzwn[ww - 1, ed - 1, wn - 1] = s
                     if deif != fillval:
                         P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
@@ -666,10 +666,12 @@ class WKSpectra:
         wave,
         Apzwn,
         Afreq,
-        levels=np.arange(0, 2, 0.2),
+        levels=None,
         title="",
         figname="specAntiSym_test.ps",
     ):
+        if levels is None:
+            levels = np.arange(0, 2, 0.2)
         fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
         self._plot_dispersion_curves(ax, Apzwn, Afreq, 0, 3)
 
@@ -690,10 +692,12 @@ class WKSpectra:
         wave,
         Apzwn,
         Afreq,
-        levels=np.arange(0, 5, 0.5),
+        levels=None,
         title="",
         figname="specSym_test.ps",
     ):
+        if levels is None:
+            levels = np.arange(0, 5, 0.5)
         fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
         self._plot_dispersion_curves(ax, Apzwn, Afreq, 3, 6)
 
@@ -903,8 +907,6 @@ class WKSpectra:
                     ntLast + nSampSkip
                 )  # set index for next temporal window
                 ntLast = ntStrt + nSampWin
-
-        peeAS_cube = self.make_spec_cube(peeAS, lats, wave, freq)
 
         # -------------------------------------------------------------------
         #  now that we have the power array for sym and asym: use to
@@ -1358,10 +1360,6 @@ class WKSpectra:
         #  Hence, the following are just 'place holders'
         # *****************************************************************
         """
-        # detrend overall series in time
-        # Time mean (later to be added to the trend)
-        varmean = var.collapsed("time", iris.analysis.MEAN)
-
         # remove linear trend
         var.data = scipy.signal.detrend(
             var.data, axis=0
@@ -1370,11 +1368,9 @@ class WKSpectra:
         # Initialise
         power = np.zeros([mlon + 1, nDay + 1])  # initialize
         work = var.data
-        xAvgSea = 0.0
         xVarSea = 0.0  # variance (raw)
         xVarTap = 0.0  # variance after tapering
         kSea = 0  # count of seasons used
-        N = nDay  # convenience
 
         for ny in range(nYear):
             iStrt = iSea[ny]  # start index for current season
@@ -1420,10 +1416,12 @@ class WKSpectra:
     def mjo_wavenum_freq_season_plot(
         self,
         pow_cube,
-        levels=np.arange(0, 3, 0.2),
+        levels=None,
         title="",
         figname="wavenum_freq_season_plot.ps",
     ):
+        if levels is None:
+            levels = np.arange(0, 3, 0.2)
         NW = 6
         fMin = -0.05
         fMax = 0.05
