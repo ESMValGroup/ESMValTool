@@ -454,10 +454,9 @@ def main(config):
         model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"
         model_label = group[0]["alias"]
         figure = plot_data(
-            model_dataset,
             model_data,
-            model_period,
             model_label,
+            model_period,
             obs_names,
             obs_unit,
             stephens_data,
