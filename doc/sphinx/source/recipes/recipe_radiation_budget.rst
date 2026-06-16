@@ -22,12 +22,12 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_radiation_budget.yml
+* recipe_radiation_budget.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/radiation_budget/
 
-    * radiation_budget.py: Plot the global radiation budget.
-    * seasonal_radiation_budget.py: Write the global climatological seasonal radiation budget to a text file.
+* radiation_budget.py: Plot the global radiation budget.
+* seasonal_radiation_budget.py: Write the global climatological seasonal radiation budget to a text file.
 
 
 
