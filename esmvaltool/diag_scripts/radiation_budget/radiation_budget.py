@@ -448,7 +448,7 @@ def main(config):
         unordered_model_data = iris.load(filenames)
         all_model_data = derive_additional_variables(unordered_model_data)
         model_data = order_data(all_model_data, obs_names, obs_unit)
-        # An assumption has been made that the start_year and end_year
+        # An assumption has been made that the start_year, end_year and alias
         # from the first variable in the list (for a given dataset)
         # is the same as all the others.
         model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"
