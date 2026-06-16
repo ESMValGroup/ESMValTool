@@ -48,12 +48,10 @@ y_lim : list of float, optional (default: [0.5, 3.5])
 import logging
 import os
 from copy import deepcopy
-from functools import partial
 from pprint import pformat
 
 import cf_units
 import iris
-import iris.coord_categorisation
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -79,10 +77,15 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 COLORS = sns.color_palette()
 EXP_4XCO2 = {
+    "default": "abrupt-4xCO2",
     "CMIP5": "abrupt4xCO2",
-    "CMIP6": "abrupt-4xCO2",
 }
 RTMT_DATASETS = set()
+
+
+def _get_4x_co2_exp(project: str) -> str:
+    """Get 4xCO2 experiment name."""
+    return EXP_4XCO2.get(project, EXP_4XCO2["default"])
 
 
 def _get_anomaly_data(input_data):
@@ -98,13 +101,13 @@ def _get_anomaly_data(input_data):
                 var,
                 dataset_name,
             )
-            data_4x = select_metadata(datasets, exp=EXP_4XCO2[project])
+            data_4x = select_metadata(datasets, exp=_get_4x_co2_exp(project))
             data_pic = select_metadata(datasets, exp="piControl")
 
             # Check if all experiments are available
             if not data_4x:
                 raise ValueError(
-                    f"No '{EXP_4XCO2[project]}' data available for '{var}' of "
+                    f"No '{_get_4x_co2_exp(project)}' data available for '{var}' of "
                     f"'{dataset_name}'",
                 )
             if not data_pic:
@@ -133,23 +136,6 @@ def _get_anomaly_data(input_data):
                 },
             )
     return new_input_data
-
-
-def _get_data_time_last(cube):
-    """Get data of ``cube`` with time axis as last dimension."""
-    return np.moveaxis(cube.data, cube.coord_dims("time")[0], -1)
-
-
-@partial(np.vectorize, excluded=["x_arr"], signature="(n),(n)->()")
-def _get_intercept(x_arr, y_arr):
-    """Get intercept of linear regression of two (masked) arrays."""
-    if np.ma.is_masked(y_arr):
-        x_arr = x_arr[~y_arr.mask]
-        y_arr = y_arr[~y_arr.mask]
-    if len(y_arr) < 2:
-        return np.nan
-    reg = stats.linregress(x_arr, y_arr)
-    return reg.intercept
 
 
 def _get_multi_model_mean(input_data):
@@ -209,18 +195,6 @@ def _get_multi_model_mean(input_data):
         mmm_data.append({**attributes, "cube": mmm_cube})
     input_data.extend(mmm_data)
     return input_data
-
-
-@partial(np.vectorize, excluded=["x_arr"], signature="(n),(n)->()")
-def _get_slope(x_arr, y_arr):
-    """Get slope of linear regression of two (masked) arrays."""
-    if np.ma.is_masked(y_arr):
-        x_arr = x_arr[~y_arr.mask]
-        y_arr = y_arr[~y_arr.mask]
-    if len(y_arr) < 2:
-        return np.nan
-    reg = stats.linregress(x_arr, y_arr)
-    return reg.slope
 
 
 def _plot_complex_gregroy_plot(cfg, axes, tas_cube, rtnt_cube, reg_all):
@@ -328,13 +302,11 @@ def check_input_data(cfg):
             f"{projects}",
         )
     project = projects[0]
-    if project not in EXP_4XCO2:
-        raise ValueError(f"Project '{project}' not supported yet")
     exp_group = group_metadata(input_data, "exp")
     exps = set(exp_group.keys())
-    if exps != {"piControl", EXP_4XCO2[project]}:
+    if exps != {"piControl", _get_4x_co2_exp(project)}:
         raise ValueError(
-            f"This diagnostic needs 'piControl' and '{EXP_4XCO2[project]}' "
+            f"This diagnostic needs 'piControl' and '{_get_4x_co2_exp(project)}' "
             f"experiments, got {exps}",
         )
 
