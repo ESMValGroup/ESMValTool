@@ -517,8 +517,6 @@ class WKSpectra:
 
                     eif = deif  # + k*U since  U=0.0
                     P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
-                    dps = deif / k
-                    R = L
                     #Rdeg = (180.0 * R) / (pi * 6.37e6)
                     Apzwn[ww - 1, ed - 1, wn - 1] = s
                     if deif != fillval:
@@ -811,7 +809,6 @@ class WKSpectra:
 
         wave = wave.astype(float)
         freq = freq.astype(float)
-        lats = self.cube.coord("latitude").points
 
         # Time mean (later to be added to the trend)
         varmean = self.cube.collapsed("time", iris.analysis.MEAN)
