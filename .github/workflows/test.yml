@@ -5,6 +5,7 @@ permissions: {}
 
 # runs on a push on main and at the end of every day
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
