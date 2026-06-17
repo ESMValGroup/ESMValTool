@@ -31,7 +31,9 @@ jobs:
           set -o pipefail
           pixi update --json | pixi exec pixi-diff-to-markdown >> diff.md
       - name: Run tests
-        run: gh workflow run test.yml
+        run: |
+          gh workflow view test.yml --yaml
+          gh workflow run test.yml
         env:
           GH_TOKEN: ${{ github.token }}
       - name: Create pull request
