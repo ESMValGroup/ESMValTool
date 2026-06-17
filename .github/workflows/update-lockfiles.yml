@@ -2,11 +2,15 @@
 name: Update lockfiles
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - run_GHA-Test_after_pixi-lockfile-regen
   schedule:
     - cron: 0 5 1 * *
 
@@ -26,6 +30,10 @@ jobs:
         run: |
           set -o pipefail
           pixi update --json | pixi exec pixi-diff-to-markdown >> diff.md
+      - name: Run tests
+        run: gh workflow run test.yml
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Create pull request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
