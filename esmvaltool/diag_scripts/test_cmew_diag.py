@@ -43,7 +43,7 @@ def plot_timeseries(cube, cfg):
     """Plot timeseries."""
     # Plot the data
     fig, ax = plt.subplots()
-    qplt.plot(cube.coord("time").points(), cube.data(), axes=ax)
+    qplt.plot(cube, axes=ax)
     # Save the figure (also closes it)
     save_figure(
         cube.name,
