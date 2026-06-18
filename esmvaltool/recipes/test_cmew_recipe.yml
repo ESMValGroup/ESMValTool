@@ -1,0 +1,37 @@
+# ESMValTool
+# recipe_radiation_budget.yml
+---
+documentation:
+  title: CMEW variable extraction
+  description: |
+    Recipe for testing what changes need to be made to various
+    variable and mip table combinations to work through CMEW.
+  authors:
+    - parsons_naomi
+  maintainer:
+    - parsons_naomi
+
+datasets:
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+     ensemble: r5i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
+
+preprocessors:
+  global_mean:
+    area_statistics:
+      operator: mean
+
+diagnostics:
+  plot_timeseries:
+    description: Plots a timeseries of the global mean average.
+    variables:
+      rss:
+        mip: Emon
+        preprocessor: global_mean
+      rsdt:
+        mip: Amon
+        preprocessor: global_mean
+    scripts:
+      plot_timeseries:
+        script: test_cmew_diag.py
