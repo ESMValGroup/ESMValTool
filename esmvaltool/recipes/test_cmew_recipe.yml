@@ -26,10 +26,10 @@ diagnostics:
   plot_timeseries:
     description: Plots a timeseries of the global mean average.
     variables:
-      rss:
+      ua:
         mip: Emon
         preprocessor: global_mean
-      rsdt:
+      tos:
         mip: Amon
         preprocessor: global_mean
     scripts:
