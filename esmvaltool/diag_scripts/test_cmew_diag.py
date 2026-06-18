@@ -36,17 +36,19 @@ def loop_over_models(cfg):
 
         for cube in cubes:
             logger.info("Cube: %s", cube.name)
-            plot_timeseries(cube, cfg)
+            name_to_plot = nc_filepath.split("/")[-1]
+            plot_timeseries(cube, name_to_plot, cfg)
 
 
-def plot_timeseries(cube, cfg):
+def plot_timeseries(cube, name_to_plot, cfg):
     """Plot timeseries."""
     # Plot the data
     fig, ax = plt.subplots()
     qplt.plot(cube, axes=ax)
+
     # Save the figure (also closes it)
     save_figure(
-        cube.name,
+        name_to_plot,
         {},
         cfg,
         figure=fig,
