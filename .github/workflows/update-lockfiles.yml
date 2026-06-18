@@ -8,9 +8,10 @@ permissions:
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - run_GHA-Test_after_pixi-lockfile-regen
+  # if we ever need to run this workflow from push
+  # push:
+  #   branches:
+  #     - branch_name
   schedule:
     - cron: 0 5 1 * *
 
@@ -32,7 +33,8 @@ jobs:
           pixi update --json | pixi exec pixi-diff-to-markdown >> diff.md
       - name: Run tests
         run: |
-          gh workflow view test.yml --yaml
+          # visually inspect workflow that needs be run e.g. test.yml
+          # gh workflow view test.yml --yaml
           gh workflow run test.yml
         env:
           GH_TOKEN: ${{ github.token }}
