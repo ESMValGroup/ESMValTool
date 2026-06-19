@@ -131,7 +131,6 @@ class WKSpectra:
         """Build a 2D Iris cube for seasonal power."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
-        # var_cube.long_name = long_name
         wave_coord = iris.coords.DimCoord(wave, long_name="wavenumber")
         wave_coord.guess_bounds()
         freq_coord = iris.coords.DimCoord(freq, long_name="frequency")
@@ -297,9 +296,8 @@ class WKSpectra:
         """
         N, mlon = varfft.shape
         pee = np.ones([N + 1, mlon + 1]) * -999.0  # initialize
-        # -999 scaling is for testing
-        # purpose
-        # Create the real power spectrum pee = sqrt(real^2+imag^2)^2
+        # -999 scaling is for testing purpose
+        # Create the real power spectrum pee equals sqrt(real^2+imag^2)^2
         varfft = np.abs(varfft) ** 2
         pee[: N // 2, : mlon // 2] = varfft[N // 2 : N, mlon // 2 : 0 : -1]
         pee[N // 2 :, : mlon // 2] = varfft[: N // 2 + 1, mlon // 2 : 0 : -1]
@@ -427,15 +425,12 @@ class WKSpectra:
         nPlanetaryWave = 50
         nEquivDepth = Ahe.size
         fillval = 1e20
-        # ---------------------------------------------------------------
+
         # Theoretical shallow water dispersion curves
-        # --------------------------------------------------------------
         pi = 4.0 * math.atan(1.0)
         re = 6.37122e06  # [m]   average radius of earth
         g = 9.80665  # [m/s] gravity at 45 deg lat used by the WMO
         omega = 7.292e-05  # [1/s] earth's angular vel
-        # U = 0.0
-        # Un = 0.0  # since Un = U*T/L
         ll = 2.0 * pi * re * math.cos(abs(rlat))
         Beta = 2.0 * omega * math.cos(abs(rlat)) / re
 
@@ -449,15 +444,12 @@ class WKSpectra:
         for ww in range(1, nWaveType + 1):  # wave type
             for ed in range(1, nEquivDepth + 1):  # equivalent depth
                 he = Ahe[ed - 1]
-                # T = 1.0 / math.sqrt(Beta) * (g * he) ** (0.25)
-                # L = (g * he) ** (0.25) / math.sqrt(Beta)
 
                 for wn in range(
                     1, nPlanetaryWave + 1
                 ):  # planetary wave number
                     s = -20.0 * (wn - 1) * 2.0 / (nPlanetaryWave - 1) + 20.0
                     k = 2.0 * pi * s / ll
-                    # kn = k * L
 
                     # Anti-symmetric curves
                     if ww == 1:  # MRG wave
@@ -471,7 +463,7 @@ class WKSpectra:
                         if k > 0:
                             deif = fillval
 
-                    if ww == 2:  # n=0 IG wave
+                    if ww == 2:  # n equals 0 IG wave
                         if k < 0:
                             deif = fillval
                         if k == 0:
@@ -482,13 +474,13 @@ class WKSpectra:
                             )
                             deif = k * math.sqrt(g * he) * (0.5 + 0.5 * delx)
 
-                    if ww == 3:  # n=2 IG wave
+                    if ww == 3:  # n equals 2 IG wave
                         n = 2.0
                         delx = Beta * math.sqrt(g * he)
                         deif = math.sqrt(
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
-                        # do some corrections to the above calculated frequency.......
+                        # Do some corrections to the above calculated frequency...
                         for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
@@ -497,7 +489,7 @@ class WKSpectra:
                             )
 
                     # symmetric curves
-                    if ww == 4:  # n=1 ER wave
+                    if ww == 4:  # n equals 1 ER wave
                         n = 1.0
                         if k < 0:
                             delx = (Beta / math.sqrt(g * he)) * (2.0 * n + 1.0)
@@ -506,13 +498,13 @@ class WKSpectra:
                             deif = fillval
                     if ww == 5:  # Kelvin wave
                         deif = k * math.sqrt(g * he)
-                    if ww == 6:  # n=1 IG wave
+                    if ww == 6:  # n equals 1 IG wave
                         n = 1.0
                         delx = Beta * math.sqrt(g * he)
                         deif = math.sqrt(
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
-                        # do some corrections to the above calculated frequency.......
+                        # Do some corrections to the above calculated frequency...
                         for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
@@ -520,9 +512,8 @@ class WKSpectra:
                                 + g * he * Beta * k / deif
                             )
 
-                    eif = deif  # + k*U since  U=0.0
+                    eif = deif  # plus k times U since U equals 0.0
                     P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
-                    # Rdeg = (180.0 * R) / (pi * 6.37e6)
                     Apzwn[ww - 1, ed - 1, wn - 1] = s
                     if deif != fillval:
                         P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
@@ -712,7 +703,7 @@ class WKSpectra:
         ax.text(-14.0, 0.46, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
-        caption = f"{figname}, [or other caption for symmetric]"  # TODO
+        caption = f"{figname}"
         provenance_dict = self.get_provenance_record(caption)
         save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
@@ -737,15 +728,6 @@ class WKSpectra:
             Progressive and Retrogressive Waves by Space and Fourier and
             TimeCross Spectral Analysis J. Meteor. Soc. Japan, 1971, 49: 125-128.
         """
-
-        # if self.varname == 'x_wind':
-        #    assert len(self.cube.coord('pressure').points) == 1
-        #    pressure_level = self.cube.coord('pressure').points[0]
-        #    if pressure_level == 850:
-        #        varname = 'x_wind_850hPa'
-        #    if pressure_level == 200:
-        #        varname = 'x_wind_200hPa'
-
         ntim, nlat, mlon = self.cube.shape
         latN = self.latBound
         latS = -1 * self.latBound  # make symmetric about the equator
@@ -754,9 +736,9 @@ class WKSpectra:
         lonR = 360  # 180
         fCrit = 1.0 / self.nDayWin  # remove all contributions 'longer'
 
-        tim_taper = 0.1  # time taper      [0.1   => 10%]
+        tim_taper = 0.1  # time taper [0.1 => 10%]
         lon_taper = (
-            0.0  # longitude taper [0.0 for globe  only global supported]
+            0.0  # longitude taper [0.0 for globe only global supported]
         )
 
         if lon_taper > 0.0 or lonR - lonL != 360.0:
@@ -873,10 +855,6 @@ class WKSpectra:
                     )
                 work = xAS[ntStrt:ntLast, nl].copy()
 
-                # Check for missing data
-                # masked_inds = np.where(work.data.mask)
-                # if not len(masked_inds[0]) > 0:
-
                 # detrend the window
                 work.data = scipy.signal.detrend(
                     xAS.data[ntStrt:ntLast, nl], axis=0
@@ -889,7 +867,6 @@ class WKSpectra:
                     work.data[:, lo] = self.taper(
                         work.data[:, lo], alpha=tim_taper, iopt=0
                     )
-                # logging.info('Passed Tapering test')
 
                 # Do actual FFT work
                 ft = work.copy()
@@ -902,9 +879,6 @@ class WKSpectra:
                 peeAS[nl, :, :] = peeAS[nl, :, :] + (pee / nWindow)
 
                 nw += 1
-
-                # else:
-                #    logging.info('Missing data detected. Skipping to the next window...')
 
                 ntStrt = (
                     ntLast + nSampSkip
@@ -985,7 +959,6 @@ class WKSpectra:
         #  [3] Apply smoothing to the spectrum. This smoothing DOES include
         #      wavenumber zero.
         # -----------------------------------------------------------------------------
-        # logging.info("======> BACKGROUND <=====")
 
         psumb = self.compute_background(peeAS, freq, indStrt, indLast)
         psumb_nolog = np.ma.masked_array(psumb)
@@ -998,8 +971,6 @@ class WKSpectra:
         # Generate dispersion cuves
         Afreq, Apzwn = self.generate_dispersion_curves()
 
-        # Fig.1 - Raw spectra Symmetric and Anti-symmetric
-        #
         # Define contour levels for plots
         levels_dict = {
             "toa_outgoing_longwave_flux": np.array(
@@ -1362,7 +1333,7 @@ class WKSpectra:
         # remove linear trend
         var.data = scipy.signal.detrend(
             var.data, axis=0
-        )  # + varmean.data # Mean added
+        )
 
         # Initialise
         power = np.zeros([mlon + 1, nDay + 1])  # initialize
