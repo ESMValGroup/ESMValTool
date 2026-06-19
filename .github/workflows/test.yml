@@ -5,9 +5,12 @@ permissions: {}
 
 # runs on a push on main and at the end of every day
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+  pull_request:
+    branches: ["update-pixi"]
   schedule:
     - cron: "0 0 * * *"
 
