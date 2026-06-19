@@ -8,10 +8,6 @@ permissions:
 
 on:
   workflow_dispatch:
-  # if we ever need to run this workflow from push
-  # push:
-  #   branches:
-  #     - branch_name
   schedule:
     - cron: 0 5 1 * *
 
@@ -43,10 +39,3 @@ jobs:
           labels: pixi
           delete-branch: true
           add-paths: pixi.lock
-      - name: Run tests on that Pull Request
-        run: |
-          # visually inspect workflow that needs be run e.g. test.yml
-          # gh workflow view test.yml --yaml
-          gh workflow run test.yml --ref update-pixi
-        env:
-          GH_TOKEN: ${{ github.token }}
