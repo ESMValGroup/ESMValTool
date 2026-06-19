@@ -8,9 +8,9 @@ from pathlib import Path
 import cf_units as unit
 import iris
 import matplotlib as mpl
-import matplotlib.colors as colors
+from matplotlib import colors
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+from matplotlib import ticker
 import numpy as np
 import scipy
 
@@ -312,7 +312,7 @@ class WKSpectra:
 
     def wk_smooth121(self, var):
         """
-        Special 1-2-1 smoother that smooths vv by passing it through a 1-2-1 filter.
+        Smooth vv by passing it through a special 1-2-1 filter.
 
         The first and last points are given 3-1 (1st) or 1-3 (last)
         weightings (Note that this conserves the total sum).
@@ -370,7 +370,7 @@ class WKSpectra:
 
     def compute_background(self, peeAS, freq, minwav4smth, maxwav4smth):
         """
-        Derive the background spectrum (red noise) ************
+        Derive the background spectrum (red noise).
 
         [1] Sum power over all latitude
         [2] Put fill value in mean
@@ -763,7 +763,8 @@ class WKSpectra:
             logging.error(
                 "Code does currently allow lon_taper>0 or (lonR-lonL)<360."
             )
-            raise ValueError("wkSpaceTime lon_taper>0 or (lonR-lonL)<360")
+            msg = "wkSpaceTime lon_taper>0 or (lonR-lonL)<360"
+            raise ValueError(msg)
 
         nDayTot = ntim / self.spd  # of days (total) for input variable
         nSampTot = nDayTot * self.spd  # of samples (total)
@@ -781,9 +782,8 @@ class WKSpectra:
                 nDayTot,
                 self.nDayWin,
             )
-            raise ValueError(
-                f"nDayTot ({nDayTot}) is less than nDayWin ({self.nDayWin})"
-            )
+            msg = f"nDayTot ({nDayTot}) is less than nDayWin ({self.nDayWin})"
+            raise ValueError(msg)
         # -------------------------------------------------------------------
         #  Remove dominant signals
         # (a) Explicitly remove *long term* linear trend
@@ -835,7 +835,8 @@ class WKSpectra:
             logging.error(
                 "Length of the variable is shorter than 365. Can not continue!"
             )
-            raise ValueError(f"nDayTot ({nDayTot}) is less than 365")
+            msg = f"nDayTot ({nDayTot}) is less than 365"
+            raise ValueError(msg)
 
         # -------------------------------------------------------------------
         #  Decompose to Symmetric and Asymmetric parts
