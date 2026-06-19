@@ -47,6 +47,6 @@ jobs:
         run: |
           # visually inspect workflow that needs be run e.g. test.yml
           # gh workflow view test.yml --yaml
-          gh workflow run test.yml --ref update-pixi -f environment=prod
+          gh workflow run test.yml --ref update-pixi
         env:
           GH_TOKEN: ${{ github.token }}
