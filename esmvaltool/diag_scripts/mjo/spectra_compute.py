@@ -8,13 +8,15 @@ from pathlib import Path
 import cf_units as unit
 import iris
 import matplotlib as mpl
-from matplotlib import colors
 import matplotlib.pyplot as plt
-from matplotlib import ticker
 import numpy as np
 import scipy
+from matplotlib import colors, ticker
 
-from esmvaltool.diag_scripts.shared import save_data, save_figure
+from esmvaltool.diag_scripts.shared import (
+    save_data,
+    save_figure,
+)
 
 logging = logging.getLogger(Path(__file__).stem)
 
@@ -23,7 +25,7 @@ class WKSpectra:
     """Compute, smooth, and plot Wheeler-Kiladis spectra."""
 
     def __init__(
-        self, cfg: dict, attributes: dict, check_missing: bool = True
+        self, cfg: dict, attributes: dict, *, check_missing: bool = True
     ):
         self.cfg = cfg  # Store the configuration dictionary
         self.spd = 1  # samples per day (1 for daily data, 4 for 6-hourly data and so on)
@@ -110,15 +112,21 @@ class WKSpectra:
         """Extract year, month, and day arrays from an Iris time coordinate."""
         if time.units.calendar == "gregorian":
             dates = unit.num2date(
-                time.points, str(time.units), unit.CALENDAR_GREGORIAN,
+                time.points,
+                str(time.units),
+                unit.CALENDAR_GREGORIAN,
             )
         elif time.units.calendar == "standard":
             dates = unit.num2date(
-                time.points, str(time.units), unit.CALENDAR_STANDARD,
+                time.points,
+                str(time.units),
+                unit.CALENDAR_STANDARD,
             )
         else:
             dates = unit.num2date(
-                time.points, str(time.units), time.units.calendar,
+                time.points,
+                str(time.units),
+                time.units.calendar,
             )
         year = np.zeros(len(dates), dtype=int)
         month = np.zeros(len(dates), dtype=int)
@@ -139,17 +147,17 @@ class WKSpectra:
         var_cube.add_dim_coord(freq_coord, 1)
         return var_cube
 
-    def remove_annual_cycle(self, var, fCrit, rmvMeans=False):
+    def remove_annual_cycle(self, var, f_crit, *, rmvMeans=False):
         """
         Prewhiten the data: eg remove the annual cycle.
 
         Actually, this will remove all time periods less than
-          those corresponding to 'fCrit'.
+          those corresponding to 'f_crit'.
         Note: The original fortran code provided by JET did not remove
           the grid point means so .... rmvMeans=False
               I assume that Matt Wheeler's code did that also.
         """
-        logging.info("fCrit: %s", fCrit)
+        logging.info("f_crit: %s", f_crit)
         # Take a copy for metadata
         var_cut = var.copy()
 
@@ -165,7 +173,7 @@ class WKSpectra:
         x = freq.copy()
 
         # cutting frequencies
-        cf[np.abs(x) < fCrit] = 0.0
+        cf[np.abs(x) < f_crit] = 0.0
 
         # inverse FFT
         var_cut.data = np.fft.ifft(cf, axis=0).astype(float)
@@ -203,11 +211,13 @@ class WKSpectra:
                 )
 
             return var_sa
-        else:
-            logging.error(
-                "Only axis == 1 is supported. Modify the code to accommodate other axes."
-            )
-            raise ValueError("decompose_sym_asym axis != 1")
+
+        # Replacing "else" statement
+        logging.error(
+            "Only axis == 1 is supported. Modify the code to accommodate other axes."
+        )
+        msg = "decompose_sym_asym axis != 1"
+        raise ValueError(msg)
 
     def taper(self, ts, alpha=0.1, iopt=0):
         """
@@ -366,7 +376,7 @@ class WKSpectra:
         """Return the index of the array value closest to the target value."""
         return (np.abs(array - value)).argmin()
 
-    def compute_background(self, peeAS, freq, minwav4smth, maxwav4smth):
+    def compute_background(self, pee_as, freq, minwav4smth, maxwav4smth):
         """
         Derive the background spectrum (red noise).
 
@@ -374,7 +384,7 @@ class WKSpectra:
         [2] Put fill value in mean
         [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
         """
-        psumb = np.sum(peeAS, axis=0)  # sum over all latitudes
+        psumb = np.sum(pee_as, axis=0)  # sum over all latitudes
         n, _mlon = psumb.shape
 
         for tt in range(n // 2 + 1, n):
@@ -385,14 +395,14 @@ class WKSpectra:
                             psumb[tt, minwav4smth : maxwav4smth + 1]
                         )
                     )
-            if freq[tt] >= 0.1 and freq[tt] < 0.2:
+            if 0.1 <= freq[tt] < 0.2:
                 for _i in range(1, 11):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
                             psumb[tt, minwav4smth : maxwav4smth + 1]
                         )
                     )
-            if freq[tt] >= 0.2 and freq[tt] < 0.3:
+            if 0.2 <= freq[tt] < 0.3:
                 for _i in range(1, 21):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
@@ -418,6 +428,7 @@ class WKSpectra:
         return psumb
 
     def generate_dispersion_curves(self):
+        """Compute theoretical dispersion curves."""
         # Theoretical dispersion curves
         rlat = 0.0
         ahe = np.array([50.0, 25.0, 12.0])
@@ -435,10 +446,12 @@ class WKSpectra:
         beta = 2.0 * omega * math.cos(abs(rlat)) / re
 
         apzwn = np.zeros(
-            [n_wave_type, n_equiv_depth, n_planetary_wave], dtype=np.double,
+            [n_wave_type, n_equiv_depth, n_planetary_wave],
+            dtype=np.double,
         )
         afreq = np.zeros(
-            [n_wave_type, n_equiv_depth, n_planetary_wave], dtype=np.double,
+            [n_wave_type, n_equiv_depth, n_planetary_wave],
+            dtype=np.double,
         )
 
         for ww in range(1, n_wave_type + 1):  # wave type
@@ -526,19 +539,20 @@ class WKSpectra:
         apzwn = np.ma.masked_values(apzwn, fillval)
         return afreq, apzwn
 
-    def spread_colorbar(self, C):
+    def spread_colorbar(self, c):
         """Interpolate a sparse RGB table to 256 colors."""
-        x = np.linspace(0, 256, len(C))
+        x = np.linspace(0, 256, len(c))
         xnew = np.arange(256)
-        fr = scipy.interpolate.interp1d(x, C[:, 0])
-        fg = scipy.interpolate.interp1d(x, C[:, 1])
-        fb = scipy.interpolate.interp1d(x, C[:, 2])
-        C = np.array(
+        fr = scipy.interpolate.interp1d(x, c[:, 0])
+        fg = scipy.interpolate.interp1d(x, c[:, 1])
+        fb = scipy.interpolate.interp1d(x, c[:, 2])
+
+        # Return C
+        return np.array(
             [fr(xnew).astype(int), fg(xnew).astype(int), fb(xnew).astype(int)]
         ).T
-        return C
 
-    def get_colors(self, reverse=False):
+    def get_colors(self, *, reverse=False):
         """Return the diagnostic colormap, optionally reversed."""
         # Provided RGB values
         rgb_values_str = (
@@ -578,13 +592,13 @@ class WKSpectra:
             rgb_values.append([r, g, b])
 
         # Convert the list to a NumPy array
-        C = np.array(rgb_values)
+        c = np.array(rgb_values)
 
-        if len(C) < 256:
-            C = self.spread_colorbar(C)
-            cm = mpl.colors.ListedColormap(C / 256.0)
+        if len(c) < 256:
+            c = self.spread_colorbar(c)
+            cm = mpl.colors.ListedColormap(c / 256.0)
             if reverse:
-                cm = mpl.colors.ListedColormap(C[::-1, :] / 256.0)
+                cm = mpl.colors.ListedColormap(c[::-1, :] / 256.0)
         return cm
 
     def _setup_spectrum_plot(self, spec, freq, wave, levels, title):
@@ -597,14 +611,14 @@ class WKSpectra:
 
         minfrq = minfrq4plt
         maxfrq = min([maxfrq4plt, max(freq)])
-        F, W = np.meshgrid(wave, freq)
+        f, w = np.meshgrid(wave, freq)
 
-        cmap = self.get_colors()
+        cmap = self.get_colors(reverse=False)
         norm = colors.BoundaryNorm(levels, len(cmap.colors))
 
         fig, ax = plt.subplots()
         contour_set = ax.contourf(
-            F, W, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
+            f, w, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
         )
         bar = fig.colorbar(contour_set, ax=ax)
         bar.locator = ticker.FixedLocator(levels)
@@ -642,7 +656,7 @@ class WKSpectra:
         ]
 
         # Write the provenance dictionary using the provided caption
-        record = {
+        return {
             "caption": caption,
             "statistics": ["mean"],
             "domains": ["global"],
@@ -652,8 +666,6 @@ class WKSpectra:
             ],
             "ancestors": filenames,
         }
-
-        return record
 
     def plot_anti_symmetric(
         self,
@@ -666,6 +678,7 @@ class WKSpectra:
         title="",
         figname="specAntiSym_test.ps",
     ):
+        """Plot the anti-symmetric component of the Wheeler-Kiladis power spectrum."""
         if levels is None:
             levels = np.arange(0, 2, 0.2)
         fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
@@ -692,6 +705,7 @@ class WKSpectra:
         title="",
         figname="specSym_test.ps",
     ):
+        """Plot the symmetric component of the Wheeler-Kiladis power spectrum."""
         if levels is None:
             levels = np.arange(0, 5, 0.5)
         fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
@@ -734,7 +748,7 @@ class WKSpectra:
 
         lonL = 0  # -180
         lonR = 360  # 180
-        fCrit = 1.0 / self.nDayWin  # remove all contributions 'longer'
+        f_crit = 1.0 / self.nDayWin  # remove all contributions 'longer'
 
         tim_taper = 0.1  # time taper [0.1 => 10%]
         lon_taper = (
@@ -811,7 +825,7 @@ class WKSpectra:
 
         if nDayTot >= 365:  # remove dominant signals
             self.cube = self.remove_annual_cycle(
-                self.cube, fCrit, rmvMeans=False
+                self.cube, f_crit, rmvMeans=False
             )
         else:
             logging.error(
@@ -1331,9 +1345,7 @@ class WKSpectra:
         # *****************************************************************
         """
         # remove linear trend
-        var.data = scipy.signal.detrend(
-            var.data, axis=0
-        )
+        var.data = scipy.signal.detrend(var.data, axis=0)
 
         # Initialise
         power = np.zeros([mlon + 1, nDay + 1])  # initialize
