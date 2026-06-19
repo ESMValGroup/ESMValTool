@@ -127,7 +127,7 @@ class WKSpectra:
             year[i], month[i], day[i] = self.split_time(date)
         return year, month, day
 
-    def makecube_season_pow(self, var, wave, freq, name="spectra"):
+    def makecube_season_pow(self, var, wave, freq):
         """Build a 2D Iris cube for seasonal power."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
@@ -140,7 +140,7 @@ class WKSpectra:
         var_cube.add_dim_coord(freq_coord, 1)
         return var_cube
 
-    def remove_annual_cycle(self, var, nDayTot, fCrit, spd=1, rmvMeans=False):
+    def remove_annual_cycle(self, var, fCrit, rmvMeans=False):
         """
         Prewhiten the data: eg remove the annual cycle.
 
@@ -246,7 +246,7 @@ class WKSpectra:
             tst[n - i] = (ts[n - i] - tsmean) * weight + tsmean
         return tst
 
-    def resolve_waves_hayashi(self, varfft, nDayWin, spd):
+    def resolve_waves_hayashi(self, varfft):
         """
         Create array PEE(NL+1,NT+1) which contains the (real) power spectrum.
 
@@ -368,7 +368,7 @@ class WKSpectra:
         """Return the index of the array value closest to the target value."""
         return (np.abs(array - value)).argmin()
 
-    def compute_background(self, peeAS, wave, freq, minwav4smth, maxwav4smth):
+    def compute_background(self, peeAS, freq, minwav4smth, maxwav4smth):
         """
         Derive the background spectrum (red noise) ************
 
