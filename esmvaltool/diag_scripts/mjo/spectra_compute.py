@@ -110,15 +110,15 @@ class WKSpectra:
         """Extract year, month, and day arrays from an Iris time coordinate."""
         if time.units.calendar == "gregorian":
             dates = unit.num2date(
-                time.points, str(time.units), unit.CALENDAR_GREGORIAN
+                time.points, str(time.units), unit.CALENDAR_GREGORIAN,
             )
         elif time.units.calendar == "standard":
             dates = unit.num2date(
-                time.points, str(time.units), unit.CALENDAR_STANDARD
+                time.points, str(time.units), unit.CALENDAR_STANDARD,
             )
         else:
             dates = unit.num2date(
-                time.points, str(time.units), time.units.calendar
+                time.points, str(time.units), time.units.calendar,
             )
         year = np.zeros(len(dates), dtype=int)
         month = np.zeros(len(dates), dtype=int)
@@ -440,10 +440,10 @@ class WKSpectra:
         Beta = 2.0 * omega * math.cos(abs(rlat)) / re
 
         Apzwn = np.zeros(
-            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
+            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double,
         )
         Afreq = np.zeros(
-            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
+            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double,
         )
 
         for ww in range(1, nWaveType + 1):  # wave type
@@ -829,7 +829,7 @@ class WKSpectra:
 
         if nDayTot >= 365:  # remove dominant signals
             self.cube = self.remove_annual_cycle(
-                self.cube, nDayTot, fCrit, spd=1, rmvMeans=False
+                self.cube, fCrit, rmvMeans=False
             )
         else:
             logging.error(
@@ -896,9 +896,7 @@ class WKSpectra:
                 ft.data = np.fft.fft2(work.data) / mlon / nSampWin
 
                 # Shifting FFTs
-                pee = self.resolve_waves_hayashi(
-                    ft.data, self.nDayWin, self.spd
-                )
+                pee = self.resolve_waves_hayashi(ft.data)
 
                 # Average
                 peeAS[nl, :, :] = peeAS[nl, :, :] + (pee / nWindow)
@@ -989,7 +987,7 @@ class WKSpectra:
         # -----------------------------------------------------------------------------
         # logging.info("======> BACKGROUND <=====")
 
-        psumb = self.compute_background(peeAS, wave, freq, indStrt, indLast)
+        psumb = self.compute_background(peeAS, freq, indStrt, indLast)
         psumb_nolog = np.ma.masked_array(psumb)
         psumb = np.ma.log10(psumb)
         psumb_cube = self.make_cube(psumb, wave, freq)
@@ -1399,9 +1397,7 @@ class WKSpectra:
                 ft = np.fft.fft2(xSeason.T) / mlon / nDay
 
                 # Shifting FFTs
-                power = power + self.resolve_waves_hayashi(
-                    ft, nDay, spd=1
-                )  # (wave,freq)
+                power = power + self.resolve_waves_hayashi(ft)  # (wave,freq)
 
         xVarSea = xVarSea / kSea  # pooled seasonal variance
         xVarTap = xVarTap / kSea  # pooled seasonal variance

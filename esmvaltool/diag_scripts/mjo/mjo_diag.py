@@ -43,7 +43,8 @@ def _load_cube(input_file, variable_group, pressure_level=None):
     elif variable_group == "rlut":
         varname = "toa_outgoing_longwave_flux"
     else:
-        raise ValueError(f"Unsupported variable group: {variable_group}")
+        msg = f"Unsupported variable group: {variable_group}"
+        raise ValueError(msg)
 
     return cube, varname
 
