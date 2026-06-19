@@ -9,9 +9,9 @@ permissions:
 on:
   workflow_dispatch:
   # if we ever need to run this workflow from push
-  # push:
-  #   branches:
-  #     - branch_name
+  push:
+    branches:
+      - run_GHA-Test_after_pixi-lockfile-regen
   schedule:
     - cron: 0 5 1 * *
 
@@ -31,13 +31,6 @@ jobs:
         run: |
           set -o pipefail
           pixi update --json | pixi exec pixi-diff-to-markdown >> diff.md
-      - name: Run tests
-        run: |
-          # visually inspect workflow that needs be run e.g. test.yml
-          # gh workflow view test.yml --yaml
-          gh workflow run test.yml
-        env:
-          GH_TOKEN: ${{ github.token }}
       - name: Create pull request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
@@ -50,3 +43,10 @@ jobs:
           labels: pixi
           delete-branch: true
           add-paths: pixi.lock
+      - name: Run tests on that Pull Request
+        run: |
+          # visually inspect workflow that needs be run e.g. test.yml
+          # gh workflow view test.yml --yaml
+          gh workflow run test.yml --ref update-pixi -f environment=prod
+        env:
+          GH_TOKEN: ${{ github.token }}
