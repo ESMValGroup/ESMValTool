@@ -154,7 +154,7 @@ class WKSpectra:
         var_cut = var.copy()
 
         # mean for later
-        varMean = var.collapsed("time", iris.analysis.MEAN)
+        var_mean = var.collapsed("time", iris.analysis.MEAN)
 
         ntime, nlat, nlon = var.data.shape
 
@@ -170,7 +170,7 @@ class WKSpectra:
         # inverse FFT
         var_cut.data = np.fft.ifft(cf, axis=0).astype(float)
         if not rmvMeans:
-            var_cut.data += varMean.data
+            var_cut.data += var_mean.data
         return var_cut
 
     def decompose_sym_asym(self, var, axis=1):
@@ -186,23 +186,23 @@ class WKSpectra:
         symmetric part is stored in other hemisphere [eg: Southern Hemisphere]
                  xOut(-lat) = (x(lat)+x(-lat))/2
         """
-        varSA = var.copy()  # copy to store the output
+        var_sa = var.copy()  # copy to store the output
         nlat = var.shape[axis]  # get the number of latitude points
 
-        N2 = nlat // 2
+        n2 = nlat // 2
 
         if axis == 1:
-            for nl in np.arange(0, N2):
+            for nl in np.arange(0, n2):
                 logging.debug("(nlat - 1 - nl): %s", (nlat - 1 - nl))
                 logging.debug("nl: %s", nl)
-                varSA.data[:, nl] = 0.5 * (
+                var_sa.data[:, nl] = 0.5 * (
                     var.data[:, nlat - 1 - nl] + var.data[:, nl]
                 )
-                varSA.data[:, nlat - 1 - nl] = 0.5 * (
+                var_sa.data[:, nlat - 1 - nl] = 0.5 * (
                     var.data[:, nlat - 1 - nl] - var.data[:, nl]
                 )
 
-            return varSA
+            return var_sa
         else:
             logging.error(
                 "Only axis == 1 is supported. Modify the code to accommodate other axes."
@@ -294,16 +294,16 @@ class WKSpectra:
                  |  numtim/2+1 <= pt <= numtim            | numtim-1 <= t <= numtim/2
 
         """
-        N, mlon = varfft.shape
-        pee = np.ones([N + 1, mlon + 1]) * -999.0  # initialize
+        n, mlon = varfft.shape
+        pee = np.ones([n + 1, mlon + 1]) * -999.0  # initialize
         # -999 scaling is for testing purpose
         # Create the real power spectrum pee equals sqrt(real^2+imag^2)^2
         varfft = np.abs(varfft) ** 2
-        pee[: N // 2, : mlon // 2] = varfft[N // 2 : N, mlon // 2 : 0 : -1]
-        pee[N // 2 :, : mlon // 2] = varfft[: N // 2 + 1, mlon // 2 : 0 : -1]
-        pee[: N // 2 + 1, mlon // 2 :] = varfft[N // 2 :: -1, : mlon // 2 + 1]
-        pee[N // 2 + 1 :, mlon // 2 :] = varfft[
-            N - 1 : N // 2 - 1 : -1, : mlon // 2 + 1
+        pee[: n // 2, : mlon // 2] = varfft[n // 2 : n, mlon // 2 : 0 : -1]
+        pee[n // 2 :, : mlon // 2] = varfft[: n // 2 + 1, mlon // 2 : 0 : -1]
+        pee[: n // 2 + 1, mlon // 2 :] = varfft[n // 2 :: -1, : mlon // 2 + 1]
+        pee[n // 2 + 1 :, mlon // 2 :] = varfft[
+            n - 1 : n // 2 - 1 : -1, : mlon // 2 + 1
         ]
 
         return pee
@@ -375,9 +375,9 @@ class WKSpectra:
         [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
         """
         psumb = np.sum(peeAS, axis=0)  # sum over all latitudes
-        N, _mlon = psumb.shape
+        n, _mlon = psumb.shape
 
-        for tt in range(N // 2 + 1, N):
+        for tt in range(n // 2 + 1, n):
             if freq[tt] < 0.1:
                 for _i in range(1, 6):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
@@ -412,18 +412,18 @@ class WKSpectra:
         # smth frequency up to .8 cycles per day
         for nw in range(minwav4smth, maxwav4smth + 1):
             for _i in range(1, 11):
-                psumb[N // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
-                    psumb[N // 2 + 1 : pt8cpd + 1, nw]
+                psumb[n // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
+                    psumb[n // 2 + 1 : pt8cpd + 1, nw]
                 )
         return psumb
 
     def generate_dispersion_curves(self):
         # Theoretical dispersion curves
         rlat = 0.0
-        Ahe = np.array([50.0, 25.0, 12.0])
-        nWaveType = 6
-        nPlanetaryWave = 50
-        nEquivDepth = Ahe.size
+        ahe = np.array([50.0, 25.0, 12.0])
+        n_wave_type = 6
+        n_planetary_wave = 50
+        n_equiv_depth = ahe.size
         fillval = 1e20
 
         # Theoretical shallow water dispersion curves
@@ -432,34 +432,34 @@ class WKSpectra:
         g = 9.80665  # [m/s] gravity at 45 deg lat used by the WMO
         omega = 7.292e-05  # [1/s] earth's angular vel
         ll = 2.0 * pi * re * math.cos(abs(rlat))
-        Beta = 2.0 * omega * math.cos(abs(rlat)) / re
+        beta = 2.0 * omega * math.cos(abs(rlat)) / re
 
-        Apzwn = np.zeros(
-            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double,
+        apzwn = np.zeros(
+            [n_wave_type, n_equiv_depth, n_planetary_wave], dtype=np.double,
         )
-        Afreq = np.zeros(
-            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double,
+        afreq = np.zeros(
+            [n_wave_type, n_equiv_depth, n_planetary_wave], dtype=np.double,
         )
 
-        for ww in range(1, nWaveType + 1):  # wave type
-            for ed in range(1, nEquivDepth + 1):  # equivalent depth
-                he = Ahe[ed - 1]
+        for ww in range(1, n_wave_type + 1):  # wave type
+            for ed in range(1, n_equiv_depth + 1):  # equivalent depth
+                he = ahe[ed - 1]
 
                 for wn in range(
-                    1, nPlanetaryWave + 1
+                    1, n_planetary_wave + 1
                 ):  # planetary wave number
-                    s = -20.0 * (wn - 1) * 2.0 / (nPlanetaryWave - 1) + 20.0
+                    s = -20.0 * (wn - 1) * 2.0 / (n_planetary_wave - 1) + 20.0
                     k = 2.0 * pi * s / ll
 
                     # Anti-symmetric curves
                     if ww == 1:  # MRG wave
                         if k <= 0:
                             delx = math.sqrt(
-                                1.0 + (4.0 * Beta) / (k**2 * math.sqrt(g * he))
+                                1.0 + (4.0 * beta) / (k**2 * math.sqrt(g * he))
                             )
                             deif = k * math.sqrt(g * he) * (0.5 - 0.5 * delx)
                         if k == 0:
-                            deif = math.sqrt(math.sqrt(g * he) * Beta)
+                            deif = math.sqrt(math.sqrt(g * he) * beta)
                         if k > 0:
                             deif = fillval
 
@@ -467,16 +467,16 @@ class WKSpectra:
                         if k < 0:
                             deif = fillval
                         if k == 0:
-                            deif = math.sqrt(math.sqrt(g * he) * Beta)
+                            deif = math.sqrt(math.sqrt(g * he) * beta)
                         if k > 0:
                             delx = math.sqrt(
-                                1.0 + (4.0 * Beta) / (k**2 * math.sqrt(g * he))
+                                1.0 + (4.0 * beta) / (k**2 * math.sqrt(g * he))
                             )
                             deif = k * math.sqrt(g * he) * (0.5 + 0.5 * delx)
 
                     if ww == 3:  # n equals 2 IG wave
                         n = 2.0
-                        delx = Beta * math.sqrt(g * he)
+                        delx = beta * math.sqrt(g * he)
                         deif = math.sqrt(
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
@@ -485,22 +485,22 @@ class WKSpectra:
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
-                                + g * he * Beta * k / deif
+                                + g * he * beta * k / deif
                             )
 
                     # symmetric curves
                     if ww == 4:  # n equals 1 ER wave
                         n = 1.0
                         if k < 0:
-                            delx = (Beta / math.sqrt(g * he)) * (2.0 * n + 1.0)
-                            deif = -Beta * k / (k**2 + delx)
+                            delx = (beta / math.sqrt(g * he)) * (2.0 * n + 1.0)
+                            deif = -beta * k / (k**2 + delx)
                         else:
                             deif = fillval
                     if ww == 5:  # Kelvin wave
                         deif = k * math.sqrt(g * he)
                     if ww == 6:  # n equals 1 IG wave
                         n = 1.0
-                        delx = Beta * math.sqrt(g * he)
+                        delx = beta * math.sqrt(g * he)
                         deif = math.sqrt(
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
@@ -509,22 +509,22 @@ class WKSpectra:
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
-                                + g * he * Beta * k / deif
+                                + g * he * beta * k / deif
                             )
 
                     eif = deif  # plus k times U since U equals 0.0
-                    P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
-                    Apzwn[ww - 1, ed - 1, wn - 1] = s
+                    p = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
+                    apzwn[ww - 1, ed - 1, wn - 1] = s
                     if deif != fillval:
-                        P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
-                        Afreq[ww - 1, ed - 1, wn - 1] = 1.0 / P
+                        p = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
+                        afreq[ww - 1, ed - 1, wn - 1] = 1.0 / p
                     else:
-                        Afreq[ww - 1, ed - 1, wn - 1] = fillval
+                        afreq[ww - 1, ed - 1, wn - 1] = fillval
 
         # removing missing values
-        Afreq = np.ma.masked_values(Afreq, fillval)
-        Apzwn = np.ma.masked_values(Apzwn, fillval)
-        return Afreq, Apzwn
+        afreq = np.ma.masked_values(afreq, fillval)
+        apzwn = np.ma.masked_values(apzwn, fillval)
+        return afreq, apzwn
 
     def spread_colorbar(self, C):
         """Interpolate a sparse RGB table to 256 colors."""
@@ -625,12 +625,12 @@ class WKSpectra:
         return fig, ax
 
     def _plot_dispersion_curves(
-        self, ax, Apzwn, Afreq, start_index, stop_index
+        self, ax, apzwn, afreq, start_index, stop_index
     ):
         """Overlay theoretical dispersion curves on a spectrum plot."""
         for i in range(start_index, stop_index):
             for j in range(3):
-                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], "k", lw=0.5)
+                ax.plot(apzwn[i, j, :], afreq[i, j, :], "k", lw=0.5)
 
     def get_provenance_record(
         self, caption
