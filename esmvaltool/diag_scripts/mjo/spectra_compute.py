@@ -33,7 +33,7 @@ class WKSpectra:
             96  # Wheeler-Kiladis [WK] temporal window length (days)
         )
         self.n_day_skip = -65  # Negative means overlap
-        self.latBound = 15  # Latitude bounds for MJO region (15S-15N)
+        self.lat_bound = 15  # Latitude bounds for MJO region (15S-15N)
         self.filename = attributes["filename"]
         self.out_dir = os.path.dirname(self.filename)
         self.runid = attributes["dataset"]
@@ -149,14 +149,14 @@ class WKSpectra:
         var_cube.add_dim_coord(freq_coord, 1)
         return var_cube
 
-    def remove_annual_cycle(self, var, f_crit, *, rmvMeans=False):
+    def remove_annual_cycle(self, var, f_crit, *, rmv_means=False):
         """
         Prewhiten the data: eg remove the annual cycle.
 
         Actually, this will remove all time periods less than
           those corresponding to 'f_crit'.
         Note: The original fortran code provided by JET did not remove
-          the grid point means so .... rmvMeans=False
+          the grid point means so .... rmv_means=False
               I assume that Matt Wheeler's code did that also.
         """
         logging.info("f_crit: %s", f_crit)
@@ -179,7 +179,7 @@ class WKSpectra:
 
         # inverse FFT
         var_cut.data = np.fft.ifft(cf, axis=0).astype(float)
-        if not rmvMeans:
+        if not rmv_means:
             var_cut.data += var_mean.data
         return var_cut
 
@@ -701,8 +701,8 @@ class WKSpectra:
         spec,
         freq,
         wave,
-        Apzwn,
-        Afreq,
+        apzwn,
+        afreq,
         levels=None,
         title="",
         figname="specSym_test.ps",
@@ -711,7 +711,7 @@ class WKSpectra:
         if levels is None:
             levels = np.arange(0, 5, 0.5)
         fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
-        self._plot_dispersion_curves(ax, Apzwn, Afreq, 3, 6)
+        self._plot_dispersion_curves(ax, apzwn, afreq, 3, 6)
 
         ax.text(11.5, 0.4, "Kelvin", {"color": "k", "backgroundcolor": "w"})
         ax.text(-10.7, 0.07, "n=1 ER", {"color": "k", "backgroundcolor": "w"})
@@ -733,7 +733,7 @@ class WKSpectra:
          Note_2: Tapering in time is done to make the variable periodic.
 
          The calculations are also only made for the latitudes
-         between '-latBound' and 'latBound'.
+         between '-lat_bound' and 'lat_bound'.
 
         ********************   REFERENCES  *******************************
          Wheeler, M., G.n. Kiladis Convectively Coupled Equatorial Waves:
@@ -745,11 +745,11 @@ class WKSpectra:
             TimeCross Spectral Analysis J. Meteor. Soc. Japan, 1971, 49: 125-128.
         """
         ntim, nlat, mlon = self.cube.shape
-        latN = self.latBound
-        latS = -1 * self.latBound  # make symmetric about the equator
+        lat_n = self.lat_bound
+        lat_s = -1 * self.lat_bound  # make symmetric about the equator
 
-        lonL = 0  # -180
-        lonR = 360  # 180
+        lon_l = 0  # -180
+        lon_r = 360  # 180
         f_crit = 1.0 / self.n_day_win  # remove all contributions 'longer'
 
         tim_taper = 0.1  # time taper [0.1 => 10%]
@@ -757,11 +757,11 @@ class WKSpectra:
             0.0  # longitude taper [0.0 for globe only global supported]
         )
 
-        if lon_taper > 0.0 or lonR - lonL != 360.0:
+        if lon_taper > 0.0 or lon_r - lon_l != 360.0:
             logging.error(
-                "Code does currently allow lon_taper>0 or (lonR-lonL)<360."
+                "Code does currently allow lon_taper>0 or (lon_r-lon_l)<360."
             )
-            msg = "wkSpaceTime lon_taper>0 or (lonR-lonL)<360"
+            msg = "wkSpaceTime lon_taper>0 or (lon_r-lon_l)<360"
             raise ValueError(msg)
 
         n_day_tot = ntim / self.spd  # of days (total) for input variable
@@ -773,7 +773,7 @@ class WKSpectra:
             self.n_day_skip * self.spd
         )  # of samples to skip between window segments
         # neg means overlap
-        nWindow = (n_samp_tot - n_samp_win) / (n_samp_win + n_samp_skip) + 1
+        n_window = (n_samp_tot - n_samp_win) / (n_samp_win + n_samp_skip) + 1
         n = n_samp_win  # convenience [historical]
 
         if n_day_tot < self.n_day_win:
@@ -795,7 +795,7 @@ class WKSpectra:
 
         # subset the data for 15S-15N
         constraint = iris.Constraint(
-            latitude=lambda cell: latS <= cell <= latN
+            latitude=lambda cell: lat_s <= cell <= lat_n
         )
         self.cube = self.cube.extract(constraint)
         ntim, nlat, mlon = self.cube.shape
@@ -829,7 +829,7 @@ class WKSpectra:
 
         if n_day_tot >= 365:  # remove dominant signals
             self.cube = self.remove_annual_cycle(
-                self.cube, f_crit, rmvMeans=False
+                self.cube, f_crit, rmv_means=False
             )
         else:
             logging.error(
@@ -897,7 +897,7 @@ class WKSpectra:
                 pee = self.resolve_waves_hayashi(ft.data)
 
                 # Average
-                pee_as[nl, :, :] = pee_as[nl, :, :] + (pee / nWindow)
+                pee_as[nl, :, :] = pee_as[nl, :, :] + (pee / n_window)
 
                 nw += 1
 
