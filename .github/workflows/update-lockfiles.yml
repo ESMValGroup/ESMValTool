@@ -8,10 +8,6 @@ permissions:
 
 on:
   workflow_dispatch:
-  # if we ever need to run this workflow from push
-  # push:
-  #   branches:
-  #     - branch_name
   schedule:
     - cron: 0 5 1 * *
 
