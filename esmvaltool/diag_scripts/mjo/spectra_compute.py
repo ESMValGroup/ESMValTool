@@ -3,6 +3,7 @@
 import logging
 import math
 import os
+from pathlib import Path
 
 import cf_units as unit
 import iris
@@ -15,16 +16,20 @@ import scipy
 
 from esmvaltool.diag_scripts.shared import save_data, save_figure
 
+logging = logging.getLogger(Path(__file__).stem)
+
 
 class WKSpectra:
     """Compute, smooth, and plot Wheeler-Kiladis spectra."""
 
-    def __init__(self, cfg: dict, attributes: dict, check_missing: bool = True):
-        self.cfg = cfg # Store the configuration dictionary
-        self.spd = 1 # samples per day (1 for daily data, 4 for 6-hourly data and so on)
+    def __init__(
+        self, cfg: dict, attributes: dict, check_missing: bool = True
+    ):
+        self.cfg = cfg  # Store the configuration dictionary
+        self.spd = 1  # samples per day (1 for daily data, 4 for 6-hourly data and so on)
         self.nDayWin = 96  # Wheeler-Kiladis [WK] temporal window length (days)
         self.nDaySkip = -65  # Negative means overlap
-        self.latBound = 15   # Latitude bounds for MJO region (15S-15N)
+        self.latBound = 15  # Latitude bounds for MJO region (15S-15N)
         self.filename = attributes["filename"]
         self.out_dir = os.path.dirname(self.filename)
         self.runid = attributes["dataset"]
@@ -429,11 +434,11 @@ class WKSpectra:
         re = 6.37122e06  # [m]   average radius of earth
         g = 9.80665  # [m/s] gravity at 45 deg lat used by the WMO
         omega = 7.292e-05  # [1/s] earth's angular vel
-        #U = 0.0
-        #Un = 0.0  # since Un = U*T/L
+        # U = 0.0
+        # Un = 0.0  # since Un = U*T/L
         ll = 2.0 * pi * re * math.cos(abs(rlat))
         Beta = 2.0 * omega * math.cos(abs(rlat)) / re
-        
+
         Apzwn = np.zeros(
             [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
         )
@@ -444,15 +449,15 @@ class WKSpectra:
         for ww in range(1, nWaveType + 1):  # wave type
             for ed in range(1, nEquivDepth + 1):  # equivalent depth
                 he = Ahe[ed - 1]
-                #T = 1.0 / math.sqrt(Beta) * (g * he) ** (0.25)
-                L = (g * he) ** (0.25) / math.sqrt(Beta)
+                # T = 1.0 / math.sqrt(Beta) * (g * he) ** (0.25)
+                # L = (g * he) ** (0.25) / math.sqrt(Beta)
 
                 for wn in range(
                     1, nPlanetaryWave + 1
                 ):  # planetary wave number
                     s = -20.0 * (wn - 1) * 2.0 / (nPlanetaryWave - 1) + 20.0
                     k = 2.0 * pi * s / ll
-                    #kn = k * L
+                    # kn = k * L
 
                     # Anti-symmetric curves
                     if ww == 1:  # MRG wave
@@ -517,7 +522,7 @@ class WKSpectra:
 
                     eif = deif  # + k*U since  U=0.0
                     P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
-                    #Rdeg = (180.0 * R) / (pi * 6.37e6)
+                    # Rdeg = (180.0 * R) / (pi * 6.37e6)
                     Apzwn[ww - 1, ed - 1, wn - 1] = s
                     if deif != fillval:
                         P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
@@ -628,7 +633,9 @@ class WKSpectra:
         ax.set_ylabel("Frequency (CPD)")
         return fig, ax
 
-    def _plot_dispersion_curves(self, ax, Apzwn, Afreq, start_index, stop_index):
+    def _plot_dispersion_curves(
+        self, ax, Apzwn, Afreq, start_index, stop_index
+    ):
         """Overlay theoretical dispersion curves on a spectrum plot."""
         for i in range(start_index, stop_index):
             for j in range(3):
@@ -1201,9 +1208,7 @@ class WKSpectra:
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
-        save_data(
-            forename, provenance_dict, self.cfg, psumanti_nolog_cube
-        )
+        save_data(forename, provenance_dict, self.cfg, psumanti_nolog_cube)
 
         # Symmetric
         # Define contour levels for plots
@@ -1313,9 +1318,7 @@ class WKSpectra:
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
-        save_data(
-            forename, provenance_dict, self.cfg, psumsym_nolog_cube
-        )
+        save_data(forename, provenance_dict, self.cfg, psumsym_nolog_cube)
 
     def mjo_wavenum_freq_season(self, seaName):
         #
