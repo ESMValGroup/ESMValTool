@@ -206,7 +206,6 @@ class MultiDatasets(MonitorBase):
         """Initialize class member."""
         super().__init__(cfg)
 
-        ###TODO maybe edit here for labels...
         # Get default settings
         self.cfg = deepcopy(self.cfg)
         self.cfg.setdefault("facet_used_for_labels", "dataset")
@@ -615,15 +614,15 @@ class MultiDatasets(MonitorBase):
         dataset_2["cube"].coord("latitude").coord_system = None
         dataset_2["cube"].coord("longitude").coord_system = None
 
-        print(dataset_1["cube"].coord('time'))
-        print(dataset_2["cube"].coord('time'))
+        # print(dataset_1["cube"].coord('time'))
+        # print(dataset_2["cube"].coord('time'))
        
-        print(dataset_1["cube"].coord('time').points)
-        print(dataset_2["cube"].coord('time').points)
+        # print(dataset_1["cube"].coord('time').points)
+        # print(dataset_2["cube"].coord('time').points)
 
-        print(dataset_1["cube"])
-        print(dataset_2["cube"])
-        print("hier das")
+        # print(dataset_1["cube"])
+        # print(dataset_2["cube"])
+        # print("TODO check if this part here is working, then remove prints")
         bias_cube = dataset_1["cube"] - dataset_2["cube"]
 
         bias_cube.metadata = dataset_1["cube"].metadata
@@ -812,7 +811,7 @@ class MultiDatasets(MonitorBase):
 
         return getattr(ccrs, projection)(**projection_kwargs)
 
-    #TODO: Update the next function here:
+    
     def _get_provenance_record(
         self,
         plot_type: str,
@@ -999,7 +998,11 @@ class MultiDatasets(MonitorBase):
         dataset_colors = dict(zip(datasets_labels,colors))
         
         
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+       
+
         if "threshold_conversion" in self.options:
+            threshold = self.options["threshold_conversion"]["threshold"]
             operators = self.options["threshold_conversion"]["operators"]
             if len(operators)==0:
                 operators = ['mean']
@@ -1008,7 +1011,20 @@ class MultiDatasets(MonitorBase):
                     linestyle[operator] = '-'
                 else:
                     linestyle[operator] = next(linestyle_iter, '--')
-
+        
+            axes.set_title(f"Average number of days per year on which the {multi_dataset_facets["long_name"]} exceeds {threshold} {multi_dataset_facets['units']} at some point")
+            var_label = (
+                f"{multi_dataset_facets[self.cfg['group_variables_by']]} exceeding {threshold} {multi_dataset_facets['units']} [days/year]"
+            )
+        
+        else:
+            axes.set_title(multi_dataset_facets["long_name"])
+            var_label = (
+                f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+                f"[{multi_dataset_facets['units']}]"
+                )
+        
+        
         operators=[] 
 
         for dataset in datasets:
@@ -1080,12 +1096,8 @@ class MultiDatasets(MonitorBase):
             axes.axhline(**hline_kwargs)
 
         # Title and axis labels
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        var_label = (
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
+        
+        
         if self.plots[plot_type]["transpose_axes"]:
             axes.set_xlabel(var_label)
             axes.set_ylabel(coord_label)
@@ -1366,10 +1378,13 @@ class MultiDatasets(MonitorBase):
             
             cube.standard_name = None
             cube.rename(f"{var_name}geq{threshold}count")
-            cube.long_name = f"Average number of days per year on which the {var_long} exceeds {threshold} {var_unit} at some point" #TODO: make auto insertions, also for °C...
+            cube.long_name = f"Average number of days per year on which the {var_long} exceeds {threshold} {var_unit} at some point"
             
             cube.units = "days/year"
- 
+            for plot_type in self.plots:
+                self.plots[plot_type]["cbar_label"] = f"{var_name} exceeding {threshold} {var_unit} [{cube.units}]"
+                self.plots[plot_type]["cbar_label_bias"] = f"Δ{var_name} exceeding {threshold} {var_unit} [{cube.units}]"
+    
 
         return cube
 
@@ -1522,12 +1537,8 @@ class MultiDatasets(MonitorBase):
         return plot_path
 
 
-# @register_supplementaries(
-#     variables=["areacella", "areacello"],
-#     required="prefer_at_least_one",
-# )
+
 # Adapted preprocessor function "area_statistics".
-    #@preserve_float_dtype #-> function in preprocessor/_shared.py; TODO: can we just do without?
     def thr_area_statistics(
         self,
         cube: Cube,
@@ -1612,10 +1623,7 @@ class MultiDatasets(MonitorBase):
             plot_function = plot_settings["function"]
             mpl_rc_params = self._get_custom_mpl_rc_params(plot_type)
             logger.info("Plotting %s", plot_type)
-
-
                    
-            # Handle deprecations -> see manuels original diagnostic for more on this, deleted here cause it is not needed
             
             # Inspect plot function to determine arguments
             plot_parameters = inspect.signature(plot_function).parameters

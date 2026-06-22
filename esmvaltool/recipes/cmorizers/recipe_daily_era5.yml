@@ -23,15 +23,16 @@ documentation:
 
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 1990, end_year: 1991}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, frequency: 1hr, start_year: 1995, end_year: 2015}
+ # - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, timeperiod: 19950101/20150131, type_id: 12, tres: 1H, tier: 3}
 
 preprocessors:
   add_one_day: &add_one_day
     extract_time:
-      start_year: 1990
+      start_year: 1995
       start_month: 1
       start_day: 1
-      end_year: 1991
+      end_year: 2015
       end_month: 1
       end_day: 1
 
@@ -55,108 +56,43 @@ diagnostics:
       rename:
         script: cmorizers/era5.py
     variables:
-      clt:
-        mip: E1hr
-        era5_name: total_cloud_cover
-        era5_freq: hourly
-        preprocessor: daily_mean
-      evspsbl:
-        mip: E1hr
-        era5_name: evaporation
-        era5_freq: hourly
-        preprocessor: daily_mean
-      evspsblpot:
-        mip: E1hr
-        era5_name: potential_evaporation
-        era5_freq: hourly
-        preprocessor: daily_mean
-      mrro:
-        mip: E1hr
-        era5_name: runoff
-        era5_freq: hourly
-        preprocessor: daily_mean
-      pr:
-        mip: E1hr
-        era5_name: total_precipitation
-        era5_freq: hourly
-        preprocessor: daily_mean
-      prsn:
-        mip: E1hr
-        era5_name: snowfall
-        era5_freq: hourly
-        preprocessor: daily_mean
-      ps:
-        mip: E1hr
-        era5_name: surface_pressure
-        era5_freq: hourly
-        preprocessor: daily_mean
-      psl:
-        mip: E1hr
-        era5_name: mean_sea_level_pressure
-        era5_freq: hourly
-        preprocessor: daily_mean
-      rlds:
-        mip: E1hr
-        era5_name: surface_thermal_radiation_downwards
-        era5_freq: hourly
-        preprocessor: daily_mean
-      rls:
-        mip: E1hr
-        era5_name: mean_surface_net_long_wave_radiation_flux
-        era5_freq: hourly
-        preprocessor: daily_mean
-      rsds:
-        mip: E1hr
-        era5_name: surface_solar_radiation_downwards
-        era5_freq: hourly
-        preprocessor: daily_mean
-      rsdt:
-        mip: E1hr
-        era5_name: toa_incident_solar_radiation
-        era5_freq: hourly
-        preprocessor: daily_mean
-      rss:
-        mip: E1hr
-        era5_name: surface_net_solar_radiation
-        era5_freq: hourly
-        preprocessor: daily_mean
+      # pr:
+      #   mip: E1hr
+      #   era5_name: total_precipitation
+      #   era5_freq: hourly
+      #   preprocessor: daily_mean
+      #   grib_id: 228
+      #   raw_name: tp
+
       tas:
-        mip: E1hr
-        era5_name: 2m_temperature
-        era5_freq: hourly
-        preprocessor: daily_mean
-      tasmax:
+        #raw_name: tas
         mip: E1hr
         era5_name: maximum_2m_temperature_since_previous_post_processing
         era5_freq: hourly
         preprocessor: daily_max
-      tasmin:
-        mip: E1hr
-        era5_name: minimum_2m_temperature_since_previous_post_processing
-        era5_freq: hourly
-        preprocessor: daily_min
-      tdps:
-        mip: E1hr
-        era5_name: 2m_dewpoint_temperature
-        era5_freq: hourly
-        preprocessor: daily_mean
-      ts:
-        mip: E1hr
-        era5_name: skin_temperature
-        era5_freq: hourly
-        preprocessor: daily_mean
-      tsn:
-        mip: E1hr
-        era5_name: temperature_of_snow_layer
-        era5_freq: hourly
-        preprocessor: daily_mean
-      uas:
-        mip: E1hr
-        era5_name: 10m_u_component_of_wind
-        era5_freq: hourly
-        preprocessor: daily_mean
-      vas:
-        mip: E1hr
-        era5_name: 10m_v_component_of_wind
-        era5_freq: hourly
-        preprocessor: daily_mean
+        # grib_id: 201
+        # raw_name: mx2t
+      # tas:
+      #   #raw_name: tas
+      #   mip: E1hr
+      #   era5_name: minimum_2m_temperature_since_previous_post_processing
+      #   era5_freq: hourly
+      #   preprocessor: daily_min
+      #   # grib_id: 202
+      #   # raw_name: mn2t
+
+      # # tasmax:
+      # #   mip: E1hr
+      # #   era5_name: maximum_2m_temperature_since_previous_post_processing
+      # #   era5_freq: hourly
+      # #   preprocessor: daily_max
+      # #   grib_id: 201
+      # #   raw_name: mx2t
+      # tasmin:
+      #   mip: E1hr
+      #   era5_name: minimum_2m_temperature_since_previous_post_processing
+      #   era5_freq: hourly
+      #   preprocessor: daily_min
+      #   grib_id: 202
+      #   raw_name: mn2t
+    

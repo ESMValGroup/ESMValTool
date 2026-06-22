@@ -9,9 +9,9 @@
 
 ---
 documentation:
-  title: Impact diagnostics first experiments.
+  title: Impact diagnostic.
   description: >
-    TODO
+    Diagnostic to plot the temporal mean of selected climate impact drivers discussed in Elling et al. 2026 on a global map.
   authors:
     - caspers_laura
   maintainer:
@@ -45,6 +45,9 @@ preprocessors:
       
   precipitation_preproc:
     custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
     local_solar_time:
     mask_landsea:
       mask_out: sea
@@ -61,12 +64,12 @@ preprocessors:
     regrid_time:
     #needed to extract a timeframe here, in order for the time coordinate of the observations to match:
     extract_time:
-      start_year: 2001
-      start_month: 2
-      start_day: 3
-      end_year: 2003
-      end_month: 8
-      end_day: 6
+      start_year: 1995
+      start_month: 1
+      start_day: 1
+      end_year: 2014
+      end_month: 12
+      end_day: 31
     # mask_landsea:
     #   mask_out: sea
     convert_units:
@@ -75,6 +78,9 @@ preprocessors:
 #####################
 
   radiation_preproc:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
     climate_statistics:
       operator: mean  
     
@@ -102,7 +108,7 @@ diagnostics:
     description: Map showing number of days where the temperature exceeds 40°C.
     variables:
       tasmax:
-        timerange: 20000601/20030901
+        timerange: 19950101/20141231
         mip: day
         preprocessor: temperature_preproc
     scripts:
@@ -134,7 +140,7 @@ diagnostics:
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
-        timerange: 20000601/20030901
+        timerange: 19950101/20141231
         mip: day
         preprocessor: temperature_preproc
     scripts:
@@ -156,11 +162,12 @@ diagnostics:
 
   plot_days_prmaxthreshold1:
     # additional_datasets: 
-    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, mip: day, grib_id: 228, raw_name: tp, short_name: pr, units: m, tier: 3, timerange: 20000101/20040101,  reference_for_monitor_diags: true} #  start_year: 2000, end_year: 2003 units: m, mip: 1hr,
+    #   - {dataset: ERA5, project: OBS, short_name: pr, raw_name: pr, type: fc, version: v1,  reference_for_monitor_diags: true}
+      # - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, mip: day, grib_id: 228, raw_name: tp, short_name: pr, units: m, tier: 3,  reference_for_monitor_diags: true} # , timerange: 20000101/20040101, start_year: 2000, end_year: 2003 units: m, mip: 1hr,
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
-        timerange: 20000601/20030901
+        timerange: 19950101/20141231
         mip: day
         preprocessor: precipitation_preproc
     scripts:
@@ -185,10 +192,10 @@ diagnostics:
   plot_days_prmaxthreshold10:
     # additional_datasets: 
     #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 228, raw_name: tp, short_name: pr, units: m, tier: 3, mip: day,  reference_for_monitor_diags: true}
-    description: Map showing number of days where the rain rate exceeds xx mm.
+    description: Map showing number of days where the rain rate exceeds 10 mm.
     variables:
       pr:
-        timerange: 20000601/20030901
+        timerange: 19950101/20141231
         mip: day
         preprocessor: precipitation_preproc
     scripts:
@@ -220,7 +227,7 @@ diagnostics:
     description: Map showing number of days there is more than 10 cm of snow water equivalent.
     variables:
       snw:
-        timerange: 20000601/20030901
+        timerange: 19950101/20141231
         mip: day
         preprocessor: snow_preproc
     scripts:
@@ -275,12 +282,12 @@ diagnostics:
     description: Plot maps showing the sea surface temperature.
     variables:
       tos:
-        timerange: 20000601/20030901
+        timerange: 19950101/20141231
         mip: Oday
         preprocessor: ocean_preproc
     scripts:
       plot: &map_config
-        script: monitor/multi_datasets.py
+        script: impact/diagnostic_draft3.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -299,7 +306,7 @@ diagnostics:
     description: Plot maps showing the mixed layer depth.
     variables:
       mlotst:
-        timerange: 20000601/20030901
+        timerange: 19950101/20141231
         mip: Omon #or Eday
         preprocessor: ocean_preproc
     scripts:
@@ -316,12 +323,14 @@ diagnostics:
 
 
   plot_rsds:
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, short_name: rsds, tier: 3, type: reanaly, version: 1, mip: day, reference_for_monitor_diags: true}
     # additional_datasets: 
     #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 169, raw_name: ssrd, short_name: rsds, units: Jm-2, tier: 3, mip: day,  reference_for_monitor_diags: true}
     description: Plot maps showing the shortwave downward radiation at the surface.
     variables:
       rsds:
-        timerange: 20000601/20030901
+        timerange: 19960101/20141231
         mip: day #or Amon
         preprocessor: radiation_preproc
     scripts:
