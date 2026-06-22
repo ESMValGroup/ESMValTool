@@ -26,6 +26,7 @@ def plotmaps_level2(input_data, grp):
     """Create map plots for pair of input data."""
     fig = plt.figure(figsize=(18, 6))
     proj = ccrs.Orthographic(central_longitude=210.0)
+    cubes = []
     for plt_pos, dataset in enumerate(input_data, start=121):
         logger.info(
             "dataset: %s - %s",
@@ -33,6 +34,9 @@ def plotmaps_level2(input_data, grp):
             dataset["long_name"],
         )
         cube, cbar_label = load_seacycle_stdev(dataset)
+
+        # return cubes to save
+        cubes.append(cube)
 
         ax1 = plt.subplot(plt_pos, projection=proj)
         ax1.add_feature(cfeature.LAND, facecolor="gray")
@@ -61,7 +65,7 @@ def plotmaps_level2(input_data, grp):
     cbar = fig.colorbar(cf1, cax=cax, orientation="horizontal", extend="both")
     cbar.set_label(cbar_label)
 
-    return fig
+    return fig, cubes
 
 
 def load_seacycle_stdev(dataset):
@@ -153,9 +157,10 @@ def main(cfg):
             # create pairs, add obs first to list
             pairs = [var_attr[-1]]
             logger.info("iterate though datasets\n %s", pformat(metadata))
-            if metadata["project"] == "CMIP6":
+            if metadata["project"].startswith("CMIP"):
                 pairs.append(metadata)
-                fig = plotmaps_level2(pairs, grp)
+                fig, data_cubes = plotmaps_level2(pairs, grp)
+                save_plotdata(data_cubes, grp, pairs, cfg)
                 filename = "_".join(
                     [
                         metadata["dataset"],
