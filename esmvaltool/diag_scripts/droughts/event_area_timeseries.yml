@@ -1,0 +1,71 @@
+# Default configuration for event_area_timeseries diag script
+# Each key can be overwritten by the user in the recipes diagnostic block
+index: spei
+weighted: True
+interval: 240
+reuse: False
+regions: Null
+
+ylim: [0, 1]
+fig_kwargs:
+  figsize: [10, 2]
+plot_overview: True
+overview:
+  skip: False
+  fig_kwargs:
+    figsize: [9, 4]
+fullperiod:
+  skip: False
+  fig_kwargs:
+    figsize: [16, 6]
+# axes_properties:
+#   xticklabels: []
+events:
+  - label: |
+      extreme wet spell
+      $SPEI \geq 2$
+    color: "#00094e"
+    min: 2
+    max: 100
+  - label: |
+      severe wet spell
+      $1.5 \leq SPEI < 2$
+    color: "#2b97a1"
+    min: 1.5
+    max: 2
+  - label: |
+      moderate wet spell
+      $1.5 \leq SPEI < 1$
+    color: "#9bc193"
+    min: 1
+    max: 1.5
+  - label: |
+      near normal
+      $-1 \leq SPEI < 1$
+    color: "#dadab7"
+    min: -1
+    max:  1
+  - label: |
+      moderate drought
+      $-1.5 \leq SPEI < -1$
+    color: "#daba5f"  # "#d98d4e"
+    min: -1.5
+    max:  -1
+  - label: |
+      severe drought
+      $-2 \leq SPEI < -1.5$
+    color: "#d96e20"
+    min: -2
+    max: -1.5
+  - label: |
+      extreme drought
+      $SPEI < -2$
+    color: "#c33800"
+    min: -100
+    max: -2
+  - label: |
+      invalid data
+      $SPEI = nan$
+    color: "gray"
+    min: "nan"
+    max: "nan"
