@@ -21,36 +21,21 @@ documentation:
   maintainer:
     - parsons_naomi
 
-model_defaults: &model_defaults { ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6, start_year: &data_start 1979, end_year: &data_end 2014}
+# The default period has been chosen to end in 2020 as this is the last year available in the sea ice observations
+model_defaults: &model_defaults {activity: CMIP, project: CMIP7, exp: historical, start_year: &data_start 1979, end_year: &data_end 2020}
 model_datasets: &model_datasets
-  - {<<: *model_defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, label_dataset: True}
-  - {<<: *model_defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, label_dataset: True}
-  - {<<: *model_defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
-  - {<<: *model_defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
-  - {<<: *model_defaults, dataset: BCC-CSM2-MR, institute: BCC}
-  - {<<: *model_defaults, dataset: CAMS-CSM1-0, institute: CAMS}
-  - {<<: *model_defaults, dataset: CanESM5, institute: CCCma}
-  - {<<: *model_defaults, dataset: CESM2, institute: NCAR}
-  - {<<: *model_defaults, dataset: CESM2-WACCM, institute: NCAR}
-  - {<<: *model_defaults, dataset: CESM2-WACCM-FV2, institute: NCAR}
-  - {<<: *model_defaults, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
-  - {<<: *model_defaults, dataset: MIROC6, institute: MIROC}
-  - {<<: *model_defaults, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
-  - {<<: *model_defaults, dataset: MPI-ESM1-2-HR, institute: MPI-M}
-  - {<<: *model_defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
-  - {<<: *model_defaults, dataset: MRI-ESM2-0, institute: MRI}
+  - {<<: *model_defaults, dataset: MOCK-MODEL-LL, institute: MOHC, ensemble: r1i1p1f3, exp: 1pctCO2, grid: g100, label_dataset: True}
 
 obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2, start_year: *data_start, end_year: *data_end}
 tasa_obs: &tasa_obs
-  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }
+  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis, mip: Amon }
   - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
 
 arctic_siconc_obs: &arctic_siconc_obs
-  - { <<: *obs_defaults, dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
+  - { <<: *obs_defaults, dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon}
 
 antarctic_siconc_obs: &antarctic_siconc_obs
-  - { <<: *obs_defaults, dataset: OSI-450-sh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
-
+  - { <<: *obs_defaults, dataset: OSI-450-sh, type: reanaly, version: v3, mip: OImon}
 
 preprocessors:
   nh_total_area:
@@ -108,19 +93,25 @@ diagnostics:
   arctic:
     description: Plots September sea ice sensitivity above 0 latitude in millions of square kilometres
     variables:
-      siconc:
+      siconc: &siconc
         preprocessor: pp_arctic_sept_sea_ice
-        mip: SImon
+        mip: seaIce
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-u
         additional_datasets:
           *model_datasets
       siconc_obs:
+        <<: *siconc
         short_name: siconc
-        preprocessor: pp_arctic_sept_sea_ice
         additional_datasets:
           *arctic_siconc_obs
       tas: &tas
         preprocessor: pp_avg_ann_global_temp
-        mip: Amon
+        mip: atmos
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-h2m-hxy-u
         additional_datasets:
           *model_datasets
       tasa_obs: &tasa
@@ -144,11 +135,12 @@ diagnostics:
     description: Plots annual mean sea ice sensitivity below 0 latitude in millions of square kilometres
     variables:
       siconc:
+        <<: *siconc
         preprocessor: pp_antarctic_avg_ann_sea_ice
-        mip: SImon
         additional_datasets:
           *model_datasets
       siconc_obs:
+        <<: *siconc
         short_name: siconc
         preprocessor: pp_antarctic_avg_ann_sea_ice
         additional_datasets:
