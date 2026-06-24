@@ -124,6 +124,7 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
       clt:
@@ -194,8 +195,10 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-CLOUD
       lst:
         additional_datasets:
         - dataset: ALADIN53
@@ -251,6 +254,9 @@ diagnostics:
           mip: Amon
           project: OBS
           reference_for_metric: true
+          supplementary_variables:
+          - short_name: sftlf
+            skip: true
           tier: 2
           type: sat
           variable_group: lst
@@ -378,6 +384,7 @@ diagnostics:
         preprocessor: land
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-LST
         short_name: ts
       lwp:
         additional_datasets:
@@ -401,6 +408,7 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
       prw:
@@ -425,6 +433,7 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
       rlut:
@@ -472,6 +481,7 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
       rsus:
@@ -566,8 +576,10 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-CLOUD
       sic:
         additional_datasets:
         - dataset: ALADIN63
@@ -651,8 +663,10 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-SEAICE
       snw:
         additional_datasets:
         - dataset: ALADIN53
@@ -701,6 +715,7 @@ diagnostics:
         ensemble: r1i1p1
         exp: historical
         mip: day
+        preprocessor: default
         project: CORDEX
         rcm_version: v1
       sst:
