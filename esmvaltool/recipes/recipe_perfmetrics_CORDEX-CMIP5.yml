@@ -243,7 +243,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: ICTP
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -251,7 +250,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-CLOUD
-        start_year: 2002
+        timerange: 2003/2005
       clt:
         additional_datasets:
         - dataset: ALADIN63
@@ -420,7 +419,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: ICTP
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -428,7 +426,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-CLOUD
-        start_year: 2002
+        timerange: 2003/2005
       lst:
         additional_datasets:
         - dataset: ALADIN53
@@ -605,7 +603,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: ICTP
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -614,7 +611,7 @@ diagnostics:
         rcm_version: v1
         reference_dataset: ESACCI-LST
         short_name: ts
-        start_year: 2002
+        timerange: 2003/2005
       lwp:
         additional_datasets:
         - dataset: ALADIN63
@@ -734,7 +731,6 @@ diagnostics:
           institute: ICTP
         derive: true
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -742,7 +738,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-CLOUD
-        start_year: 2002
+        timerange: 2003/2005
       prw:
         additional_datasets:
         - dataset: ALADIN63
@@ -860,7 +856,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: ICTP
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -868,7 +863,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-WATERVAPOUR
-        start_year: 2002
+        timerange: 2003/2005
       rlut:
         additional_datasets:
         - dataset: ALADIN63
@@ -1058,7 +1053,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: IPSL
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -1066,7 +1060,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-CLOUD
-        start_year: 2002
+        timerange: 2003/2005
       rsus:
         additional_datasets:
         - dataset: ALADIN53
@@ -1259,7 +1253,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: IPSL
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -1267,7 +1260,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-CLOUD
-        start_year: 2002
+        timerange: 2003/2005
       sic:
         additional_datasets:
         - dataset: ALADIN63
@@ -1355,7 +1348,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: IPSL
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -1363,7 +1355,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-SEAICE
-        start_year: 2002
+        timerange: 2003/2005
       snw:
         additional_datasets:
         - dataset: ALADIN53
@@ -1538,7 +1530,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: IPSL
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -1546,7 +1537,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         reference_dataset: ESACCI-SNOW
-        start_year: 2002
+        timerange: 2003/2005
       sst:
         additional_datasets:
         - dataset: ALADIN53
@@ -1724,7 +1715,6 @@ diagnostics:
           driver: NCC-NorESM1-M
           institute: ICTP
         domain: EUR-11
-        end_year: 2004
         ensemble: r1i1p1
         exp: historical
         mip: day
@@ -1733,4 +1723,4 @@ diagnostics:
         rcm_version: v1
         reference_dataset: ESACCI-SST
         short_name: ts
-        start_year: 2002
+        timerange: 2003/2005
