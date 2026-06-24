@@ -404,6 +404,7 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        derive: true
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
