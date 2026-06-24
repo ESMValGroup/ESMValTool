@@ -113,6 +113,13 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: ESACCI-CLOUD
+          mip: Amon
+          project: OBS6
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          version: v3.0-AVHRR-AMPM
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -127,6 +134,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-CLOUD
       clt:
         additional_datasets:
         - dataset: ALADIN63
@@ -397,6 +405,14 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: ESACCI-CLOUD
+          derive: false
+          mip: Amon
+          project: OBS6
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          version: v3.0-AVHRR-AMPM
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -412,6 +428,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-CLOUD
       prw:
         additional_datasets:
         - dataset: ALADIN63
@@ -423,6 +440,13 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: ESACCI-WATERVAPOUR
+          mip: Eday
+          project: OBS6
+          reference_for_metric: true
+          tier: 3
+          type: sat
+          version: CDR2-L3-COMBI-05deg-fv3.1
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -437,6 +461,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-WATERVAPOUR
       rlut:
         additional_datasets:
         - dataset: ALADIN63
@@ -448,6 +473,13 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: ESACCI-CLOUD
+          mip: Amon
+          project: OBS6
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          version: v3.0-AVHRR-AMPM
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -485,6 +517,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-CLOUD
       rsus:
         additional_datasets:
         - dataset: ALADIN53
@@ -682,6 +715,12 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: ESACCI-SNOW
+          project: OBS6
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          version: v2.0
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -719,6 +758,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-SNOW
       sst:
         additional_datasets:
         - dataset: ALADIN53
@@ -770,6 +810,15 @@ diagnostics:
         - dataset: COSMO-crCLIM-v1-1
           driver: NCC-NorESM1-M
           institute: CLMcom-ETH
+        - dataset: ESACCI-SST
+          mip: Oday
+          project: OBS6
+          reference_for_metric: true
+          short_name: tos
+          tier: 2
+          type: sat
+          variable_group: sst
+          version: 3.0-L4-analysis
         - dataset: HIRHAM5
           driver: CNRM-CERFACS-CNRM-CM5
           institute: DMI
@@ -893,4 +942,5 @@ diagnostics:
         preprocessor: sea
         project: CORDEX
         rcm_version: v1
+        reference_dataset: ESACCI-SST
         short_name: ts
