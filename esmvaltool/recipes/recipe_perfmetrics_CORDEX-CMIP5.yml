@@ -77,6 +77,20 @@ datasets:
   driver: CNRM-CERFACS-CNRM-CM5
   institute: CNRM
   rcm_version: v2
+- dataset: HIRHAM5
+  driver: CNRM-CERFACS-CNRM-CM5
+  institute: DMI
+  rcm_version: v2
+- dataset: HIRHAM5
+  driver: ICHEC-EC-EARTH
+  ensemble: r12i1p1
+  institute: DMI
+- dataset: HIRHAM5
+  driver: IPSL-IPSL-CM5A-MR
+  institute: DMI
+- dataset: HIRHAM5
+  driver: MPI-M-MPI-ESM-LR
+  institute: DMI
 - dataset: HadREM3-GA7-05
   driver: CNRM-CERFACS-CNRM-CM5
   institute: MOHC
@@ -84,6 +98,16 @@ datasets:
 - dataset: HadREM3-GA7-05
   driver: MPI-M-MPI-ESM-LR
   institute: MOHC
+- dataset: RCA4
+  driver: ICHEC-EC-EARTH
+  institute: SMHI
+- dataset: RCA4
+  driver: MPI-M-MPI-ESM-LR
+  ensemble: r(2:3)i1p1
+  institute: SMHI
+- dataset: RCA4
+  driver: NCC-NorESM1-M
+  institute: SMHI
 diagnostics:
   diagnostic:
     scripts:
@@ -113,6 +137,43 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: CCLM4-8-17
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
         - dataset: ESACCI-CLOUD
           mip: Amon
           project: OBS6
@@ -120,6 +181,22 @@ diagnostics:
           tier: 2
           type: sat
           version: v3.0-AVHRR-AMPM
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -127,6 +204,44 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -146,6 +261,30 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
         - dataset: ESACCI-CLOUD
           project: OBS6
           reference_for_metric: true
@@ -153,15 +292,7 @@ diagnostics:
           type: sat
           version: v3.0-AVHRR-AMPM
         - dataset: HIRHAM5
-          driver: CNRM-CERFACS-CNRM-CM5
-          institute: DMI
-          rcm_version: v2
-        - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
-          institute: DMI
-        - dataset: HIRHAM5
-          driver: ICHEC-EC-EARTH
-          ensemble: r12i1p1
           institute: DMI
         - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
@@ -169,15 +300,9 @@ diagnostics:
           institute: DMI
           rcm_version: v2
         - dataset: HIRHAM5
-          driver: IPSL-IPSL-CM5A-MR
-          institute: DMI
-        - dataset: HIRHAM5
           driver: MOHC-HadGEM2-ES
           institute: DMI
           rcm_version: v2
-        - dataset: HIRHAM5
-          driver: MPI-M-MPI-ESM-LR
-          institute: DMI
         - dataset: HIRHAM5
           driver: NCC-NorESM1-M
           institute: DMI
@@ -192,13 +317,106 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: ICON-2024-01
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: KNMI
+          rcm_version: v2
+        - dataset: ICON-2024-01
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: IPSL-IPSL-CM5A-MR
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: MOHC-HadGEM2-ES
+          institute: KNMI
+          rcm_version: v2
+        - dataset: ICON-2024-01
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: MPI-M-MPI-ESM-LR
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:2)i1p1
+          institute: MPI-CSC
+        - dataset: ICON-2024-01
+          driver: NCC-NorESM1-M
+          institute: KNMI
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
         - dataset: REMO2015
           driver: CNRM-CERFACS-CNRM-CM5
           institute: GERICS
           rcm_version: v2
         - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-LR
+          institute: GERICS
+        - dataset: REMO2015
           driver: IPSL-IPSL-CM5A-MR
           institute: GERICS
+        - dataset: REMO2015
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r3i1p1
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NCC-NorESM1-M
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NOAA-GFDL-GFDL-ESM2G
+          institute: GERICS
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -270,15 +488,7 @@ diagnostics:
           variable_group: lst
           version: '1.00'
         - dataset: HIRHAM5
-          driver: CNRM-CERFACS-CNRM-CM5
-          institute: DMI
-          rcm_version: v2
-        - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
-          institute: DMI
-        - dataset: HIRHAM5
-          driver: ICHEC-EC-EARTH
-          ensemble: r12i1p1
           institute: DMI
         - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
@@ -286,15 +496,9 @@ diagnostics:
           institute: DMI
           rcm_version: v2
         - dataset: HIRHAM5
-          driver: IPSL-IPSL-CM5A-MR
-          institute: DMI
-        - dataset: HIRHAM5
           driver: MOHC-HadGEM2-ES
           institute: DMI
           rcm_version: v2
-        - dataset: HIRHAM5
-          driver: MPI-M-MPI-ESM-LR
-          institute: DMI
         - dataset: HIRHAM5
           driver: NCC-NorESM1-M
           institute: DMI
@@ -339,9 +543,6 @@ diagnostics:
           institute: SMHI
         - dataset: RCA4
           driver: ICHEC-EC-EARTH
-          institute: SMHI
-        - dataset: RCA4
-          driver: ICHEC-EC-EARTH
           ensemble: r3i1p1
           institute: SMHI
         - dataset: RCA4
@@ -358,9 +559,6 @@ diagnostics:
           driver: MPI-M-MPI-ESM-LR
           institute: SMHI
           rcm_version: v1a
-        - dataset: RCA4
-          driver: NCC-NorESM1-M
-          institute: SMHI
         - dataset: REMO2009
           driver: MPI-M-MPI-ESM-LR
           ensemble: r(1:2)i1p1
@@ -385,6 +583,23 @@ diagnostics:
         - dataset: REMO2015
           driver: NOAA-GFDL-GFDL-ESM2G
           institute: GERICS
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -405,6 +620,43 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: CCLM4-8-17
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
         - dataset: ESACCI-CLOUD
           derive: false
           mip: Amon
@@ -413,6 +665,22 @@ diagnostics:
           tier: 2
           type: sat
           version: v3.0-AVHRR-AMPM
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -420,6 +688,44 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         derive: true
         domain: EUR-11
         ensemble: r1i1p1
@@ -440,6 +746,43 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: CCLM4-8-17
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
         - dataset: ESACCI-WATERVAPOUR
           mip: Eday
           project: OBS6
@@ -447,6 +790,22 @@ diagnostics:
           tier: 3
           type: sat
           version: CDR2-L3-COMBI-05deg-fv3.1
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -454,6 +813,44 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -473,6 +870,43 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: CCLM4-8-17
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
         - dataset: ESACCI-CLOUD
           mip: Amon
           project: OBS6
@@ -480,6 +914,22 @@ diagnostics:
           tier: 2
           type: sat
           version: v3.0-AVHRR-AMPM
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -490,6 +940,93 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: RACMO22E
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: IPSL-IPSL-CM5A-MR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: MOHC-HadGEM2-ES
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: MPI-M-MPI-ESM-LR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: NCC-NorESM1-M
+          institute: KNMI
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
+        - dataset: REMO2009
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:2)i1p1
+          institute: MPI-CSC
+        - dataset: REMO2015
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: GERICS
+          rcm_version: v2
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-LR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-MR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r3i1p1
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NCC-NorESM1-M
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NOAA-GFDL-GFDL-ESM2G
+          institute: GERICS
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         - dataset: WRF381P
           driver: CNRM-CERFACS-CNRM-CM5
           institute: IPSL
@@ -532,6 +1069,30 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
         - dataset: ESACCI-CLOUD
           mip: Amon
           project: OBS6
@@ -540,15 +1101,7 @@ diagnostics:
           type: sat
           version: v3.0-AVHRR-AMPM
         - dataset: HIRHAM5
-          driver: CNRM-CERFACS-CNRM-CM5
-          institute: DMI
-          rcm_version: v2
-        - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
-          institute: DMI
-        - dataset: HIRHAM5
-          driver: ICHEC-EC-EARTH
-          ensemble: r12i1p1
           institute: DMI
         - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
@@ -556,15 +1109,9 @@ diagnostics:
           institute: DMI
           rcm_version: v2
         - dataset: HIRHAM5
-          driver: IPSL-IPSL-CM5A-MR
-          institute: DMI
-        - dataset: HIRHAM5
           driver: MOHC-HadGEM2-ES
           institute: DMI
           rcm_version: v2
-        - dataset: HIRHAM5
-          driver: MPI-M-MPI-ESM-LR
-          institute: DMI
         - dataset: HIRHAM5
           driver: NCC-NorESM1-M
           institute: DMI
@@ -579,13 +1126,106 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: ICON-2024-01
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: KNMI
+          rcm_version: v2
+        - dataset: ICON-2024-01
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: IPSL-IPSL-CM5A-MR
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: MOHC-HadGEM2-ES
+          institute: KNMI
+          rcm_version: v2
+        - dataset: ICON-2024-01
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: ICON-2024-01
+          driver: MPI-M-MPI-ESM-LR
+          institute: KNMI
+        - dataset: ICON-2024-01
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:2)i1p1
+          institute: MPI-CSC
+        - dataset: ICON-2024-01
+          driver: NCC-NorESM1-M
+          institute: KNMI
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
         - dataset: REMO2015
           driver: CNRM-CERFACS-CNRM-CM5
           institute: GERICS
           rcm_version: v2
         - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-LR
+          institute: GERICS
+        - dataset: REMO2015
           driver: IPSL-IPSL-CM5A-MR
           institute: GERICS
+        - dataset: REMO2015
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r3i1p1
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NCC-NorESM1-M
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NOAA-GFDL-GFDL-ESM2G
+          institute: GERICS
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         - dataset: WRF381P
           driver: CNRM-CERFACS-CNRM-CM5
           institute: IPSL
@@ -627,15 +1267,7 @@ diagnostics:
           type: sat
           version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH
         - dataset: HIRHAM5
-          driver: CNRM-CERFACS-CNRM-CM5
-          institute: DMI
-          rcm_version: v2
-        - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
-          institute: DMI
-        - dataset: HIRHAM5
-          driver: ICHEC-EC-EARTH
-          ensemble: r12i1p1
           institute: DMI
         - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
@@ -643,15 +1275,9 @@ diagnostics:
           institute: DMI
           rcm_version: v2
         - dataset: HIRHAM5
-          driver: IPSL-IPSL-CM5A-MR
-          institute: DMI
-        - dataset: HIRHAM5
           driver: MOHC-HadGEM2-ES
           institute: DMI
           rcm_version: v2
-        - dataset: HIRHAM5
-          driver: MPI-M-MPI-ESM-LR
-          institute: DMI
         - dataset: HIRHAM5
           driver: NCC-NorESM1-M
           institute: DMI
@@ -666,6 +1292,27 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
         - dataset: REMO2015
           driver: CNRM-CERFACS-CNRM-CM5
           institute: GERICS
@@ -715,12 +1362,65 @@ diagnostics:
         - dataset: ALADIN63
           driver: NCC-NorESM1-M
           institute: CNRM
+        - dataset: CCLM4-8-17
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
         - dataset: ESACCI-SNOW
           project: OBS6
           reference_for_metric: true
           tier: 2
           type: sat
           version: v2.0
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
         - dataset: HadREM3-GA7-05
           driver: ICHEC-EC-EARTH
           ensemble: r12i1p1
@@ -731,6 +1431,76 @@ diagnostics:
         - dataset: HadREM3-GA7-05
           driver: NCC-NorESM1-M
           institute: MOHC
+        - dataset: RACMO22E
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: IPSL-IPSL-CM5A-MR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: MOHC-HadGEM2-ES
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: MPI-M-MPI-ESM-LR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: NCC-NorESM1-M
+          institute: KNMI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: REMO2009
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:2)i1p1
+          institute: MPI-CSC
+        - dataset: REMO2015
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: GERICS
+          rcm_version: v2
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-LR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-MR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r3i1p1
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NCC-NorESM1-M
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NOAA-GFDL-GFDL-ESM2G
+          institute: GERICS
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         - dataset: WRF381P
           driver: CNRM-CERFACS-CNRM-CM5
           institute: IPSL
@@ -815,20 +1585,15 @@ diagnostics:
           project: OBS6
           reference_for_metric: true
           short_name: tos
+          supplementary_variables:
+          - short_name: sftlf
+            skip: true
           tier: 2
           type: sat
           variable_group: sst
           version: 3.0-L4-analysis
         - dataset: HIRHAM5
-          driver: CNRM-CERFACS-CNRM-CM5
-          institute: DMI
-          rcm_version: v2
-        - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
-          institute: DMI
-        - dataset: HIRHAM5
-          driver: ICHEC-EC-EARTH
-          ensemble: r12i1p1
           institute: DMI
         - dataset: HIRHAM5
           driver: ICHEC-EC-EARTH
@@ -836,15 +1601,9 @@ diagnostics:
           institute: DMI
           rcm_version: v2
         - dataset: HIRHAM5
-          driver: IPSL-IPSL-CM5A-MR
-          institute: DMI
-        - dataset: HIRHAM5
           driver: MOHC-HadGEM2-ES
           institute: DMI
           rcm_version: v2
-        - dataset: HIRHAM5
-          driver: MPI-M-MPI-ESM-LR
-          institute: DMI
         - dataset: HIRHAM5
           driver: NCC-NorESM1-M
           institute: DMI
@@ -889,9 +1648,6 @@ diagnostics:
           institute: SMHI
         - dataset: RCA4
           driver: ICHEC-EC-EARTH
-          institute: SMHI
-        - dataset: RCA4
-          driver: ICHEC-EC-EARTH
           ensemble: r3i1p1
           institute: SMHI
         - dataset: RCA4
@@ -908,9 +1664,6 @@ diagnostics:
           driver: MPI-M-MPI-ESM-LR
           institute: SMHI
           rcm_version: v1a
-        - dataset: RCA4
-          driver: NCC-NorESM1-M
-          institute: SMHI
         - dataset: REMO2009
           driver: MPI-M-MPI-ESM-LR
           ensemble: r(1:2)i1p1
@@ -935,6 +1688,23 @@ diagnostics:
         - dataset: REMO2015
           driver: NOAA-GFDL-GFDL-ESM2G
           institute: GERICS
+        - dataset: RegCM4-6
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: ICTP
+          rcm_version: v2
+        - dataset: RegCM4-6
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MOHC-HadGEM2-ES
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: MPI-M-MPI-ESM-LR
+          institute: ICTP
+        - dataset: RegCM4-6
+          driver: NCC-NorESM1-M
+          institute: ICTP
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
