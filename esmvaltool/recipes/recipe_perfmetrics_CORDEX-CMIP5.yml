@@ -1,0 +1,880 @@
+documentation:
+  title: CORDEX-CMIP5 performance metrics
+  description: 'This is an example recipe that computes performance metrics for CORDEX-CMIP5
+    models.
+
+    The outcome of this recipe is used for deliverable DX.X of the project ESO4Clima.'
+  authors:
+  - loosveldt-tomas_saskia
+  - andela_bouwe
+  maintainer:
+  - andela_bouwe
+preprocessors:
+  default:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
+      operator: mean
+    regrid:
+      target_grid: EUR-11
+      scheme: linear
+    distance_metric:
+      metric: weighted_rmse
+    multi_model_statistics:
+      span: overlap
+      statistics:
+      - operator: mean
+      - operator: median
+      exclude:
+      - reference_dataset
+  land:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
+      operator: mean
+    mask_landsea:
+      mask_out: sea
+    regrid:
+      target_grid: EUR-11
+      scheme: linear
+    distance_metric:
+      metric: weighted_rmse
+    multi_model_statistics:
+      span: overlap
+      statistics:
+      - operator: mean
+      - operator: median
+      exclude:
+      - reference_dataset
+  sea:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
+      operator: mean
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: EUR-11
+      scheme: linear
+    distance_metric:
+      metric: weighted_rmse
+    multi_model_statistics:
+      span: overlap
+      statistics:
+      - operator: mean
+      - operator: median
+      exclude:
+      - reference_dataset
+
+datasets:
+- dataset: ALADIN63
+  driver: CNRM-CERFACS-CNRM-CM5
+  institute: CNRM
+  rcm_version: v2
+- dataset: HadREM3-GA7-05
+  driver: CNRM-CERFACS-CNRM-CM5
+  institute: MOHC
+  rcm_version: v2
+- dataset: HadREM3-GA7-05
+  driver: MPI-M-MPI-ESM-LR
+  institute: MOHC
+diagnostics:
+  diagnostic:
+    scripts:
+      portrait:
+        cbar_kwargs:
+          extend: both
+          label: Relative RMSE
+        default_split: Ref1
+        group_by: project
+        nan_color: '#bdbdbd'
+        normalize: centered_median
+        plot_kwargs:
+          vmax: 0.5
+          vmin: -0.5
+        script: portrait_plot.py
+        x_by: alias
+        y_by: variable
+    variables:
+      clivi:
+        additional_datasets:
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      clt:
+        additional_datasets:
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: ESACCI-CLOUD
+          project: OBS6
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          version: v3.0-AVHRR-AMPM
+        - dataset: HIRHAM5
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: IPSL-IPSL-CM5A-MR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MPI-M-MPI-ESM-LR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: MOHC-HadGEM2-ES
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        - dataset: REMO2015
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: GERICS
+          rcm_version: v2
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-MR
+          institute: GERICS
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      lst:
+        additional_datasets:
+        - dataset: ALADIN53
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: CCLM4-8-17
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
+        - dataset: ESACCI-LST
+          mip: Amon
+          project: OBS
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          variable_group: lst
+          version: '1.00'
+        - dataset: HIRHAM5
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: IPSL-IPSL-CM5A-MR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MPI-M-MPI-ESM-LR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: MOHC-HadGEM2-ES
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        - dataset: RACMO22E
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: IPSL-IPSL-CM5A-MR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: MOHC-HadGEM2-ES
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: MPI-M-MPI-ESM-LR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: NCC-NorESM1-M
+          institute: KNMI
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
+        - dataset: RCA4
+          driver: NCC-NorESM1-M
+          institute: SMHI
+        - dataset: REMO2009
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:2)i1p1
+          institute: MPI-CSC
+        - dataset: REMO2015
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: GERICS
+          rcm_version: v2
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-LR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-MR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r3i1p1
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NCC-NorESM1-M
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NOAA-GFDL-GFDL-ESM2G
+          institute: GERICS
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        preprocessor: land
+        project: CORDEX
+        rcm_version: v1
+        short_name: ts
+      lwp:
+        additional_datasets:
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      prw:
+        additional_datasets:
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      rlut:
+        additional_datasets:
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: MOHC-HadGEM2-ES
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        - dataset: WRF381P
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: IPSL
+          rcm_version: v2
+        - dataset: WRF381P
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: IPSL
+        - dataset: WRF381P
+          driver: IPSL-IPSL-CM5A-MR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MOHC-HadGEM2-ES
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MPI-M-MPI-ESM-LR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: NCC-NorESM1-M
+          institute: IPSL
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      rsus:
+        additional_datasets:
+        - dataset: ALADIN53
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: ESACCI-CLOUD
+          mip: Amon
+          project: OBS6
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          version: v3.0-AVHRR-AMPM
+        - dataset: HIRHAM5
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: IPSL-IPSL-CM5A-MR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MPI-M-MPI-ESM-LR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: MOHC-HadGEM2-ES
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        - dataset: REMO2015
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: GERICS
+          rcm_version: v2
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-MR
+          institute: GERICS
+        - dataset: WRF381P
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: IPSL
+          rcm_version: v2
+        - dataset: WRF381P
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: IPSL
+        - dataset: WRF381P
+          driver: IPSL-IPSL-CM5A-MR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MOHC-HadGEM2-ES
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MPI-M-MPI-ESM-LR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: NCC-NorESM1-M
+          institute: IPSL
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      sic:
+        additional_datasets:
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ESACCI-SEAICE
+          mip: SIday
+          project: OBS6
+          reference_for_metric: true
+          tier: 2
+          type: sat
+          version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH
+        - dataset: HIRHAM5
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: IPSL-IPSL-CM5A-MR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MPI-M-MPI-ESM-LR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: MOHC-HadGEM2-ES
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        - dataset: REMO2015
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: GERICS
+          rcm_version: v2
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-MR
+          institute: GERICS
+        - dataset: WRF381P
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: IPSL
+          rcm_version: v2
+        - dataset: WRF381P
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: IPSL
+        - dataset: WRF381P
+          driver: IPSL-IPSL-CM5A-MR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MOHC-HadGEM2-ES
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MPI-M-MPI-ESM-LR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: NCC-NorESM1-M
+          institute: IPSL
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      snw:
+        additional_datasets:
+        - dataset: ALADIN53
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: MOHC-HadGEM2-ES
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        - dataset: WRF381P
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: IPSL
+          rcm_version: v2
+        - dataset: WRF381P
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: IPSL
+        - dataset: WRF381P
+          driver: IPSL-IPSL-CM5A-MR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MOHC-HadGEM2-ES
+          institute: IPSL
+        - dataset: WRF381P
+          driver: MPI-M-MPI-ESM-LR
+          institute: IPSL
+        - dataset: WRF381P
+          driver: NCC-NorESM1-M
+          institute: IPSL
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        project: CORDEX
+        rcm_version: v1
+      sst:
+        additional_datasets:
+        - dataset: ALADIN53
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MOHC-HadGEM2-ES
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: MPI-M-MPI-ESM-LR
+          institute: CNRM
+        - dataset: ALADIN63
+          driver: NCC-NorESM1-M
+          institute: CNRM
+        - dataset: CCLM4-8-17
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom
+        - dataset: CCLM4-8-17
+          driver: MPI-M-MPI-ESM-LR
+          institute: CLMcom
+        - dataset: COSMO-crCLIM-v1-1
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MOHC-HadGEM2-ES
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:3)i1p1
+          institute: CLMcom-ETH
+        - dataset: COSMO-crCLIM-v1-1
+          driver: NCC-NorESM1-M
+          institute: CLMcom-ETH
+        - dataset: HIRHAM5
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: IPSL-IPSL-CM5A-MR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: MOHC-HadGEM2-ES
+          institute: DMI
+          rcm_version: v2
+        - dataset: HIRHAM5
+          driver: MPI-M-MPI-ESM-LR
+          institute: DMI
+        - dataset: HIRHAM5
+          driver: NCC-NorESM1-M
+          institute: DMI
+          rcm_version: v3
+        - dataset: HadREM3-GA7-05
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: MOHC-HadGEM2-ES
+          institute: MOHC
+        - dataset: HadREM3-GA7-05
+          driver: NCC-NorESM1-M
+          institute: MOHC
+        - dataset: RACMO22E
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: IPSL-IPSL-CM5A-MR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: MOHC-HadGEM2-ES
+          institute: KNMI
+          rcm_version: v2
+        - dataset: RACMO22E
+          driver: MPI-M-MPI-ESM-LR
+          institute: KNMI
+        - dataset: RACMO22E
+          driver: NCC-NorESM1-M
+          institute: KNMI
+        - dataset: RCA4
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r3i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: ICHEC-EC-EARTH
+          ensemble: r12i1p1
+          institute: SMHI
+        - dataset: RCA4
+          driver: IPSL-IPSL-CM5A-MR
+          institute: SMHI
+        - dataset: RCA4
+          driver: MOHC-HadGEM2-ES
+          institute: SMHI
+        - dataset: RCA4
+          driver: MPI-M-MPI-ESM-LR
+          institute: SMHI
+          rcm_version: v1a
+        - dataset: RCA4
+          driver: NCC-NorESM1-M
+          institute: SMHI
+        - dataset: REMO2009
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r(1:2)i1p1
+          institute: MPI-CSC
+        - dataset: REMO2015
+          driver: CNRM-CERFACS-CNRM-CM5
+          institute: GERICS
+          rcm_version: v2
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-LR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: IPSL-IPSL-CM5A-MR
+          institute: GERICS
+        - dataset: REMO2015
+          driver: MPI-M-MPI-ESM-LR
+          ensemble: r3i1p1
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NCC-NorESM1-M
+          institute: GERICS
+        - dataset: REMO2015
+          driver: NOAA-GFDL-GFDL-ESM2G
+          institute: GERICS
+        domain: EUR-11
+        ensemble: r1i1p1
+        exp: historical
+        mip: day
+        preprocessor: sea
+        project: CORDEX
+        rcm_version: v1
+        short_name: ts
