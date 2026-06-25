@@ -727,9 +727,12 @@ class MultiDatasets(MonitorBase):
         self,
         plot_path: Path | str,
         suffix: str | None = None,
+        option: str | None = None
     ) -> str:
         """Get netCDF path."""
         basename = Path(plot_path).stem
+        if option is not None:
+            basename += '_spacial' + option
         if suffix is not None:
             basename += suffix
         return get_diagnostic_filename(basename, self.cfg)
@@ -1462,9 +1465,13 @@ class MultiDatasets(MonitorBase):
             self._get_label(d): d["cube"] for d in datasets
         }
         if "threshold_conversion" in self.options:
-            for label, cube in cubes.items():
-                cubes[label] = self.thr_area_statistics(cube, operator = "mean")
-        netcdf_path = self._get_netcdf_path(plot_path)
+            operators = self.options["threshold_conversion"]["operators"]
+            #for operator in operators:
+            cubes_threshold: dict[str, dict[str, Cube]] = {
+                operator: {label: self.thr_area_statistics(cube, operator = operator) for label, cube in cubes.items()} for operator in operators
+            } 
+                # for label, cube in cubes.items():
+                #     cubes[label] = self.thr_area_statistics(cube, operator = "mean")
         cube_0 = datasets[0]["cube"]
         if "threshold_conversion" in self.options:
             cube_0 = self.thr_area_statistics(cube_0, operator = "mean")
@@ -1472,7 +1479,19 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
         }
-        io.save_1d_data(cubes, netcdf_path, coord_name, var_attrs)
+        print(var_attrs)
+        print("copy this style")
+        
+        if "threshold_conversion" in self.options:
+            for operator in operators:
+                print({"operator": operator})
+                print(cubes_threshold[operator])
+                netcdf_path = self._get_netcdf_path(plot_path, option = operator)
+                print(netcdf_path)
+                io.save_1d_data(cubes_threshold[operator], netcdf_path, coord_name, var_attrs, attributes = {"operator": operator}) # attributes = "operator"
+        else:
+            netcdf_path = self._get_netcdf_path(plot_path)
+            io.save_1d_data(cubes, netcdf_path, coord_name, var_attrs)
 
         # Provenance tracking
         provenance_record = self._get_provenance_record(
