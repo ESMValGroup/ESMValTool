@@ -130,11 +130,6 @@ diagnostics:
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -188,11 +183,6 @@ diagnostics:
         - {dataset: REMO2015, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: GERICS}
         - {dataset: REMO2015, driver: NCC-NorESM1-M, institute: GERICS}
         - {dataset: REMO2015, driver: NOAA-GFDL-GFDL-ESM2G, institute: GERICS}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -247,11 +237,6 @@ diagnostics:
         - {dataset: REMO2015, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: GERICS}
         - {dataset: REMO2015, driver: NCC-NorESM1-M, institute: GERICS}
         - {dataset: REMO2015, driver: NOAA-GFDL-GFDL-ESM2G, institute: GERICS}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -291,11 +276,6 @@ diagnostics:
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         derive: true
         domain: EUR-11
         ensemble: r1i1p1
@@ -335,11 +315,6 @@ diagnostics:
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
@@ -393,11 +368,6 @@ diagnostics:
         - {dataset: REMO2015, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: GERICS}
         - {dataset: REMO2015, driver: NCC-NorESM1-M, institute: GERICS}
         - {dataset: REMO2015, driver: NOAA-GFDL-GFDL-ESM2G, institute: GERICS}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         - {dataset: WRF381P, driver: CNRM-CERFACS-CNRM-CM5, institute: IPSL, rcm_version: v2}
         - {dataset: WRF381P, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: IPSL}
         - {dataset: WRF381P, driver: IPSL-IPSL-CM5A-MR, institute: IPSL}
@@ -458,11 +428,6 @@ diagnostics:
         - {dataset: REMO2015, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: GERICS}
         - {dataset: REMO2015, driver: NCC-NorESM1-M, institute: GERICS}
         - {dataset: REMO2015, driver: NOAA-GFDL-GFDL-ESM2G, institute: GERICS}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         - {dataset: WRF381P, driver: CNRM-CERFACS-CNRM-CM5, institute: IPSL, rcm_version: v2}
         - {dataset: WRF381P, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: IPSL}
         - {dataset: WRF381P, driver: IPSL-IPSL-CM5A-MR, institute: IPSL}
@@ -552,11 +517,6 @@ diagnostics:
         - {dataset: REMO2015, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: GERICS}
         - {dataset: REMO2015, driver: NCC-NorESM1-M, institute: GERICS}
         - {dataset: REMO2015, driver: NOAA-GFDL-GFDL-ESM2G, institute: GERICS}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         - {dataset: WRF381P, driver: CNRM-CERFACS-CNRM-CM5, institute: IPSL, rcm_version: v2}
         - {dataset: WRF381P, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: IPSL}
         - {dataset: WRF381P, driver: IPSL-IPSL-CM5A-MR, institute: IPSL}
@@ -617,11 +577,6 @@ diagnostics:
         - {dataset: REMO2015, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: GERICS}
         - {dataset: REMO2015, driver: NCC-NorESM1-M, institute: GERICS}
         - {dataset: REMO2015, driver: NOAA-GFDL-GFDL-ESM2G, institute: GERICS}
-        - {dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, institute: ICTP, rcm_version: v2}
-        - {dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, institute: ICTP}
-        - {dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, institute: ICTP}
-        - {dataset: RegCM4-6, driver: NCC-NorESM1-M, institute: ICTP}
         domain: EUR-11
         ensemble: r1i1p1
         exp: historical
