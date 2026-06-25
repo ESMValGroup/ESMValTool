@@ -1,5 +1,3 @@
-:html_theme.sidebar_secondary.remove:
-
 .. ESMValTool documentation master file, created by
    sphinx-quickstart on Tue Jun  2 11:34:13 2015.
    You can adapt this file completely to your liking, but it should at least
@@ -36,46 +34,25 @@ notebooks.
       :figclass: align-center
       :class: dark-light
 
-
-Learning resources:
--------------------
-
-A tutorial is available on https://tutorial.esmvaltool.org.
-
-A series of video lectures has been created by `ACCESS-NRI <https://www.access-nri.org.au>`_.
-While these are tailored for ACCESS users, they are still very informative.
-
-.. raw:: html
-
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?si=pUXrXB8C8bLRfQHY&amp;list=PLFjfi2xLaFpJp59LvDc1upQsj_xzFlFLc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-How to contribute
------------------
-Refer to ESMValTool :ref:`contributing to the community<community>` for a guide on contributing recipes and diagnostics.
-
-Refer to ESMValCore contributing for information on contributing code.
-
-Get in touch!
--------------
-Contact information is available :ref:`here <Support-and-Contact>`.
-
 .. toctree::
    :hidden:
    :maxdepth: 2
    :caption: ESMValTool
 
-    Introduction <introduction>
-    ESMValTool Functionalities <functionalities>
-    Gallery <gallery>
-    Getting started <quickstart/index>
-    Recipes <recipes/index>
-    Diagnostics API Reference <api/esmvaltool>
-    Obtaining input data <input>
-    Making a recipe or diagnostic <develop/index>
-    Contributing to the community <community/index>
-    Utilities <utils/utils>
-    Frequently Asked Questions <faq>
-    Changelog <changelog>
+   Introduction <introduction>
+   Tutorials <tutorials/index>
+   ESMValTool Functionalities <functionalities>
+   Gallery <gallery>
+   Getting started <quickstart/index>
+   Recipes <recipes/index>
+   Diagnostics API Reference <api/esmvaltool>
+   Obtaining input data <input>
+   Making a recipe or diagnostic <develop/index>
+   Contributing to the community <community/index>
+   Utilities <utils/utils>
+   Frequently Asked Questions <faq>
+   Changelog <changelog>
+   Support <support>
 
 Indices and tables
 ------------------

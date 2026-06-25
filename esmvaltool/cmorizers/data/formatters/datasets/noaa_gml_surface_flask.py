@@ -14,6 +14,10 @@ Download and processing instructions
     https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/ch4_surface-flask_ccgg_text.tar.gz
     https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/co2_surface-flask_ccgg_text.tar.gz
     https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz
+
+NOTE this formatter is currently not working for Python 3.14 since pys2index is
+not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+from conda-forge.
 """
 
 import logging
