@@ -9,7 +9,7 @@ jobs:
     # Run tests
     docker:
       - image: cimg/base:current
-    resource_class: medium
+    resource_class: large.gen2
     steps:
       - checkout
       - pixi/pixi_setup
