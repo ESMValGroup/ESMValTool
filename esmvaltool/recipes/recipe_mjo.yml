@@ -59,6 +59,8 @@ diagnostics:
     scripts:
       &main
       main:
+<<<<<<< HEAD
+<<<<<<< HEAD
         script: diag_scripts/mjo/mjo_diag.py
         reference_datasets: [ "ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3" ]
         regrid_dataset: ERA-Interim

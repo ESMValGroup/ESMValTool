@@ -3,28 +3,37 @@
 import logging
 import math
 import os
+from pathlib import Path
 
 import cf_units as unit
 import iris
 import matplotlib as mpl
-import matplotlib.colors as colors
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import numpy as np
 import scipy
+from matplotlib import colors, ticker
 
-from esmvaltool.diag_scripts.shared import save_data, save_figure
+from esmvaltool.diag_scripts.shared import (
+    save_data,
+    save_figure,
+)
+
+logging = logging.getLogger(Path(__file__).stem)
 
 
 class WKSpectra:
     """Compute, smooth, and plot Wheeler-Kiladis spectra."""
 
-    def __init__(self, cfg: dict, attributes: dict, check_missing: bool = True):
-        self.cfg = cfg # Store the configuration dictionary
-        self.spd = 1 # samples per day (1 for daily data, 4 for 6-hourly data and so on)
-        self.nDayWin = 96  # Wheeler-Kiladis [WK] temporal window length (days)
-        self.nDaySkip = -65  # Negative means overlap
-        self.latBound = 15   # Latitude bounds for MJO region (15S-15N)
+    def __init__(
+        self, cfg: dict, attributes: dict, *, check_missing: bool = True
+    ):
+        self.cfg = cfg  # Store the configuration dictionary
+        self.spd = 1  # samples per day (1 for daily data, 4 for 6-hourly data and so on)
+        self.n_day_win = (
+            96  # Wheeler-Kiladis [WK] temporal window length (days)
+        )
+        self.n_day_skip = -65  # Negative means overlap
+        self.lat_bound = 15  # Latitude bounds for MJO region (15S-15N)
         self.filename = attributes["filename"]
         self.out_dir = os.path.dirname(self.filename)
         self.runid = attributes["dataset"]
@@ -105,15 +114,21 @@ class WKSpectra:
         """Extract year, month, and day arrays from an Iris time coordinate."""
         if time.units.calendar == "gregorian":
             dates = unit.num2date(
-                time.points, str(time.units), unit.CALENDAR_GREGORIAN
+                time.points,
+                str(time.units),
+                unit.CALENDAR_GREGORIAN,
             )
         elif time.units.calendar == "standard":
             dates = unit.num2date(
-                time.points, str(time.units), unit.CALENDAR_STANDARD
+                time.points,
+                str(time.units),
+                unit.CALENDAR_STANDARD,
             )
         else:
             dates = unit.num2date(
-                time.points, str(time.units), time.units.calendar
+                time.points,
+                str(time.units),
+                time.units.calendar,
             )
         year = np.zeros(len(dates), dtype=int)
         month = np.zeros(len(dates), dtype=int)
@@ -122,11 +137,10 @@ class WKSpectra:
             year[i], month[i], day[i] = self.split_time(date)
         return year, month, day
 
-    def makecube_season_pow(self, var, wave, freq, name="spectra"):
+    def makecube_season_pow(self, var, wave, freq):
         """Build a 2D Iris cube for seasonal power."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
-        # var_cube.long_name = long_name
         wave_coord = iris.coords.DimCoord(wave, long_name="wavenumber")
         wave_coord.guess_bounds()
         freq_coord = iris.coords.DimCoord(freq, long_name="frequency")
@@ -135,22 +149,22 @@ class WKSpectra:
         var_cube.add_dim_coord(freq_coord, 1)
         return var_cube
 
-    def remove_annual_cycle(self, var, nDayTot, fCrit, spd=1, rmvMeans=False):
+    def remove_annual_cycle(self, var, f_crit, *, rmv_means=False):
         """
         Prewhiten the data: eg remove the annual cycle.
 
         Actually, this will remove all time periods less than
-          those corresponding to 'fCrit'.
+          those corresponding to 'f_crit'.
         Note: The original fortran code provided by JET did not remove
-          the grid point means so .... rmvMeans=False
+          the grid point means so .... rmv_means=False
               I assume that Matt Wheeler's code did that also.
         """
-        logging.info("fCrit: %s", fCrit)
+        logging.info("f_crit: %s", f_crit)
         # Take a copy for metadata
         var_cut = var.copy()
 
         # mean for later
-        varMean = var.collapsed("time", iris.analysis.MEAN)
+        var_mean = var.collapsed("time", iris.analysis.MEAN)
 
         ntime, nlat, nlon = var.data.shape
 
@@ -161,12 +175,12 @@ class WKSpectra:
         x = freq.copy()
 
         # cutting frequencies
-        cf[np.abs(x) < fCrit] = 0.0
+        cf[np.abs(x) < f_crit] = 0.0
 
         # inverse FFT
         var_cut.data = np.fft.ifft(cf, axis=0).astype(float)
-        if not rmvMeans:
-            var_cut.data += varMean.data
+        if not rmv_means:
+            var_cut.data += var_mean.data
         return var_cut
 
     def decompose_sym_asym(self, var, axis=1):
@@ -182,28 +196,30 @@ class WKSpectra:
         symmetric part is stored in other hemisphere [eg: Southern Hemisphere]
                  xOut(-lat) = (x(lat)+x(-lat))/2
         """
-        varSA = var.copy()  # copy to store the output
+        var_sa = var.copy()  # copy to store the output
         nlat = var.shape[axis]  # get the number of latitude points
 
-        N2 = nlat // 2
+        n2 = nlat // 2
 
         if axis == 1:
-            for nl in np.arange(0, N2):
+            for nl in np.arange(0, n2):
                 logging.debug("(nlat - 1 - nl): %s", (nlat - 1 - nl))
                 logging.debug("nl: %s", nl)
-                varSA.data[:, nl] = 0.5 * (
+                var_sa.data[:, nl] = 0.5 * (
                     var.data[:, nlat - 1 - nl] + var.data[:, nl]
                 )
-                varSA.data[:, nlat - 1 - nl] = 0.5 * (
+                var_sa.data[:, nlat - 1 - nl] = 0.5 * (
                     var.data[:, nlat - 1 - nl] - var.data[:, nl]
                 )
 
-            return varSA
-        else:
-            logging.error(
-                "Only axis == 1 is supported. Modify the code to accommodate other axes."
-            )
-            raise ValueError("decompose_sym_asym axis != 1")
+            return var_sa
+
+        # Replacing "else" statement
+        logging.error(
+            "Only axis == 1 is supported. Modify the code to accommodate other axes."
+        )
+        msg = "decompose_sym_asym axis != 1"
+        raise ValueError(msg)
 
     def taper(self, ts, alpha=0.1, iopt=0):
         """
@@ -241,7 +257,7 @@ class WKSpectra:
             tst[n - i] = (ts[n - i] - tsmean) * weight + tsmean
         return tst
 
-    def resolve_waves_hayashi(self, varfft, nDayWin, spd):
+    def resolve_waves_hayashi(self, varfft):
         """
         Create array PEE(NL+1,NT+1) which contains the (real) power spectrum.
 
@@ -290,24 +306,23 @@ class WKSpectra:
                  |  numtim/2+1 <= pt <= numtim            | numtim-1 <= t <= numtim/2
 
         """
-        N, mlon = varfft.shape
-        pee = np.ones([N + 1, mlon + 1]) * -999.0  # initialize
-        # -999 scaling is for testing
-        # purpose
-        # Create the real power spectrum pee = sqrt(real^2+imag^2)^2
+        n, mlon = varfft.shape
+        pee = np.ones([n + 1, mlon + 1]) * -999.0  # initialize
+        # -999 scaling is for testing purpose
+        # Create the real power spectrum pee equals sqrt(real^2+imag^2)^2
         varfft = np.abs(varfft) ** 2
-        pee[: N // 2, : mlon // 2] = varfft[N // 2 : N, mlon // 2 : 0 : -1]
-        pee[N // 2 :, : mlon // 2] = varfft[: N // 2 + 1, mlon // 2 : 0 : -1]
-        pee[: N // 2 + 1, mlon // 2 :] = varfft[N // 2 :: -1, : mlon // 2 + 1]
-        pee[N // 2 + 1 :, mlon // 2 :] = varfft[
-            N - 1 : N // 2 - 1 : -1, : mlon // 2 + 1
+        pee[: n // 2, : mlon // 2] = varfft[n // 2 : n, mlon // 2 : 0 : -1]
+        pee[n // 2 :, : mlon // 2] = varfft[: n // 2 + 1, mlon // 2 : 0 : -1]
+        pee[: n // 2 + 1, mlon // 2 :] = varfft[n // 2 :: -1, : mlon // 2 + 1]
+        pee[n // 2 + 1 :, mlon // 2 :] = varfft[
+            n - 1 : n // 2 - 1 : -1, : mlon // 2 + 1
         ]
 
         return pee
 
     def wk_smooth121(self, var):
         """
-        Special 1-2-1 smoother that smooths vv by passing it through a 1-2-1 filter.
+        Smooth vv by passing it through a special 1-2-1 filter.
 
         The first and last points are given 3-1 (1st) or 1-3 (last)
         weightings (Note that this conserves the total sum).
@@ -363,18 +378,18 @@ class WKSpectra:
         """Return the index of the array value closest to the target value."""
         return (np.abs(array - value)).argmin()
 
-    def compute_background(self, peeAS, wave, freq, minwav4smth, maxwav4smth):
+    def compute_background(self, pee_as, freq, minwav4smth, maxwav4smth):
         """
-        Derive the background spectrum (red noise) ************
+        Derive the background spectrum (red noise).
 
         [1] Sum power over all latitude
         [2] Put fill value in mean
         [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
         """
-        psumb = np.sum(peeAS, axis=0)  # sum over all latitudes
-        N, _mlon = psumb.shape
+        psumb = np.sum(pee_as, axis=0)  # sum over all latitudes
+        n, _mlon = psumb.shape
 
-        for tt in range(N // 2 + 1, N):
+        for tt in range(n // 2 + 1, n):
             if freq[tt] < 0.1:
                 for _i in range(1, 6):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
@@ -382,14 +397,14 @@ class WKSpectra:
                             psumb[tt, minwav4smth : maxwav4smth + 1]
                         )
                     )
-            if freq[tt] >= 0.1 and freq[tt] < 0.2:
+            if 0.1 <= freq[tt] < 0.2:
                 for _i in range(1, 11):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
                             psumb[tt, minwav4smth : maxwav4smth + 1]
                         )
                     )
-            if freq[tt] >= 0.2 and freq[tt] < 0.3:
+            if 0.2 <= freq[tt] < 0.3:
                 for _i in range(1, 21):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
@@ -409,140 +424,137 @@ class WKSpectra:
         # smth frequency up to .8 cycles per day
         for nw in range(minwav4smth, maxwav4smth + 1):
             for _i in range(1, 11):
-                psumb[N // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
-                    psumb[N // 2 + 1 : pt8cpd + 1, nw]
+                psumb[n // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
+                    psumb[n // 2 + 1 : pt8cpd + 1, nw]
                 )
         return psumb
 
     def generate_dispersion_curves(self):
+        """Compute theoretical dispersion curves."""
         # Theoretical dispersion curves
         rlat = 0.0
-        Ahe = np.array([50.0, 25.0, 12.0])
-        nWaveType = 6
-        nPlanetaryWave = 50
-        nEquivDepth = Ahe.size
+        ahe = np.array([50.0, 25.0, 12.0])
+        n_wave_type = 6
+        n_planetary_wave = 50
+        n_equiv_depth = ahe.size
         fillval = 1e20
-        # ---------------------------------------------------------------
+
         # Theoretical shallow water dispersion curves
-        # --------------------------------------------------------------
         pi = 4.0 * math.atan(1.0)
         re = 6.37122e06  # [m]   average radius of earth
         g = 9.80665  # [m/s] gravity at 45 deg lat used by the WMO
         omega = 7.292e-05  # [1/s] earth's angular vel
-        #U = 0.0
-        #Un = 0.0  # since Un = U*T/L
         ll = 2.0 * pi * re * math.cos(abs(rlat))
-        Beta = 2.0 * omega * math.cos(abs(rlat)) / re
-        
-        Apzwn = np.zeros(
-            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
+        beta = 2.0 * omega * math.cos(abs(rlat)) / re
+
+        apzwn = np.zeros(
+            [n_wave_type, n_equiv_depth, n_planetary_wave],
+            dtype=np.double,
         )
-        Afreq = np.zeros(
-            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
+        afreq = np.zeros(
+            [n_wave_type, n_equiv_depth, n_planetary_wave],
+            dtype=np.double,
         )
 
-        for ww in range(1, nWaveType + 1):  # wave type
-            for ed in range(1, nEquivDepth + 1):  # equivalent depth
-                he = Ahe[ed - 1]
-                #T = 1.0 / math.sqrt(Beta) * (g * he) ** (0.25)
-                L = (g * he) ** (0.25) / math.sqrt(Beta)
+        for ww in range(1, n_wave_type + 1):  # wave type
+            for ed in range(1, n_equiv_depth + 1):  # equivalent depth
+                he = ahe[ed - 1]
 
                 for wn in range(
-                    1, nPlanetaryWave + 1
+                    1, n_planetary_wave + 1
                 ):  # planetary wave number
-                    s = -20.0 * (wn - 1) * 2.0 / (nPlanetaryWave - 1) + 20.0
+                    s = -20.0 * (wn - 1) * 2.0 / (n_planetary_wave - 1) + 20.0
                     k = 2.0 * pi * s / ll
-                    #kn = k * L
 
                     # Anti-symmetric curves
                     if ww == 1:  # MRG wave
                         if k <= 0:
                             delx = math.sqrt(
-                                1.0 + (4.0 * Beta) / (k**2 * math.sqrt(g * he))
+                                1.0 + (4.0 * beta) / (k**2 * math.sqrt(g * he))
                             )
                             deif = k * math.sqrt(g * he) * (0.5 - 0.5 * delx)
                         if k == 0:
-                            deif = math.sqrt(math.sqrt(g * he) * Beta)
+                            deif = math.sqrt(math.sqrt(g * he) * beta)
                         if k > 0:
                             deif = fillval
 
-                    if ww == 2:  # n=0 IG wave
+                    if ww == 2:  # n equals 0 IG wave
                         if k < 0:
                             deif = fillval
                         if k == 0:
-                            deif = math.sqrt(math.sqrt(g * he) * Beta)
+                            deif = math.sqrt(math.sqrt(g * he) * beta)
                         if k > 0:
                             delx = math.sqrt(
-                                1.0 + (4.0 * Beta) / (k**2 * math.sqrt(g * he))
+                                1.0 + (4.0 * beta) / (k**2 * math.sqrt(g * he))
                             )
                             deif = k * math.sqrt(g * he) * (0.5 + 0.5 * delx)
 
-                    if ww == 3:  # n=2 IG wave
+                    if ww == 3:  # n equals 2 IG wave
                         n = 2.0
-                        delx = Beta * math.sqrt(g * he)
+                        delx = beta * math.sqrt(g * he)
                         deif = math.sqrt(
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
-                        # do some corrections to the above calculated frequency.......
+                        # Do some corrections to the above calculated frequency...
                         for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
-                                + g * he * Beta * k / deif
+                                + g * he * beta * k / deif
                             )
 
                     # symmetric curves
-                    if ww == 4:  # n=1 ER wave
+                    if ww == 4:  # n equals 1 ER wave
                         n = 1.0
                         if k < 0:
-                            delx = (Beta / math.sqrt(g * he)) * (2.0 * n + 1.0)
-                            deif = -Beta * k / (k**2 + delx)
+                            delx = (beta / math.sqrt(g * he)) * (2.0 * n + 1.0)
+                            deif = -beta * k / (k**2 + delx)
                         else:
                             deif = fillval
                     if ww == 5:  # Kelvin wave
                         deif = k * math.sqrt(g * he)
-                    if ww == 6:  # n=1 IG wave
+                    if ww == 6:  # n equals 1 IG wave
                         n = 1.0
-                        delx = Beta * math.sqrt(g * he)
+                        delx = beta * math.sqrt(g * he)
                         deif = math.sqrt(
                             (2.0 * n + 1.0) * delx + (g * he) * k**2
                         )
-                        # do some corrections to the above calculated frequency.......
+                        # Do some corrections to the above calculated frequency...
                         for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
-                                + g * he * Beta * k / deif
+                                + g * he * beta * k / deif
                             )
 
-                    eif = deif  # + k*U since  U=0.0
-                    P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
-                    #Rdeg = (180.0 * R) / (pi * 6.37e6)
-                    Apzwn[ww - 1, ed - 1, wn - 1] = s
+                    eif = deif  # plus k times U since U equals 0.0
+                    p = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
+                    apzwn[ww - 1, ed - 1, wn - 1] = s
                     if deif != fillval:
-                        P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
-                        Afreq[ww - 1, ed - 1, wn - 1] = 1.0 / P
+                        p = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
+                        afreq[ww - 1, ed - 1, wn - 1] = 1.0 / p
                     else:
-                        Afreq[ww - 1, ed - 1, wn - 1] = fillval
+                        afreq[ww - 1, ed - 1, wn - 1] = fillval
 
         # removing missing values
-        Afreq = np.ma.masked_values(Afreq, fillval)
-        Apzwn = np.ma.masked_values(Apzwn, fillval)
-        return Afreq, Apzwn
+        afreq = np.ma.masked_values(afreq, fillval)
+        apzwn = np.ma.masked_values(apzwn, fillval)
+        return afreq, apzwn
 
-    def spread_colorbar(self, C):
+    def spread_colorbar(self, c):
         """Interpolate a sparse RGB table to 256 colors."""
-        x = np.linspace(0, 256, len(C))
+        x = np.linspace(0, 256, len(c))
         xnew = np.arange(256)
-        fr = scipy.interpolate.interp1d(x, C[:, 0])
-        fg = scipy.interpolate.interp1d(x, C[:, 1])
-        fb = scipy.interpolate.interp1d(x, C[:, 2])
-        C = np.array(
+        fr = scipy.interpolate.interp1d(x, c[:, 0])
+        fg = scipy.interpolate.interp1d(x, c[:, 1])
+        fb = scipy.interpolate.interp1d(x, c[:, 2])
+
+        # Return C
+        return np.array(
             [fr(xnew).astype(int), fg(xnew).astype(int), fb(xnew).astype(int)]
         ).T
-        return C
 
-    def get_colors(self, reverse=False):
+    def get_colors(self, *, reverse=False):
         """Return the diagnostic colormap, optionally reversed."""
         # Provided RGB values
         rgb_values_str = (
@@ -582,13 +594,13 @@ class WKSpectra:
             rgb_values.append([r, g, b])
 
         # Convert the list to a NumPy array
-        C = np.array(rgb_values)
+        c = np.array(rgb_values)
 
-        if len(C) < 256:
-            C = self.spread_colorbar(C)
-            cm = mpl.colors.ListedColormap(C / 256.0)
+        if len(c) < 256:
+            c = self.spread_colorbar(c)
+            cm = mpl.colors.ListedColormap(c / 256.0)
             if reverse:
-                cm = mpl.colors.ListedColormap(C[::-1, :] / 256.0)
+                cm = mpl.colors.ListedColormap(c[::-1, :] / 256.0)
         return cm
 
     def _setup_spectrum_plot(self, spec, freq, wave, levels, title):
@@ -601,14 +613,14 @@ class WKSpectra:
 
         minfrq = minfrq4plt
         maxfrq = min([maxfrq4plt, max(freq)])
-        F, W = np.meshgrid(wave, freq)
+        f, w = np.meshgrid(wave, freq)
 
-        cmap = self.get_colors()
+        cmap = self.get_colors(reverse=False)
         norm = colors.BoundaryNorm(levels, len(cmap.colors))
 
         fig, ax = plt.subplots()
         contour_set = ax.contourf(
-            F, W, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
+            f, w, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
         )
         bar = fig.colorbar(contour_set, ax=ax)
         bar.locator = ticker.FixedLocator(levels)
@@ -628,11 +640,13 @@ class WKSpectra:
         ax.set_ylabel("Frequency (CPD)")
         return fig, ax
 
-    def _plot_dispersion_curves(self, ax, Apzwn, Afreq, start_index, stop_index):
+    def _plot_dispersion_curves(
+        self, ax, apzwn, afreq, start_index, stop_index
+    ):
         """Overlay theoretical dispersion curves on a spectrum plot."""
         for i in range(start_index, stop_index):
             for j in range(3):
-                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], "k", lw=0.5)
+                ax.plot(apzwn[i, j, :], afreq[i, j, :], "k", lw=0.5)
 
     def get_provenance_record(
         self, caption
@@ -644,7 +658,7 @@ class WKSpectra:
         ]
 
         # Write the provenance dictionary using the provided caption
-        record = {
+        return {
             "caption": caption,
             "statistics": ["mean"],
             "domains": ["global"],
@@ -655,23 +669,22 @@ class WKSpectra:
             "ancestors": filenames,
         }
 
-        return record
-
     def plot_anti_symmetric(
         self,
         spec,
         freq,
         wave,
-        Apzwn,
-        Afreq,
+        apzwn,
+        afreq,
         levels=None,
         title="",
         figname="specAntiSym_test.ps",
     ):
+        """Plot the anti-symmetric component of the Wheeler-Kiladis power spectrum."""
         if levels is None:
             levels = np.arange(0, 2, 0.2)
         fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
-        self._plot_dispersion_curves(ax, Apzwn, Afreq, 0, 3)
+        self._plot_dispersion_curves(ax, apzwn, afreq, 0, 3)
 
         ax.text(-10.0, 0.15, "MRG", {"color": "k", "backgroundcolor": "w"})
         ax.text(-3.0, 0.58, "n=2 IG", {"color": "k", "backgroundcolor": "w"})
@@ -688,16 +701,17 @@ class WKSpectra:
         spec,
         freq,
         wave,
-        Apzwn,
-        Afreq,
+        apzwn,
+        afreq,
         levels=None,
         title="",
         figname="specSym_test.ps",
     ):
+        """Plot the symmetric component of the Wheeler-Kiladis power spectrum."""
         if levels is None:
             levels = np.arange(0, 5, 0.5)
         fig, ax = self._setup_spectrum_plot(spec, freq, wave, levels, title)
-        self._plot_dispersion_curves(ax, Apzwn, Afreq, 3, 6)
+        self._plot_dispersion_curves(ax, apzwn, afreq, 3, 6)
 
         ax.text(11.5, 0.4, "Kelvin", {"color": "k", "backgroundcolor": "w"})
         ax.text(-10.7, 0.07, "n=1 ER", {"color": "k", "backgroundcolor": "w"})
@@ -705,7 +719,7 @@ class WKSpectra:
         ax.text(-14.0, 0.46, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
-        caption = f"{figname}, [or other caption for symmetric]"  # TODO
+        caption = f"{figname}"
         provenance_dict = self.get_provenance_record(caption)
         save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
@@ -719,10 +733,10 @@ class WKSpectra:
          Note_2: Tapering in time is done to make the variable periodic.
 
          The calculations are also only made for the latitudes
-         between '-latBound' and 'latBound'.
+         between '-lat_bound' and 'lat_bound'.
 
         ********************   REFERENCES  *******************************
-         Wheeler, M., G.N. Kiladis Convectively Coupled Equatorial Waves:
+         Wheeler, M., G.n. Kiladis Convectively Coupled Equatorial Waves:
             Analysis of Clouds and Temperature in the Wavenumber-Frequency
             Domain J. Atmos. Sci., 1999,  56: 374-399.
         ---
@@ -730,53 +744,46 @@ class WKSpectra:
             Progressive and Retrogressive Waves by Space and Fourier and
             TimeCross Spectral Analysis J. Meteor. Soc. Japan, 1971, 49: 125-128.
         """
-
-        # if self.varname == 'x_wind':
-        #    assert len(self.cube.coord('pressure').points) == 1
-        #    pressure_level = self.cube.coord('pressure').points[0]
-        #    if pressure_level == 850:
-        #        varname = 'x_wind_850hPa'
-        #    if pressure_level == 200:
-        #        varname = 'x_wind_200hPa'
-
         ntim, nlat, mlon = self.cube.shape
-        latN = self.latBound
-        latS = -1 * self.latBound  # make symmetric about the equator
+        lat_n = self.lat_bound
+        lat_s = -1 * self.lat_bound  # make symmetric about the equator
 
-        lonL = 0  # -180
-        lonR = 360  # 180
-        fCrit = 1.0 / self.nDayWin  # remove all contributions 'longer'
+        lon_l = 0  # -180
+        lon_r = 360  # 180
+        f_crit = 1.0 / self.n_day_win  # remove all contributions 'longer'
 
-        tim_taper = 0.1  # time taper      [0.1   => 10%]
+        tim_taper = 0.1  # time taper [0.1 => 10%]
         lon_taper = (
-            0.0  # longitude taper [0.0 for globe  only global supported]
+            0.0  # longitude taper [0.0 for globe only global supported]
         )
 
-        if lon_taper > 0.0 or lonR - lonL != 360.0:
+        if lon_taper > 0.0 or lon_r - lon_l != 360.0:
             logging.error(
-                "Code does currently allow lon_taper>0 or (lonR-lonL)<360."
+                "Code does currently allow lon_taper>0 or (lon_r-lon_l)<360."
             )
-            raise ValueError("wkSpaceTime lon_taper>0 or (lonR-lonL)<360")
+            msg = "wkSpaceTime lon_taper>0 or (lon_r-lon_l)<360"
+            raise ValueError(msg)
 
-        nDayTot = ntim / self.spd  # of days (total) for input variable
-        nSampTot = nDayTot * self.spd  # of samples (total)
-        nSampWin = self.nDayWin * self.spd  # of samples per temporal window
-        nSampSkip = (
-            self.nDaySkip * self.spd
+        n_day_tot = ntim / self.spd  # of days (total) for input variable
+        n_samp_tot = n_day_tot * self.spd  # of samples (total)
+        n_samp_win = (
+            self.n_day_win * self.spd
+        )  # of samples per temporal window
+        n_samp_skip = (
+            self.n_day_skip * self.spd
         )  # of samples to skip between window segments
         # neg means overlap
-        nWindow = (nSampTot - nSampWin) / (nSampWin + nSampSkip) + 1
-        N = nSampWin  # convenience [historical]
+        n_window = (n_samp_tot - n_samp_win) / (n_samp_win + n_samp_skip) + 1
+        n = n_samp_win  # convenience [historical]
 
-        if nDayTot < self.nDayWin:
+        if n_day_tot < self.n_day_win:
             logging.error(
-                "nDayTot=%s is not allowed to be less than nDayWin=%s",
-                nDayTot,
-                self.nDayWin,
+                "n_day_tot=%s is not allowed to be less than nDayWin=%s",
+                n_day_tot,
+                self.n_day_win,
             )
-            raise ValueError(
-                f"nDayTot ({nDayTot}) is less than nDayWin ({self.nDayWin})"
-            )
+            msg = f"n_day_tot ({n_day_tot}) is less than nDayWin ({self.n_day_win})"
+            raise ValueError(msg)
         # -------------------------------------------------------------------
         #  Remove dominant signals
         # (a) Explicitly remove *long term* linear trend
@@ -788,23 +795,23 @@ class WKSpectra:
 
         # subset the data for 15S-15N
         constraint = iris.Constraint(
-            latitude=lambda cell: latS <= cell <= latN
+            latitude=lambda cell: lat_s <= cell <= lat_n
         )
         self.cube = self.cube.extract(constraint)
         ntim, nlat, mlon = self.cube.shape
 
-        peeAS = np.zeros([nlat, nSampWin + 1, mlon + 1])  # initialize
+        pee_as = np.zeros([nlat, n_samp_win + 1, mlon + 1])  # initialize
 
         # Wave numbers
         wave = np.arange(-mlon / 2, mlon / 2 + 1, 1)
         # Frequencies
         freq = (
             np.linspace(
-                -1 * self.nDayWin * self.spd / 2,
-                self.nDayWin * self.spd / 2,
-                self.nDayWin * self.spd + 1,
+                -1 * self.n_day_win * self.spd / 2,
+                self.n_day_win * self.spd / 2,
+                self.n_day_win * self.spd + 1,
             )
-            / self.nDayWin
+            / self.n_day_win
         )
 
         wave = wave.astype(float)
@@ -818,60 +825,60 @@ class WKSpectra:
             scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
         )  # Mean added
 
-        logging.info("nDayTot = %s", nDayTot)
+        logging.info("n_day_tot = %s", n_day_tot)
 
-        if nDayTot >= 365:  # remove dominant signals
+        if n_day_tot >= 365:  # remove dominant signals
             self.cube = self.remove_annual_cycle(
-                self.cube, nDayTot, fCrit, spd=1, rmvMeans=False
+                self.cube, f_crit, rmv_means=False
             )
         else:
             logging.error(
                 "Length of the variable is shorter than 365. Can not continue!"
             )
-            raise ValueError(f"nDayTot ({nDayTot}) is less than 365")
+            msg = f"n_day_tot ({n_day_tot}) is less than 365"
+            raise ValueError(msg)
 
         # -------------------------------------------------------------------
         #  Decompose to Symmetric and Asymmetric parts
         # -------------------------------------------------------------------
-        xAS = self.decompose_sym_asym(self.cube)  # create Asym and Sym parts
+        x_as = self.decompose_sym_asym(self.cube)  # create Asym and Sym parts
 
         # -------------------------------------------------------------------
         #  Because there is the possibility of overlapping *temporal* segments,
         #  we must use a less efficient approach and detrend/taper
         #  each window segment as it arises.
-        #           t0   t1   t2   t3   t4  .................. t(N)
-        #  lon(0):  x00  x01  x02  x03  x04 .................. x0(N)
+        #           t0   t1   t2   t3   t4  .................. t(n)
+        #  lon(0):  x00  x01  x02  x03  x04 .................. x0(n)
         #      :    :   :   :   :   :                     :
-        #  lon(M):  xM0  xM1  xM2  xM3  xM4 .................. xM(N)
+        #  lon(M):  xM0  xM1  xM2  xM3  xM4 .................. xM(n)
         # -------------------------------------------------------------------
         #  q     - temporary array to hold the 2D complex results
         #          for each longitude/time (lon,time) window that is fft'd.
         #          This is one instance [realization] of space-time decomposition.
         #
-        #  peeAS - symmetric and asymmetric power values in each latitude hemisphere.
+        #  pee_as - symmetric and asymmetric power values in each latitude hemisphere.
         #          Add extra lon/time to match JET
         # -------------------------------------------------------------------
-        logging.info("nSampWin = %s", nSampWin)
+        logging.info("n_samp_win = %s", n_samp_win)
 
         for nl in range(nlat):
             nw = 0
             logging.info("Latitude: nl = %s", nl)
-            ntStrt = 0
-            ntLast = nSampWin
-            while ntLast < nDayTot:
+            nt_strt = 0
+            nt_last = n_samp_win
+            while nt_last < n_day_tot:
                 if nl == 0:
                     logging.debug(
-                        "nw = %s\nntStrt = %s\nntLast =%s", nw, ntStrt, ntLast
+                        "nw = %s\nnt_strt = %s\nnt_last =%s",
+                        nw,
+                        nt_strt,
+                        nt_last,
                     )
-                work = xAS[ntStrt:ntLast, nl].copy()
-
-                # Check for missing data
-                # masked_inds = np.where(work.data.mask)
-                # if not len(masked_inds[0]) > 0:
+                work = x_as[nt_strt:nt_last, nl].copy()
 
                 # detrend the window
                 work.data = scipy.signal.detrend(
-                    xAS.data[ntStrt:ntLast, nl], axis=0
+                    x_as.data[nt_strt:nt_last, nl], axis=0
                 )
 
                 # taper the window along time axis
@@ -881,29 +888,23 @@ class WKSpectra:
                     work.data[:, lo] = self.taper(
                         work.data[:, lo], alpha=tim_taper, iopt=0
                     )
-                # logging.info('Passed Tapering test')
 
                 # Do actual FFT work
                 ft = work.copy()
-                ft.data = np.fft.fft2(work.data) / mlon / nSampWin
+                ft.data = np.fft.fft2(work.data) / mlon / n_samp_win
 
                 # Shifting FFTs
-                pee = self.resolve_waves_hayashi(
-                    ft.data, self.nDayWin, self.spd
-                )
+                pee = self.resolve_waves_hayashi(ft.data)
 
                 # Average
-                peeAS[nl, :, :] = peeAS[nl, :, :] + (pee / nWindow)
+                pee_as[nl, :, :] = pee_as[nl, :, :] + (pee / n_window)
 
                 nw += 1
 
-                # else:
-                #    logging.info('Missing data detected. Skipping to the next window...')
-
-                ntStrt = (
-                    ntLast + nSampSkip
+                nt_strt = (
+                    nt_last + n_samp_skip
                 )  # set index for next temporal window
-                ntLast = ntStrt + nSampWin
+                nt_last = nt_strt + n_samp_win
 
         # -------------------------------------------------------------------
         #  now that we have the power array for sym and asym: use to
@@ -916,12 +917,12 @@ class WKSpectra:
         # -------------------------------------------------------------------
         if nlat % 2 == 0:
             psumanti = np.sum(
-                peeAS[nlat // 2 : nlat], axis=0
+                pee_as[nlat // 2 : nlat], axis=0
             )  # // for integer result
-            psumsym = np.sum(peeAS[: nlat // 2], axis=0)
+            psumsym = np.sum(pee_as[: nlat // 2], axis=0)
         else:
-            psumanti = np.sum(peeAS[nlat // 2 + 1 : nlat], axis=0)
-            psumsym = np.sum(peeAS[: nlat // 2 + 1], axis=0)
+            psumanti = np.sum(pee_as[nlat // 2 + 1 : nlat], axis=0)
+            psumsym = np.sum(pee_as[: nlat // 2 + 1], axis=0)
         # -------------------------------------------------------------------
         #  since summing over half the array (symmetric,asymmetric) the
         #  total variance is 2 x the half sum
@@ -949,15 +950,15 @@ class WKSpectra:
         minwav4smth = -27
         maxwav4smth = 27
 
-        indStrt = np.where(minwav4smth == wave)[0][0]
-        indLast = np.where(maxwav4smth == wave)[0][0]
+        ind_strt = np.where(minwav4smth == wave)[0][0]
+        ind_last = np.where(maxwav4smth == wave)[0][0]
 
-        for wv in np.arange(indStrt, indLast + 1):
-            psumanti[N // 2 + 1 : N, wv] = self.wk_smooth121(
-                psumanti[N // 2 + 1 : N, wv]
+        for wv in np.arange(ind_strt, ind_last + 1):
+            psumanti[n // 2 + 1 : n, wv] = self.wk_smooth121(
+                psumanti[n // 2 + 1 : n, wv]
             )
-            psumsym[N // 2 + 1 : N, wv] = self.wk_smooth121(
-                psumsym[N // 2 + 1 : N, wv]
+            psumsym[n // 2 + 1 : n, wv] = self.wk_smooth121(
+                psumsym[n // 2 + 1 : n, wv]
             )
         # -------------------------------------------------------------------
         #  Log10 scaling
@@ -979,9 +980,8 @@ class WKSpectra:
         #  [3] Apply smoothing to the spectrum. This smoothing DOES include
         #      wavenumber zero.
         # -----------------------------------------------------------------------------
-        # logging.info("======> BACKGROUND <=====")
 
-        psumb = self.compute_background(peeAS, wave, freq, indStrt, indLast)
+        psumb = self.compute_background(pee_as, freq, ind_strt, ind_last)
         psumb_nolog = np.ma.masked_array(psumb)
         psumb = np.ma.log10(psumb)
         psumb_cube = self.make_cube(psumb, wave, freq)
@@ -990,10 +990,8 @@ class WKSpectra:
         #  Plot section
 
         # Generate dispersion cuves
-        Afreq, Apzwn = self.generate_dispersion_curves()
+        afreq, apzwn = self.generate_dispersion_curves()
 
-        # Fig.1 - Raw spectra Symmetric and Anti-symmetric
-        #
         # Define contour levels for plots
         levels_dict = {
             "toa_outgoing_longwave_flux": np.array(
@@ -1032,8 +1030,8 @@ class WKSpectra:
             psumanti,
             freq,
             wave,
-            Apzwn,
-            Afreq,
+            apzwn,
+            afreq,
             levels=levels_dict[self.varname],
             title=title,
             figname=figname,
@@ -1056,8 +1054,8 @@ class WKSpectra:
             psumsym,
             freq,
             wave,
-            Apzwn,
-            Afreq,
+            apzwn,
+            afreq,
             levels=levels_dict[self.varname],
             title=title,
             figname=figname,
@@ -1189,8 +1187,8 @@ class WKSpectra:
             psumanti_nolog,
             freq,
             wave,
-            Apzwn,
-            Afreq,
+            apzwn,
+            afreq,
             levels=levels_dict[self.varname],
             title=title,
             figname=figname,
@@ -1201,9 +1199,7 @@ class WKSpectra:
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
-        save_data(
-            forename, provenance_dict, self.cfg, psumanti_nolog_cube
-        )
+        save_data(forename, provenance_dict, self.cfg, psumanti_nolog_cube)
 
         # Symmetric
         # Define contour levels for plots
@@ -1301,8 +1297,8 @@ class WKSpectra:
             psumsym_nolog,
             freq,
             wave,
-            Apzwn,
-            Afreq,
+            apzwn,
+            afreq,
             levels=levels_dict[self.varname],
             title=title,
             figname=figname,
@@ -1313,22 +1309,20 @@ class WKSpectra:
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
-        save_data(
-            forename, provenance_dict, self.cfg, psumsym_nolog_cube
-        )
+        save_data(forename, provenance_dict, self.cfg, psumsym_nolog_cube)
 
-    def mjo_wavenum_freq_season(self, seaName):
+    def mjo_wavenum_freq_season(self, sea_name):
         #
-        #  For each 'seaName' (say, 'winter') over a number
+        #  For each 'sea_name' (say, 'winter') over a number
         #  of different years, calculate the
         #  pooled space-time spectra
         #  MJO CLIVAR: wavenumber-frequency spectra
         #              winter starts Nov 1  [180 days]
         #              summer starts May 1  [180 days]
         #              annual starts Jan 1  [365 days]
-        latBound = 10
+        lat_bound = 10
         var = self.cube.intersection(
-            latitude=(-latBound, latBound), longitude=(0, 360)
+            latitude=(-lat_bound, lat_bound), longitude=(0, 360)
         )
         var = var.collapsed("latitude", iris.analysis.MEAN)
 
@@ -1337,17 +1331,17 @@ class WKSpectra:
         years, months, days = self.get_dates(time)
         mmdd = months * 100 + days
         yyyymmdd = years * 10000 + mmdd
-        nDay = 180
-        if seaName == "winter":
-            mmddStrt = 1101
-        if seaName == "summer":
-            mmddStrt = 501
-        if seaName == "annual":
-            nDay = 365
-            mmddStrt = 101
+        n_day = 180
+        if sea_name == "winter":
+            mmdd_strt = 1101
+        if sea_name == "summer":
+            mmdd_strt = 501
+        if sea_name == "annual":
+            n_day = 365
+            mmdd_strt = 101
 
-        iSea = [i for i in range(len(mmdd)) if mmdd[i] == mmddStrt]
-        nYear = len(iSea)
+        i_sea = [i for i in range(len(mmdd)) if mmdd[i] == mmdd_strt]
+        n_year = len(i_sea)
 
         """
         # *****************************************************************
@@ -1358,53 +1352,51 @@ class WKSpectra:
         # *****************************************************************
         """
         # remove linear trend
-        var.data = scipy.signal.detrend(
-            var.data, axis=0
-        )  # + varmean.data # Mean added
+        var.data = scipy.signal.detrend(var.data, axis=0)
 
         # Initialise
-        power = np.zeros([mlon + 1, nDay + 1])  # initialize
+        power = np.zeros([mlon + 1, n_day + 1])  # initialize
         work = var.data
-        xVarSea = 0.0  # variance (raw)
-        xVarTap = 0.0  # variance after tapering
-        kSea = 0  # count of seasons used
+        x_var_sea = 0.0  # variance (raw)
+        x_var_tap = 0.0  # variance after tapering
+        k_sea = 0  # count of seasons used
 
-        for ny in range(nYear):
-            iStrt = iSea[ny]  # start index for current season
-            iLast = iSea[ny] + nDay  # last
-            if iLast < ntim - 1:
+        for ny in range(n_year):
+            i_strt = i_sea[ny]  # start index for current season
+            i_last = i_sea[ny] + n_day  # last
+            if i_last < ntim - 1:
                 logging.debug("ny: %s", ny)
-                logging.debug("kSea: %s", kSea)
-                logging.debug("iStrt: %s", iStrt)
-                logging.debug("iLast: %s", iLast)
-                logging.debug("yyyymmdd[iStrt]: %s", yyyymmdd[iStrt])
-                logging.debug("yyyymmdd[iLast]: %s", yyyymmdd[iLast])
-                xSeason = work[iStrt:iLast, :]
-                xAvg = np.average(xSeason)  # season average all time/lon
-                xSeason = xSeason - xAvg  # remove season time-lon mean
-                xVarSea = xVarSea + np.var(xSeason)  # overall variance
-                kSea = kSea + 1
+                logging.debug("k_sea: %s", k_sea)
+                logging.debug("i_strt: %s", i_strt)
+                logging.debug("i_last: %s", i_last)
+                logging.debug("yyyymmdd[i_strt]: %s", yyyymmdd[i_strt])
+                logging.debug("yyyymmdd[i_last]: %s", yyyymmdd[i_last])
+                x_season = work[i_strt:i_last, :]
+                x_avg = np.average(x_season)  # season average all time/lon
+                x_season = x_season - x_avg  # remove season time-lon mean
+                x_var_sea = x_var_sea + np.var(x_season)  # overall variance
+                k_sea = k_sea + 1
 
                 for lo in range(mlon):
-                    xSeason[:, lo] = self.taper(
-                        xSeason[:, lo], alpha=0.1, iopt=0
+                    x_season[:, lo] = self.taper(
+                        x_season[:, lo], alpha=0.1, iopt=0
                     )
-                xVarTap = xVarTap + np.var(xSeason)  # variance after tapering
+                x_var_tap = x_var_tap + np.var(
+                    x_season
+                )  # variance after tapering
                 # do 2d fft
-                ft = xSeason.copy()
-                ft = np.fft.fft2(xSeason.T) / mlon / nDay
+                ft = x_season.copy()
+                ft = np.fft.fft2(x_season.T) / mlon / n_day
 
                 # Shifting FFTs
-                power = power + self.resolve_waves_hayashi(
-                    ft, nDay, spd=1
-                )  # (wave,freq)
+                power = power + self.resolve_waves_hayashi(ft)  # (wave,freq)
 
-        xVarSea = xVarSea / kSea  # pooled seasonal variance
-        xVarTap = xVarTap / kSea  # pooled seasonal variance
-        power = np.ma.masked_array(power / kSea)  # pooled spectra
+        x_var_sea = x_var_sea / k_sea  # pooled seasonal variance
+        x_var_tap = x_var_tap / k_sea  # pooled seasonal variance
+        power = np.ma.masked_array(power / k_sea)  # pooled spectra
 
         wave = np.arange(-mlon / 2, mlon / 2 + 1, 1)
-        freq = np.linspace(-1 * nDay / 2, nDay / 2, nDay + 1) / nDay
+        freq = np.linspace(-1 * n_day / 2, n_day / 2, n_day + 1) / n_day
         wave = wave.astype(float)
         freq = freq.astype(float)
         pow_cube = self.makecube_season_pow(power, wave, freq)
@@ -1419,20 +1411,20 @@ class WKSpectra:
     ):
         if levels is None:
             levels = np.arange(0, 3, 0.2)
-        NW = 6
-        fMin = -0.05
-        fMax = 0.05
+        nw = 6
+        f_min = -0.05
+        f_max = 0.05
 
         constraint = iris.Constraint(
-            frequency=lambda cell: fMin <= cell <= fMax,
-            wavenumber=lambda cell: 0 <= cell <= NW,
+            frequency=lambda cell: f_min <= cell <= f_max,
+            wavenumber=lambda cell: 0 <= cell <= nw,
         )
         pow_cube = pow_cube.extract(constraint)
 
         freq = pow_cube.coord("frequency").points
         wave = pow_cube.coord("wavenumber").points
 
-        W, F = np.meshgrid(freq, wave)
+        w, f = np.meshgrid(freq, wave)
 
         # set zeroth frequency to minimum value
         izero = np.where(freq == 0)[0][0]
@@ -1441,14 +1433,14 @@ class WKSpectra:
         # Initialize the plot
         fig, ax = plt.subplots()
 
-        CS = ax.contourf(
-            W, F, pow_cube.data, levels=levels, cmap="YlGnBu", extend="both"
+        cs = ax.contourf(
+            w, f, pow_cube.data, levels=levels, cmap="YlGnBu", extend="both"
         )
-        fig.colorbar(CS, ax=ax)
+        fig.colorbar(cs, ax=ax)
 
         # set axes range
-        ax.set_ylim(0, NW)
-        ax.set_xlim(fMin, fMax)
+        ax.set_ylim(0, nw)
+        ax.set_xlim(f_min, f_max)
 
         # Line markers of periods
         frqs = [80, 30]
