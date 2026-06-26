@@ -23,8 +23,9 @@ documentation:
     - ukesm
 
 datasets:
-  #- {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
-  - {dataset: ACCESS1-3, 'institute': CSIRO-BOM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: ACCESS1-3, institute: CSIRO-BOM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, exp: historical, grid: gn, project: CMIP6, start_year: 1981, end_year: 2000}
 
 preprocessors:
   extract_region:
@@ -59,8 +60,6 @@ diagnostics:
     scripts:
       &main
       main:
-<<<<<<< HEAD
-<<<<<<< HEAD
         script: diag_scripts/mjo/mjo_diag.py
         reference_datasets: [ "ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3" ]
         regrid_dataset: ERA-Interim
