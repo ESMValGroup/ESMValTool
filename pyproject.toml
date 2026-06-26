@@ -132,7 +132,6 @@ env = { MPLBACKEND = "Agg" }
 log_level = "WARNING"
 minversion = "6"
 markers = [
-    "installation: Test requires installation of dependencies",
     "diagnostic_image_output: test produces images that will be compared with imagehash",
 ]
 testpaths = ["tests"]
