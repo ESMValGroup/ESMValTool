@@ -9,20 +9,25 @@ jobs:
     # Run tests
     docker:
       - image: cimg/base:current
-    resource_class: large
+    resource_class: medium
     steps:
       - checkout
       - pixi/pixi_setup
       - run:
-          name: Check dependencies are compatible
-          command: pixi run --as-is pip check
+          name: Check dependencies are compatible and installed
+          command: |
+            pixi run --as-is pip check
+            # The following command should not install any new dependencies
+            # because they are already in the conda environment, but this is
+            # not checked.
+            pixi run --as-is pip install --dry-run .[all]
       - run:
           name: Check code formatting and mistakes
           command: pixi run --as-is pre-commit run --all
       - run:
           name: Run tests
           command: |
-            pixi run --as-is test -n 4 --durations=10 --junitxml=test-reports/report.xml
+            pixi run --as-is test -n 2 --durations=10 --junitxml=test-reports/report.xml
       - run:
           name: Check the command line interface
           command: |
@@ -80,6 +85,10 @@ jobs:
             intake_esgf.conf.save()
             '
             esmvaltool run --max-parallel-tasks=2 testing/recipe_python_for_CI.yml
+      - run:
+          name: Run tests
+          command: |
+            pixi run --as-is --environment esmvaltool-minimal test -n 2 --ignore tests/sample_data/ --ignore tests/unit/cmorizers/test_cmorization_interface.py
       - store_artifacts:
           path: /root/esmvaltool_output
       - save_cache:
