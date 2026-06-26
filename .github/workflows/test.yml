@@ -10,7 +10,6 @@ on:
     branches:
       - main
       - update-pixi
-      - add-minimal-installation
   schedule:
     - cron: "0 0 * * *"
 

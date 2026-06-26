@@ -179,9 +179,6 @@ workflows:
   commit:
     jobs:
       - tests
-      - test_minimal_installation
-      - test_upstream_development
-      - build_documentation
   nightly:
     triggers:
       - schedule:
@@ -192,6 +189,7 @@ workflows:
                 - main
     jobs:
       - tests
+      - test_minimal_installation
       - test_upstream_development
       - build_documentation
       - test_installation_from_conda
