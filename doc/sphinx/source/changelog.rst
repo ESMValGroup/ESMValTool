@@ -16,7 +16,6 @@ This release includes
 Bug fixes
 ~~~~~~~~~
 
--  Fix removal of `month_number` and `year` coordinates after `monthly_statistics` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
 -  Fix ESACCI-CLOUD formatter: removing group coordinates is not necessary anymore (:pull:`4410`) by :user:`schlunma`
 
 Documentation
@@ -35,6 +34,7 @@ Observational and re-analysis dataset support
 
 -  Extension of ESA CCI OZONE CMORizer (:pull:`4125`) by :user:`axel-lauer`
 -  Cmoriser update WOA to 2023 (:pull:`4337`) by :user:`flicj191`
+-  Fix removal of `month_number` and `year` coordinates after `monthly_statistics` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
 -  Updated calipso-icecloud downloader and formatter from v1.00 to v2.00 (:pull:`4441`) by :user:`axel-lauer`
 -  Fix ESACCI-OC CMORizer (:pull:`4464`) by :user:`schlunma`
 
