@@ -53,7 +53,7 @@ jobs:
     # Test running the example recipe with minimal dependencies.
     docker:
       - image: cimg/base:current
-    resource_class: large
+    resource_class: medium
     steps:
       - checkout
       - run:
@@ -93,7 +93,7 @@ jobs:
     # the development cycle.
     docker:
       - image: cimg/base:current
-    resource_class: large
+    resource_class: medium
     steps:
       - checkout
       - run:
@@ -107,7 +107,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pixi run --as-is --environment esmvalcore-dev test -n 4 --junitxml=test-reports/report.xml
+            pixi run --as-is --environment esmvalcore-dev test -n 2 --junitxml=test-reports/report.xml
       - store_test_results:
           path: test-reports/report.xml
       - run:
@@ -136,7 +136,7 @@ jobs:
     # Test building documentation
     docker:
       - image: cimg/base:current
-    resource_class: medium+
+    resource_class: medium
     steps:
       - checkout
       - pixi/pixi_setup
@@ -175,6 +175,8 @@ workflows:
     jobs:
       - tests
       - test_minimal_installation
+      - test_upstream_development
+      - build_documentation
   nightly:
     triggers:
       - schedule:
