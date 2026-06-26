@@ -3,6 +3,91 @@
 Changelog
 =========
 
+.. _changelog-v2-15-0:
+
+v2.15.0
+--------
+Highlights
+
+TODO: add highlights
+
+This release includes
+
+Bug fixes
+~~~~~~~~~
+
+-  Fix removal of `month_number` and `year` coordinates after `monthly_statistics` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
+-  Fix ESACCI-CLOUD formatter: removing group coordinates is not necessary anymore (:pull:`4410`) by :user:`schlunma`
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Remove outdated link to YAML reference card (:pull:`4418`) by :user:`bouweandela`
+-  Fix the PDF build of the documentation (:pull:`4432`) by :user:`bouweandela`
+-  Improve documentation  on installing the development version of ESMValCore (:pull:`4433`) by :user:`bouweandela`
+-  Update release instructions related to Docker (:pull:`4454`) by :user:`bouweandela`
+-  Minimise content on main documentation page (:pull:`4449`) by :user:`ehogan`
+-  Documentation for contributor license agreement & CLA-assistant (:pull:`4440`) by :user:`alistairsellar`
+-  Small improvements to documentation on obtaining input data (:pull:`4462`) by :user:`bouweandela`
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Extension of ESA CCI OZONE CMORizer (:pull:`4125`) by :user:`axel-lauer`
+-  Cmoriser update WOA to 2023 (:pull:`4337`) by :user:`flicj191`
+-  Updated calipso-icecloud downloader and formatter from v1.00 to v2.00 (:pull:`4441`) by :user:`axel-lauer`
+-  Fix ESACCI-OC CMORizer (:pull:`4464`) by :user:`schlunma`
+
+Release
+~~~~~~~
+
+-  Update to v2.14.0 (:pull:`4388`) by :user:`schlunma`
+-  Add missing PR to 2.14.0 changelog (:pull:`4390`) by :user:`schlunma`
+-  Add v2.14.0 release overview table (:pull:`4477`) by :user:`schlunma`
+-  Release planning for 2.15 (:pull:`4471`) by :user:`flicj191`
+-  Update planned release dates for v2.15 (:pull:`4494`) by :user:`flicj191`
+-  Release 2.15 Tool planned freeze date typo (:pull:`4496`) by :user:`flicj191`
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Run test recipes in the nightly tests with intake-esgf (:pull:`4394`) by :user:`bouweandela`
+-  Improve the security of GitHub Action workflows (:pull:`4421`) by :user:`bouweandela`
+-  Add workflow dispatch gha test.yml (needed to test PR 4502) (:pull:`4503`) by :user:`valeriupredoi`
+-  Run Github Action tests (test.yml) after pixi lockfile update (:pull:`4502`) by :user:`valeriupredoi`
+-  Ask ESMValBot to create the lockfile update pull request (:pull:`4507`) by :user:`bouweandela`
+-  Undo branches selection in test.yml (:pull:`4509`) by :user:`bouweandela`
+-  Run tests on all platforms and Python versions when updating pixi lock file (:pull:`4512`) by :user:`bouweandela`
+
+Installation
+~~~~~~~~~~~~
+
+-  Use pixi to manage development conda environments (:pull:`4407`) by :user:`bouweandela`
+-  Support for Python 3.14 (:pull:`4303`) by :user:`valeriupredoi`
+
+Rapid Evaluation Framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Fix issue with recipe ref fire dependency (:pull:`4420`) by :user:`jlenh`
+-  Add fallbacks for CMIP7 tasmax handling in `ref/recipe_ref_fire.yml` (:pull:`4423`) by :user:`jlenh`
+-  Updating the REF ozone recipe with the correct ozone data (:pull:`4444`) by :user:`hb326`
+-  Add ZEC CMIP7 recipe (:pull:`4458`) by :user:`bettina-gier`
+-  Added a CMIP7 version for recipe_ref_trend_regions.yml, recipe_ref_tannual_cycle_region.yml and recipe_ref_timeseries_region.yml (:pull:`4460`) by :user:`katjaweigel`
+-  Add CMIP7-compatible REF version of ``recipe_ecs.yml`` (:pull:`4465`) by :user:`schlunma`
+-  Add CMIP7-compatible REF version of ``recipe_tcr.yml`` (:pull:`4469`) by :user:`schlunma`
+-  Add CMIP7-compatible REF version of ``recipe_tcre.yml`` (:pull:`4480`) by :user:`schlunma`
+-  REF recipe CRE with CMIP7 data (:pull:`4461`) by :user:`hb326`
+-  Write temperature vs. emissions data in TCRE diagnostic (:pull:`4484`) by :user:`schlunma`
+-  Update REF recipe `recipe_calculate_gwl_exceedance_stats.yml` for CMIP7 datasets (:pull:`4486`) by :user:`rswamina`
+-  Sea ice sensitivity to GMST - Calculate from observational datasets (:pull:`4220`) by :user:`NParsonsMO`
+-  Adding CMIP7 version of `recipe_seaice_sensitivity.yml` (:pull:`4453`) by :user:`NParsonsMO`
+
+Improvements
+~~~~~~~~~~~~
+
+-  Update path to CEDA-JASMIN esmeval gws (group workspace) (:pull:`4411`) by :user:`valeriupredoi`
+-  Nicer command line (:pull:`4459`) by :user:`bouweandela`
+
 .. _changelog-v2-14-0:
 
 v2.14.0
