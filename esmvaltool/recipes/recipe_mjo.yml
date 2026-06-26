@@ -14,10 +14,10 @@ documentation:
      {in/de}creasing values.
 
   authors:
-    - xavier_prince
+    - sellar_alistair
 
   maintainer:
-    - xavier_prince
+    - sellar_alistair
 
   projects:
     - ukesm
@@ -46,6 +46,9 @@ preprocessors:
       levels: [85000., 20000.]
       scheme: linear
 
+  pp_olr:
+    <<: *extract_region
+
 diagnostics:
   eqw_spectra_pr:
     description: equatorial waves spectra precip
@@ -56,7 +59,7 @@ diagnostics:
     scripts:
       &main
       main:
-        script: ../diag_scripts/mjo/mjo_diag.py
+        script: diag_scripts/mjo/mjo_diag.py
         reference_datasets: [ "ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3" ]
         regrid_dataset: ERA-Interim
         mip_name: CMIP
@@ -64,10 +67,19 @@ diagnostics:
         analysis_range: [ 1981, 2000 ]
 
   eqw_spectra_winds:
-    description: equatorial waves spectra winds
+    description: equatorial waves spectra zonal winds at 850 hPa
     variables:
       ua:
         mip: day
         preprocessor: pp_levels_winds
+    scripts:
+      *main
+
+  eqw_spectra_olr:
+    description: equatorial waves spectra TOA outgoing longwave radiation
+    variables:
+      rlut:
+        mip: day
+        preprocessor: pp_olr
     scripts:
       *main
