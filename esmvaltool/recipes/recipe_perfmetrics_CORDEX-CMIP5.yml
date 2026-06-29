@@ -62,6 +62,8 @@ preprocessors:
     regrid:
       target_grid: EUR-11
       scheme: linear
+    convert_units:
+      units: K
     distance_metric:
       metric: weighted_rmse
     multi_model_statistics:
@@ -80,7 +82,6 @@ datasets:
 - {dataset: HadREM3-GA7-05, driver: CNRM-CERFACS-CNRM-CM5, institute: MOHC, rcm_version: v2}
 - {dataset: HadREM3-GA7-05, driver: MPI-M-MPI-ESM-LR, institute: MOHC}
 - {dataset: RCA4, driver: ICHEC-EC-EARTH, institute: SMHI}
-- {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
 - {dataset: RCA4, driver: NCC-NorESM1-M, institute: SMHI}
 diagnostics:
   diagnostic:
@@ -125,6 +126,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         domain: EUR-11
         ensemble: r1i1p1
@@ -176,6 +178,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         - {dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(1:2)i1p1', institute: MPI-CSC}
         - {dataset: REMO2015, driver: CCCma-CanESM2, institute: GERICS}
@@ -230,6 +233,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI, supplementary_variables: [{driver: CNRM-CERFACS-CNRM-CM5, ensemble: r0i0p0, mip: fx, short_name: sftlf}]}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         - {dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(1:2)i1p1', institute: MPI-CSC}
         - {dataset: REMO2015, driver: CNRM-CERFACS-CNRM-CM5, institute: GERICS, rcm_version: v2}
@@ -273,6 +277,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         derive: true
         domain: EUR-11
@@ -309,6 +314,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         domain: EUR-11
         ensemble: r1i1p1
@@ -352,6 +358,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         - {dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(1:2)i1p1', institute: MPI-CSC}
         - {dataset: REMO2015, driver: CNRM-CERFACS-CNRM-CM5, institute: GERICS, rcm_version: v2}
@@ -419,6 +426,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         - {dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(1:2)i1p1', institute: MPI-CSC}
         - {dataset: REMO2015, driver: CCCma-CanESM2, institute: GERICS}
@@ -463,6 +471,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         - {dataset: REMO2015, driver: CNRM-CERFACS-CNRM-CM5, institute: GERICS, rcm_version: v2}
         - {dataset: REMO2015, driver: IPSL-IPSL-CM5A-MR, institute: GERICS}
@@ -510,6 +519,7 @@ diagnostics:
         - {dataset: RACMO22E, driver: MPI-M-MPI-ESM-LR, institute: KNMI}
         - {dataset: RACMO22E, driver: NCC-NorESM1-M, institute: KNMI}
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r3i1p1, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI}
         - {dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(1:2)i1p1', institute: MPI-CSC}
         - {dataset: REMO2015, driver: CNRM-CERFACS-CNRM-CM5, institute: GERICS, rcm_version: v2}
         - {dataset: REMO2015, driver: IPSL-IPSL-CM5A-LR, institute: GERICS}
@@ -565,6 +575,7 @@ diagnostics:
         - {dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI}
         - {dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, institute: SMHI}
         - {dataset: RCA4, driver: MOHC-HadGEM2-ES, institute: SMHI}
+        - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(2:3)i1p1', institute: SMHI, supplementary_variables: [{driver: CNRM-CERFACS-CNRM-CM5, ensemble: r0i0p0, mip: fx, short_name: sftlf}]}
         - {dataset: RCA4, driver: MPI-M-MPI-ESM-LR, institute: SMHI, rcm_version: v1a}
         - {dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: 'r(1:2)i1p1', institute: MPI-CSC}
         - {dataset: REMO2015, driver: CNRM-CERFACS-CNRM-CM5, institute: GERICS, rcm_version: v2}
