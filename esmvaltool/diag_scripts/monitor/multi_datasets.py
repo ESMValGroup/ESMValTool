@@ -428,7 +428,6 @@ from matplotlib.ticker import (
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
