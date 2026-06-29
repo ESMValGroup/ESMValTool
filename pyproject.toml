@@ -240,8 +240,8 @@ default = { features = ["esmvalcore", "all", "dev", "doc", "test"], solve-group 
 esmvaltool-python = { features = ["esmvalcore", "all"], solve-group = "default" }
 # Environment for running the minimum set of dependencies, just enough to run
 # the Python example diagnostic (examples/recipe_python.yml).
-esmvaltool-minimal-dev = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
-esmvaltool-minimal = { features = ["esmvalcore"], solve-group = "default" }
+esmvaltool-base-dev = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
+esmvaltool-base = { features = ["esmvalcore"], solve-group = "default" }
 # Environment for running diagnostics that also require NCL.
 esmvaltool-ncl-dev = { features = ["esmvalcore", "all", "ncl", "dev", "doc", "pys2index", "test"], solve-group = "ncl" }
 esmvaltool-ncl = { features = ["esmvalcore", "all", "ncl", "pys2index"], solve-group = "ncl" }

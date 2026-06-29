@@ -54,7 +54,7 @@ jobs:
       - store_artifacts:
           path: test-reports.tar.gz
 
-  test_minimal_installation:
+  test_esmvaltool_base_installation:
     # Test running the example recipe with minimal dependencies.
     docker:
       - image: cimg/base:current
@@ -66,16 +66,16 @@ jobs:
           # Refresh the cache every month.
           command: echo $(date '+%Y-%m') | tee cache_key.txt
       - restore_cache:
-          key: test-minimal-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - pixi/pixi_setup:
-          env: esmvaltool-minimal
+          env: esmvaltool-base
       - run:
           name: Check dependencies are compatible
-          command: pixi run --as-is --environment esmvaltool-minimal pip check
+          command: pixi run --as-is --environment esmvaltool-base pip check
       - run:
           name: Run example recipe
           command: |
-            source <(pixi shell-hook --as-is --environment esmvaltool-minimal)
+            source <(pixi shell-hook --as-is --environment esmvaltool-base)
             esmvaltool version
             esmvaltool config copy data-intake-esgf.yml
             python -c '
@@ -88,7 +88,7 @@ jobs:
       - store_artifacts:
           path: /root/esmvaltool_output
       - save_cache:
-          key: test-minimal-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - /root/climate_data
 
@@ -189,7 +189,7 @@ workflows:
                 - main
     jobs:
       - tests
-      - test_minimal_installation
+      - test_esmvaltool_base_installation
       - test_upstream_development
       - build_documentation
       - test_installation_from_conda

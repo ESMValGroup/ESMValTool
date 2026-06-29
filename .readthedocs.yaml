@@ -23,9 +23,9 @@ build:
       - pixi install --frozen
     build:
       html:
-        - pixi run sphinx-build -T -W --keep-going -b html -d _build/doctrees -D language=en doc/sphinx/source $READTHEDOCS_OUTPUT/html
+        - pixi run -e esmvaltool-base-dev sphinx-build -T -W --keep-going -b html -d _build/doctrees -D language=en doc/sphinx/source $READTHEDOCS_OUTPUT/html
       pdf:
-        - pixi run sphinx-build -T -b latex -d _build/doctrees -D language=en doc/sphinx/source $READTHEDOCS_OUTPUT/pdf-build
+        - pixi run -e esmvaltool-base-dev sphinx-build -T -b latex -d _build/doctrees -D language=en doc/sphinx/source $READTHEDOCS_OUTPUT/pdf-build
         - cat $READTHEDOCS_OUTPUT/pdf-build/latexmkrc
         - cd $READTHEDOCS_OUTPUT/pdf-build && latexmk -r latexmkrc -pdf -f -dvi- -ps- -jobname=esmvaltool -interaction=nonstopmode; mkdir $READTHEDOCS_OUTPUT/pdf && mv esmvaltool.pdf $READTHEDOCS_OUTPUT/pdf
 
