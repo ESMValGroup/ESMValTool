@@ -32,13 +32,14 @@ jobs:
           - test-py312
           - test-py313
           - test-py314
+          - esmvaltool-base-dev
     name: ${{ matrix.os }} ${{ matrix.environment }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11  # v0.9.6
+      - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           frozen: true
           environments: ${{ matrix.environment }}
@@ -47,7 +48,15 @@ jobs:
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
-        run: pytest -n 2 -m "not installation"
+        if: matrix.environment != 'esmvaltool-base-dev'
+        run: pytest -n 2
+      - name: Run tests
+        if: matrix.environment == 'esmvaltool-base-dev'
+        run: >-
+          pytest
+          -n 2
+          --ignore=tests/sample_data/
+          --ignore=tests/unit/cmorizers/test_cmorization_interface.py
       - name: Upload artifacts
         if: ${{ always() }} # upload artifacts even if fail
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
