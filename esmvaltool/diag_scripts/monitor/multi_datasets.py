@@ -2319,55 +2319,6 @@ class MultiDatasets(MonitorBase):
             mpl_rc_params = self._get_custom_mpl_rc_params(plot_type)
             logger.info("Plotting %s", plot_type)
 
-            # Handle deprecations
-            if "show_x_minor_ticks" in self.plots[plot_type]:
-                msg = (
-                    f"The option `show_x_minor_ticks` for plot type "
-                    f"`{plot_type}` has been deprecated in ESMValTool version "
-                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
-                    f"Please use the option `x_minor_formatter: null/''` (for "
-                    f"`show_x_minor_ticks: false/true`) instead."
-                )
-                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-                show_ticks = self.plots[plot_type].pop("show_x_minor_ticks")
-                self.plots[plot_type]["x_minor_formatter"] = (
-                    "" if show_ticks else None
-                )
-            if "show_y_minor_ticks" in self.plots[plot_type]:
-                msg = (
-                    f"The option `show_y_minor_ticks` for plot type "
-                    f"`{plot_type}` has been deprecated in ESMValTool version "
-                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
-                    f"Please use the option `y_minor_formatter: null/''` (for "
-                    f"`show_y_minor_ticks: false/true`) instead."
-                )
-                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-                show_ticks = self.plots[plot_type].pop("show_y_minor_ticks")
-                self.plots[plot_type]["y_minor_formatter"] = (
-                    "" if show_ticks else None
-                )
-            if "show_y_minor_ticklabels" in self.plots[plot_type]:
-                msg = (
-                    f"The option `show_y_minor_ticklabels` for plot type "
-                    f"`{plot_type}` has been deprecated in ESMValTool version "
-                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
-                    f"Please use the option `y_minor_formatter: '%.1f'` "
-                    f"instead."
-                )
-                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-                self.plots[plot_type].pop("show_y_minor_ticklabels")
-                self.plots[plot_type]["y_minor_formatter"] = "%.1f"
-            if "time_on" in self.plots[plot_type]:
-                msg = (
-                    f"The option `time_on` for plot type `{plot_type}` has "
-                    f"been deprecated in ESMValTool version 2.13.0 and is "
-                    f"scheduled for removal in version 2.15.0. Please use the "
-                    f"option `transpose_axes: true/false` instead."
-                )
-                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-                time_on = self.plots[plot_type].pop("time_on")
-                self.plots[plot_type]["transpose_axes"] = time_on == "y-axis"
-
             # Inspect plot function to determine arguments
             plot_parameters = inspect.signature(plot_function).parameters
 
