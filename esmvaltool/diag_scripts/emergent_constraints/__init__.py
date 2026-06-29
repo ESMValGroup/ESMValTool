@@ -523,14 +523,14 @@ def _create_scatterplot(
     for idx, _ in enumerate(x_data):
         if numbers_as_markers:
             axes.text(
-                x_data[idx],
-                y_data[idx],
+                x_data.iloc[idx],
+                y_data.iloc[idx],
                 x_data.index.get_level_values(-1)[idx],
                 size=7,
                 **scatter_kwargs,
             )
         else:
-            axes.scatter(x_data[idx], y_data[idx], **scatter_kwargs)
+            axes.scatter(x_data.iloc[idx], y_data.iloc[idx], **scatter_kwargs)
 
     # Regression line
     line_kwargs = {**kwargs, "linestyle": "-"}
@@ -635,6 +635,18 @@ def _create_regplot(
 
 def _get_pandas_cube(pandas_object):
     """Convert :mod:`pandas` object to cube and fix coordinates."""
+    # Make sure dtype of indices and columns is "object" (just like it used to
+    # be in Pandas < 3) because iris.pandas.as_cube cannot handle the new
+    # string dtype of Pandas <= 3. See
+    # https://pandas.pydata.org/pandas-docs/stable/whatsnew/v3.0.0.html#dedicated-string-data-type-by-default
+    # for details.
+    if pandas_object.index.dtype == "str":
+        pandas_object.index = pandas_object.index.astype("object")
+    if (
+        hasattr(pandas_object, "columns")
+        and pandas_object.columns.dtype == "str"
+    ):
+        pandas_object.columns = pandas_object.columns.astype("object")
     cube = iris.pandas.as_cube(pandas_object)
     for coord_name in ("index", "columns"):
         try:

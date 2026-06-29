@@ -9,12 +9,13 @@ import shutil
 from contextlib import contextmanager
 from pathlib import Path
 
+import esmvalcore.cmor.table
+import esmvalcore.config
 import iris
 import numpy as np
 import yaml
 from cf_units import Unit
 from dask import array as da
-from esmvalcore.cmor.table import CMOR_TABLES
 from iris.cube import Cube
 
 from esmvaltool import __file__ as esmvaltool_file
@@ -316,7 +317,9 @@ def read_cmor_config(dataset):
     )
     with open(reg_path, encoding="utf-8") as file:
         cfg = yaml.safe_load(file)
-    cfg["cmor_table"] = CMOR_TABLES[cfg["attributes"]["project_id"]]
+    cfg["cmor_table"] = esmvalcore.cmor.table.CMOR_TABLES[
+        cfg["attributes"]["project_id"]
+    ]
     if "comment" not in cfg["attributes"]:
         cfg["attributes"]["comment"] = ""
     return cfg
