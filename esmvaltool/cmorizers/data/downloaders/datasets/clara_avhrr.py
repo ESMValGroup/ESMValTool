@@ -174,8 +174,10 @@ def download_dataset(
                     zip_ref.extractall(outdir)
             else:
                 logger.info("Detected GZIP file: %s", file_path)
-                with gzip.open(file_path, "rb") as f_in:
-                    with Path(outdir / file_path.stem).open("rb") as f_out:
+                with (
+                    gzip.open(file_path, "rb") as f_in,
+                    Path(outdir / file_path.stem).open("rb") as f_out,
+                ):
                         shutil.copyfileobj(f_in, f_out)
         except Exception as ex:
             logger.info("%s: no data downloaded for %s", type(ex), var_name)
