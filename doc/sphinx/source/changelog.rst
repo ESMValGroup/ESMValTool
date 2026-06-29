@@ -38,16 +38,6 @@ Observational and re-analysis dataset support
 -  Updated calipso-icecloud downloader and formatter from v1.00 to v2.00 (:pull:`4441`) by :user:`axel-lauer`
 -  Fix ESACCI-OC CMORizer (:pull:`4464`) by :user:`schlunma`
 
-Release
-~~~~~~~
-
--  Update to v2.14.0 (:pull:`4388`) by :user:`schlunma`
--  Add missing PR to 2.14.0 changelog (:pull:`4390`) by :user:`schlunma`
--  Add v2.14.0 release overview table (:pull:`4477`) by :user:`schlunma`
--  Release planning for 2.15 (:pull:`4471`) by :user:`flicj191`
--  Update planned release dates for v2.15 (:pull:`4494`) by :user:`flicj191`
--  Release 2.15 Tool planned freeze date typo (:pull:`4496`) by :user:`flicj191`
-
 Automatic testing
 ~~~~~~~~~~~~~~~~~
 
