@@ -505,15 +505,14 @@ ncdf_opener_universal <- # nolint
 
       # break if the data requested is not there
       lastday_base <- paste0(max(tyears), "-", max(tmonths), "-28")
-      # uses number.days.month, which loops to get the month change
+      # calendar-aware last day of month
+      if (grepl("360", caldata)) {
+        ndays <- 30
+      } else {
+        ndays <- number_days_month(lastday_base)
+      }
       lastday <- as.PCICt(
-        paste0(
-          max(tyears),
-          "-",
-          max(tmonths),
-          "-",
-          number_days_month(lastday_base)
-        ),
+        paste0(max(tyears), "-", max(tmonths), "-", ndays),
         cal = caldata,
         format = "%Y-%m-%d"
       )
