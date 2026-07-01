@@ -17,7 +17,7 @@ documentation:
 
 datasets:
   - {dataset: DUMMY-MODEL, institute: MOHC, project: CMIP7, activity: CMIP,
-    ensemble: r1i1p1f2, exp: historical, start_year: 2013, end_year: 2014,
+    ensemble: r1i1p1f2, exp: historical, start_year: 2002, end_year: 2021,
     region: glb, grid: g999, frequency: mon}
 
 preprocessors:
