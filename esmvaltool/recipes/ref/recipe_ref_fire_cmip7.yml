@@ -5,6 +5,7 @@ documentation:
     Recipe that plots diagnostics regarding climate drivers for fire.
     The diagnostic uses code for the ConFire model from the following GitHub repository:
     https://github.com/douglask3/Bayesian_fire_models/tree/AR7_REF
+    The timerange is chosen to overlap with reliable burned area observations.
 
   title: Climate drivers for fire.
 
