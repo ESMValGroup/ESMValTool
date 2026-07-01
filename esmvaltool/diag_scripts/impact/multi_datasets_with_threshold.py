@@ -242,7 +242,7 @@ class MultiDatasets(MonitorBase):
             if options_type not in self.options_settings:
                 msg = (
                     f"Got unexpected options type '{options_type}' for option "
-                    f"'plots', expected one of {list(self.options_settings)}"
+                    f"'options', expected one of {list(self.options_settings)}"
                 )
                 raise ValueError(msg) 
             if option_options is None:
@@ -283,7 +283,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(key, val)
            
 
-              #load input data
+        # Load input data
         self.input_data = self._load_and_preprocess_data()
         self.grouped_input_data = group_metadata(
             self.input_data,
@@ -610,19 +610,7 @@ class MultiDatasets(MonitorBase):
     
     def _get_bias_dataset(self, dataset_1: dict, dataset_2: dict) -> dict:
         """Get bias dataset (dataset_1 - dataset_2)."""
-        #ToDo: this is a quick fix, maybe fix the dataset properly
-        dataset_2["cube"].coord("latitude").coord_system = None
-        dataset_2["cube"].coord("longitude").coord_system = None
-
-        # print(dataset_1["cube"].coord('time'))
-        # print(dataset_2["cube"].coord('time'))
        
-        # print(dataset_1["cube"].coord('time').points)
-        # print(dataset_2["cube"].coord('time').points)
-
-        # print(dataset_1["cube"])
-        # print(dataset_2["cube"])
-        # print("TODO check if this part here is working, then remove prints")
         bias_cube = dataset_1["cube"] - dataset_2["cube"]
 
         bias_cube.metadata = dataset_1["cube"].metadata
@@ -925,7 +913,20 @@ class MultiDatasets(MonitorBase):
             elif cube.coords("altitude", dim_coords=True):
                 z_coord = cube.coord("altitude")
                 z_coord.attributes["positive"] = "up"
-             # Save ancestors
+            
+            # Remove additional coordinate systems to avoid errors calculating
+            # bias datasets. In particular,  removing the additional coordinate
+            # system of the ESACCI obssevational Dataset, introducing a neglegible 
+            # error.
+            for dim in ["latitude", "longitude"]:
+                if cube.coord(dim).coord_system:
+                    msg = ( 
+                        f"Removing the coordinate system {cube.coord(dim).coord_system} " 
+                        f"from the dataset {dataset}  in the dimension {dim}"
+                    )
+                    warnings.warn(msg, UserWarning, stacklevel = 1)
+                    cube.coord(dim).coord_system = None
+            # Save ancestors
             dataset["ancestors"] = [filename]
 
             if "threshold_conversion" in self.options:
@@ -974,8 +975,6 @@ class MultiDatasets(MonitorBase):
             linestyle_op = linestyle[operator]
             label = f"{label_dataset} - {operator}" 
             
-            
-           
             coords = self._check_cube_coords(cube, plot_type)
             coord = cube.coord(coords[0], dim_coords=True)
             coord_label = f"{coord.name()} [{coord.units}]"
@@ -988,15 +987,13 @@ class MultiDatasets(MonitorBase):
                 iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
 
 
-
         
         linestyle = {}
         linestyle_iter = iter(['--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))])
 
        
         datasets_labels = list(dict.fromkeys(self._get_label(d) for d in datasets))
-        print(datasets_labels)
-        #todo maybe add that this should only be applied if theme is not set differently.
+        
         colors = sns.color_palette("husl", len(datasets_labels))
         dataset_colors = dict(zip(datasets_labels,colors))
         
@@ -1039,7 +1036,7 @@ class MultiDatasets(MonitorBase):
 
             #Plotting the observations in black
             for key, val in dataset.items():
-                if 'OBS' in str(val):  #Todo again a not so clean easy fix, maybe do this in a more elegant way
+                if 'OBS' in str(val):  
                     dataset_colors[label_dataset] = 'black'
 
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)         
@@ -1062,7 +1059,11 @@ class MultiDatasets(MonitorBase):
                     if len(operator_list) == 1:
                         operator = operator_list[0]
                     else:
-                        warnings.warn("There are multiple operations accociated with the time coordinate, expected is only one. Continuing with the first one, but results might be not accurate.")
+                        msg = (
+                            "There are multiple operations accociated with the time coordinate,"
+                            "expected is only one. Continuing with the first one, but results might be not accurate."
+                        )
+                        warnings.warn(msg, UserWarning, stacklevel=1)
                         operator = operator_list[0]
                     if operator not in operators:
                         if operator == 'mean':
@@ -1312,44 +1313,18 @@ class MultiDatasets(MonitorBase):
         axes_right.set_ylabel("")
 
         return fig
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             
     def convert_data_thresholded(
         self,
         cube,
     ):
        
-        #TODO: this condition is a bit hacky fix to prevent for this option to be executed several times, would be better to fix it nicely, directly calling this option only once before the plotting calls.
+        #Preventing that this option is executed several times
         if cube.coords('day_of_year'):
             msg = (
-                f"WARNING: Reusing already aggregated cube..."
+                f"Reusing already aggregated cube"
             )
-            warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
+            warnings.warn(msg, UserWarning, stacklevel=2)
 
         else:
 
@@ -1359,8 +1334,8 @@ class MultiDatasets(MonitorBase):
             cat.add_year(cube, "time")
 
             for options_type in self.options:
-                    # Ensuring that the data is daily, by regridding to daily timestep eventually. 
-                    # Note that for absolute values like temperature one should take the max (accumulated: false), and for cummulated values like total precipitation one should accumulate the values (accumulated: true).  
+                # Ensuring that the data is daily, by regridding to daily timestep eventually 
+                # Note that for absolute values like temperature one should take the max (accumulated: false), and for cummulated values like total precipitation one should accumulate the values (accumulated: true).  
                 if self.options[options_type]["accumulated"]:
                     cube = cube.aggregated_by(["year", "day_of_year"], iris.analysis.SUM)
                 else:
@@ -1385,8 +1360,8 @@ class MultiDatasets(MonitorBase):
             
             cube.units = "days/year"
             for plot_type in self.plots:
-                self.plots[plot_type]["cbar_label"] = f"{var_name} exceeding {threshold} {var_unit} [{cube.units}]"
-                self.plots[plot_type]["cbar_label_bias"] = f"Δ{var_name} exceeding {threshold} {var_unit} [{cube.units}]"
+                self.plots[plot_type]["cbar_label"] = f"days with {var_name} exceeding {threshold} {var_unit} [{cube.units}]"
+                self.plots[plot_type]["cbar_label_bias"] = f"Δ days with {var_name} exceeding {threshold} {var_unit} [{cube.units}]"
     
 
         return cube

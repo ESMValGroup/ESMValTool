@@ -1,6 +1,6 @@
 # ESMValTool
 # TODO: Include warning: Currently not full year periods are deprechiated cause they could produce missleading results...
-# TODO: currently need to call map function after timeline such that cube is still intact for timeline, maybe fix this in diagnostic...
+# TODO: currently need to call map function after timeseries such that cube is still intact for timeseries, maybe fix this in diagnostic...
 ---
 documentation:
   title: Impact diagnostic.
@@ -13,7 +13,6 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
-  #- {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc}
   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
   # - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
     #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
@@ -61,24 +60,24 @@ preprocessors:
 
 
 
-  radiation_preproc_timeline: &radiation_preproc_config
+  radiation_preproc_timeseries: &radiation_preproc_config
     area_statistics:
       operator: mean
     annual_statistics:
       operator: mean  
 
-  radiation_preproc_timeline_min:
+  radiation_preproc_timeseries_min:
     <<: *radiation_preproc_config
     area_statistics:
       operator: min
      
 
-  radiation_preproc_timeline_max:
+  radiation_preproc_timeseries_max:
     <<: *radiation_preproc_config
     area_statistics:
       operator: max  
 
-  ocean_preproc_timeline: &ocean_preproc_config
+  ocean_preproc_timeseries: &ocean_preproc_config
     custom_order: true
     regrid:
       target_grid: 2x2
@@ -91,18 +90,18 @@ preprocessors:
     annual_statistics:
       operator: mean
 
-  ocean_preproc_timeline_max:
+  ocean_preproc_timeseries_max:
     <<: *ocean_preproc_config
     area_statistics:
       operator: max
 
-  ocean_preproc_timeline_min:
+  ocean_preproc_timeseries_min:
     <<: *ocean_preproc_config
     area_statistics:
       operator: min
 
 
-  zostoga_preproc_timeline:
+  zostoga_preproc_timeseries:
     # custom_order: true
     # regrid:
     #   target_grid: 2x2
@@ -119,9 +118,8 @@ preprocessors:
 diagnostics:
 
   plot_days_tmax_40:
-  # TODO: this is not working yet, maybe also look into https://github.com/ESMValGroup/ESMValCore/issues/2892
-  # additional_datasets: 
-  #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 201, raw_name: mx2t, short_name: tasmax, units: K, tier: 3, mip: day,  reference_for_monitor_diags: true} #maybe change to tres: 1H? #todo: check entries, in part. if type fc is reasonable choice...
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: tasmax, type: reanaly, version: 1,  reference_for_monitor_diags: true} 
     description: Map showing number of days where the temperature exceeds 40°C.
     variables:
       tasmax:
@@ -130,7 +128,7 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days: &exceeding_day_config
-        script: impact/diagnostic_draft3.py
+        script: impact/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -151,9 +149,8 @@ diagnostics:
           #       cmap: 'coolwarm'
 
   plot_days_tmin_0:
-  # TODO: this is not working yet, maybe also look into https://github.com/ESMValGroup/ESMValCore/issues/2892
-  # additional_datasets: 
-  #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 202, raw_name: mn2t, short_name: tasmin, units: K, tier: 3, mip: day,  reference_for_monitor_diags: true} #maybe change to tres: 1H? #todo: check entries, in part. if type fc is reasonable choice...
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: tasmin, type: reanaly, version: 1,  reference_for_monitor_diags: true}
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
@@ -172,8 +169,8 @@ diagnostics:
           
 
   plot_days_prmaxthreshold1:
-    # additional_datasets: 
-    #   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, color: blue}
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, version: 1,  reference_for_monitor_diags: true}
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
@@ -194,9 +191,9 @@ diagnostics:
          
 
   plot_days_prmaxthreshold10:
-    # additional_datasets: 
-    #   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, color: blue}
-    description: Map showing number of days where the rain rate exceeds xx mm.
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+    description: Map showing number of days where the rain rate exceeds 10 mm.
     variables:
       pr:
         timerange: 19950101/20141231
@@ -243,10 +240,10 @@ diagnostics:
       zostoga:
         timerange: 19950101/20141231
         mip: Omon
-        preprocessor: zostoga_preproc_timeline
+        preprocessor: zostoga_preproc_timeseries
     scripts:
       thermosteric_sealevel_mean: &timeseries_config
-        script: impact/diagnostic_draft3.py
+        script: impact/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -274,17 +271,17 @@ diagnostics:
       tos:
         timerange: 19950101/20141231
         mip: Oday
-        preprocessor: ocean_preproc_timeline
+        preprocessor: ocean_preproc_timeseries
       tos_max:
         short_name: tos
         timerange: 19950101/20141231
         mip: Oday
-        preprocessor: ocean_preproc_timeline_max
+        preprocessor: ocean_preproc_timeseries_max
       tos_min:
         short_name: tos
         timerange: 19950101/20141231
         mip: Oday
-        preprocessor: ocean_preproc_timeline_min
+        preprocessor: ocean_preproc_timeseries_min
     scripts:
       plot: *timeseries_config
         
@@ -297,41 +294,39 @@ diagnostics:
       mlotst:
         timerange: 19950101/20141231
         mip: Omon #Omon or Eday
-        preprocessor: ocean_preproc_timeline
+        preprocessor: ocean_preproc_timeseries
       mlotst_max:
         short_name: mlotst
         timerange: 19950101/20141231
         mip: Omon
-        preprocessor: ocean_preproc_timeline_max
+        preprocessor: ocean_preproc_timeseries_max
       mlotst_min:
         short_name: mlotst
         timerange: 19950101/20141231
         mip: Omon
-        preprocessor: ocean_preproc_timeline_min
+        preprocessor: ocean_preproc_timeseries_min
     scripts:
       plot: *timeseries_config
 
   timeseries_rsds:
     additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: rsds, tier: 3, type: reanaly, version: 1, mip: day, reference_for_monitor_diags: true}
-    # additional_datasets: 
-    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 169, raw_name: ssrd, short_name: rsds, units: Jm-2, tier: 3, mip: day}
     description: Plot timeseries showing the shortwave downward radiation at the surface.
     variables:
       rsds:
         timerange: 19960101/20141231
         mip: Amon #or Amon
-        preprocessor: radiation_preproc_timeline
+        preprocessor: radiation_preproc_timeseries
       rsds_min:
         short_name: rsds
         timerange: 19960101/20141231
         mip: Amon #or Amon
-        preprocessor: radiation_preproc_timeline_min
+        preprocessor: radiation_preproc_timeseries_min
       rsds_max:
         short_name: rsds
         timerange: 19960101/20141231
         mip: Amon #or Amon
-        preprocessor: radiation_preproc_timeline_max
+        preprocessor: radiation_preproc_timeseries_max
       
     scripts:
       plot: *timeseries_config

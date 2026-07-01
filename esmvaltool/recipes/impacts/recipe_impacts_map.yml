@@ -1,6 +1,6 @@
 # ESMValTool
 # TODO: Include warning: Currently not full year periods are deprechiated cause they could produce missleading results...
-# TODO: currently need to call map function after timeline such that cube is still intact for timeline, maybe fix this in diagnostic...
+# TODO: currently need to call map function after timeseries such that cube is still intact for timeseries, maybe fix this in diagnostic...
 
 
 
@@ -21,13 +21,12 @@ documentation:
 datasets:
   #- {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  #- {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+ 
     #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
 
 
 preprocessors:
 
-  # 
   temperature_preproc:
     ##In the future extract europe or similar with: 
     #extract_region:
@@ -35,6 +34,9 @@ preprocessors:
     #  end_latitude: 30
     #  start_longitude: 0
     #  end_longitude: 360
+    regrid:
+      target_grid: 2x2
+      scheme: linear
     convert_units:
       units: degC
     local_solar_time: # Needed to ensure dates are local time and not UTC [otherwise extremes at one noon could count for two days. TODO: maybe consider how this could influence results for e.g. low temperatures at night]
@@ -101,10 +103,10 @@ preprocessors:
 
 
 diagnostics:
-  # TODO: this is not working yet, maybe also look into https://github.com/ESMValGroup/ESMValCore/issues/2892
-  # additional_datasets: 
-  #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 201, raw_name: mx2t, short_name: tasmax, units: K, tier: 3, mip: day,  reference_for_monitor_diags: true} #maybe change to tres: 1H? #todo: check entries, in part. if type fc is reasonable choice...
+   
   plot_days_tmax_40:
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: tasmax, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
     description: Map showing number of days where the temperature exceeds 40°C.
     variables:
       tasmax:
@@ -113,7 +115,7 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days: &exceeding_day_config
-        script: impact/diagnostic_draft3.py
+        script: impact/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -133,10 +135,9 @@ diagnostics:
                 cmap: 'coolwarm'
 
   plot_days_tmin_0:
-  # TODO: this is not working yet, maybe also look into https://github.com/ESMValGroup/ESMValCore/issues/2892
-  # additional_datasets: 
-  #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 202, raw_name: mn2t, short_name: tasmin, units: K, tier: 3, mip: day,  reference_for_monitor_diags: true} #maybe change to tres: 1H? #todo: check entries, in part. if type fc is reasonable choice...
-
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: tasmin, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
+  
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
@@ -161,9 +162,9 @@ diagnostics:
                 cmap: 'coolwarm'
 
   plot_days_prmaxthreshold1:
-    # additional_datasets: 
-    #   - {dataset: ERA5, project: OBS, short_name: pr, raw_name: pr, type: fc, version: v1,  reference_for_monitor_diags: true}
-      # - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, mip: day, grib_id: 228, raw_name: tp, short_name: pr, units: m, tier: 3,  reference_for_monitor_diags: true} # , timerange: 20000101/20040101, start_year: 2000, end_year: 2003 units: m, mip: 1hr,
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: pr, tier: 3, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+   
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
@@ -180,18 +181,19 @@ diagnostics:
             threshold: 1 #1,10
         plots:
           map:     
-            #TODO: include actual threshold number in this caption:
-            caption: 'Number of days per year with rain rate exceeding threshold for {dataset}.'
+            caption: 'Number of days per year with rain rate exceeding 1 mm for {dataset}.'
             common_cbar: true
             fontsize: 10
             plot_kwargs:
               default:
                 cmap: 'coolwarm'
+          
 
 
   plot_days_prmaxthreshold10:
-    # additional_datasets: 
-    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 228, raw_name: tp, short_name: pr, units: m, tier: 3, mip: day,  reference_for_monitor_diags: true}
+    additional_datasets:
+        - {dataset: ERA5, project: OBS6, type: reanaly, tier: 3, version: 1, short_name: pr ,  reference_for_monitor_diags: true}
+    
     description: Map showing number of days where the rain rate exceeds 10 mm.
     variables:
       pr:
@@ -209,8 +211,7 @@ diagnostics:
         plots:
           # timeseries:
           map:     
-            #TODO: include actual threshold number in this caption:
-            caption: 'Number of days per year with rain rate exceeding threshold for {dataset}.'
+            caption: 'Number of days per year with rain rate exceeding 10 mm for {dataset}.'
             common_cbar: true
             fontsize: 10
             plot_kwargs:
@@ -222,7 +223,6 @@ diagnostics:
 
   plot_snwe_10:
     additional_datasets:
-    #  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn,  reference_for_monitor_diags: true}
       - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0, reference_for_monitor_diags: true}
     description: Map showing number of days there is more than 10 cm of snow water equivalent.
     variables:
@@ -249,30 +249,6 @@ diagnostics:
                 cmap: 'coolwarm'
 
 
-######Todo: This variable is a global average -> cannot be plotted as a map 
-
-  # plot_zostoga:
-  #   description: Map showing the Global Average Thermosteric Sea Level Change.
-  #   variables:
-  #     zostoga:
-  #       timerange: 20000601/20030901
-  #       mip: Omon
-  #       preprocessor: ocean_preproc
-  #   scripts:
-  #     plot:
-  #       script: monitor/multi_datasets.py
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{mip}'
-  #       facet_used_for_labels: dataset
-  #       plots:
-  #         map:
-  #           caption: |
-  #             TODO test.
-  #           common_cbar: true
-  #           fontsize: 10
-  #           plot_kwargs:
-  #             default:
-  #               cmap: 'coolwarm'
 
 
 
@@ -287,7 +263,7 @@ diagnostics:
         preprocessor: ocean_preproc
     scripts:
       plot: &map_config
-        script: impact/diagnostic_draft3.py
+        script: impact/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -325,8 +301,6 @@ diagnostics:
   plot_rsds:
     additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: rsds, tier: 3, type: reanaly, version: 1, mip: day, reference_for_monitor_diags: true}
-    # additional_datasets: 
-    #   - {dataset: ERA5, project: native6, family: E5, level: sf, type: fc, type_id: 12, tres: 1D, grib_id: 169, raw_name: ssrd, short_name: rsds, units: Jm-2, tier: 3, mip: day,  reference_for_monitor_diags: true}
     description: Plot maps showing the shortwave downward radiation at the surface.
     variables:
       rsds:
@@ -345,5 +319,3 @@ diagnostics:
               default:
                 cmap: 'coolwarm'
       
-
- 
