@@ -467,9 +467,7 @@
   "license": {
     "id": "Apache-2.0"
   },
-  "publication_date": "2025-03-05",
   "title": "ESMValTool",
-  "version": "v2.12.0",
   "communities": [
     {
       "identifier": "enes-ri"
