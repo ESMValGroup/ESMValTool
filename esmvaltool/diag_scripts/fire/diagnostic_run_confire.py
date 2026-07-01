@@ -412,6 +412,7 @@ def _read_variable_from_netcdf(
     make_flat: bool = False,
     return_time_points: bool = False,
     return_extent: bool = False,
+    verbose: bool = True,
 ) -> iris.cube.Cube:
     """Read data from a netCDF file.
 
@@ -446,8 +447,9 @@ def _read_variable_from_netcdf(
         if make_flat, a numpy vector of the target variable, otherwise
         returns iris cube.
     """
-    logger.info("Opening:")
-    logger.info(filename)
+    if verbose:
+        logger.info("Opening:")
+        logger.info(filename)
 
     if filename[0] == "~" or filename[0] == "/" or filename[0] == ".":
         directory = ""
@@ -612,6 +614,7 @@ def _read_all_data_from_netcdf(
         make_flat=True,
         return_time_points=True,
         return_extent=True,
+        verbose=False,
         **kw,
     )
 
@@ -622,6 +625,7 @@ def _read_all_data_from_netcdf(
             make_flat=True,
             time_points=time_points,
             extent=extent,
+            verbose=False,
             **kw,
         )
 
@@ -899,7 +903,11 @@ def _get_parameters(config: dict) -> tuple:
         directory=nc_dir,
     )
     # Load a sample cube (used for inserting data)
-    eg_cube = _read_variable_from_netcdf(nc_files[0], directory=nc_dir)
+    eg_cube = _read_variable_from_netcdf(
+        nc_files[0],
+        directory=nc_dir,
+        verbose=False,
+    )
     # **Extract Model Parameters**
     logger.info("Loading ConFire model parameters...")
     params, params_names = _select_post_param(param_file_trace)
