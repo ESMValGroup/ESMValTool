@@ -25,18 +25,36 @@ Diagnostic is in `diag_scripts/seaice/`
 Recipe settings
 ~~~~~~~~~~~~~~~
 
-Years to be evaluated are specified in the ``extract_test_period`` preprocessor. Arctic sea ice is evaluated using data from September, and Antarctic sea ice is evaluated using annually meaned data. This can be amended by changing the preprocessor for each variable (shown below).
+Years to be evaluated are specified with the ``start_year`` and ``end_year`` keywords in the model dataset section, which are automatically duplicated into the observational datasets section.
+
+.. code-block:: yaml
+
+    model_defaults: &model_defaults { ..., start_year: &data_start 1979, end_year: &data_end 2014}
+
+Pre-calculated values for the mean sensitivity of sea ice area to global warming (and an associated standard deviation and plausible range) can be entered be for both arctic and antarctic diagnostics (more details are given in the "References" section below).
+
+.. code-block:: yaml
+
+    diagnostics:
+      arctic:
+        scripts:
+          sea_ice_sensitivity_script:
+            observations:
+              observation_period:
+                start_year:
+                end_year:
+              sea_ice_sensitivity:
+                mean:
+                standard deviation:
+                plausible range:
+
+If the years to be evaluated differ from those specified for pre-calculated observational values for either hemisphere, then the "observational period" is assumed to be a subset of the dataset evaluation period and all statistics will be calculated for both periods, with these results shown as two halves of the sensitivity (one dimensional) plot. The two dimensional plot will only use values from the entire evaluation period.
+
+Arctic sea ice is evaluated using data from September, and Antarctic sea ice is evaluated using annually meaned data. This can be amended by changing the preprocessor for each variable (shown below).
 
 .. code-block:: yaml
 
     pp_arctic_sept_sea_ice:
-      extract_time:
-        start_day: 1
-        start_month: 1
-        start_year: 1979
-        end_day: 31
-        end_month: 12
-        end_year: 2014
       extract_month:
         month: 9
       extract_region:
@@ -57,6 +75,15 @@ Only one ensemble member is used for each model.
 
 All, some or no datasets may be labelled in the plots, using ``label_dataset: True`` in the recipe settings.
 
+.. note::
+
+   **The same time range must be used for all observational datasets specified.**
+
+   This is because the linear regression of sea ice area against temperature
+   is calculated directly for some values in the plots,
+   and so both types of observation must have the same number of data points.
+
+
 References
 ----------
 
@@ -71,6 +98,8 @@ Example plots
    :width:   8cm
 
    Plot of sensitivity of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September to the annual mean global temperature change (K).
+   Models are shown on the left in blue, and the relationships between SIA-GMST pairs of observational datasets are shown on the right in orange.
+   The shading around the position of each observational pair shows the standard error as computed by :func:`scipy.stats.linregress`.
 
    The dashed black line shows the observational mean, the shaded area denotes one one standard deviation of observational uncertainty, as calculated by Notz et al (2020).
    The dotted grey lines reflect Notz et al estimate of a plausible range incorporating both internal variability and observational uncertainty.
@@ -89,4 +118,5 @@ plausible  1.28 million km2 K-1
 
    Plot of the trend of annually averaged southern hemisphere sea ice area (millions of square kilometres) over time against the trend of annually and globally averaged air temperature near the surface (degrees Kelvin) over time. The values plotted are 10 times the annual trend, which was calculated using :func:`scipy.stats.linregress`, for consistency with the decadal values used in the published plot.
 
-   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.
+   The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates that the trend of sea ice area over time has a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.
+   Models are shown as circles and observational datasets are shown as squares.
