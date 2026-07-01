@@ -58,6 +58,9 @@ all = [
     "cfgrib",
     "cftime",
     "cmocean",
+    "copernicusmarine",
+    "dask!=2024.8.0",   # https://github.com/dask/dask/issues/11296
+    "distributed",
     "ecmwf-api-client",
     "eofs",
     # "ESMPy",               # not on PyPI
@@ -315,7 +318,9 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "cdsapi" = "*"
 "cfgrib" = "*"
 "cftime" = "*"
+"click" = ">=8.2.0,!=8.3.0,!=8.3.1"
 "cmocean" = "*"
+"copernicusmarine" = "*"
 "cython" = "*"
 "ecmwf-api-client" = "*"
 "eofs" = "*"

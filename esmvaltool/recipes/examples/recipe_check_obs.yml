@@ -595,6 +595,37 @@ diagnostics:
          type: clim, version: v2.2016b, start_year: 2000, end_year: 2000}
     scripts: null
 
+  GLORYS12V1:
+    description: GLORYS12V1 check
+    variables:
+      uo:
+        mip: Omon
+      vo:
+        mip: Omon
+      thetao:
+        mip: Omon
+      so:
+        mip: Omon
+      zos:
+        mip: Omon
+      mlotst:
+        mip: Omon
+      tob:
+        mip: Omon
+      siconc:
+        mip: SImon
+      sithick:
+        mip: SImon
+      siu:
+        mip: SImon
+      siv:
+        mip: SImon
+      thkcello:
+        mip: Ofx
+    additional_datasets:
+      - {dataset: GLORYS12V1, project: OBS6, tier: 2, type: reanaly,
+         version: v202311, start_year: 1993, end_year: 2025}
+    scripts: null
 
   GPCC:
     description: GPCC check
