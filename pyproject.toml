@@ -306,7 +306,7 @@ test-py314 = { features = ["py314", "esmvalcore", "test"], solve-group = "defaul
 
 # Use the development version of ESMValCore to test new features and bug fixes.
 [tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
-"ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "target-grid-cordex-domain" }
+"ESMValCore" = { git = "https://github.com/ESMValGroup/ESMValCore.git", branch = "more-cordex-fixes" }
 # Replace the line above with the following to use a local ESMValCore repository instead.
 # "ESMValCore" = { path = "../ESMValCore", editable = true }
 
