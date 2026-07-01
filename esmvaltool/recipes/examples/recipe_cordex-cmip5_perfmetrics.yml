@@ -84,7 +84,7 @@ datasets:
     driver: ICHEC-EC-EARTH
     ensemble: r12i1p1
     institute: KNMI
-    rcm_version: v1 
+    rcm_version: v1
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4
@@ -140,7 +140,7 @@ datasets:
     driver: IPSL-IPSL-CM5A-MR
     ensemble: r1i1p1
     institute: SMHI
-    rcm_version: v1 
+    rcm_version: v1
   - project: CORDEX
     domain: EUR-11
     dataset: CCLM4-8-17

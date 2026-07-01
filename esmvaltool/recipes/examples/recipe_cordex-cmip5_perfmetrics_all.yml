@@ -106,7 +106,7 @@ datasets:
     driver: ICHEC-EC-EARTH
     ensemble: r12i1p1
     institute: KNMI
-    rcm_version: v1 
+    rcm_version: v1
     use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
@@ -170,7 +170,7 @@ datasets:
     driver: IPSL-IPSL-CM5A-MR
     ensemble: r1i1p1
     institute: SMHI
-    rcm_version: v1 
+    rcm_version: v1
     use_standard_grid: true
   - project: CORDEX
     domain: EUR-11
@@ -731,7 +731,7 @@ diagnostics:
         group_by: project
         normalize: "centered_median"
         default_split: Ref1
-        nan_color: "#bdbdbd" 
+        nan_color: "#bdbdbd"
         plot_kwargs:
           vmin: -0.5
           vmax: +0.5
