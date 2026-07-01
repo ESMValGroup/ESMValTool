@@ -33,6 +33,7 @@ dependencies = [
     "cfgrib",
     "cftime",
     "cmocean",
+    "copernicusmarine",
     "dask!=2024.8.0",   # https://github.com/dask/dask/issues/11296
     "distributed",
     "ecmwf-api-client",
@@ -214,6 +215,7 @@ convention = "numpy"
 "cfgrib" = "*"
 "cftime" = "*"
 "cmocean" = "*"
+"copernicusmarine" = "*"
 "cython" = "*"
 "dask" = "!=2024.8.0"  # https://github.com/dask/dask/issues/11296
 "distributed" = "*"

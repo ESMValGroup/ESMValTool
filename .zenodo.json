@@ -456,6 +456,11 @@
     {
       "affiliation": "Met Office, UK",
       "name": "Ellis, Hannah"
+    },
+    {
+      "affiliation": "SMHI, Sweden",
+      "name": "Lenhardt, Julien",
+      "orcid": "0000-0002-9949-3989"
     }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",

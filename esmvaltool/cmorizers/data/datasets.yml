@@ -789,6 +789,22 @@ datasets:
     last_access: 2020-03-03
     info: "Use automatic download feature to get the data"
 
+  GLORYS12V1:
+    tier: 2
+    source: https://data.marine.copernicus.eu/product/GLOBAL_MULTIYEAR_PHY_001_030/description
+    last_access: 2026-06-01
+    info: |
+      Use automatic download feature to get the data.
+      The Copernicus Marine Service API is used to download the dataset:
+        GLORYS12V1 = cmems_mod_glo_phy_my_0.083deg_P1M-m
+
+      The dataset starts in 1993 onwards and is frequently updated.
+      The downloaded data files have the following filename:
+        mercatorglorys12v1_gl12_mean_{date}.nc
+
+      The CMS credentials need to be setup before the download by running:
+        copernicusmarine login
+
   GLWD:
     tier: 2
     source: https://figshare.com/articles/dataset/Global_Lakes_and_Wetlands_Database_GLWD_version_2_0/28519994
