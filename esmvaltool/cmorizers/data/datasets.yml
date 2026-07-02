@@ -1059,6 +1059,13 @@ datasets:
       yearly granularity. Note that some (most) variables are on the goldsmr4 server,
       whereas others are on the goldsmr5 server.
 
+  MIDAS:
+    tier: 2
+    source: https://zenodo.org/records/4244106#.Y5ekg3bMKMo
+    last_access: 2026-01-31
+    info: |
+      Download the data for the years you need and unzip the files.
+
   MLS-AURA:
     tier: 3
     source: https://disc.gsfc.nasa.gov/datasets/ML2RHI_004/summary https://disc.gsfc.nasa.gov/datasets/ML2T_004/summary
