@@ -165,14 +165,14 @@ message to the console.
 Installation of subpackages
 ---------------------------
 
-The diagnostics bundled in ESMValTool are scripts in four different programming
-languages: Python, NCL, and R.
+The diagnostics bundled in ESMValTool are scripts in three different programming
+languages: Python, R, and NCL.
 
 There are three language specific packages available:
 
-* ``esmvaltool-ncl``
 * ``esmvaltool-python``
 * ``esmvaltool-r``
+* ``esmvaltool-ncl``
 
 The main ``esmvaltool`` package contains all three subpackages listed above.
 If you only need to run a recipe with diagnostics in some of these languages, it
