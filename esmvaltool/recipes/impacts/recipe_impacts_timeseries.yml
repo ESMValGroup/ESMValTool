@@ -1,0 +1,333 @@
+# ESMValTool
+# TODO: Include warning: Currently not full year periods are deprechiated cause they could produce missleading results...
+# TODO: currently need to call map function after timeseries such that cube is still intact for timeseries, maybe fix this in diagnostic...
+---
+documentation:
+  title: Impact diagnostic.
+  description: >
+    Diagnostic to plot yearly means of the spacial mean of selected climate impact drivers discussed in Elling et al. 2026.
+  authors:
+    - caspers_laura
+  maintainer:
+    - caspers_laura
+
+# Note: the following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  # - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+    #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
+
+
+preprocessors:
+
+  # 
+  temperature_preproc:
+    ##In the future extract europe or similar with: 
+    #extract_region:
+    #  start_latitude: -30
+    #  end_latitude: 30
+    #  start_longitude: 0
+    #  end_longitude: 360
+    convert_units:
+      units: degC
+    local_solar_time: # Needed to ensure dates are local time and not UTC [otherwise extremes at one noon could count for two days. TODO: maybe consider how this could influence results for e.g. low temperatures at night]
+    mask_landsea:
+      mask_out: sea
+
+  
+      
+  precipitation_preproc:
+    custom_order: true
+    local_solar_time:
+    mask_landsea:
+      mask_out: sea
+    convert_units:
+      units: mm day-1
+
+
+  snow_preproc:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    local_solar_time:
+    mask_landsea:
+      mask_out: sea
+    convert_units:
+      units: mm
+
+  
+
+
+
+  radiation_preproc_timeseries: &radiation_preproc_config
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean  
+
+  radiation_preproc_timeseries_min:
+    <<: *radiation_preproc_config
+    area_statistics:
+      operator: min
+     
+
+  radiation_preproc_timeseries_max:
+    <<: *radiation_preproc_config
+    area_statistics:
+      operator: max  
+
+  ocean_preproc_timeseries: &ocean_preproc_config
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: mean
+      #Todo: Masking does not work with oras5 -> is masking necessary?
+    # mask_landsea: 
+    #   mask_out: land
+    annual_statistics:
+      operator: mean
+
+  ocean_preproc_timeseries_max:
+    <<: *ocean_preproc_config
+    area_statistics:
+      operator: max
+
+  ocean_preproc_timeseries_min:
+    <<: *ocean_preproc_config
+    area_statistics:
+      operator: min
+
+
+  zostoga_preproc_timeseries:
+    # custom_order: true
+    # regrid:
+    #   target_grid: 2x2
+    #   scheme: linear
+    # mask_landsea:
+    #   mask_out: land
+    annual_statistics:
+      operator: mean
+
+
+ 
+
+
+diagnostics:
+
+  plot_days_tmax_40:
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: tasmax, type: reanaly, version: 1,  reference_for_monitor_diags: true} 
+    description: Map showing number of days where the temperature exceeds 40°C.
+    variables:
+      tasmax:
+        timerange: 19950101/20141231
+        mip: day
+        preprocessor: temperature_preproc
+    scripts:
+      diag_number_of_exceeding_days: &exceeding_day_config
+        script: impact/multi_datasets_with_threshold.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        options:
+          threshold_conversion:
+            inverted: false
+            accumulated: false
+            threshold: 40
+            operators: [max, mean, min]
+        plots:
+          timeseries:
+          # map:
+          #   caption: 'Number of days per year with temperatures exceeding 40°C for {dataset}.'
+          #   common_cbar: true
+          #   fontsize: 10
+          #   plot_kwargs:
+          #     default:
+          #       cmap: 'coolwarm'
+
+  plot_days_tmin_0:
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: tasmin, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+    description: Map showing number of days where the temperature drops below 0°C.
+    variables:
+      tasmin:
+        timerange: 19950101/20141231
+        mip: day
+        preprocessor: temperature_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        <<: *exceeding_day_config
+        options:
+            threshold_conversion:
+              inverted: true
+              accumulated: false
+              threshold: 0
+              operators: [max, mean, min]
+          
+
+  plot_days_prmaxthreshold1:
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+    description: Map showing number of days where the rain rate exceeds 1 mm.
+    variables:
+      pr:
+        timerange: 19950101/20141231
+        mip: day
+        preprocessor: precipitation_preproc
+    scripts: 
+      diag_number_of_exceeding_days: 
+        <<: *exceeding_day_config
+        options:
+          threshold_conversion:
+            inverted: false
+            accumulated: false
+            threshold: 1 #1,10
+            operators: [max, mean, min]
+        plots:
+          timeseries:
+         
+
+  plot_days_prmaxthreshold10:
+    additional_datasets: 
+      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+    description: Map showing number of days where the rain rate exceeds 10 mm.
+    variables:
+      pr:
+        timerange: 19950101/20141231
+        mip: day
+        preprocessor: precipitation_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        <<: *exceeding_day_config
+        options:
+            threshold_conversion:
+              inverted: false
+              accumulated: false
+              threshold: 10
+              operators: [max, mean, min]
+      
+         
+        
+          
+
+  plot_snwe_10:
+    additional_datasets:
+      - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    description: Map showing number of days there is more than 10 cm of snow water equivalent.
+    variables:
+      snw:
+        timerange: 19950101/20141231
+        mip: day
+        preprocessor: snow_preproc
+    scripts:
+      diag_number_of_exceeding_days:
+        <<: *exceeding_day_config
+        options:
+          threshold_conversion:
+            inverted: false
+            accumulated: false #todo: check this
+            threshold: 100
+            operators: [max, mean, min]
+  
+          
+  ########## data is already a global mean, thus no area statistics possible
+  timeseries_zostoga:
+    description: Plot timeseries showing the Global Average Thermosteric Sea Level Change.
+    variables:
+      zostoga:
+        timerange: 19950101/20141231
+        mip: Omon
+        preprocessor: zostoga_preproc_timeseries
+    scripts:
+      thermosteric_sealevel_mean: &timeseries_config
+        script: impact/multi_datasets_with_threshold.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
+
+
+
+
+
+
+
+
+
+          
+
+ 
+      
+
+  timeseries_sst:
+    additional_datasets: 
+      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: tos, raw_name: sosstsst, raw_units: deg_C, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc} 
+    description: Plot timeseries showing the sea surface temperature.
+    variables:
+      tos:
+        timerange: 19950101/20141231
+        mip: Oday
+        preprocessor: ocean_preproc_timeseries
+      tos_max:
+        short_name: tos
+        timerange: 19950101/20141231
+        mip: Oday
+        preprocessor: ocean_preproc_timeseries_max
+      tos_min:
+        short_name: tos
+        timerange: 19950101/20141231
+        mip: Oday
+        preprocessor: ocean_preproc_timeseries_min
+    scripts:
+      plot: *timeseries_config
+        
+
+  timeseries_mld:
+    additional_datasets: 
+      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc} 
+    description: Plot timeseries showing the mixed layer depth.
+    variables:
+      mlotst:
+        timerange: 19950101/20141231
+        mip: Omon #Omon or Eday
+        preprocessor: ocean_preproc_timeseries
+      mlotst_max:
+        short_name: mlotst
+        timerange: 19950101/20141231
+        mip: Omon
+        preprocessor: ocean_preproc_timeseries_max
+      mlotst_min:
+        short_name: mlotst
+        timerange: 19950101/20141231
+        mip: Omon
+        preprocessor: ocean_preproc_timeseries_min
+    scripts:
+      plot: *timeseries_config
+
+  timeseries_rsds:
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, short_name: rsds, tier: 3, type: reanaly, version: 1, mip: day, reference_for_monitor_diags: true}
+    description: Plot timeseries showing the shortwave downward radiation at the surface.
+    variables:
+      rsds:
+        timerange: 19960101/20141231
+        mip: Amon #or Amon
+        preprocessor: radiation_preproc_timeseries
+      rsds_min:
+        short_name: rsds
+        timerange: 19960101/20141231
+        mip: Amon #or Amon
+        preprocessor: radiation_preproc_timeseries_min
+      rsds_max:
+        short_name: rsds
+        timerange: 19960101/20141231
+        mip: Amon #or Amon
+        preprocessor: radiation_preproc_timeseries_max
+      
+    scripts:
+      plot: *timeseries_config
+        
