@@ -1,12 +1,12 @@
 documentation:
   title: CORDEX-CMIP5 performance metrics
-  description: 'This is an example recipe that computes performance metrics for CORDEX-CMIP5 models.
-
-    The outcome of this recipe is used for deliverable DX.X of the project ESO4Clima.'
+  description: This is a recipe that computes performance metrics for CORDEX-CMIP5 models.
   authors:
     - loosveldt-tomas_saskia
     - andela_bouwe
+    - ghosh_supriyo
   maintainer:
+    - ghosh_supriyo
     - andela_bouwe
 
 preprocessors:
