@@ -10,6 +10,13 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
+import dask.array as da
+from distributed import Client
+from distributed import LocalCluster
+from iris.fileformats.netcdf.loader import CHUNK_CONTROL
+from iris import COMBINE_POLICY
+
+
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_plot_filename,
@@ -46,75 +53,6 @@ def _get_input_cubes(metadata):
     return inputs, ancestors
 
 
-def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
-    """Create and save the output figure.
-
-    The plot is a mean differnce with +/- one standard deviation
-    of the model spread,
-
-    Inputs:
-    lst_diff_data = cube of the mean difference
-    lst_diff_data_low = cube of the mean difference
-                        with model minus standard deviation
-    lst_diff_data_high = cube of the mean difference
-                        with model plus standard deviation
-    config = The config dictionary from the preprocessor
-
-    Outputs:
-    Saved figure
-    """
-    fig, ax = plt.subplots(figsize=(20, 15))
-
-    ax.plot(lst_diff_data.data, color="black", linewidth=4)
-    ax.plot(lst_diff_data_low.data, "--", color="blue", linewidth=3)
-    ax.plot(lst_diff_data_high.data, "--", color="blue", linewidth=3)
-    ax.fill_between(
-        range(len(lst_diff_data.data)),
-        lst_diff_data_low.data,
-        lst_diff_data_high.data,
-        color="blue",
-        alpha=0.25,
-    )
-
-    # make X ticks
-    x_tick_list = []
-    time_list = lst_diff_data.coord("time").units.num2date(
-        lst_diff_data.coord("time").points,
-    )
-    for item in time_list:
-        if item.month == 1:
-            x_tick_list.append(item.strftime("%Y %b"))
-        elif item.month == 7:
-            x_tick_list.append(item.strftime("%b"))
-        else:
-            x_tick_list.append("")
-
-    ax.set_xticks(range(len(lst_diff_data.data)))
-    ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
-
-    # make Y ticks
-    y_lower = np.floor(lst_diff_data_low.data.min())
-    y_upper = np.ceil(lst_diff_data_high.data.max())
-    ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
-    ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
-    ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
-
-    ax.set_xlabel("Date", fontsize=20)
-    ax.set_ylabel("Difference / K", fontsize=20)
-
-    ax.grid()
-
-    lons = lst_diff_data.coord("longitude").bounds
-    lats = lst_diff_data.coord("latitude").bounds
-
-    ax.set_title(f"Area: lon {lons[0]} lat {lats[0]}", fontsize=22)
-
-    fig.suptitle("ESACCI LST - CMIP6 Historical Ensemble Mean", fontsize=24)
-
-    plot_path = get_plot_filename("timeseries", config)
-    plt.savefig(plot_path)
-    plt.close("all")  # Is this needed?
-
 
 def _get_provenance_record(attributes, ancestor_files):
     """Create the provenance record dictionary.
@@ -147,6 +85,67 @@ def _get_provenance_record(attributes, ancestor_files):
 
     return record
 
+# DASK stiff
+def setup(n_workers=1, threads_per_worker=4, processes=False):
+    """_summary_
+
+    Args:
+        n_workers (int, optional): _description_. Defaults to 1.
+        threads_per_worker (int, optional): _description_. Defaults to 4.
+        processes (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        _type_: _description_
+    """
+    cluster = LocalCluster(n_workers = n_workers,
+                           threads_per_worker = threads_per_worker,
+                           processes = processes)
+    client = cluster.get_client()
+
+    return cluster, client
+
+# definition of the basic "threshold" calculation = find threshold exceedance ignoring all after max and before prior min
+def threshcalc(arr, alpha):
+    """
+    Calculate time-index-of-first-threshold-exceedance.
+
+    For a data array (ny, nx, ..., nt)
+    = a time sequence at each (y, x, ...) location
+    Perform a *separate* time-sequence calculation at each location.
+
+    Returns
+        INTEGER array (ny, nx), of time-indexes
+
+    For use in dask.array.map_blocks, we need to consider how it "knows" about the expected relation to the passed array.
+    This requires the following:
+        * the time dimension must be complete in each block -- i.e. data must NOT be chunked in the time dim (use rechunk if needed)
+        * the calc doesn't support a trial call with zero-length data : must use "meta=" keyword
+        * the first dim will be dropped : use "drop_dims=(0,)" keyword
+        * the result always has dtype "i8" : use 'dtype' keyword
+
+    """
+    # orig_arr = arr[...]
+    nt = arr.shape[-1]
+    inds_shape = (1,) * (arr.ndim - 1) + (nt,)
+    timeinds = np.arange(nt).reshape(inds_shape) * np.ones(arr.shape)  # time index expanded to full shape
+    # find max + blank times after it, at each landpoint
+    maxs = np.max(arr, axis=-1)
+    maxinds = np.argmax(arr, axis=-1)
+    # re-add a degenerate final dim
+    # N.B. direct assignment here is problematic, because of reshape on boolean indexing
+    #  - if costly, could use stack + index instead of 'where' ?
+    wherefn = np.ma.where if np.ma.is_masked(arr) else np.where 
+    arr = wherefn(timeinds > maxinds[..., None], maxs[..., None], arr)
+    # find min + blank times before it, at each landpoint
+    # NB must be done AFTER blanking out times>max-time !
+    mins = np.min(arr, axis=-1)
+    mininds = np.argmin(arr, axis=-1)
+    arr = wherefn(timeinds < mininds[..., None], mins[..., None], arr)
+    # calculate threshold values (at each landpoint)
+    threshs = mins + alpha * (maxs - mins)
+    # calculate "time-index of first exceedance of threshold"
+    threshinds = np.argmax(arr > threshs[..., None], axis=-1)
+    return threshinds
 
 def _diagnostic(config):
     """Perform the control for the ESA CCI LST diagnostic.
@@ -169,75 +168,52 @@ def _diagnostic(config):
     for dataset, metadata in group_metadata(input_metadata, "dataset").items():
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-        ancestor_list.append(ancestors["ts"][0])
+        ancestor_list.append(ancestors["lai"][0])
 
 
     logger.info(f"{loaded_data}")
-    # loaded data is a nested dictionary
-    # KEY1 model ESACCI-LST or something else
-    # KEY2 is ts, the surface temperature
-    # ie loaded_data['ESACCI-LST']['ts'] is the CCI cube
-    #    loaded_data['MultiModelMean']['ts'] is CMIP6 data, emsemble means
-    #    similarly dor Std, see preprocessor
+    # data is nested dictionaries MODEL LAI
 
-    # The Diagnostic uses CCI - MODEL
+    for MODEL in loaded_data.keys():
+        if 'lai' in loaded_data[MODEL].keys():
+            # follow the Dask, onset proceedure
+            cluster, client = setup(n_workers=2, threads_per_worker=1, processes=True)
 
-    # CMIP data had 360 day calendar, CCI data has 365 day calendar
-    # Assume the loaded data is all the same shape
-    # loaded_data["MultiModelMean"]["ts"].remove_coord("time")
-    # loaded_data["MultiModelMean"]["ts"].add_dim_coord(
-    #     loaded_data["ESACCI-LST"]["ts"].coord("time"),
-    #     0,
-    # )
-    # loaded_data["MultiModelStd_Dev"]["ts"].remove_coord("time")
-    # loaded_data["MultiModelStd_Dev"]["ts"].add_dim_coord(
-    #     loaded_data["ESACCI-LST"]["ts"].coord("time"),
-    #     0,
-    # )
+            lazarr = loaded_data[MODEL]['lai'].core_data()
+            # this is needed for the OBS data where a lot of days are all NaNs
+            # need to find a generic way to do this wit all OBS and MODELS....
+            sam = lazarr[:,  0,0].compute()
+            good_day_inds = np.where(~np.isnan(sam))
+            logger.info(f'{good_day_inds=}')
+            print(f'{good_day_inds=}')
 
-    # # Make a cube of the LST difference, and with +/- std of model variation
-    # lst_diff_cube = (
-    #     loaded_data["ESACCI-LST"]["ts"] - loaded_data["MultiModelMean"]["ts"]
-    # )
-    # lst_diff_cube_low = loaded_data["ESACCI-LST"]["ts"] - (
-    #     loaded_data["MultiModelMean"]["ts"]
-    #     + loaded_data["MultiModelStd_Dev"]["ts"]
-    # )
-    # lst_diff_cube_high = loaded_data["ESACCI-LST"]["ts"] - (
-    #     loaded_data["MultiModelMean"]["ts"]
-    #     - loaded_data["MultiModelStd_Dev"]["ts"]
-    # )
+            # why this note on this line? this should work what ever the data NaN structure????
+            good_days = lazarr[good_day_inds]  # NOTE: this is not correct, would only work if every month has 30 days
+            data = good_days.transpose((1, 2, 0))
+            
+            # this needs a way to be generic
+            data_r = data.rechunk({-1:-1, 1:20}) # 1186 was C3S LAI
 
-    # # Plotting
-    # _make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config)
+            thresh_inds = da.map_blocks(
+                threshcalc,
+                data_r,
+                alpha=0.2, # can this be passed in from the recipe???????
+                dtype=int,
+                drop_axis=[-1],
+                meta=np.ma.array(0),
+            )
 
-    # # Provenance
-    # # Get this information form the data cubes
-    # data_attributes = {}
-    # data_attributes["start_year"] = (
-    #     lst_diff_cube.coord("time")
-    #     .units.num2date(lst_diff_cube.coord("time").points)[0]
-    #     .year
-    # )
-    # data_attributes["end_year"] = (
-    #     lst_diff_cube.coord("time")
-    #     .units.num2date(lst_diff_cube.coord("time").points)[-1]
-    #     .year
-    # )
-    # data_attributes["lat_south"] = lst_diff_cube.coord("latitude").bounds[0][0]
-    # data_attributes["lat_north"] = lst_diff_cube.coord("latitude").bounds[0][1]
-    # data_attributes["lon_west"] = lst_diff_cube.coord("longitude").bounds[0][0]
-    # data_attributes["lon_east"] = lst_diff_cube.coord("longitude").bounds[0][1]
-    # data_attributes["ensembles"] = ""
+            result_cube = iris.cube.Cube(thresh_inds)
+            # lat lon from original data
+            # long name
 
-    # for item in input_metadata:
-    #     if (
-    #         "ESACCI" in item["alias"]
-    #         or "MultiModel" in item["alias"]
-    #         or "OBS" in item["alias"]
-    #     ):
-    #         continue
-    #     data_attributes["ensembles"] += f"{item['alias']} "
+
+            # change to esmvaltool save path for run
+            iris.save(result_cube, '/home/users/robking/CMUG/ESMValTool/esmvaltool/cube.nc')
+            
+        else:
+            continue
+ 
 
     # record = _get_provenance_record(data_attributes, ancestor_list)
     # plot_file = get_plot_filename("timeseries", config)
