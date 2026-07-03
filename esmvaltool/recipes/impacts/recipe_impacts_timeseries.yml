@@ -119,7 +119,7 @@ diagnostics:
 
   plot_days_tmax_40:
     additional_datasets: 
-      - {dataset: ERA5, project: OBS6, short_name: tasmax, type: reanaly, version: 1,  reference_for_monitor_diags: true} 
+      - {dataset: ERA5, project: OBS6, short_name: tasmax, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true} 
     description: Map showing number of days where the temperature exceeds 40°C.
     variables:
       tasmax:
@@ -150,7 +150,7 @@ diagnostics:
 
   plot_days_tmin_0:
     additional_datasets: 
-      - {dataset: ERA5, project: OBS6, short_name: tasmin, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+      - {dataset: ERA5, project: OBS6, short_name: tasmin, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
@@ -170,7 +170,7 @@ diagnostics:
 
   plot_days_prmaxthreshold1:
     additional_datasets: 
-      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
@@ -192,7 +192,7 @@ diagnostics:
 
   plot_days_prmaxthreshold10:
     additional_datasets: 
-      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, version: 1,  reference_for_monitor_diags: true}
+      - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
     description: Map showing number of days where the rain rate exceeds 10 mm.
     variables:
       pr:
@@ -228,12 +228,12 @@ diagnostics:
         options:
           threshold_conversion:
             inverted: false
-            accumulated: false #todo: check this
+            accumulated: true
             threshold: 100
             operators: [max, mean, min]
   
           
-  ########## data is already a global mean, thus no area statistics possible
+  ########## data is already a global mean, thus no area statistics needed
   timeseries_zostoga:
     description: Plot timeseries showing the Global Average Thermosteric Sea Level Change.
     variables:
@@ -293,7 +293,7 @@ diagnostics:
     variables:
       mlotst:
         timerange: 19950101/20141231
-        mip: Omon #Omon or Eday
+        mip: Omon 
         preprocessor: ocean_preproc_timeseries
       mlotst_max:
         short_name: mlotst
@@ -315,17 +315,17 @@ diagnostics:
     variables:
       rsds:
         timerange: 19960101/20141231
-        mip: Amon #or Amon
+        mip: Amon
         preprocessor: radiation_preproc_timeseries
       rsds_min:
         short_name: rsds
         timerange: 19960101/20141231
-        mip: Amon #or Amon
+        mip: Amon 
         preprocessor: radiation_preproc_timeseries_min
       rsds_max:
         short_name: rsds
         timerange: 19960101/20141231
-        mip: Amon #or Amon
+        mip: Amon 
         preprocessor: radiation_preproc_timeseries_max
       
     scripts:

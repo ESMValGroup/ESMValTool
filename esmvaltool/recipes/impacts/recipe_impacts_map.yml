@@ -236,12 +236,12 @@ diagnostics:
         options:
           threshold_conversion:
             inverted: false
-            accumulated: false
+            accumulated: true
             threshold: 100
         plots:
           #timeseries:
           map:
-            caption: 'Number of days per year with ... for {dataset}.'
+            caption: 'Number of days per year with more than 10 cm of snow water equivalent surface snow amount for {dataset}.'
             common_cbar: true
             fontsize: 10
             plot_kwargs:

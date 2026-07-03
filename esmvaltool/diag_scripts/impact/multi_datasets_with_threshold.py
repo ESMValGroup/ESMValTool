@@ -1,5 +1,306 @@
-"""
-Plot types can be specified with the recipe option 'plots'; Pre-processing options can be accessed with the recipe option 'options' 
+"""Diagnostic to vizualize the climate impact drivers defined in Elling et al. (2026).
+
+Description
+-----------
+The code is based on the monitor/multi_datasets.py diagnostic adding pre-processing
+routines to allow for plots of the number of days in a year that certain thresholds
+are exceeded. With this diagnostic, multiple datasets can be visualized in a single plot.
+
+Plot types can be specified with the recipe option 'plots' and pre-processing options 
+can be accessed with the recipe option 'options'.
+
+Supported pre-processing options
+--------------------------------
+-   ``threshold_conversion``: Replace the given dataset by the count of on how many days
+    the data exceeds a certian threshold at some point of time. 
+
+    Additional options
+    ------------------
+    threshold: float
+        The threshold which should be exceeded for days to add to the count.
+    inverted: bool, optional
+        Optional boolean that can be set to true to count the days on which the values 
+        drop below the threshold at some point of time instead. The default value is ``false``.
+    accumulated: bool, optional
+        Optional boolean that must be set to true to check if the daily accumulated
+        amount is exceeding the threshold for variables that are accumulating over time 
+        (e.g. absolute amount of precipitation or snow) if the temporal resolution is
+        shorter than daily. For all other variables (i.e. variables for which the number 
+        of days on which the absolute value of the variable exceeds the threshold at some 
+        point in time should be counted) use the default value. The default value is ``false``. 
+
+Supported plot types
+--------------------
+-   ``timeseries`` (1D plot): plot time series. Input data needs single dimension
+    `time`. For each variable separately, all datasets are plotted in one single figure.
+    Input data needs to be 1D.
+-   ``map`` (2D plot): plot map plot. Input data needs dimensions `(longitude,
+    latitude)`. For each variable and dataset, an individual figure is
+    plotted. Input data needs to be 2D. A single reference dataset can be defined
+    by setting the facet ``reference_for_monitor_diags: True`` in the dataset
+    definition in the recipe. In this case, three panels are plotted, incl. a
+    bias. Note that if a reference dataset is defined, all input datasets need to
+    be given on the same horizontal and vertical grid (you can use the
+    preprocessors :func:`esmvalcore.preprocessor.regrid` and
+    :func:`esmvalcore.preprocessor.extract_levels` for this).
+
+    Additional options for timeseries
+    ---------------------------------
+    aspect_ratio: float, optional (default: None)
+        Aspect ratio of the plot.
+    axes_kwargs: dict, optional
+        Optional calls to methods of the corresponding
+        :class:`matplotlib.axes.Axes` instance. Dictionary keys are functions of
+        :class:`matplotlib.axes.Axes`. Dictionary values are used as argument(s)
+        for these functions (if values are dictionaries, these are interpreted as
+        keyword arguments; otherwise a single argument is assumed). String
+        arguments can include facets in curly brackets which will be derived from
+        the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+        ``{exp}``. Examples: ``{set_title: 'Awesome Plot of {long_name}'}``,
+        ``{set_xlabel: '{short_name}'}``, ``{set_xlim: [0, 5]}``.
+    caption: str, optional
+        Figure caption used for provenance tracking. Can include facets in curly
+        brackets which will be derived from the corresponding dataset, e.g.,
+        ``{project}``, ``{short_name}``, ``{exp}``. By default, uses a very basic
+        caption.
+    gridline_kwargs: dict, optional
+        Optional keyword arguments for grid lines. By default, uses ``{color:
+        'lightgrey', alpha: 0.5}``. Use ``gridline_kwargs: False`` to not show grid
+        lines.
+    hlines: list of dict, optional
+        Horizontal lines to show in plot. Each list element corresponds to one
+        line, and each list element should contain a dictionary with keywords
+        arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
+        0}, {y: 1, color: 'red'}]``.
+    legend_kwargs: dict, optional
+        Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
+        ``legend_kwargs: False`` to not show legends.
+    log_x: bool, optional (default: False)
+        Use logarithmic X-axis.
+    log_y: bool, optional (default: False)
+        Use logarithmic Y-axis.
+    plot_kwargs: dict, optional
+        Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
+        elements identified by ``facet_used_for_labels`` or ``'default'``, e.g.,
+        ``'CMIP6'`` if ``facet_used_for_labels: 'project'`` or ``'historical'`` if
+        ``facet_used_for_labels: 'exp'``. Dictionary values are dictionaries used
+        as keyword arguments for :func:`iris.plot.plot`. String arguments can
+        include facets in curly brackets which will be derived from the
+        corresponding dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``.
+        Examples: ``{default: {linestyle: '-', label: '{project}'}, CMIP6: {color:
+        'red', linestyle: '--'}, OBS: {color: 'black'}}``.
+    pyplot_kwargs: dict, optional
+        Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+        are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+        argument(s) for these functions (if values are dictionaries, these are
+        interpreted as keyword arguments; otherwise a single argument is assumed).
+        String arguments can include facets in curly brackets which will be derived
+        from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+        ``{exp}``. Examples: ``{title: 'Awesome Plot of {long_name}'}``, ``{xlabel:
+        '{short_name}'}``, ``{xlim: [0, 5]}``.
+    rasterize: bool, optional (default: False)
+        If ``True``, use rasterization_ for plots to produce smaller files.  This
+        is only relevant for vector graphics (e.g., ``output_file_type: 'pdf'``).
+    time_format: str, optional (default: None)
+        :func:`~datetime.datetime.strftime` format string that is used to format
+        the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
+        use the default formatting imposed by the iris plotting function.
+    transpose_axes: bool, optional (default: False)
+        Swap X- and Y-axis.
+    x_major_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format major tick labels of X-axis.
+    x_minor_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format minor tick labels of X-axis.
+    y_major_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format major tick labels of Y-axis.
+    y_minor_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format minor tick labels of Y-axis.
+
+    Additional options for map
+    --------------------------
+    aspect_ratio: float, optional (default: None)
+        Aspect ratio of the plot.
+    axes_kwargs: dict, optional
+        Optional calls to methods of the corresponding
+        :class:`matplotlib.axes.Axes` instance. Dictionary keys are functions of
+        :class:`matplotlib.axes.Axes`. Dictionary values are used as argument(s)
+        for these functions (if values are dictionaries, these are interpreted as
+        keyword arguments; otherwise a single argument is assumed). String
+        arguments can include facets in curly brackets which will be derived from
+        the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+        ``{exp}``. Examples: ``{set_title: 'Awesome Plot of {long_name}'}``,
+        ``{set_xlabel: '{short_name}'}``, ``{set_xlim: [0, 5]}``.
+    caption: str, optional
+        Figure caption used for provenance tracking. Can include facets in curly
+        brackets which will be derived from the corresponding dataset, e.g.,
+        ``{project}``, ``{short_name}``, ``{exp}``. By default, uses a very basic
+        caption.
+    cbar_label: str, optional (default: '{short_name} [{units}]')
+        Colorbar label. Can include facets in curly brackets which will be derived
+        from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+        ``{exp}``.
+    cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
+        Colorbar label for plotting biases. Can include facets in curly brackets
+        which will be derived from the corresponding dataset, e.g., ``{project}``,
+        ``{short_name}``, ``{exp}``. Only relevant for plots including reference
+        datasets.
+    cbar_kwargs: dict, optional
+        Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
+        default, uses ``{orientation: 'vertical'}``.
+    cbar_kwargs_bias: dict, optional
+        Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
+        plotting biases. These keyword arguments update (and potentially overwrite)
+        the ``cbar_kwargs`` for the bias plot. Only relevant for plots including
+        reference datasets.
+    common_cbar: bool, optional (default: False)
+        Use a common colorbar for the top panels (i.e., plots of the dataset and
+        the corresponding reference dataset) when using a reference dataset. If
+        neither ``vmin`` and ``vmax`` nor ``levels`` is given in ``plot_kwargs``,
+        the colorbar bounds are inferred from the dataset in the top left panel,
+        which might lead to an inappropriate colorbar for the reference dataset
+        (top right panel). Thus, specify ``vmin`` and ``vmax`` or ``levels`` when
+        using ``common_cbar: True``. Only relevant for plots including reference
+        datasets.
+    fontsize: int, optional (default: None)
+        Fontsize used for ticks, labels and titles. For the latter, use the given
+        fontsize plus 2. Does not affect suptitles. If not given, use default
+        matplotlib values. For a more fine-grained definition of fontsizes, use the
+        option ``matplotlib_rc_params`` (see above).
+    gridline_kwargs: dict, optional (default: False)
+        Optional keyword arguments for grid lines. Use ``gridline_kwargs: False``
+        to not show grid lines.
+    log_x: bool, optional (default: False)
+        Use logarithmic X-axis.
+    log_y: bool, optional (default: False)
+        Use logarithmic Y-axis.
+    plot_func: str, optional (default: 'contourf')
+        Plot function used to plot the maps. Must be a function of :mod:`iris.plot`
+        that supports plotting of 2D data.
+    plot_kwargs: dict, optional
+        Optional keyword arguments for the plot function defined by ``plot_func``.
+        Dictionary keys are elements identified by ``facet_used_for_labels`` or
+        ``'default'``, e.g., ``'CMIP6'`` if ``facet_used_for_labels: 'project'`` or
+        ``'historical'`` if ``facet_used_for_labels: 'exp'``. Dictionary values are
+        dictionaries used as keyword arguments for the plot function defined by
+        ``plot_func``. String arguments can include facets in curly brackets which
+        will be derived from the corresponding dataset, e.g., ``{project}``,
+        ``{short_name}``, ``{exp}``. Examples: ``{default: {levels: 2}, CMIP6:
+        {vmin: 200, vmax: 250}}``. In addition to the normalization_ options
+        supported by the plot function, the option ``{norm: 'centered'}`` can be
+        specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+        be used instead of ``vmin`` or ``vmax`` (see
+        :class:`~matplotlib.colors.CenteredNorm`).
+    plot_kwargs_bias: dict, optional
+        Optional keyword arguments for the plot function defined by ``plot_func``
+        for plotting biases. These keyword arguments update (and potentially
+        overwrite) the ``plot_kwargs`` for the bias plot. By default, uses ``{cmap:
+        'bwr', norm: 'centered'}``. Only relevant for plots including reference
+        datasets.
+    projection: str, optional (default: None)
+        Projection used for the plot. Needs to be a valid projection class of
+        :mod:`cartopy.crs`. Keyword arguments can be specified using the option
+        ``projection_kwargs``. For map plots, ``'Robinson'`` is used as default.
+    projection_kwargs: dict, optional
+        Optional keyword arguments for the projection given by ``projection``. For
+        map plots, the default keyword arguments ``{central_longitude: 10}`` are
+        used.
+    pyplot_kwargs: dict, optional
+        Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+        are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+        argument(s) for these functions (if values are dictionaries, these are
+        interpreted as keyword arguments; otherwise a single argument is assumed).
+        String arguments can include facets in curly brackets which will be derived
+        from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+        ``{exp}``. Examples: ``{title: 'Awesome Plot of {long_name}'}``, ``{xlabel:
+        '{short_name}'}``, ``{xlim: [0, 5]}``.
+    rasterize: bool, optional (default: False)
+        If ``True``, use rasterization_ for plots to produce smaller files.  This
+        is only relevant for vector graphics (e.g., ``output_file_type: 'pdf'``).
+    show_stats: bool, optional (default: True)
+        Show basic statistics on the plots.
+    time_format: str, optional (default: None)
+        :func:`~datetime.datetime.strftime` format string that is used to format
+        the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
+        use the default formatting imposed by the iris plotting function.
+    transpose_axes: bool, optional (default: False)
+        Swap X- and Y-axis.
+    x_major_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format major tick labels of X-axis.
+    x_minor_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format minor tick labels of X-axis.
+    x_pos_stats_avg: float, optional (default: 0.01)
+        Text X-position of average (shown on the left) in Axes coordinates. Can be
+        adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
+        True``.
+    x_pos_stats_bias: float, optional (default: 0.7)
+        Text X-position of bias statistics (shown on the right) in Axes
+        coordinates. Can be adjusted to avoid overlap with the figure. Only
+        relevant if ``show_stats: True``.
+    y_major_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format major tick labels of Y-axis.
+    y_minor_formatter: str, optional (default: None)
+        Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+        format minor tick labels of Y-axis.
+
+Recipe configuration options
+----------------------------
+
+facet_used_for_labels: str, optional (default: 'dataset')
+    Facet used to label different datasets in plot titles and legends. For
+    example, ``facet_used_for_labels: 'dataset'`` will use dataset names in
+    plot titles and legends; ``facet_used_for_labels: 'exp'`` will use
+    experiments in plot titles and legends. In addition,
+    ``facet_used_for_labels`` is used to select the correct ``plot_kwargs`` for
+    the different datasets (see configuration options for the different plot
+    types below).
+figure_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
+    default, uses ``{constrained_layout: True}``.
+group_variables_by: str, optional (default: 'short_name')
+    Facet or coordinate which is used to create variable groups. For each
+    variable group, an individual plot is created. Specifying a coordinate
+    allows to create one plot for each point along a dimension. For example,
+    when used in combination with the preprocessor function
+    :func:`esmvalcore.preprocessor.extract_shape` the `shape_id` coordinate
+    can be used to create one plot for each shape.
+matplotlib_rc_params: dict, optional
+    Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
+    Options given here will be passed to :func:`matplotlib.rc_context` and used
+    for all plots produced with this diagnostic. Note: fontsizes specified here
+    might be overwritten by the plot-type-specific option ``fontsize`` (see
+    below).
+plots: dict
+    Plot types plotted by this diagnostic (see list above). Dictionary keys
+    must be elements of the list above.  Dictionary values are dictionaries
+    used as options for the corresponding plot.
+plot_filename: str, optional
+    Filename pattern for the plots. By default, uses
+    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'``.  All tags
+    (i.e., the entries in curly brackets, e.g., ``'{dataset}'``, are replaced
+    with the corresponding tags).
+plot_folder: str, optional
+    Path to the folder to store figures. By default, uses
+    ``'{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}'``.  All
+    tags (i.e., the entries in curly brackets, e.g., ``'{dataset}'``, are
+    replaced with the corresponding tags). ``'{plot_dir}'`` is replaced with
+    the default ESMValTool plot directory (i.e.,
+    ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:outputdata`).
+savefig_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
+    default, uses ``{bbox_inches: 'tight', dpi: 300, orientation:
+    'landscape'}``.
+seaborn_settings: dict, optional
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
+    ``{style: 'ticks'}``.
+
 
 """
 
@@ -31,7 +332,6 @@ import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord, Coord
-from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
@@ -44,7 +344,6 @@ from matplotlib.ticker import (
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -53,28 +352,23 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
 )
-from esmvaltool.diag_scripts.shared._base import sorted_metadata
 
 #TODO: make this import from esmvalcore unnecessary:
 from esmvalcore.preprocessor._shared import (
-    apply_mask,
-    get_dims_along_axes,
     get_iris_aggregator,
     get_normalized_cube,
-    preserve_float_dtype,
     try_adding_calculated_cell_area,
     update_weights_kwargs,
 )
 
 from esmvalcore.iris_helpers import (
-    has_regular_grid,
     ignore_iris_vague_metadata_warnings,
 )
 
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
-
+    from iris.cube import Cube
     from matplotlib.axes import Axes
     from matplotlib.figure import Figure
 
@@ -95,12 +389,9 @@ class MultiDatasets(MonitorBase):
         return{
             "threshold_conversion": {
                 "default_settings": {
-                    **default_settings,
-                    
+                    **default_settings,            
                 },
             },
-            
-
         }
 
     
@@ -111,12 +402,6 @@ class MultiDatasets(MonitorBase):
             "aspect_ratio": None,
             "axes_kwargs": {},
             "caption": None,
-            "envelope_kwargs": {
-                "alpha": 0.8,
-                "facecolor": "lightblue",
-                "linewidth": 0.0,
-                "zorder": 1.0,
-            },
             "gridline_kwargs": {},
             "hlines": [],
             "legend_kwargs": {},
@@ -219,7 +504,7 @@ class MultiDatasets(MonitorBase):
                 "dpi": 300,
                 "orientation": "landscape",
             },
-        ) 
+        )
         self.cfg.setdefault("seaborn_settings", {"style": "ticks"})
         logger.info(
             "Using facet '%s' to group variables",
@@ -244,7 +529,7 @@ class MultiDatasets(MonitorBase):
                     f"Got unexpected options type '{options_type}' for option "
                     f"'options', expected one of {list(self.options_settings)}"
                 )
-                raise ValueError(msg) 
+                raise ValueError(msg)
             if option_options is None:
                 option_options = {}  # noqa: PLW2901
                 self.options[options_type] = option_options
@@ -610,7 +895,6 @@ class MultiDatasets(MonitorBase):
     
     def _get_bias_dataset(self, dataset_1: dict, dataset_2: dict) -> dict:
         """Get bias dataset (dataset_1 - dataset_2)."""
-       
         bias_cube = dataset_1["cube"] - dataset_2["cube"]
 
         bias_cube.metadata = dataset_1["cube"].metadata
@@ -715,12 +999,12 @@ class MultiDatasets(MonitorBase):
         self,
         plot_path: Path | str,
         suffix: str | None = None,
-        option: str | None = None
+        option: str | None = None,
     ) -> str:
         """Get netCDF path."""
         basename = Path(plot_path).stem
         if option is not None:
-            basename += '_spacial' + option
+            basename += "_spacial" + option
         if suffix is not None:
             basename += suffix
         return get_diagnostic_filename(basename, self.cfg)
@@ -880,30 +1164,33 @@ class MultiDatasets(MonitorBase):
             if cube.coords("time", dim_coords=True):
                 ih.unify_time_coord(cube)
 
-            # Add scalar latitude and longitude coordinates if these are not
-            # present (necessary for calculation of area weights). The exact
-            # values for the points/bounds of these coordinates do not matter
-            # since they don't change the weights.
-            if not cube.coords("latitude"):
-                lon_coord = AuxCoord(
-                    0.0,
-                    bounds=[-90.0, 90.0],
-                    var_name="lat",
-                    standard_name="latitude",
-                    long_name="latitude",
-                    units="degrees_north",
-                )
-                cube.add_aux_coord(lon_coord, ())
-            if not cube.coords("longitude"):
-                lon_coord = AuxCoord(
-                    180.0,
-                    bounds=[0.0, 360.0],
-                    var_name="lon",
-                    standard_name="longitude",
-                    long_name="longitude",
-                    units="degrees_east",
-                )
-                cube.add_aux_coord(lon_coord, ())
+            for dim, deg in {"latitude": "degrees_north", "longitude": "degrees_east"}.items():
+                # Add scalar latitude and longitude coordinates if these are not
+                # present (necessary for calculation of area weights). The exact
+                # values for the points/bounds of these coordinates do not matter
+                # since they don't change the weights.
+                if not cube.coords(dim):
+                    lon_coord = AuxCoord(
+                        0.0,
+                        bounds=[-90.0, 90.0],
+                        var_name=dim[:3],
+                        standard_name=dim,
+                        long_name=dim,
+                        units=deg,
+                    )
+                    cube.add_aux_coord(lon_coord, ())
+
+                # Remove additional coordinate systems to avoid errors calculating
+                # bias datasets. In particular,  removing the additional coordinate
+                # system of the ESACCI obssevational Dataset, introducing a neglegible
+                # error.
+                if cube.coord(dim).coord_system:
+                    msg = (
+                        f"Removing the coordinate system {cube.coord(dim).coord_system} "
+                        f"from the dataset {dataset}  in the dimension {dim}"
+                    )
+                    warnings.warn(msg, UserWarning, stacklevel = 1)
+                    cube.coord(dim).coord_system = None
 
             # Fix Z-coordinate if present
             if cube.coords("air_pressure", dim_coords=True):
@@ -914,18 +1201,7 @@ class MultiDatasets(MonitorBase):
                 z_coord = cube.coord("altitude")
                 z_coord.attributes["positive"] = "up"
             
-            # Remove additional coordinate systems to avoid errors calculating
-            # bias datasets. In particular,  removing the additional coordinate
-            # system of the ESACCI obssevational Dataset, introducing a neglegible 
-            # error.
-            for dim in ["latitude", "longitude"]:
-                if cube.coord(dim).coord_system:
-                    msg = ( 
-                        f"Removing the coordinate system {cube.coord(dim).coord_system} " 
-                        f"from the dataset {dataset}  in the dimension {dim}"
-                    )
-                    warnings.warn(msg, UserWarning, stacklevel = 1)
-                    cube.coord(dim).coord_system = None
+            
             # Save ancestors
             dataset["ancestors"] = [filename]
 
@@ -970,14 +1246,12 @@ class MultiDatasets(MonitorBase):
             plot_type: str,
             axes: Axes,
         ) -> None:
-            """Plot single dataset/operator in the plot"""
-
+            """Plot single dataset associated to one operator in the plot."""
             linestyle_op = linestyle[operator]
-            label = f"{label_dataset} - {operator}" 
+            label = f"{label_dataset} - {operator}"
             
             coords = self._check_cube_coords(cube, plot_type)
             coord = cube.coord(coords[0], dim_coords=True)
-            coord_label = f"{coord.name()} [{coord.units}]"
 
             plot_kwargs.setdefault("label", label)
             plot_kwargs["axes"] = axes
@@ -987,7 +1261,7 @@ class MultiDatasets(MonitorBase):
                 iris.plot.plot(coord, cube, linestyle= linestyle_op, color=dataset_colors[label_dataset], **plot_kwargs)
 
 
-        
+        operators=[]
         linestyle = {}
         linestyle_iter = iter(['--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))])
 
@@ -995,7 +1269,7 @@ class MultiDatasets(MonitorBase):
         datasets_labels = list(dict.fromkeys(self._get_label(d) for d in datasets))
         
         colors = sns.color_palette("husl", len(datasets_labels))
-        dataset_colors = dict(zip(datasets_labels,colors))
+        dataset_colors = dict(zip(datasets_labels,colors, strict = True))
         
         
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
@@ -1003,18 +1277,17 @@ class MultiDatasets(MonitorBase):
 
         if "threshold_conversion" in self.options:
             threshold = self.options["threshold_conversion"]["threshold"]
-            operators = self.options["threshold_conversion"]["operators"]
-            if len(operators)==0:
-                operators = ['mean']
+            operators = self.options["threshold_conversion"]["operators"] or ["mean"] 
             for operator in operators:
-                if operator == 'mean':
-                    linestyle[operator] = '-'
-                else:
-                    linestyle[operator] = next(linestyle_iter, '--')
+                linestyle[operator] = "-" if operator == "mean" else next(linestyle_iter, '--')
         
-            axes.set_title(f"Average number of days per year on which the {multi_dataset_facets["long_name"]} exceeds {threshold} {multi_dataset_facets['units']} at some point")
+            axes.set_title(
+                f"Average number of days per year on which the {multi_dataset_facets["long_name"]} "
+                f"exceeds {threshold} {multi_dataset_facets['units']} at some point"
+            )
             var_label = (
-                f"{multi_dataset_facets[self.cfg['group_variables_by']]} exceeding {threshold} {multi_dataset_facets['units']} [days/year]"
+                f"{multi_dataset_facets[self.cfg['group_variables_by']]} exceeding "
+                f"{threshold} {multi_dataset_facets['units']} [days/year]"
             )
         
         else:
@@ -1024,52 +1297,42 @@ class MultiDatasets(MonitorBase):
                 f"[{multi_dataset_facets['units']}]"
                 )
         
-        
-        operators=[] 
-
+       
         for dataset in datasets:
 
             label_dataset = self._get_label(dataset)
             cube = dataset["cube"]
 
-            
-
             #Plotting the observations in black
-            for key, val in dataset.items():
-                if 'OBS' in str(val):  
-                    dataset_colors[label_dataset] = 'black'
+            for val in dataset.values():
+                if "OBS" in str(val):
+                    dataset_colors[label_dataset] = "black"
 
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)         
 
             
             if "threshold_conversion" in self.options:
                 oldcube = cube
-                operators = self.options["threshold_conversion"]["operators"]
-                if len(operators)==0:
-                    operators = ['mean']
-                for operator in operators:
-                    
+                operators = self.options["threshold_conversion"]["operators"] or ["mean"]
+
+                for operator in operators:    
                     cube = self.thr_area_statistics(oldcube, operator = operator) 
                     plot_1d_data(cube, operator, label_dataset, linestyle, dataset_colors, plot_type, axes)
                     
             else:
                 
-                operator_list = [cm.method for cm in cube.cell_methods if 'latitude' in cm.coord_names] # list of all cell methods accociated to latitude coord
+                operator_list = [cm.method for cm in cube.cell_methods if "latitude" in cm.coord_names]
+                if len(operator_list) > 1:
+                    msg = (
+                        "There are multiple operations accociated with the time coordinate,"
+                        "expected is only one. Continuing with the first one, but results might be not accurate."
+                    )
+                    warnings.warn(msg, UserWarning, stacklevel=1)
                 if len(operator_list) > 0:
-                    if len(operator_list) == 1:
-                        operator = operator_list[0]
-                    else:
-                        msg = (
-                            "There are multiple operations accociated with the time coordinate,"
-                            "expected is only one. Continuing with the first one, but results might be not accurate."
-                        )
-                        warnings.warn(msg, UserWarning, stacklevel=1)
-                        operator = operator_list[0]
+                    operator = operator_list[0]
+                        
                     if operator not in operators:
-                        if operator == 'mean':
-                            linestyle[operator] = '-'
-                        else:
-                            linestyle[operator] = next(linestyle_iter, '--')
+                        linestyle[operator] = "-" if operator == 'mean' else next(linestyle_iter, "--")
                         operators.append(operator)    
                     
                     plot_1d_data(cube, operator, label_dataset, linestyle, dataset_colors, plot_type, axes)
@@ -1079,7 +1342,6 @@ class MultiDatasets(MonitorBase):
            
                     coords = self._check_cube_coords(cube, plot_type)
                     coord = cube.coord(coords[0], dim_coords=True)
-                    coord_label = f"{coord.name()} [{coord.units}]"
 
                     # Actual plot
                     plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
@@ -1088,10 +1350,7 @@ class MultiDatasets(MonitorBase):
                     if self.plots[plot_type]["transpose_axes"]:
                         iris.plot.plot(cube, coord, **plot_kwargs)
                     else:
-                        iris.plot.plot(coord, cube, **plot_kwargs)                    
-
-
-       
+                        iris.plot.plot(coord, cube, **plot_kwargs)      
        
         
         
@@ -1099,9 +1358,13 @@ class MultiDatasets(MonitorBase):
         for hline_kwargs in self.plots[plot_type]["hlines"]:
             axes.axhline(**hline_kwargs)
 
-        # Title and axis labels
-        
-        
+
+        # Axis labels
+        coords = self._check_cube_coords(cube, plot_type)
+        coord = cube.coord(coords[0], dim_coords=True)
+        coord_label = f"{coord.name()} [{coord.units}]"
+
+
         if self.plots[plot_type]["transpose_axes"]:
             axes.set_xlabel(var_label)
             axes.set_ylabel(coord_label)
@@ -1114,7 +1377,7 @@ class MultiDatasets(MonitorBase):
 
         # Plot legend
         col_handles =  [mlines.Line2D([], [], color=dataset_colors[dlabel], label=dlabel) for dlabel in datasets_labels]
-        style_handles = [mlines.Line2D([], [], color='gray', linestyle=linestyle[olabel], label=olabel) for olabel in operators]
+        style_handles = [mlines.Line2D([], [], color="gray", linestyle=linestyle[olabel], label=olabel) for olabel in operators]
         handles = col_handles + style_handles
 
         if len(style_handles)>1:
@@ -1338,6 +1601,9 @@ class MultiDatasets(MonitorBase):
                 # Note that for absolute values like temperature one should take the max (accumulated: false), and for cummulated values like total precipitation one should accumulate the values (accumulated: true).  
                 if self.options[options_type]["accumulated"]:
                     cube = cube.aggregated_by(["year", "day_of_year"], iris.analysis.SUM)
+                elif self.options[options_type]["inverted"]: 
+                    cube = cube.aggregated_by(["year", "day_of_year"], iris.analysis.MIN)
+
                 else:
                     cube = cube.aggregated_by(["year", "day_of_year"], iris.analysis.MAX)
 

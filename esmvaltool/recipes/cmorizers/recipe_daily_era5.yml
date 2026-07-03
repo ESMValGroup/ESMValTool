@@ -64,22 +64,24 @@ diagnostics:
       #   grib_id: 228
       #   raw_name: tp
 
-      tas:
-        #raw_name: tas
-        mip: E1hr
-        era5_name: maximum_2m_temperature_since_previous_post_processing
-        era5_freq: hourly
-        preprocessor: daily_max
-        # grib_id: 201
-        # raw_name: mx2t
       # tas:
-      #   #raw_name: tas
+      #   raw_name: tas
+      #   short_name: tasmax
       #   mip: E1hr
-      #   era5_name: minimum_2m_temperature_since_previous_post_processing
+      #   era5_name: maximum_2m_temperature_since_previous_post_processing
       #   era5_freq: hourly
-      #   preprocessor: daily_min
-      #   # grib_id: 202
-      #   # raw_name: mn2t
+      #   preprocessor: daily_max
+      #   # grib_id: 201
+      #   # raw_name: mx2t
+      tas:
+        raw_name: tas
+        short_name: tasmin
+        mip: E1hr
+        era5_name: minimum_2m_temperature_since_previous_post_processing
+        era5_freq: hourly
+        preprocessor: daily_min
+        # grib_id: 202
+        # raw_name: mn2t
 
       # # tasmax:
       # #   mip: E1hr
