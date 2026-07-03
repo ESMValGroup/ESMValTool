@@ -7,6 +7,7 @@ This is doen using LAI from CMIP6 and satellite obseravtions.
 import logging
 
 import iris
+import iris.coord_categorisation as icc
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -203,14 +204,37 @@ def _diagnostic(config):
                 meta=np.ma.array(0),
             )
 
-            result_cube = iris.cube.Cube(thresh_inds)
+
+            lat_coord = loaded_data[MODEL]['lai'].coord('latitude')
+            lon_coord = loaded_data[MODEL]['lai'].coord('longitude')
+            
+            result_cube = iris.cube.Cube(thresh_inds,
+                                         dim_coords_and_dims = ((lat_coord,0),
+                                                                (lon_coord,1)),
+                                         long_name = "Vegeation Onset Index"
+                                         )
+            try:
+                icc.add_day_of_year( loaded_data[MODEL]['lai'], 'time')
+            except:
+                pass
+
+            doy_values = loaded_data[MODEL]['lai'].coord('day_of_year').points
+            doy_data = doy_values[thresh_inds]
+
+            doy_cube = iris.cube.Cube(doy_data,
+                                      dim_coords_and_dims = ((lat_coord,0),
+                                                             (lon_coord,1)),
+                                      long_name = "Vegeation Onset "
+                                         )
+            
             # lat lon from original data
             # long name
 
 
             # change to esmvaltool save path for run
-            iris.save(result_cube, '/home/users/robking/CMUG/ESMValTool/esmvaltool/cube.nc')
-            
+
+            iris.save(result_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_index_{MODEL}.nc')
+            iris.save(doy_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_doy_{MODEL}.nc')
         else:
             continue
  
