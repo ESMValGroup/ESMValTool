@@ -1,0 +1,403 @@
+# ESMValTool
+# recipe_ml_downscaling_PEon.yml
+#
+# Positional-embedding ablation (revision 1, comment R1-M3 / R2-Min1).
+# `AFM-PosEmb` is identical to `AFM-baseline` except for 4-channel sinusoidal
+# positional embeddings re-enabled in both networks (matches Fotiadis 2024).
+# Heatmap compares AFM-PosEmb vs AFM-baseline (clean PE-effect within AFM
+# architecture); PCAFM is kept as a context method in the eval blocks.
+#
+# This recipe runs over **all three regions** (CE, IBE, SCA) in a single
+# invocation. Per-region datasets are encoded via the `version` facet:
+# `1` (Central Europe), `1-Iberia`, `1-Scandinavia`. One diagnostic block
+# per region keeps the per-region metric calculations independent.
+---
+documentation:
+  description: |
+    Positional-embedding ablation: AFM-PosEmb vs AFM-baseline / PCAFM
+    over CE, IBE, SCA. Addresses R1-M3 and R2-Min1.
+  authors:
+    - debeire_kevin
+  title: PE-on ablation (revision 1)
+  maintainer:
+    - debeire_kevin
+
+# Top-level dataset list is empty; each diagnostic block injects the
+# region-specific list via per-variable `additional_datasets`.
+datasets: []
+
+# --------------------------------------------------------------------------
+# YAML anchors for region-specific dataset lists. Defined under
+# `_dataset_groups` so ESMValTool ignores them as an unknown key but YAML
+# parsers still expand the anchors below.
+# --------------------------------------------------------------------------
+_dataset_groups:
+  CE: &CE_datasets
+    - {dataset: HIGHRES-REF,  project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+  IBE: &IBE_datasets
+    - {dataset: HIGHRES-REF-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+  SCA: &SCA_datasets
+    - {dataset: HIGHRES-REF-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+    - {dataset: PCAFM,        project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+    - {dataset: AFM-PosEmb,  project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+
+preprocessors:
+  pp_extract_time: &pp_time
+    extract_time: &time_window
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  pp_tas:   {<<: *pp_time, convert_units: {units: degC}}
+  pp_huss:  {<<: *pp_time, convert_units: {units: g kg-1}}
+  pp_pr:    {<<: *pp_time, convert_units: {units: mm h-1}}
+  pp_ps:    {<<: *pp_time, convert_units: {units: hPa}}
+  pp_qmae_tas:  {<<: *pp_time, extract_season: {season: "JJA"}, convert_units: {units: degC}}
+  pp_qmae_huss: {<<: *pp_time, extract_season: {season: "JJA"}, convert_units: {units: g kg-1}}
+  pp_qmae_ps:   {<<: *pp_time, extract_season: {season: "JJA"}, convert_units: {units: hPa}}
+  pp_qmae_pr:   {<<: *pp_time, extract_season: {season: "DJF"}, convert_units: {units: mm h-1}}
+  pp_qmae_uas:  {<<: *pp_time, extract_season: {season: "SON"}}
+  pp_qmae_vas:  {<<: *pp_time, extract_season: {season: "SON"}}
+
+  # Iberia variants: add extract_region clip; CE/SCA NetCDFs are already
+  # region-scoped so no extra clipping needed there.
+  pp_extract_time_IBE: &pp_time_IBE
+    extract_time: *time_window
+    extract_region: &ibe_clip
+      start_longitude: -15
+      end_longitude: 3
+      start_latitude: 24
+      end_latitude: 42
+  pp_tas_IBE:   {<<: *pp_time_IBE, convert_units: {units: degC}}
+  pp_huss_IBE:  {<<: *pp_time_IBE, convert_units: {units: g kg-1}}
+  pp_pr_IBE:    {<<: *pp_time_IBE, convert_units: {units: mm h-1}}
+  pp_ps_IBE:    {<<: *pp_time_IBE, convert_units: {units: hPa}}
+  pp_qmae_tas_IBE:  {<<: *pp_time_IBE, extract_season: {season: "JJA"}, convert_units: {units: degC}}
+  pp_qmae_huss_IBE: {<<: *pp_time_IBE, extract_season: {season: "JJA"}, convert_units: {units: g kg-1}}
+  pp_qmae_ps_IBE:   {<<: *pp_time_IBE, extract_season: {season: "JJA"}, convert_units: {units: hPa}}
+  pp_qmae_pr_IBE:   {<<: *pp_time_IBE, extract_season: {season: "DJF"}, convert_units: {units: mm h-1}}
+  pp_qmae_uas_IBE:  {<<: *pp_time_IBE, extract_season: {season: "SON"}}
+  pp_qmae_vas_IBE:  {<<: *pp_time_IBE, extract_season: {season: "SON"}}
+
+# Common script options reused across regions (YAML anchors).
+_script_opts:
+  ml_methods: &_ml ["AFM-baseline", "PCAFM", "AFM-PosEmb"]
+
+diagnostics:
+
+  # =====================================================================
+  # Region 1 — Central Europe (training domain)
+  # =====================================================================
+  PEon_eval_CE:
+    description: "PE-on ablation — CE"
+    variables:
+      uas:  {preprocessor: pp_extract_time, additional_datasets: *CE_datasets}
+      vas:  {preprocessor: pp_extract_time, additional_datasets: *CE_datasets}
+      huss: {preprocessor: pp_huss,         additional_datasets: *CE_datasets}
+      ps:   {preprocessor: pp_ps,           additional_datasets: *CE_datasets}
+      pr:   {preprocessor: pp_pr,           additional_datasets: *CE_datasets}
+      tas:  {preprocessor: pp_tas,          additional_datasets: *CE_datasets}
+    scripts:
+      spatial_metrics: &spatial_metrics_cfg
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: *_ml
+        reference: HIGHRES-REF
+        analysis_type: spatial_metrics
+        compute_relbias_pr: true
+        compute_conservation: ["pr", "huss"]
+        pool_factor: 10
+      energy_spectrum: &spec_cfg
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: *_ml
+        reference: HIGHRES-REF
+        analysis_type: energy_spectrum
+      log_density: &logd_cfg
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: *_ml
+        reference: HIGHRES-REF
+        analysis_type: log_density
+      calibration: &cal_cfg
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: *_ml
+        reference: HIGHRES-REF
+        analysis_type: calibration
+
+  PEon_quantileMAE_CE:
+    description: "PE-on ablation — Quantile MAE — CE"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas,  additional_datasets: *CE_datasets}
+      vas:  {preprocessor: pp_qmae_vas,  additional_datasets: *CE_datasets}
+      huss: {preprocessor: pp_qmae_huss, additional_datasets: *CE_datasets}
+      ps:   {preprocessor: pp_qmae_ps,   additional_datasets: *CE_datasets}
+      pr:   {preprocessor: pp_qmae_pr,   additional_datasets: *CE_datasets}
+      tas:  {preprocessor: pp_qmae_tas,  additional_datasets: *CE_datasets}
+    scripts:
+      quantile_MAE: &qmae_cfg
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: *_ml
+        reference: HIGHRES-REF
+        analysis_type: quantile_MAE
+        compute_wbgt: true
+        compute_wind: true
+        compute_pr: true
+
+  PEon_heatmap_CE:
+    description: "PE-on heatmap — CE"
+    scripts:
+      heatmap:
+        script: regional_downscaling/ml_downscaling_heatmap.py
+        ancestors:
+          - 'PEon_eval_CE/spatial_metrics'
+          - 'PEon_eval_CE/energy_spectrum'
+          - 'PEon_eval_CE/log_density'
+          - 'PEon_eval_CE/calibration'
+          - 'PEon_quantileMAE_CE/quantile_MAE'
+        method1: "AFM-PosEmb"
+        method2: "AFM-baseline"
+        region_name: "PE-on ablation — CE"
+        heatmap_vmin: 0.80
+        heatmap_vmax: 1.20
+
+  PEon_combined_panel_CE:
+    description: "PE-on per-variable panel — CE"
+    scripts:
+      panel:
+        script: regional_downscaling/ml_downscaling_combined_panel.py
+        ancestors:
+          - 'PEon_eval_CE/spatial_metrics'
+          - 'PEon_eval_CE/energy_spectrum'
+          - 'PEon_eval_CE/log_density'
+          - 'PEon_eval_CE/calibration'
+        variables: ["pr", "huss", "tas", "ps", "uas", "vas"]
+        panel_fig_width: 18
+        region_name: "PE-on ablation — CE"
+
+  # =====================================================================
+  # Region 2 — Iberian Peninsula (OOD)
+  # =====================================================================
+  PEon_eval_IBE:
+    description: "PE-on ablation — IBE"
+    variables:
+      uas:  {preprocessor: pp_extract_time_IBE, additional_datasets: *IBE_datasets}
+      vas:  {preprocessor: pp_extract_time_IBE, additional_datasets: *IBE_datasets}
+      huss: {preprocessor: pp_huss_IBE,         additional_datasets: *IBE_datasets}
+      ps:   {preprocessor: pp_ps_IBE,           additional_datasets: *IBE_datasets}
+      pr:   {preprocessor: pp_pr_IBE,           additional_datasets: *IBE_datasets}
+      tas:  {preprocessor: pp_tas_IBE,          additional_datasets: *IBE_datasets}
+    scripts:
+      spatial_metrics: {<<: *spatial_metrics_cfg, reference: HIGHRES-REF-Iberia, compute_relbias_pr: false}
+      energy_spectrum: {<<: *spec_cfg,            reference: HIGHRES-REF-Iberia}
+      log_density:     {<<: *logd_cfg,            reference: HIGHRES-REF-Iberia}
+      calibration:     {<<: *cal_cfg,             reference: HIGHRES-REF-Iberia}
+
+  PEon_quantileMAE_IBE:
+    description: "PE-on ablation — Quantile MAE — IBE"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas_IBE,  additional_datasets: *IBE_datasets}
+      vas:  {preprocessor: pp_qmae_vas_IBE,  additional_datasets: *IBE_datasets}
+      huss: {preprocessor: pp_qmae_huss_IBE, additional_datasets: *IBE_datasets}
+      ps:   {preprocessor: pp_qmae_ps_IBE,   additional_datasets: *IBE_datasets}
+      pr:   {preprocessor: pp_qmae_pr_IBE,   additional_datasets: *IBE_datasets}
+      tas:  {preprocessor: pp_qmae_tas_IBE,  additional_datasets: *IBE_datasets}
+    scripts:
+      quantile_MAE: {<<: *qmae_cfg, reference: HIGHRES-REF-Iberia}
+
+  PEon_heatmap_IBE:
+    description: "PE-on heatmap — IBE"
+    scripts:
+      heatmap:
+        script: regional_downscaling/ml_downscaling_heatmap.py
+        ancestors:
+          - 'PEon_eval_IBE/spatial_metrics'
+          - 'PEon_eval_IBE/energy_spectrum'
+          - 'PEon_eval_IBE/log_density'
+          - 'PEon_eval_IBE/calibration'
+          - 'PEon_quantileMAE_IBE/quantile_MAE'
+        method1: "AFM-PosEmb"
+        method2: "AFM-baseline"
+        region_name: "PE-on ablation — IBE"
+        heatmap_vmin: 0.80
+        heatmap_vmax: 1.20
+
+  PEon_combined_panel_IBE:
+    description: "PE-on per-variable panel — IBE"
+    scripts:
+      panel:
+        script: regional_downscaling/ml_downscaling_combined_panel.py
+        ancestors:
+          - 'PEon_eval_IBE/spatial_metrics'
+          - 'PEon_eval_IBE/energy_spectrum'
+          - 'PEon_eval_IBE/log_density'
+          - 'PEon_eval_IBE/calibration'
+        variables: ["pr", "huss", "tas", "ps", "uas", "vas"]
+        panel_fig_width: 18
+        region_name: "PE-on ablation — IBE"
+
+  # =====================================================================
+  # Region 3 — Scandinavia / Northern Europe (OOD)
+  # =====================================================================
+  PEon_eval_SCA:
+    description: "PE-on ablation — SCA"
+    variables:
+      uas:  {preprocessor: pp_extract_time, additional_datasets: *SCA_datasets}
+      vas:  {preprocessor: pp_extract_time, additional_datasets: *SCA_datasets}
+      huss: {preprocessor: pp_huss,         additional_datasets: *SCA_datasets}
+      ps:   {preprocessor: pp_ps,           additional_datasets: *SCA_datasets}
+      pr:   {preprocessor: pp_pr,           additional_datasets: *SCA_datasets}
+      tas:  {preprocessor: pp_tas,          additional_datasets: *SCA_datasets}
+    scripts:
+      spatial_metrics: {<<: *spatial_metrics_cfg, reference: HIGHRES-REF-Scandinavia}
+      energy_spectrum: {<<: *spec_cfg,            reference: HIGHRES-REF-Scandinavia}
+      log_density:     {<<: *logd_cfg,            reference: HIGHRES-REF-Scandinavia}
+      calibration:     {<<: *cal_cfg,             reference: HIGHRES-REF-Scandinavia}
+
+  PEon_quantileMAE_SCA:
+    description: "PE-on ablation — Quantile MAE — SCA"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas,  additional_datasets: *SCA_datasets}
+      vas:  {preprocessor: pp_qmae_vas,  additional_datasets: *SCA_datasets}
+      huss: {preprocessor: pp_qmae_huss, additional_datasets: *SCA_datasets}
+      ps:   {preprocessor: pp_qmae_ps,   additional_datasets: *SCA_datasets}
+      pr:   {preprocessor: pp_qmae_pr,   additional_datasets: *SCA_datasets}
+      tas:  {preprocessor: pp_qmae_tas,  additional_datasets: *SCA_datasets}
+    scripts:
+      quantile_MAE: {<<: *qmae_cfg, reference: HIGHRES-REF-Scandinavia}
+
+  PEon_heatmap_SCA:
+    description: "PE-on heatmap — SCA"
+    scripts:
+      heatmap:
+        script: regional_downscaling/ml_downscaling_heatmap.py
+        ancestors:
+          - 'PEon_eval_SCA/spatial_metrics'
+          - 'PEon_eval_SCA/energy_spectrum'
+          - 'PEon_eval_SCA/log_density'
+          - 'PEon_eval_SCA/calibration'
+          - 'PEon_quantileMAE_SCA/quantile_MAE'
+        method1: "AFM-PosEmb"
+        method2: "AFM-baseline"
+        region_name: "PE-on ablation — SCA"
+        heatmap_vmin: 0.80
+        heatmap_vmax: 1.20
+
+  PEon_combined_panel_SCA:
+    description: "PE-on per-variable panel — SCA"
+    scripts:
+      panel:
+        script: regional_downscaling/ml_downscaling_combined_panel.py
+        ancestors:
+          - 'PEon_eval_SCA/spatial_metrics'
+          - 'PEon_eval_SCA/energy_spectrum'
+          - 'PEon_eval_SCA/log_density'
+          - 'PEon_eval_SCA/calibration'
+        variables: ["pr", "huss", "tas", "ps", "uas", "vas"]
+        panel_fig_width: 18
+        region_name: "PE-on ablation — SCA"

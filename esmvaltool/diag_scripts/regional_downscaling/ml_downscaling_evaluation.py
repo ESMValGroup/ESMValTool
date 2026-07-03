@@ -361,11 +361,15 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg,
     show_pct = [False]
     is_coarse = [False]  # Track which metrics are on coarse grid
     
-    # Add relative bias for pr if enabled
+    # Add relative bias for pr if enabled. R2-Fig7: the original
+    # [-0.5, +0.5] range saturated for OOD regions where the wet bias
+    # reaches ~50% (e.g. AFM-baseline over Northern Europe, 49.9%).
+    # Widen to [-1.0, +1.0] so that ±100% biases remain visible without
+    # being clipped.
     if var_name == "pr" and compute_relbias_pr:
         metrics_to_plot.append("relbias")
-        vmins.append(-0.5)
-        vmaxs.append(0.5)
+        vmins.append(-1.0)
+        vmaxs.append(1.0)
         titles.append("Relative Bias (%)")
         cmaps.append("BrBG")
         show_pct.append(True)
@@ -711,24 +715,39 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
     cfg : dict
         Configuration dictionary
     """
-    plt.figure(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6))
     bins = 200
-    
+
     # Get variable units
     var_units = UNITS[var_name]
-    
+
+    # R2-SI1: zero-frequency bins are clipped to a fixed floor
+    # so that the log10 plot does not abruptly truncate. The floor is
+    # log10(1 / N_total) — i.e. the smallest non-zero density resolvable
+    # with the available sample count. The plotted line therefore drops
+    # *to the floor* in tail bins where the prediction produced no samples,
+    # rather than leaving the impression of a "vanishing" prediction.
+    epsilon = 1e-10
+
     # Truth histogram
     truth_flat = truth.flatten()
     truth_flat = truth_flat[np.isfinite(truth_flat)]
+    n_total = max(truth_flat.size, 1)
     hist_range = (np.min(truth_flat), np.max(truth_flat))
     truth_hist, edges = np.histogram(
         truth_flat, bins=bins, range=hist_range, density=True
     )
     centers = (edges[:-1] + edges[1:]) / 2
-    epsilon = 1e-10
-    truth_hist = np.maximum(truth_hist, epsilon)
-    plt.plot(centers, np.log10(truth_hist), label="Reference", lw=3.5, color='black')
-    
+    # Empirical floor: smallest resolvable density given N_total samples and
+    # the bin width. This is added as a visual reference horizontal line.
+    bin_width = float(edges[1] - edges[0]) if edges.size > 1 else 1.0
+    floor_density = 1.0 / (n_total * bin_width)
+    floor_log = np.log10(max(floor_density, epsilon))
+
+    truth_hist_plot = np.maximum(truth_hist, floor_density)
+    ax.plot(centers, np.log10(truth_hist_plot),
+            label="Reference", lw=3.5, color='black')
+
     # Prediction histograms
     colors = CB_COLORS[:len(method_names)]
     for method, pred_ens, color in zip(method_names, preds_methods, colors):
@@ -739,24 +758,30 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
             pred_hist, _ = np.histogram(pred_flat, bins=edges, density=True)
             ensemble_pdfs.append(pred_hist)
         mean_pred_pdf = np.mean(ensemble_pdfs, axis=0)
-        mean_pred_pdf = np.maximum(mean_pred_pdf, epsilon)
-        plt.plot(
+        mean_pred_pdf = np.maximum(mean_pred_pdf, floor_density)
+        ax.plot(
             centers, np.log10(mean_pred_pdf),
             label=method, linestyle='--', lw=3.5, color=color
         )
+
+    # R2-SI1: floor reference line, with explicit caption text in legend.
+    ax.axhline(
+        floor_log, color="#888888", linestyle=":", linewidth=1.5,
+        label=f"Resolution floor (log10[1/(N·Δ)] ≈ {floor_log:.1f})",
+    )
     
     # Add units to x-axis label
     xlabel = f"{var_name}"
     if var_units:
         xlabel += f" ({var_units})"
-    plt.xlabel(xlabel, fontsize=22)
-    plt.ylabel("log₁₀(PDF)", fontsize=22)
-    plt.title(f"Probability Distribution", fontsize=32, fontweight='bold')
-    plt.legend(fontsize=22)
-    plt.grid(True, which="both", ls="--", alpha=0.5)
-    plt.tick_params(axis='both', which='major', labelsize=20)
+    ax.set_xlabel(xlabel, fontsize=22)
+    ax.set_ylabel("log₁₀(PDF)", fontsize=22)
+    ax.set_title("Probability Distribution", fontsize=32, fontweight='bold')
+    ax.legend(fontsize=14, loc="best")
+    ax.grid(True, which="both", ls="--", alpha=0.5)
+    ax.tick_params(axis='both', which='major', labelsize=20)
     plt.tight_layout()
-    
+
     # Save
     plot_file = os.path.join(
         cfg["plot_dir"],
@@ -764,8 +789,13 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
     )
     plt.savefig(plot_file, dpi=200, bbox_inches='tight')
     plt.close()
-    
-    caption = f"Log PDF comparison for {var_name}"
+
+    caption = (
+        f"Log PDF comparison for {var_name}. Bins with zero counts in either "
+        f"truth or prediction are clipped to the resolution floor "
+        f"log10[1/(N · bin_width)]; predicted lines reaching this floor "
+        f"indicate ensemble members that produced no samples in the bin."
+    )
     _get_provenance_record(cfg, plot_file, caption, ["probability"], ["pdf"])
 
     logger.info("Saved log PDF plot: %s", plot_file)

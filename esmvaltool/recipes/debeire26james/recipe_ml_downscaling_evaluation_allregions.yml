@@ -1,0 +1,518 @@
+# ESMValTool
+# recipe_ml_downscaling_evaluation_allregions.yml
+#
+# Single merged version of:
+#   - recipe_ml_downscaling_evaluation.yml             (Central Europe, training)
+#   - recipe_ml_downscaling_evaluation_iberia.yml      (Iberic Peninsula, OOD)
+#   - recipe_ml_downscaling_evaluation_scandinavia.yml (Scandinavia, OOD)
+#
+# All three regions share most of the preprocessor logic (same time window,
+# same unit conversions, same DJF/JJA/SON seasons for QMAE); only IBE needs a
+# regional clip box and IBE has compute_relbias_pr=false (arid pr).
+#
+# Per-region deltas:
+#   region | reference dataset        | version suffix  | extract_region    | relbias_pr
+#   -------+--------------------------+-----------------+-------------------+-----------
+#    CE    | HIGHRES-REF              | (none)          | (none)            | true
+#    IBE   | HIGHRES-REF-Iberia       | -Iberia         | lon -15..3, lat 24..42 | false
+#    SCA   | HIGHRES-REF-Scandinavia  | -Scandinavia    | (none)            | true
+#
+# The qmae_cross_region_6M block at the bottom is new: it takes the three
+# per-region quantileMAE_6M_* runs as ancestors and writes the merged
+# cross-region QMAE table (one of the reviewers' requests).
+---
+documentation:
+  description: |
+    Evaluation of ML-based downscaling (AFM-baseline vs PCAFM) across three
+    regions (Central Europe, Iberic Peninsula, Scandinavia) in a single run,
+    including a cross-region QMAE summary.
+
+  authors:
+    - debeire_kevin
+
+  title: Evaluation of ML-based downscaling (CE + IBE + SCA)
+
+  maintainer:
+    - debeire_kevin
+
+
+# -----------------------------------------------------------------------------
+# Datasets
+# -----------------------------------------------------------------------------
+#
+# Global datasets list is intentionally empty.  Each diagnostic block carries
+# its own ``additional_datasets:`` so the IBE-only ``extract_region`` clip is
+# never applied to CE/SCA data (which would produce an empty intersection and
+# crash extract_region).  Region-specific dataset bundles are defined as YAML
+# anchors below; the leading ``_dataset_groups`` key is non-standard and
+# ignored by ESMValTool.
+datasets: []
+
+_dataset_groups:
+  CE: &CE_datasets
+    - {dataset: HIGHRES-REF, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 1,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 2,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 3,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 4,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 5,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 6,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 7,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 8,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 9,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 1,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 2,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 3,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 4,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 5,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 6,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 7,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 8,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 9,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    - {dataset: UNet,  project: OBS6, mip: 3hr, type: reanaly, version: 1,  tier: 1}
+
+  IBE: &IBE_datasets
+    - {dataset: HIGHRES-REF-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+    - {dataset: UNet,  project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia,  tier: 1}
+
+  SCA: &SCA_datasets
+    - {dataset: HIGHRES-REF-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline, project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia,  tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+    - {dataset: PCAFM, project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+    - {dataset: UNet,  project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia,  tier: 1}
+
+
+# -----------------------------------------------------------------------------
+# Preprocessors  (anchors -> per-region merges)
+# -----------------------------------------------------------------------------
+preprocessors:
+  # -- CE preprocessors (no clip) --
+  pp_time_CE: &pp_time_CE
+    extract_time: &time_window
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  pp_tas_CE:  {<<: *pp_time_CE, convert_units: {units: degC}}
+  pp_huss_CE: {<<: *pp_time_CE, convert_units: {units: g kg-1}}
+  pp_pr_CE:   {<<: *pp_time_CE, convert_units: {units: mm h-1}}
+  pp_ps_CE:   {<<: *pp_time_CE, convert_units: {units: hPa}}
+
+  pp_qmae_tas_CE:  {<<: *pp_time_CE, extract_season: {season: "JJA"}, convert_units: {units: degC}}
+  pp_qmae_huss_CE: {<<: *pp_time_CE, extract_season: {season: "JJA"}, convert_units: {units: g kg-1}}
+  pp_qmae_pr_CE:   {<<: *pp_time_CE, extract_season: {season: "DJF"}, convert_units: {units: mm h-1}}
+  pp_qmae_ps_CE:   {<<: *pp_time_CE, extract_season: {season: "JJA"}, convert_units: {units: hPa}}
+  pp_qmae_uas_CE:  {<<: *pp_time_CE, extract_season: {season: "SON"}}
+  pp_qmae_vas_CE:  {<<: *pp_time_CE, extract_season: {season: "SON"}}
+
+  # -- IBE preprocessors (clip to lon -15..3, lat 24..42) --
+  pp_time_IBE: &pp_time_IBE
+    extract_time: *time_window
+    extract_region: &ibe_clip
+      start_longitude: -15
+      end_longitude: 3
+      start_latitude: 24
+      end_latitude: 42
+  pp_tas_IBE:  {<<: *pp_time_IBE, convert_units: {units: degC}}
+  pp_huss_IBE: {<<: *pp_time_IBE, convert_units: {units: g kg-1}}
+  pp_pr_IBE:   {<<: *pp_time_IBE, convert_units: {units: mm h-1}}
+  pp_ps_IBE:   {<<: *pp_time_IBE, convert_units: {units: hPa}}
+
+  pp_qmae_tas_IBE:  {<<: *pp_time_IBE, extract_season: {season: "JJA"}, convert_units: {units: degC}}
+  pp_qmae_huss_IBE: {<<: *pp_time_IBE, extract_season: {season: "JJA"}, convert_units: {units: g kg-1}}
+  pp_qmae_pr_IBE:   {<<: *pp_time_IBE, extract_season: {season: "DJF"}, convert_units: {units: mm h-1}}
+  pp_qmae_ps_IBE:   {<<: *pp_time_IBE, extract_season: {season: "JJA"}, convert_units: {units: hPa}}
+  pp_qmae_uas_IBE:  {<<: *pp_time_IBE, extract_season: {season: "SON"}}
+  pp_qmae_vas_IBE:  {<<: *pp_time_IBE, extract_season: {season: "SON"}}
+
+  # -- SCA preprocessors (no clip) --
+  pp_time_SCA: &pp_time_SCA
+    extract_time: *time_window
+  pp_tas_SCA:  {<<: *pp_time_SCA, convert_units: {units: degC}}
+  pp_huss_SCA: {<<: *pp_time_SCA, convert_units: {units: g kg-1}}
+  pp_pr_SCA:   {<<: *pp_time_SCA, convert_units: {units: mm h-1}}
+  pp_ps_SCA:   {<<: *pp_time_SCA, convert_units: {units: hPa}}
+
+  pp_qmae_tas_SCA:  {<<: *pp_time_SCA, extract_season: {season: "JJA"}, convert_units: {units: degC}}
+  pp_qmae_huss_SCA: {<<: *pp_time_SCA, extract_season: {season: "JJA"}, convert_units: {units: g kg-1}}
+  pp_qmae_pr_SCA:   {<<: *pp_time_SCA, extract_season: {season: "DJF"}, convert_units: {units: mm h-1}}
+  pp_qmae_ps_SCA:   {<<: *pp_time_SCA, extract_season: {season: "JJA"}, convert_units: {units: hPa}}
+  pp_qmae_uas_SCA:  {<<: *pp_time_SCA, extract_season: {season: "SON"}}
+  pp_qmae_vas_SCA:  {<<: *pp_time_SCA, extract_season: {season: "SON"}}
+
+
+# -----------------------------------------------------------------------------
+# Diagnostics
+# -----------------------------------------------------------------------------
+#
+# YAML anchors for shared script content (constant across regions).  Region-
+# specific overrides (reference, region_name, compute_relbias_pr) are applied
+# via per-diagnostic merge keys + scalar overrides.
+diagnostics:
+
+  # =========================================================================
+  # ===== CENTRAL EUROPE (training region) ==================================
+  # =========================================================================
+  downscaling_evaluation_6M_CE:
+    description: "ML-based downscaling vs HIGHRES-REF (Central Europe)"
+    variables:
+      uas:  {preprocessor: pp_time_CE, additional_datasets: *CE_datasets}
+      vas:  {preprocessor: pp_time_CE, additional_datasets: *CE_datasets}
+      huss: {preprocessor: pp_huss_CE, additional_datasets: *CE_datasets}
+      ps:   {preprocessor: pp_ps_CE,   additional_datasets: *CE_datasets}
+      pr:   {preprocessor: pp_pr_CE,   additional_datasets: *CE_datasets}
+      tas:  {preprocessor: pp_tas_CE,  additional_datasets: *CE_datasets}
+    scripts:
+      spatial_metrics:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF
+        analysis_type: spatial_metrics
+        compute_relbias_pr: true
+        compute_conservation: ["pr", "huss"]
+        pool_factor: 10
+      energy_spectrum:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF
+        analysis_type: energy_spectrum
+      log_density:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF
+        analysis_type: log_density
+      calibration:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM"]   # ensemble-only -- rank hist + MCB
+        reference: HIGHRES-REF
+        analysis_type: calibration
+      create_animation:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF
+        analysis_type: create_animation
+        animation_start_time: 800
+        animation_end_time: 810
+        animation_frame_duration: 2
+
+  quantileMAE_6M_CE:
+    description: "Quantile MAE vs HIGHRES-REF (Central Europe)"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas_CE,  additional_datasets: *CE_datasets}
+      vas:  {preprocessor: pp_qmae_vas_CE,  additional_datasets: *CE_datasets}
+      huss: {preprocessor: pp_qmae_huss_CE, additional_datasets: *CE_datasets}
+      ps:   {preprocessor: pp_qmae_ps_CE,   additional_datasets: *CE_datasets}
+      pr:   {preprocessor: pp_qmae_pr_CE,   additional_datasets: *CE_datasets}
+      tas:  {preprocessor: pp_qmae_tas_CE,  additional_datasets: *CE_datasets}
+    scripts:
+      quantile_MAE:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF
+        analysis_type: quantile_MAE
+        compute_wbgt: true
+        compute_wind: true
+        compute_pr: true
+
+  relative_performance_heatmap_6M_CE:
+    description: "Relative performance heatmap (Central Europe)"
+    scripts:
+      heatmap:
+        script: regional_downscaling/ml_downscaling_heatmap.py
+        ancestors:
+          - 'downscaling_evaluation_6M_CE/spatial_metrics'
+          - 'downscaling_evaluation_6M_CE/energy_spectrum'
+          - 'downscaling_evaluation_6M_CE/log_density'
+          - 'downscaling_evaluation_6M_CE/calibration'
+          - 'quantileMAE_6M_CE/quantile_MAE'
+        method1: "PCAFM"
+        method2: "AFM-baseline"
+        region_name: "Central Europe (training region)"
+        heatmap_vmin: 0.80
+        heatmap_vmax: 1.20
+
+  combined_panel_6M_CE:
+    description: "Combined evaluation panel (Central Europe)"
+    scripts:
+      panel:
+        script: regional_downscaling/ml_downscaling_combined_panel.py
+        ancestors:
+          - 'downscaling_evaluation_6M_CE/spatial_metrics'
+          - 'downscaling_evaluation_6M_CE/energy_spectrum'
+          - 'downscaling_evaluation_6M_CE/log_density'
+          - 'downscaling_evaluation_6M_CE/calibration'
+        variables: ["pr", "huss", "tas", "ps", "uas", "vas"]
+        panel_fig_width: 18
+        region_name: "Central Europe (training region)"
+
+  # =========================================================================
+  # ===== IBERIA (OOD, arid) ================================================
+  # =========================================================================
+  downscaling_evaluation_6M_IBE:
+    description: "ML-based downscaling vs HIGHRES-REF (Iberic Peninsula)"
+    variables:
+      uas:  {preprocessor: pp_time_IBE, additional_datasets: *IBE_datasets}
+      vas:  {preprocessor: pp_time_IBE, additional_datasets: *IBE_datasets}
+      huss: {preprocessor: pp_huss_IBE, additional_datasets: *IBE_datasets}
+      ps:   {preprocessor: pp_ps_IBE,   additional_datasets: *IBE_datasets}
+      pr:   {preprocessor: pp_pr_IBE,   additional_datasets: *IBE_datasets}
+      tas:  {preprocessor: pp_tas_IBE,  additional_datasets: *IBE_datasets}
+    scripts:
+      spatial_metrics:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Iberia
+        analysis_type: spatial_metrics
+        compute_relbias_pr: false  # arid -- relative bias unstable
+        compute_conservation: ["pr", "huss"]
+        pool_factor: 10
+      energy_spectrum:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Iberia
+        analysis_type: energy_spectrum
+      log_density:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Iberia
+        analysis_type: log_density
+      calibration:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM"]   # ensemble-only -- rank hist + MCB
+        reference: HIGHRES-REF-Iberia
+        analysis_type: calibration
+      create_animation:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Iberia
+        analysis_type: create_animation
+        animation_start_time: 800
+        animation_end_time: 810
+        animation_frame_duration: 2
+
+  quantileMAE_6M_IBE:
+    description: "Quantile MAE vs HIGHRES-REF (Iberic Peninsula)"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas_IBE,  additional_datasets: *IBE_datasets}
+      vas:  {preprocessor: pp_qmae_vas_IBE,  additional_datasets: *IBE_datasets}
+      huss: {preprocessor: pp_qmae_huss_IBE, additional_datasets: *IBE_datasets}
+      ps:   {preprocessor: pp_qmae_ps_IBE,   additional_datasets: *IBE_datasets}
+      pr:   {preprocessor: pp_qmae_pr_IBE,   additional_datasets: *IBE_datasets}
+      tas:  {preprocessor: pp_qmae_tas_IBE,  additional_datasets: *IBE_datasets}
+    scripts:
+      quantile_MAE:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Iberia
+        analysis_type: quantile_MAE
+        compute_wbgt: true
+        compute_wind: true
+        compute_pr: true
+
+  relative_performance_heatmap_6M_IBE:
+    description: "Relative performance heatmap (Iberic Peninsula)"
+    scripts:
+      heatmap:
+        script: regional_downscaling/ml_downscaling_heatmap.py
+        ancestors:
+          - 'downscaling_evaluation_6M_IBE/spatial_metrics'
+          - 'downscaling_evaluation_6M_IBE/energy_spectrum'
+          - 'downscaling_evaluation_6M_IBE/log_density'
+          - 'downscaling_evaluation_6M_IBE/calibration'
+          - 'quantileMAE_6M_IBE/quantile_MAE'
+        method1: "PCAFM"
+        method2: "AFM-baseline"
+        region_name: "Iberic Peninsula (unseen during training)"
+        heatmap_vmin: 0.80
+        heatmap_vmax: 1.20
+
+  combined_panel_6M_IBE:
+    description: "Combined evaluation panel (Iberic Peninsula)"
+    scripts:
+      panel:
+        script: regional_downscaling/ml_downscaling_combined_panel.py
+        ancestors:
+          - 'downscaling_evaluation_6M_IBE/spatial_metrics'
+          - 'downscaling_evaluation_6M_IBE/energy_spectrum'
+          - 'downscaling_evaluation_6M_IBE/log_density'
+          - 'downscaling_evaluation_6M_IBE/calibration'
+        variables: ["pr", "huss", "tas", "ps", "uas", "vas"]
+        panel_fig_width: 18
+        region_name: "Iberic Peninsula (unseen during training)"
+
+  # =========================================================================
+  # ===== SCANDINAVIA (OOD, wet) ============================================
+  # =========================================================================
+  downscaling_evaluation_6M_SCA:
+    description: "ML-based downscaling vs HIGHRES-REF (Scandinavia)"
+    variables:
+      uas:  {preprocessor: pp_time_SCA, additional_datasets: *SCA_datasets}
+      vas:  {preprocessor: pp_time_SCA, additional_datasets: *SCA_datasets}
+      huss: {preprocessor: pp_huss_SCA, additional_datasets: *SCA_datasets}
+      ps:   {preprocessor: pp_ps_SCA,   additional_datasets: *SCA_datasets}
+      pr:   {preprocessor: pp_pr_SCA,   additional_datasets: *SCA_datasets}
+      tas:  {preprocessor: pp_tas_SCA,  additional_datasets: *SCA_datasets}
+    scripts:
+      spatial_metrics:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: spatial_metrics
+        compute_relbias_pr: true
+        compute_conservation: ["pr", "huss"]
+        pool_factor: 10
+      energy_spectrum:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: energy_spectrum
+      log_density:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: log_density
+      calibration:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM"]   # ensemble-only -- rank hist + MCB
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: calibration
+      create_animation:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: create_animation
+        animation_start_time: 800
+        animation_end_time: 810
+        animation_frame_duration: 2
+
+  quantileMAE_6M_SCA:
+    description: "Quantile MAE vs HIGHRES-REF (Scandinavia)"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas_SCA,  additional_datasets: *SCA_datasets}
+      vas:  {preprocessor: pp_qmae_vas_SCA,  additional_datasets: *SCA_datasets}
+      huss: {preprocessor: pp_qmae_huss_SCA, additional_datasets: *SCA_datasets}
+      ps:   {preprocessor: pp_qmae_ps_SCA,   additional_datasets: *SCA_datasets}
+      pr:   {preprocessor: pp_qmae_pr_SCA,   additional_datasets: *SCA_datasets}
+      tas:  {preprocessor: pp_qmae_tas_SCA,  additional_datasets: *SCA_datasets}
+    scripts:
+      quantile_MAE:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        ml_methods: ["AFM-baseline", "PCAFM", "UNet"]
+        reference: HIGHRES-REF-Scandinavia
+        analysis_type: quantile_MAE
+        compute_wbgt: true
+        compute_wind: true
+        compute_pr: true
+
+  relative_performance_heatmap_6M_SCA:
+    description: "Relative performance heatmap (Scandinavia)"
+    scripts:
+      heatmap:
+        script: regional_downscaling/ml_downscaling_heatmap.py
+        ancestors:
+          - 'downscaling_evaluation_6M_SCA/spatial_metrics'
+          - 'downscaling_evaluation_6M_SCA/energy_spectrum'
+          - 'downscaling_evaluation_6M_SCA/log_density'
+          - 'downscaling_evaluation_6M_SCA/calibration'
+          - 'quantileMAE_6M_SCA/quantile_MAE'
+        method1: "PCAFM"
+        method2: "AFM-baseline"
+        region_name: "Northern Europe region (unseen during training)"
+        heatmap_vmin: 0.80
+        heatmap_vmax: 1.20
+
+  combined_panel_6M_SCA:
+    description: "Combined evaluation panel (Scandinavia)"
+    scripts:
+      panel:
+        script: regional_downscaling/ml_downscaling_combined_panel.py
+        ancestors:
+          - 'downscaling_evaluation_6M_SCA/spatial_metrics'
+          - 'downscaling_evaluation_6M_SCA/energy_spectrum'
+          - 'downscaling_evaluation_6M_SCA/log_density'
+          - 'downscaling_evaluation_6M_SCA/calibration'
+        variables: ["pr", "huss", "tas", "ps", "uas", "vas"]
+        panel_fig_width: 18
+        region_name: "Northern Europe region (unseen during training)"
+
+  # =========================================================================
+  # ===== CROSS-REGION QMAE SUMMARY (reviewer request) ======================
+  # =========================================================================
+  qmae_cross_region_6M:
+    description: "Merged QMAE table across CE + IBE + SCA"
+    scripts:
+      qmae_cross_region:
+        script: regional_downscaling/ml_downscaling_qmae_cross_region.py
+        ancestors:
+          - 'quantileMAE_6M_CE/quantile_MAE'
+          - 'quantileMAE_6M_IBE/quantile_MAE'
+          - 'quantileMAE_6M_SCA/quantile_MAE'
+        # Maps each ancestor's diagnostic key to a region label that appears
+        # in the merged table / heatmap.
+        region_labels:
+          quantileMAE_6M_CE:  "Central Europe"
+          quantileMAE_6M_IBE: "Iberic Peninsula"
+          quantileMAE_6M_SCA: "Scandinavia"
+        # Methods to keep as columns (must match the per-region ml_methods).
+        methods: ["AFM-baseline", "PCAFM", "UNet"]
+        # Reference method used for ratios in the heatmap (PCAFM / method2).
+        # The heatmap stays a PCAFM-vs-AFM-baseline pairwise ratio; UNet
+        # values still appear in the merged CSV table as an extra column.
+        method1: "PCAFM"
+        method2: "AFM-baseline"
+        heatmap_vmin: 0.80
+        heatmap_vmax: 1.20

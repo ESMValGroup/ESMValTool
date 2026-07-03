@@ -262,7 +262,17 @@ def create_combined_panel(plot_files, var_name, cfg, reference_ar=None):
         for _, atype, _ in bottom_panels:
             img = images[atype]
             bottom_aspects.append(img.shape[1] / img.shape[0])
-        width_ratios = bottom_aspects
+
+        # Optionally widen the rank-histogram panel (D) so the per-model
+        # histograms are larger and more legible (R2-Fig4-7-10). The aspect
+        # used to size the row height (h_b) is kept at the true image aspect,
+        # so panel D itself is not distorted; only its share of the row width
+        # grows. Default 1.0 leaves all other recipes unchanged.
+        rank_width_scale = cfg.get("rank_width_scale", 1.0)
+        width_ratios = list(bottom_aspects)
+        for i, (_, atype, _) in enumerate(bottom_panels):
+            if atype == "calibration":
+                width_ratios[i] = bottom_aspects[i] * rank_width_scale
 
         total_ratio = sum(width_ratios)
         h_b = max(

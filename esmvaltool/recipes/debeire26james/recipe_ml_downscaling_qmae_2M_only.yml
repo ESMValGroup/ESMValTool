@@ -1,0 +1,132 @@
+# ESMValTool
+# recipe_ml_downscaling_qmae_2M_only.yml
+#
+# T1-T4 / E-Tab4 — minimal recipe that produces the absolute Quantile-MAE
+# values of `AFM-baseline-2M` over the three evaluation regions (CE / IBE / SCA)
+# for the three composites used in the paper:
+#   - WBGT (JJA, from tas + huss + ps)
+#   - sfcWind (SON, from uas + vas)
+#   - pr (DJF)
+#
+# Only the `quantile_MAE` diagnostic runs (no spatial_metrics / energy_spectrum /
+# log_density / calibration), and only on AFM-baseline-2M (no PCAFM variants),
+# so the recipe is fast — a few minutes per region.
+#
+# The output CSV is then post-processed into `qmae_afm_baseline_2M.tex` to
+# satisfy reviewer R2-SI4 (absolute baseline values cross-referenced from
+# Figures S19–S21).
+---
+documentation:
+  description: |
+    Minimal Quantile-MAE evaluation of AFM-baseline-2M vs HIGHRES-REF over the
+    three regions. Produces only the cross-region quantile-MAE table.
+  authors:
+    - debeire_kevin
+  title: AFM-baseline-2M absolute Quantile-MAE (revision 1, R2-SI4)
+  maintainer:
+    - debeire_kevin
+
+datasets: []
+
+_dataset_groups:
+  CE: &CE_datasets
+    - {dataset: HIGHRES-REF,     project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 1,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 2,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 3,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 4,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 5,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 6,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 7,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 8,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 9,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+  IBE: &IBE_datasets
+    - {dataset: HIGHRES-REF-Iberia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 1-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 2-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 3-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 4-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 5-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 6-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 7-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 8-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 9-Iberia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 10-Iberia, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 11-Iberia, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 12-Iberia, tier: 1}
+  SCA: &SCA_datasets
+    - {dataset: HIGHRES-REF-Scandinavia, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 1-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 2-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 3-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 4-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 5-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 6-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 7-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 8-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 9-Scandinavia,  tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 10-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 11-Scandinavia, tier: 1}
+    - {dataset: AFM-baseline-2M, project: OBS6, mip: 3hr, type: reanaly, version: 12-Scandinavia, tier: 1}
+
+preprocessors:
+  pp_extract_time: &pp_time
+    extract_time: {start_day: 20, start_month: 1, start_year: 2024,
+                   end_day: 18, end_month: 1, end_year: 2025}
+  pp_qmae_tas:  {<<: *pp_time, extract_season: {season: "JJA"}, convert_units: {units: degC}}
+  pp_qmae_huss: {<<: *pp_time, extract_season: {season: "JJA"}, convert_units: {units: g kg-1}}
+  pp_qmae_ps:   {<<: *pp_time, extract_season: {season: "JJA"}, convert_units: {units: hPa}}
+  pp_qmae_pr:   {<<: *pp_time, extract_season: {season: "DJF"}, convert_units: {units: mm h-1}}
+  pp_qmae_uas:  {<<: *pp_time, extract_season: {season: "SON"}}
+  pp_qmae_vas:  {<<: *pp_time, extract_season: {season: "SON"}}
+
+# ---- shared script config (anchored, then overridden per region for `reference`) ----
+.script_cfg:
+  qmae_cfg: &qmae_cfg
+    script: regional_downscaling/ml_downscaling_evaluation.py
+    ml_methods: ["AFM-baseline-2M"]
+    reference: HIGHRES-REF
+    analysis_type: quantile_MAE
+    compute_wbgt: true
+    compute_wind: true
+    compute_pr: true
+
+diagnostics:
+  qmae_CE:
+    description: "AFM-baseline-2M absolute Q-MAE — CE"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas,  additional_datasets: *CE_datasets}
+      vas:  {preprocessor: pp_qmae_vas,  additional_datasets: *CE_datasets}
+      huss: {preprocessor: pp_qmae_huss, additional_datasets: *CE_datasets}
+      ps:   {preprocessor: pp_qmae_ps,   additional_datasets: *CE_datasets}
+      pr:   {preprocessor: pp_qmae_pr,   additional_datasets: *CE_datasets}
+      tas:  {preprocessor: pp_qmae_tas,  additional_datasets: *CE_datasets}
+    scripts:
+      quantile_MAE: {<<: *qmae_cfg, reference: HIGHRES-REF}
+
+  qmae_IBE:
+    description: "AFM-baseline-2M absolute Q-MAE — IBE"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas,  additional_datasets: *IBE_datasets}
+      vas:  {preprocessor: pp_qmae_vas,  additional_datasets: *IBE_datasets}
+      huss: {preprocessor: pp_qmae_huss, additional_datasets: *IBE_datasets}
+      ps:   {preprocessor: pp_qmae_ps,   additional_datasets: *IBE_datasets}
+      pr:   {preprocessor: pp_qmae_pr,   additional_datasets: *IBE_datasets}
+      tas:  {preprocessor: pp_qmae_tas,  additional_datasets: *IBE_datasets}
+    scripts:
+      quantile_MAE: {<<: *qmae_cfg, reference: HIGHRES-REF-Iberia}
+
+  qmae_SCA:
+    description: "AFM-baseline-2M absolute Q-MAE — SCA"
+    variables:
+      uas:  {preprocessor: pp_qmae_uas,  additional_datasets: *SCA_datasets}
+      vas:  {preprocessor: pp_qmae_vas,  additional_datasets: *SCA_datasets}
+      huss: {preprocessor: pp_qmae_huss, additional_datasets: *SCA_datasets}
+      ps:   {preprocessor: pp_qmae_ps,   additional_datasets: *SCA_datasets}
+      pr:   {preprocessor: pp_qmae_pr,   additional_datasets: *SCA_datasets}
+      tas:  {preprocessor: pp_qmae_tas,  additional_datasets: *SCA_datasets}
+    scripts:
+      quantile_MAE: {<<: *qmae_cfg, reference: HIGHRES-REF-Scandinavia}

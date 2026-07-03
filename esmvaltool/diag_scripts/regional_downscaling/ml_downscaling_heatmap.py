@@ -108,14 +108,19 @@ def _get_provenance_record(cfg, plot_file, caption):
 
 
 def _build_colormap():
-    """Return the shared green-white-red colormap used by all heatmaps."""
+    """Return the colorblind-friendly diverging colormap used by all heatmaps.
+
+    Blue (improvement) → white (neutral) → orange (degradation), inspired by
+    ColorBrewer "RdBu" but with the orange chosen to remain distinguishable
+    under deuteranopia/protanopia. This replaces the previous green/red palette
+    in response to reviewer R2-Fig3 (revision 1)."""
     colors_below = [
-        (0.0, "#1a7a3a"), (0.3, "#3aad5c"),
-        (0.7, "#8ed4a0"), (1.0, "#f0f0f0"),
+        (0.0, "#053061"), (0.3, "#2166ac"),
+        (0.7, "#92c5de"), (1.0, "#f7f7f7"),
     ]
     colors_above = [
-        (0.0, "#f0f0f0"), (0.3, "#f4a6a0"),
-        (0.7, "#d45050"), (1.0, "#a01c1c"),
+        (0.0, "#f7f7f7"), (0.3, "#fdb863"),
+        (0.7, "#e08214"), (1.0, "#b35806"),
     ]
 
     n_steps = 256
@@ -182,9 +187,16 @@ def _draw_cells(ax, aug_data, row_labels, col_labels,
                 fc = rgba
                 lum = 0.299 * rgba[0] + 0.587 * rgba[1] + 0.114 * rgba[2]
                 text_color = "#1a1a1a" if lum > 0.55 else "white"
-                text = f"{val:.2f}"
-                fontweight = "bold" if is_avg else "medium"
-                fontsize = 11 if is_avg else 10.5
+                # R2-SI2: annotate cells whose numerical value exceeds the
+                # colorbar range so the reader can see e.g. 2.01 explicitly
+                # instead of just the saturated colour.
+                off_scale = (val > vmax + 1e-9) or (val < vmin - 1e-9)
+                if off_scale:
+                    text = f"{val:.2f}*"
+                else:
+                    text = f"{val:.2f}"
+                fontweight = "bold" if (is_avg or off_scale) else "medium"
+                fontsize = 11 if (is_avg or off_scale) else 10.5
 
             lw = 1.8 if is_avg else 0.8
             ec_color = "#333333" if is_avg else "#b0b0b0"
@@ -236,14 +248,27 @@ def _draw_cells(ax, aug_data, row_labels, col_labels,
 def _add_colorbar(fig, cmap, norm, vmin, vmax, label):
     sm = mpl.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
-    cbar_ax = fig.add_axes([0.15, 0.02, 0.70, 0.025])
+    cbar_ax = fig.add_axes([0.15, 0.08, 0.70, 0.025])
     cbar = fig.colorbar(sm, cax=cbar_ax, orientation="horizontal")
     cbar.set_ticks([vmin, 0.9, 0.95, 1.0, 1.05, 1.1, vmax])
     cbar.set_ticklabels(
         [f"{vmin:.2f}", "0.90", "0.95", "1.00", "1.05", "1.10", f"{vmax:.2f}"]
     )
     cbar.ax.tick_params(labelsize=9.5)
-    cbar.set_label(label, fontsize=10, labelpad=6)
+    # Avoid cbar.set_label here: when the label has multiple lines its
+    # bounding box overlaps the asterisk footnote below. Place every caption
+    # line as an explicit figtext so the spacing is fully under our control.
+    lines = [ln for ln in label.split("\n") if ln.strip()]
+    y = 0.045
+    for ln in lines:
+        fig.text(0.5, y, ln, ha="center", va="top", fontsize=10, color="black")
+        y -= 0.022
+    fig.text(
+        0.5, y - 0.006,
+        "Cells annotated with '*' have values beyond the colorbar range; "
+        "the printed number gives the true value.",
+        ha="center", va="top", fontsize=8, style="italic", color="#555555",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -388,7 +413,7 @@ def plot_heatmap(ratio_df, vars_list, metrics_list, method1, method2, cfg):
         ),
     )
 
-    plt.tight_layout(rect=[0.0, 0.05, 1.0, 1.0])
+    plt.tight_layout(rect=[0.0, 0.10, 1.0, 1.0])
     plot_file = os.path.join(
         cfg["plot_dir"],
         f"relative_performance_heatmap_{method1}_vs_{method2}.png",
@@ -570,7 +595,7 @@ def _plot_ablation_heatmap_raw(data, row_labels, col_labels, method2,
     )
     _add_colorbar(fig, cmap, norm, vmin, vmax, label=cbar_label)
 
-    plt.tight_layout(rect=[0.0, 0.07, 1.0, 1.0])
+    plt.tight_layout(rect=[0.0, 0.12, 1.0, 1.0])
 
     methods_str = "_".join(c.replace(" ", "-") for c in col_labels)
     plot_file = os.path.join(
@@ -824,7 +849,7 @@ def plot_quantile_mae_heatmap(ratios, vars_list, method1, method2, cfg):
         ),
     )
 
-    plt.tight_layout(rect=[0.0, 0.08, 1.0, 1.0])
+    plt.tight_layout(rect=[0.0, 0.13, 1.0, 1.0])
     plot_file = os.path.join(
         cfg["plot_dir"],
         f"quantile_mae_heatmap_{method1}_vs_{method2}.png",
