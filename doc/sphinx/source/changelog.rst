@@ -34,7 +34,7 @@ Observational and re-analysis dataset support
 
 -  Extension of ESA CCI OZONE CMORizer (:pull:`4125`) by :user:`axel-lauer`
 -  Cmoriser update WOA to 2023 (:pull:`4337`) by :user:`flicj191`
--  Fix removal of `month_number` and `year` coordinates after `monthly_statistics` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
+-  Fix removal of ``month_number`` and ``year`` coordinates after ``monthly_statistics`` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
 -  Updated calipso-icecloud downloader and formatter from v1.00 to v2.00 (:pull:`4441`) by :user:`axel-lauer`
 -  Fix ESACCI-OC CMORizer (:pull:`4464`) by :user:`schlunma`
 
@@ -59,18 +59,18 @@ Rapid Evaluation Framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Fix issue with recipe ref fire dependency (:pull:`4420`) by :user:`jlenh`
--  Add fallbacks for CMIP7 tasmax handling in `ref/recipe_ref_fire.yml` (:pull:`4423`) by :user:`jlenh`
+-  Add fallbacks for CMIP7 tasmax handling in ``ref/recipe_ref_fire.yml`` (:pull:`4423`) by :user:`jlenh`
 -  Updating the REF ozone recipe with the correct ozone data (:pull:`4444`) by :user:`hb326`
 -  Add ZEC CMIP7 recipe (:pull:`4458`) by :user:`bettina-gier`
--  Added a CMIP7 version for recipe_ref_trend_regions.yml, recipe_ref_tannual_cycle_region.yml and recipe_ref_timeseries_region.yml (:pull:`4460`) by :user:`katjaweigel`
+-  Added a CMIP7 version for ``recipe_ref_trend_regions.yml``, ``recipe_ref_tannual_cycle_region.yml`` and ``recipe_ref_timeseries_region.yml`` (:pull:`4460`) by :user:`katjaweigel`
 -  Add CMIP7-compatible REF version of ``recipe_ecs.yml`` (:pull:`4465`) by :user:`schlunma`
 -  Add CMIP7-compatible REF version of ``recipe_tcr.yml`` (:pull:`4469`) by :user:`schlunma`
 -  Add CMIP7-compatible REF version of ``recipe_tcre.yml`` (:pull:`4480`) by :user:`schlunma`
 -  REF recipe CRE with CMIP7 data (:pull:`4461`) by :user:`hb326`
 -  Write temperature vs. emissions data in TCRE diagnostic (:pull:`4484`) by :user:`schlunma`
--  Update REF recipe `recipe_calculate_gwl_exceedance_stats.yml` for CMIP7 datasets (:pull:`4486`) by :user:`rswamina`
+-  Update REF recipe ``recipe_calculate_gwl_exceedance_stats.yml`` for CMIP7 datasets (:pull:`4486`) by :user:`rswamina`
 -  Sea ice sensitivity to GMST - Calculate from observational datasets (:pull:`4220`) by :user:`NParsonsMO`
--  Adding CMIP7 version of `recipe_seaice_sensitivity.yml` (:pull:`4453`) by :user:`NParsonsMO`
+-  Adding CMIP7 version of ``recipe_seaice_sensitivity.yml`` (:pull:`4453`) by :user:`NParsonsMO`
 
 Improvements
 ~~~~~~~~~~~~
