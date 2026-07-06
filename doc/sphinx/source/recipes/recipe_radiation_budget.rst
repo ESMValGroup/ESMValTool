@@ -22,19 +22,25 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_radiation_budget.yml
+* recipe_radiation_budget.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/radiation_budget/
 
-    * radiation_budget.py: Plot the global radiation budget.
-    * seasonal_radiation_budget.py: Write the global climatological seasonal radiation budget to a text file.
+* radiation_budget.py: Plot the global radiation budget.
+* seasonal_radiation_budget.py: Write the global climatological seasonal radiation budget to a text file.
 
 
 
 User settings in recipe
 -----------------------
 
-None
+Users may specify the label to appear in the plot legend for each model, using the keyword ``alias`` in the dataset.
+For example, the following dataset entry would label the model as "HadGEM3-GC3.1 N96ORCA1" in the plot legend:
+
+.. code-block:: yaml
+
+    {dataset: HadGEM3-GC31-LL, alias: HadGEM3-GC3.1 N96ORCA1, project: ... }
+
 
 
 Variables

@@ -35,6 +35,9 @@ The ConFire model relies on a variety of observational datasets (see references)
 * ESA CCI Biomass
 * ISIMIP3a GSWP3-W5E5 dataset
 
+For the CMIP7 version of the recipe, the time period is chosen to overlap
+with reliable burned area observations, namely GFED5.
+
 Note: If custom ConFire run files are to be used for the diagnostic,
 they need to be present inside the auxiliary directory defined in the
 user configuration file `config_user.yml`.
