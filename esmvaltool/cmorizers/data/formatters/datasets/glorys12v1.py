@@ -99,6 +99,9 @@ def _extract_variable(
     cube_var = cubelist.extract(iris.NameConstraint(var_name=variable))
     # Equalise attributes
     iris.util.equalise_attributes(cube_var)
+    for cube in cube_var:
+        cube.attributes.pop("valid_min", None)
+        cube.attributes.pop("valid_max", None)
     # Concatenate cube
     cube_var = cube_var.concatenate_cube()
     # Extract time range if necesary
@@ -115,7 +118,8 @@ def _extract_variable(
     cube_var.attributes.pop("unit_long")
     cube_var.var_name = short_name
     _fix_latlon_coordinates(cube_var)
-    _fix_depth_coordinate(cube_var)
+    if cube_var.ndim > 3:
+        _fix_depth_coordinate(cube_var)
     attributes = cfg["attributes"].copy()
     attributes["mip"] = var["mip"]
     # Save cube
