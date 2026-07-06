@@ -48,11 +48,10 @@ class WKSpectra:
         self.cube = attributes["cube"]
         self.varname = attributes["varname"]
 
-        if check_missing:
+        if check_missing and np.any(self.cube.data.mask):
             # Checking for any missing data in the cube.
             # If found interpolating along longitude to fill gaps.
-            if np.any(self.cube.data.mask):
-                self.cube = self.interpolate_along_axis(self.cube, "longitude")
+            self.cube = self.interpolate_along_axis(self.cube, "longitude")
         logging.info("self.cube: %s", self.cube)
 
     def interpolate_along_axis(self, cube, coord_name):
@@ -246,10 +245,7 @@ class WKSpectra:
         if all(x == ts[0] for x in ts):
             logging.info("all values equal")
             iopt = 1
-        if iopt == 0:
-            tsmean = np.mean(ts)
-        else:
-            tsmean = 0.0
+        tsmean = np.mean(ts) if iopt == 0 else 0.0
         n = len(ts)
         m = max(1, int(alpha * n + 0.5) // 2)
         pim = np.pi / m
@@ -1085,7 +1081,7 @@ class WKSpectra:
             f"{self.label}_{self.varname} \n Symmetric log(power) [15S-15N]"
         )
         forename = f"{self.runid}_{self.varname}_Raw_Spec_Sym"
-        figname = os.path.join(self.plot_dir, f"{forename}")
+        figname = str(Path(self.plot_dir) / forename)
         self.plot_symmetric(
             psumsym,
             freq,
