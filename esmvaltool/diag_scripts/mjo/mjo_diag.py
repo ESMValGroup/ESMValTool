@@ -29,7 +29,8 @@ def _load_cube(input_file, variable_group, pressure_level=None):
     """Load the input cube and derive the variable name for the spectra run."""
     if variable_group == "ua":
         cube = iris.load_cube(
-            input_file, iris.Constraint(air_pressure=pressure_level)
+            input_file,
+            iris.Constraint(air_pressure=pressure_level),
         )
     else:
         cube = iris.load_cube(input_file)

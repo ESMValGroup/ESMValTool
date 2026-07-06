@@ -25,7 +25,11 @@ class WKSpectra:
     """Compute, smooth, and plot Wheeler-Kiladis spectra."""
 
     def __init__(
-        self, cfg: dict, attributes: dict, *, check_missing: bool = True
+        self,
+        cfg: dict,
+        attributes: dict,
+        *,
+        check_missing: bool = True,
     ):
         self.cfg = cfg  # Store the configuration dictionary
         self.spd = 1  # samples per day (1 for daily data, 4 for 6-hourly data and so on)
@@ -216,7 +220,7 @@ class WKSpectra:
 
         # Replacing "else" statement
         logging.error(
-            "Only axis == 1 is supported. Modify the code to accommodate other axes."
+            "Only axis == 1 is supported. Modify the code to accommodate other axes.",
         )
         msg = "decompose_sym_asym axis != 1"
         raise ValueError(msg)
@@ -315,7 +319,8 @@ class WKSpectra:
         pee[n // 2 :, : mlon // 2] = varfft[: n // 2 + 1, mlon // 2 : 0 : -1]
         pee[: n // 2 + 1, mlon // 2 :] = varfft[n // 2 :: -1, : mlon // 2 + 1]
         pee[n // 2 + 1 :, mlon // 2 :] = varfft[
-            n - 1 : n // 2 - 1 : -1, : mlon // 2 + 1
+            n - 1 : n // 2 - 1 : -1,
+            : mlon // 2 + 1,
         ]
 
         return pee
@@ -394,28 +399,28 @@ class WKSpectra:
                 for _i in range(1, 6):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
-                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                            psumb[tt, minwav4smth : maxwav4smth + 1],
                         )
                     )
             if 0.1 <= freq[tt] < 0.2:
                 for _i in range(1, 11):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
-                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                            psumb[tt, minwav4smth : maxwav4smth + 1],
                         )
                     )
             if 0.2 <= freq[tt] < 0.3:
                 for _i in range(1, 21):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
-                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                            psumb[tt, minwav4smth : maxwav4smth + 1],
                         )
                     )
             if freq[tt] >= 0.3:
                 for _i in range(1, 41):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
-                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                            psumb[tt, minwav4smth : maxwav4smth + 1],
                         )
                     )
 
@@ -425,7 +430,7 @@ class WKSpectra:
         for nw in range(minwav4smth, maxwav4smth + 1):
             for _i in range(1, 11):
                 psumb[n // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
-                    psumb[n // 2 + 1 : pt8cpd + 1, nw]
+                    psumb[n // 2 + 1 : pt8cpd + 1, nw],
                 )
         return psumb
 
@@ -461,7 +466,8 @@ class WKSpectra:
                 he = ahe[ed - 1]
 
                 for wn in range(
-                    1, n_planetary_wave + 1
+                    1,
+                    n_planetary_wave + 1,
                 ):  # planetary wave number
                     s = -20.0 * (wn - 1) * 2.0 / (n_planetary_wave - 1) + 20.0
                     k = 2.0 * pi * s / ll
@@ -470,7 +476,8 @@ class WKSpectra:
                     if ww == 1:  # MRG wave
                         if k <= 0:
                             delx = math.sqrt(
-                                1.0 + (4.0 * beta) / (k**2 * math.sqrt(g * he))
+                                1.0
+                                + (4.0 * beta) / (k**2 * math.sqrt(g * he)),
                             )
                             deif = k * math.sqrt(g * he) * (0.5 - 0.5 * delx)
                         if k == 0:
@@ -485,7 +492,8 @@ class WKSpectra:
                             deif = math.sqrt(math.sqrt(g * he) * beta)
                         if k > 0:
                             delx = math.sqrt(
-                                1.0 + (4.0 * beta) / (k**2 * math.sqrt(g * he))
+                                1.0
+                                + (4.0 * beta) / (k**2 * math.sqrt(g * he)),
                             )
                             deif = k * math.sqrt(g * he) * (0.5 + 0.5 * delx)
 
@@ -493,14 +501,14 @@ class WKSpectra:
                         n = 2.0
                         delx = beta * math.sqrt(g * he)
                         deif = math.sqrt(
-                            (2.0 * n + 1.0) * delx + (g * he) * k**2
+                            (2.0 * n + 1.0) * delx + (g * he) * k**2,
                         )
                         # Do some corrections to the above calculated frequency...
                         for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
-                                + g * he * beta * k / deif
+                                + g * he * beta * k / deif,
                             )
 
                     # symmetric curves
@@ -517,14 +525,14 @@ class WKSpectra:
                         n = 1.0
                         delx = beta * math.sqrt(g * he)
                         deif = math.sqrt(
-                            (2.0 * n + 1.0) * delx + (g * he) * k**2
+                            (2.0 * n + 1.0) * delx + (g * he) * k**2,
                         )
                         # Do some corrections to the above calculated frequency...
                         for _i in range(1, 6):
                             deif = math.sqrt(
                                 (2.0 * n + 1.0) * delx
                                 + (g * he) * k**2
-                                + g * he * beta * k / deif
+                                + g * he * beta * k / deif,
                             )
 
                     eif = deif  # plus k times U since U equals 0.0
@@ -551,7 +559,7 @@ class WKSpectra:
 
         # Return C
         return np.array(
-            [fr(xnew).astype(int), fg(xnew).astype(int), fb(xnew).astype(int)]
+            [fr(xnew).astype(int), fg(xnew).astype(int), fb(xnew).astype(int)],
         ).T
 
     def get_colors(self, *, reverse=False):
@@ -620,7 +628,13 @@ class WKSpectra:
 
         fig, ax = plt.subplots()
         contour_set = ax.contourf(
-            f, w, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
+            f,
+            w,
+            spec,
+            levels=levels,
+            cmap=cmap,
+            norm=norm,
+            extend="both",
         )
         bar = fig.colorbar(contour_set, ax=ax)
         bar.locator = ticker.FixedLocator(levels)
@@ -641,7 +655,12 @@ class WKSpectra:
         return fig, ax
 
     def _plot_dispersion_curves(
-        self, ax, apzwn, afreq, start_index, stop_index
+        self,
+        ax,
+        apzwn,
+        afreq,
+        start_index,
+        stop_index,
     ):
         """Overlay theoretical dispersion curves on a spectrum plot."""
         for i in range(start_index, stop_index):
@@ -649,7 +668,8 @@ class WKSpectra:
                 ax.plot(apzwn[i, j, :], afreq[i, j, :], "k", lw=0.5)
 
     def get_provenance_record(
-        self, caption
+        self,
+        caption,
     ):  # Credit to AutoAssess _plot_mo_metrics.py
         """Create a provenance record describing the diagnostic data and plot."""
         # Get the list of input filenames
@@ -759,7 +779,7 @@ class WKSpectra:
 
         if lon_taper > 0.0 or lon_r - lon_l != 360.0:
             logging.error(
-                "Code does currently allow lon_taper>0 or (lon_r-lon_l)<360."
+                "Code does currently allow lon_taper>0 or (lon_r-lon_l)<360.",
             )
             msg = "wkSpaceTime lon_taper>0 or (lon_r-lon_l)<360"
             raise ValueError(msg)
@@ -795,7 +815,7 @@ class WKSpectra:
 
         # subset the data for 15S-15N
         constraint = iris.Constraint(
-            latitude=lambda cell: lat_s <= cell <= lat_n
+            latitude=lambda cell: lat_s <= cell <= lat_n,
         )
         self.cube = self.cube.extract(constraint)
         ntim, nlat, mlon = self.cube.shape
@@ -829,11 +849,13 @@ class WKSpectra:
 
         if n_day_tot >= 365:  # remove dominant signals
             self.cube = self.remove_annual_cycle(
-                self.cube, f_crit, rmv_means=False
+                self.cube,
+                f_crit,
+                rmv_means=False,
             )
         else:
             logging.error(
-                "Length of the variable is shorter than 365. Can not continue!"
+                "Length of the variable is shorter than 365. Can not continue!",
             )
             msg = f"n_day_tot ({n_day_tot}) is less than 365"
             raise ValueError(msg)
@@ -878,7 +900,8 @@ class WKSpectra:
 
                 # detrend the window
                 work.data = scipy.signal.detrend(
-                    x_as.data[nt_strt:nt_last, nl], axis=0
+                    x_as.data[nt_strt:nt_last, nl],
+                    axis=0,
                 )
 
                 # taper the window along time axis
@@ -886,7 +909,9 @@ class WKSpectra:
                 # split-cosine-bell tapering.
                 for lo in range(mlon):
                     work.data[:, lo] = self.taper(
-                        work.data[:, lo], alpha=tim_taper, iopt=0
+                        work.data[:, lo],
+                        alpha=tim_taper,
+                        iopt=0,
                     )
 
                 # Do actual FFT work
@@ -917,7 +942,8 @@ class WKSpectra:
         # -------------------------------------------------------------------
         if nlat % 2 == 0:
             psumanti = np.sum(
-                pee_as[nlat // 2 : nlat], axis=0
+                pee_as[nlat // 2 : nlat],
+                axis=0,
             )  # // for integer result
             psumsym = np.sum(pee_as[: nlat // 2], axis=0)
         else:
@@ -955,10 +981,10 @@ class WKSpectra:
 
         for wv in np.arange(ind_strt, ind_last + 1):
             psumanti[n // 2 + 1 : n, wv] = self.wk_smooth121(
-                psumanti[n // 2 + 1 : n, wv]
+                psumanti[n // 2 + 1 : n, wv],
             )
             psumsym[n // 2 + 1 : n, wv] = self.wk_smooth121(
-                psumsym[n // 2 + 1 : n, wv]
+                psumsym[n // 2 + 1 : n, wv],
             )
         # -------------------------------------------------------------------
         #  Log10 scaling
@@ -1013,10 +1039,23 @@ class WKSpectra:
                     1.1,
                     1.2,
                     1.3,
-                ]
+                ],
             ),
             "Precipitation": np.array(
-                [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+                [
+                    -0.5,
+                    -0.4,
+                    -0.3,
+                    -0.2,
+                    -0.1,
+                    0,
+                    0.1,
+                    0.2,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0.6,
+                ],
             ),
             "x_wind_850hPa": np.arange(-3.25, 0.5, 0.25),
             "x_wind_200hPa": np.arange(-3.3, 1.2, 0.3),
@@ -1085,7 +1124,7 @@ class WKSpectra:
         # ***************************************************************
         psumanti_nolog = np.ma.masked_array(psumanti_nolog / psumb_nolog)
         psumsym_nolog = np.ma.masked_array(
-            psumsym_nolog / psumb_nolog
+            psumsym_nolog / psumb_nolog,
         )  # (wave,freq)
         # Make cubes
         psumanti_nolog_cube = self.make_cube(psumanti_nolog, wave, freq)
@@ -1113,7 +1152,7 @@ class WKSpectra:
                     1.6,
                     1.7,
                     1.8,
-                ]
+                ],
             ),
             "Precipitation": np.array(
                 [
@@ -1134,7 +1173,7 @@ class WKSpectra:
                     1.5,
                     1.6,
                     1.7,
-                ]
+                ],
             ),
             "x_wind_850hPa": np.array(
                 [
@@ -1155,7 +1194,7 @@ class WKSpectra:
                     1.7,
                     1.8,
                     1.9,
-                ]
+                ],
             ),
             "x_wind_200hPa": np.array(
                 [
@@ -1176,7 +1215,7 @@ class WKSpectra:
                     1.7,
                     1.8,
                     2,
-                ]
+                ],
             ),
         }
 
@@ -1223,7 +1262,7 @@ class WKSpectra:
                     2.4,
                     2.8,
                     3.2,
-                ]
+                ],
             ),
             "Precipitation": np.array(
                 [
@@ -1244,7 +1283,7 @@ class WKSpectra:
                     1.5,
                     1.6,
                     1.7,
-                ]
+                ],
             ),
             "x_wind_850hPa": np.array(
                 [
@@ -1265,7 +1304,7 @@ class WKSpectra:
                     2.4,
                     2.6,
                     2.8,
-                ]
+                ],
             ),
             "x_wind_200hPa": np.array(
                 [
@@ -1286,7 +1325,7 @@ class WKSpectra:
                     2.4,
                     2.6,
                     2.8,
-                ]
+                ],
             ),
         }
 
@@ -1322,7 +1361,8 @@ class WKSpectra:
         #              annual starts Jan 1  [365 days]
         lat_bound = 10
         var = self.cube.intersection(
-            latitude=(-lat_bound, lat_bound), longitude=(0, 360)
+            latitude=(-lat_bound, lat_bound),
+            longitude=(0, 360),
         )
         var = var.collapsed("latitude", iris.analysis.MEAN)
 
@@ -1379,10 +1419,12 @@ class WKSpectra:
 
                 for lo in range(mlon):
                     x_season[:, lo] = self.taper(
-                        x_season[:, lo], alpha=0.1, iopt=0
+                        x_season[:, lo],
+                        alpha=0.1,
+                        iopt=0,
                     )
                 x_var_tap = x_var_tap + np.var(
-                    x_season
+                    x_season,
                 )  # variance after tapering
                 # do 2d fft
                 ft = x_season.copy()
@@ -1434,7 +1476,12 @@ class WKSpectra:
         fig, ax = plt.subplots()
 
         cs = ax.contourf(
-            w, f, pow_cube.data, levels=levels, cmap="YlGnBu", extend="both"
+            w,
+            f,
+            pow_cube.data,
+            levels=levels,
+            cmap="YlGnBu",
+            extend="both",
         )
         fig.colorbar(cs, ax=ax)
 
