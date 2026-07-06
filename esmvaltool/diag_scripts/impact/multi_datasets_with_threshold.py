@@ -328,10 +328,10 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
-import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord, Coord
+from iris.cube import Cube
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
@@ -368,7 +368,6 @@ from esmvalcore.iris_helpers import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
-    from iris.cube import Cube
     from matplotlib.axes import Axes
     from matplotlib.figure import Figure
 
@@ -1585,7 +1584,7 @@ class MultiDatasets(MonitorBase):
         #Preventing that this option is executed several times
         if cube.coords('day_of_year'):
             msg = (
-                f"Reusing already aggregated cube"
+                "Reusing already aggregated cube"
             )
             warnings.warn(msg, UserWarning, stacklevel=2)
 
