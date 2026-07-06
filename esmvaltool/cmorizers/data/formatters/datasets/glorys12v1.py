@@ -118,7 +118,8 @@ def _extract_variable(
     cube_var.attributes.pop("unit_long")
     cube_var.var_name = short_name
     _fix_latlon_coordinates(cube_var)
-    if cube_var.ndim > 3:
+    if cube_var.coords("depth"):
+        logger.info("Fixing depth coordinate")
         _fix_depth_coordinate(cube_var)
     attributes = cfg["attributes"].copy()
     attributes["mip"] = var["mip"]
