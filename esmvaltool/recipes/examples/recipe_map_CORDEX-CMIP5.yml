@@ -68,7 +68,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, institute: CLMcom}
           - {dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom}
@@ -95,7 +95,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ALADIN63, driver: CNRM-CERFACS-CNRM-CM5, institute: CNRM, rcm_version: v2}
           - {dataset: ALADIN63, driver: MOHC-HadGEM2-ES, institute: CNRM}
@@ -150,7 +150,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         short_name: ts
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, institute: CLMcom}
           - {dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom}
@@ -193,7 +193,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, institute: CLMcom}
           - {dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom}
@@ -220,7 +220,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, institute: CLMcom}
           - {dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom}
@@ -247,7 +247,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, institute: CLMcom}
           - {dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom}
@@ -295,7 +295,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ALADIN53, driver: CNRM-CERFACS-CNRM-CM5, institute: CNRM}
           - {dataset: ALADIN63, driver: CNRM-CERFACS-CNRM-CM5, institute: CNRM, rcm_version: v2}
@@ -358,7 +358,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ALADIN63, driver: CNRM-CERFACS-CNRM-CM5, institute: CNRM, rcm_version: v2}
           - {dataset: ALADIN63, driver: MOHC-HadGEM2-ES, institute: CNRM}
@@ -385,7 +385,7 @@ diagnostics:
         preprocessor: default
         project: CORDEX
         rcm_version: v1
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, institute: CLMcom}
           - {dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom}
@@ -429,7 +429,7 @@ diagnostics:
         project: CORDEX
         rcm_version: v1
         short_name: ts
-        timerange: 200301/200301
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, institute: CLMcom}
           - {dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom}
