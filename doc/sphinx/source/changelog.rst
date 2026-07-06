@@ -13,17 +13,31 @@ TODO: add highlights
 
 This release includes
 
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Remove deprecated options from diagnostic ``multi_datasets.py`` (:pull:`4520`) by :user:`schlunma`
+
+   .. admonition:: Upgrade instructions
+
+      - Plot option ``show_x_minor_ticks``. Instead, use ``x_minor_formatter: null/''`` for ``show_x_minor_ticks: false/true``, respectively.
+      - Plot option ``show_y_minor_ticks``. Instead, use ``y_minor_formatter: null/''`` for ``show_y_minor_ticks: false/true``, respectively.
+      - Plot option ``show_y_minor_ticklabels: true``. Instead, use ``y_minor_formatter: '%.1f'``.
+      - Plot option ``time_on``. Instead, use ``transpose_axes: true/false``
+
 Bug fixes
 ~~~~~~~~~
 
+-  Fix removal of ``month_number`` and ``year`` coordinates after ``monthly_statistics`` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
 -  Fix ESACCI-CLOUD formatter: removing group coordinates is not necessary anymore (:pull:`4410`) by :user:`schlunma`
+-  Fix ESACCI-OC CMORizer (:pull:`4464`) by :user:`schlunma`
 
 Documentation
 ~~~~~~~~~~~~~
 
 -  Remove outdated link to YAML reference card (:pull:`4418`) by :user:`bouweandela`
 -  Fix the PDF build of the documentation (:pull:`4432`) by :user:`bouweandela`
--  Improve documentation  on installing the development version of ESMValCore (:pull:`4433`) by :user:`bouweandela`
+-  Improve documentation on installing the development version of ESMValCore (:pull:`4433`) by :user:`bouweandela`
 -  Update release instructions related to Docker (:pull:`4454`) by :user:`bouweandela`
 -  Minimise content on main documentation page (:pull:`4449`) by :user:`ehogan`
 -  Documentation for contributor license agreement & CLA-assistant (:pull:`4440`) by :user:`alistairsellar`
@@ -34,9 +48,8 @@ Observational and re-analysis dataset support
 
 -  Extension of ESA CCI OZONE CMORizer (:pull:`4125`) by :user:`axel-lauer`
 -  Cmoriser update WOA to 2023 (:pull:`4337`) by :user:`flicj191`
--  Fix removal of ``month_number`` and ``year`` coordinates after ``monthly_statistics`` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
 -  Updated calipso-icecloud downloader and formatter from v1.00 to v2.00 (:pull:`4441`) by :user:`axel-lauer`
--  Fix ESACCI-OC CMORizer (:pull:`4464`) by :user:`schlunma`
+
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
