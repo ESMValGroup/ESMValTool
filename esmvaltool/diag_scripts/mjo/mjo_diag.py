@@ -52,8 +52,8 @@ def _load_cube(input_file, variable_group, pressure_level=None):
 
 def _run_spectra(cfg, attributes):
     """Run the space-time and seasonal spectra diagnostics."""
-    spectra_compute.WKSpectra(cfg, attributes).wkSpaceTime()
-    spectra_compute.WKSpectra(cfg, attributes).SpectraSeason()
+    spectra_compute.WKSpectra(cfg, attributes).wk_space_time()
+    spectra_compute.WKSpectra(cfg, attributes).spectra_season()
 
 
 def main(cfg):

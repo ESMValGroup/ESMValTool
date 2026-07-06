@@ -39,7 +39,7 @@ class WKSpectra:
         self.n_day_skip = -65  # Negative means overlap
         self.lat_bound = 15  # Latitude bounds for MJO region (15S-15N)
         self.filename = attributes["filename"]
-        self.out_dir = os.path.dirname(self.filename)
+        self.out_dir = Path(self.filename).parent
         self.runid = attributes["dataset"]
         self.label = f"{attributes['dataset']}_{attributes['ensemble']}"
         self.plot_dir = attributes["plot_dir"]
@@ -337,10 +337,7 @@ class WKSpectra:
         nt = len(var)
 
         for i in range(0, nt, 1):
-            if i == 0:
-                if not np.isnan(var[i + 1]):
-                    varf[i] = (3.0 * var[i] + var[i + 1]) / 4.0
-            elif np.isnan(var[i - 1]):
+            if i == 0 or np.isnan(var[i - 1]):
                 if not np.isnan(var[i + 1]):
                     varf[i] = (3.0 * var[i] + var[i + 1]) / 4.0
             elif (i == nt - 1) or (np.isnan(var[i + 1])):
@@ -744,7 +741,7 @@ class WKSpectra:
         save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
 
-    def wkSpaceTime(self):
+    def wk_space_time(self):
         """Create Wheeler-Kiladis Space-Time  plots.
 
          Note_1: The full logitudinal domain is used.
@@ -1064,7 +1061,7 @@ class WKSpectra:
         # Anti-symmetric
         title = f"{self.label}_{self.varname} \n  Anti-symmetric log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Raw_Spec_Asym"
-        figname = os.path.join(self.plot_dir, f"{forename}")
+        figname = str(Path(self.plot_dir) / forename)
         self.plot_anti_symmetric(
             psumanti,
             freq,
@@ -1351,14 +1348,15 @@ class WKSpectra:
         save_data(forename, provenance_dict, self.cfg, psumsym_nolog_cube)
 
     def mjo_wavenum_freq_season(self, sea_name):
-        #
-        #  For each 'sea_name' (say, 'winter') over a number
-        #  of different years, calculate the
-        #  pooled space-time spectra
-        #  MJO CLIVAR: wavenumber-frequency spectra
-        #              winter starts Nov 1  [180 days]
-        #              summer starts May 1  [180 days]
-        #              annual starts Jan 1  [365 days]
+        """
+        Calculate the pooled space-time spectra.
+
+        For each 'sea_name' (say, 'winter') over a number of different years,
+        MJO CLIVAR: wavenumber-frequency spectra
+                    winter starts Nov 1  [180 days]
+                    summer starts May 1  [180 days]
+                    annual starts Jan 1  [365 days]
+        """
         lat_bound = 10
         var = self.cube.intersection(
             latitude=(-lat_bound, lat_bound),
@@ -1441,8 +1439,7 @@ class WKSpectra:
         freq = np.linspace(-1 * n_day / 2, n_day / 2, n_day + 1) / n_day
         wave = wave.astype(float)
         freq = freq.astype(float)
-        pow_cube = self.makecube_season_pow(power, wave, freq)
-        return pow_cube
+        return self.makecube_season_pow(power, wave, freq)
 
     def mjo_wavenum_freq_season_plot(
         self,
@@ -1451,6 +1448,7 @@ class WKSpectra:
         title="",
         figname="wavenum_freq_season_plot.ps",
     ):
+        """Plot MJO wavenum frequency spectrum."""
         if levels is None:
             levels = np.arange(0, 3, 0.2)
         nw = 6
@@ -1501,7 +1499,7 @@ class WKSpectra:
         ax.set_ylabel("Zonal wavenumber")
 
         # Add provenance information
-        caption = os.path.basename(figname)
+        caption = Path(figname).name
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -1514,7 +1512,8 @@ class WKSpectra:
         )
         logging.info("Plotted %s", figname)
 
-    def SpectraSeason(self):
+    def spectra_season(self):
+        """Plot MJO spectra season."""
         for season in ["winter", "summer"]:
             logging.info("Season: %s", season)
             # This is the NCL method of computing the spectra which uses anomalies
