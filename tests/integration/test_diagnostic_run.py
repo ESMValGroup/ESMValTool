@@ -57,21 +57,20 @@ SCRIPTS = [
     pytest.param(
         "diagnostic.ncl",
         marks=pytest.mark.skipif(
-            sys.platform == "darwin",
-            reason="ESMValTool ncl not supported on OSX",
+            shutil.which("ncl") is None,
+            reason="NCL is not installed",
         ),
     ),
     pytest.param(
         "diagnostic.R",
         marks=pytest.mark.skipif(
-            sys.platform == "darwin",
-            reason="ESMValTool R not supported on OSX",
+            shutil.which("Rscript") is None,
+            reason="R is not installed",
         ),
     ),
 ]
 
 
-@pytest.mark.installation
 @pytest.mark.parametrize("script_file", SCRIPTS)
 def test_diagnostic_run(tmp_path, script_file):
     local_script_file = Path(__file__).parent / script_file

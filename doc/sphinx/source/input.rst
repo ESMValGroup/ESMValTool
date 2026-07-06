@@ -44,7 +44,7 @@ but many more exist around the world.
 
 If you do not have access to such a facility through your institute or the
 project you are working on, you can request access by applying for the
-`ENES Climate Analytics Service <https://is.enes.org/sdm-climate-analytics-data/>`.
+`ENES Climate Analytics Service <https://is.enes.org/sdm-climate-analytics-data/>`__.
 
 If the options above are not available to you, ESMValTool also offers a feature
 to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
@@ -66,18 +66,9 @@ ESMValTool can automatically download any required data that is available on
 ESGF.
 This is the recommended approach for first-time users to obtain some data for
 running ESMValTool.
-For example, run
-
-.. code-block:: bash
-
-    esmvaltool run --search_esgf=when_missing examples/recipe_python.yml
-
-to run the default example recipe and automatically download the required data
-to the directory ``~/climate_data``.
-The data only needs to be downloaded once, every following run will reuse
-previously downloaded data stored in this directory.
-See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
-available configuration options.
+See the section on configuring :ref:`esmvalcore:config-data-sources` for
+details on how to configure ESMValTool to download data from ESGF using
+`intake-esgf <https://intake-esgf.readthedocs.io>`__.
 
 Alternatively, you can use an external tool called
 `esgpull <https://github.com/ESGF/esgf-download>`__
@@ -91,7 +82,7 @@ Observations
 
 Observational and reanalysis products in the standard CF/CMOR format used in
 CMIP and required by ESMValTool are available via the obs4MIPs and ana4mips
-projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/).
+projects hosted by ESGF (e.g., https://pcmdi.github.io/obs4MIPs/).
 Their use is strongly recommended, when possible.
 
 Other datasets not available in these archives can be obtained by the user from
@@ -119,9 +110,8 @@ All observational datasets are grouped into in three tiers:
 * **Tier 2** other freely available datasets that are not obs4mips. There are no license restrictions. These datasets need to be reformatted to be used with ESMValTool ('CMORization', see above).
 * **Tier 3** restricted datasets. Datasets which require registration to be downloaded or that can only be obtained upon request from the respective authors. License restrictions do not allow us to redistribute Tier 3 datasets. The data have to be obtained and reformatted by the user ('CMORization', see above).
 
-[!NOTE]
-.. _tier3_note:
-For some of the Tier 3 datasets, we obtained permission from the dataset providers to share the data among ESMValTool users on HPC systems. These Tier 3 datasets are marked with an asterisk in the table in section :ref:`supported datasets below<supported_datasets>`.
+.. note::
+    For some of the Tier 3 datasets, we obtained permission from the dataset providers to share the data among ESMValTool users on HPC systems. These Tier 3 datasets are marked with an asterisk in the table in section :ref:`supported datasets below<supported_datasets>`.
 
 An overview of the Tier 2 and Tier 3 datasets for which a CMORizing script is available in ESMValTool v2.0 is given in section :ref:`supported datasets below<supported_datasets>`.
 

@@ -22,7 +22,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import arviz as az
 import cartopy.crs as ccrs
 import cf_units
 import iris
@@ -32,6 +31,7 @@ import iris.quickplot
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import xarray as xr
 from matplotlib.colors import ListedColormap
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
@@ -357,11 +357,11 @@ def _select_post_param(trace: str) -> dict:
         return np.reshape(out, new_shape)
 
     try:
-        trace = az.from_netcdf(trace, engine="netcdf4")
+        trace = xr.open_datatree(trace, engine="netcdf4")
     except (ValueError, OSError) as expt:
         logger.debug("_select_post_param error %s", expt)
-    params = trace.to_dict()["posterior"]
-    params_names = params.keys()
+    params = trace["posterior"]
+    params_names = list(trace["posterior"].data_vars)
     params = [_select_post_param_name(var) for var in params_names]
     return params, list(params_names)
 
@@ -412,6 +412,7 @@ def _read_variable_from_netcdf(
     make_flat: bool = False,
     return_time_points: bool = False,
     return_extent: bool = False,
+    verbose: bool = True,
 ) -> iris.cube.Cube:
     """Read data from a netCDF file.
 
@@ -446,8 +447,9 @@ def _read_variable_from_netcdf(
         if make_flat, a numpy vector of the target variable, otherwise
         returns iris cube.
     """
-    logger.info("Opening:")
-    logger.info(filename)
+    if verbose:
+        logger.info("Opening:")
+        logger.info(filename)
 
     if filename[0] == "~" or filename[0] == "/" or filename[0] == ".":
         directory = ""
@@ -458,9 +460,11 @@ def _read_variable_from_netcdf(
             callback=_sort_time,
         )
     else:
+        # Fallback for CMIP7 data for tasmax
+        var = "tas" if "tasmax/tas_tmaxavg" in filename[0] else filename[1]
         dataset = iris.load_raw(
             Path(directory) / filename[0],
-            filename[1],
+            var,
             callback=_sort_time,
         )
     dataset = dataset[0]
@@ -610,6 +614,7 @@ def _read_all_data_from_netcdf(
         make_flat=True,
         return_time_points=True,
         return_extent=True,
+        verbose=False,
         **kw,
     )
 
@@ -620,6 +625,7 @@ def _read_all_data_from_netcdf(
             make_flat=True,
             time_points=time_points,
             extent=extent,
+            verbose=False,
             **kw,
         )
 
@@ -897,7 +903,11 @@ def _get_parameters(config: dict) -> tuple:
         directory=nc_dir,
     )
     # Load a sample cube (used for inserting data)
-    eg_cube = _read_variable_from_netcdf(nc_files[0], directory=nc_dir)
+    eg_cube = _read_variable_from_netcdf(
+        nc_files[0],
+        directory=nc_dir,
+        verbose=False,
+    )
     # **Extract Model Parameters**
     logger.info("Loading ConFire model parameters...")
     params, params_names = _select_post_param(param_file_trace)

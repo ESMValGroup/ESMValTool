@@ -53,7 +53,10 @@ See :ref:`api_shared` for the documentation of the shared Python code.
 
 Re-using existing code
 ======================
-Always make sure your code is or can be released under a license that is compatible with the Apache 2.0 license.
+If re-using existing code, ensure that you have the right to contribute for
+release under the Apache 2.0 license,
+and carefully check the requirements of our
+:ref:`contributor_license_agreement`.
 
 If you have existing code in a supported scripting language, you have two options for re-using it. If it is fairly
 mature and a large amount of code, the preferred way is to package and publish it on the
@@ -434,6 +437,10 @@ Detailed checklist for reviews
 
 This (non-exhaustive) checklist provides ideas for things to check when reviewing
 pull requests for new or updated recipes and/or diagnostic scripts.
+
+The first time you open a pull request,
+you will need to agree to our contributor license agreement:
+see :ref:`contributor_license_agreement`.
 
 Technical reviews
 -----------------

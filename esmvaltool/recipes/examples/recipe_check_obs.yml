@@ -1268,8 +1268,8 @@ diagnostics:
     variables:
       cli:
     additional_datasets:
-      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
-         mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
+      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 2-00,
+         mip: Amon, tier: 3, start_year: 2007, end_year: 2022}
     scripts: null
 
   CAMS:

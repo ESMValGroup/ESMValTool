@@ -1,0 +1,154 @@
+# ESMValTool
+---
+documentation:
+  title: Sea ice sensitivity
+
+  description: |
+    Recipe for quantifying the sensitivity of sea ice to global warming.
+    Siconc data is summed for each hemisphere and then compared to the
+    change in globally meaned, annually meaned surface air temperature.
+    In the northern hemisphere, September sea ice data is used.
+    In the southern hemisphere, annual mean sea ice data is used.
+    Two plots are produced for each hemisphere, one showing the gradient
+    of the direct regression of sea ice area over temperature, and the
+    other showing the two separate trends over time.
+
+  authors:
+    - parsons_naomi
+    - sellar_alistair
+    - blockley_ed
+
+  maintainer:
+    - parsons_naomi
+
+# The default period has been chosen to end in 2020 as this is the last year available in the sea ice observations
+model_defaults: &model_defaults {activity: CMIP, project: CMIP7, exp: historical, start_year: &data_start 1979, end_year: &data_end 2020}
+model_datasets: &model_datasets
+  - {<<: *model_defaults, dataset: MOCK-MODEL-LL, institute: MOHC, ensemble: r1i1p1f3, exp: 1pctCO2, grid: g100, label_dataset: True}
+
+obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2, start_year: *data_start, end_year: *data_end}
+tasa_obs: &tasa_obs
+  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis, mip: Amon }
+  - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
+
+arctic_siconc_obs: &arctic_siconc_obs
+  - { <<: *obs_defaults, dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon}
+
+antarctic_siconc_obs: &antarctic_siconc_obs
+  - { <<: *obs_defaults, dataset: OSI-450-sh, type: reanaly, version: v3, mip: OImon}
+
+preprocessors:
+  nh_total_area:
+    &nh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  sh_total_area:
+    &sh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: 0
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  global_mean:
+    &global_mean
+    area_statistics:
+      operator: mean
+
+  annual_mean:
+    &annual_mean
+    annual_statistics:
+      operator: mean
+
+  extract_sept:
+    &extract_sept
+    extract_month:
+      month: 9
+
+  pp_arctic_sept_sea_ice:
+    <<: *extract_sept
+    <<: *nh_total_area
+
+  pp_antarctic_avg_ann_sea_ice:
+    <<: *annual_mean
+    <<: *sh_total_area
+
+  pp_avg_ann_global_temp:
+    <<: *global_mean
+    <<: *annual_mean
+
+diagnostics:
+  arctic:
+    description: Plots September sea ice sensitivity above 0 latitude in millions of square kilometres
+    variables:
+      siconc: &siconc
+        preprocessor: pp_arctic_sept_sea_ice
+        mip: seaIce
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-u
+        additional_datasets:
+          *model_datasets
+      siconc_obs:
+        <<: *siconc
+        short_name: siconc
+        additional_datasets:
+          *arctic_siconc_obs
+      tas: &tas
+        preprocessor: pp_avg_ann_global_temp
+        mip: atmos
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-h2m-hxy-u
+        additional_datasets:
+          *model_datasets
+      tasa_obs: &tasa
+        <<: *tas
+        short_name: tasa
+        additional_datasets:
+          *tasa_obs
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
+        observations:
+          observation_period:
+            start_year: 1979
+            end_year: 2014
+          sea_ice_sensitivity:
+            mean: -4.01
+            standard_deviation: 0.32
+            plausible_range: 1.28
+
+  antarctic:
+    description: Plots annual mean sea ice sensitivity below 0 latitude in millions of square kilometres
+    variables:
+      siconc:
+        <<: *siconc
+        preprocessor: pp_antarctic_avg_ann_sea_ice
+        additional_datasets:
+          *model_datasets
+      siconc_obs:
+        <<: *siconc
+        short_name: siconc
+        preprocessor: pp_antarctic_avg_ann_sea_ice
+        additional_datasets:
+          *antarctic_siconc_obs
+      tas:
+        <<: *tas
+      tasa_obs:
+        <<: *tasa
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
