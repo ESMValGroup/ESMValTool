@@ -1214,7 +1214,7 @@ class WKSpectra:
 
         title = f"{self.label} {self.varname} \n Anti-symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Asym"
-        figname = os.path.join(self.plot_dir, f"{forename}")
+        figname = str(Path(self.plot_dir) / forename)
         self.plot_anti_symmetric(
             psumanti_nolog,
             freq,
@@ -1324,7 +1324,7 @@ class WKSpectra:
 
         title = f"{self.label} {self.varname} \n Symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Sym"
-        figname = os.path.join(self.plot_dir, f"{forename}")
+        figname = str(Path(self.plot_dir) / forename)
         self.plot_symmetric(
             psumsym_nolog,
             freq,
@@ -1535,7 +1535,7 @@ class WKSpectra:
             }
 
             title = f"{self.label} \n {season}  daily {self.varname} [10S-10N]"
-            figname = os.path.join(self.plot_dir, f"{forename}")
+            figname = str(Path(self.plot_dir) / forename)
             self.mjo_wavenum_freq_season_plot(
                 pow_cube,
                 levels=levels_dict[self.varname],
