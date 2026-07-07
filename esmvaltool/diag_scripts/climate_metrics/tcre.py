@@ -83,7 +83,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from iris.cube import Cube
+from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
 from scipy.stats import linregress
 
@@ -278,6 +278,7 @@ def _get_grouped_anomaly_data(
             cube_t_target.dtype,
         )
         cube_t_anomaly = cube_t_target.copy(cube_t_target.data - ref)
+        cube_t_anomaly.long_name = f"{cube_t_anomaly.long_name} Anomaly"
 
         grouped_anomaly_data[group] = (cube_e_target, cube_t_anomaly)
 
@@ -390,6 +391,20 @@ def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
             getattr(plt, func)(arg)
 
 
+def _save(
+    cube_emissions: Cube,
+    cube_temperature: Cube,
+    group: str,
+    cfg: dict,
+) -> Path:
+    """Save data of temperature vs. emissions plot."""
+    logger.info("Saving data for group '%s'", group)
+    cubes = CubeList([cube_emissions, cube_temperature])
+    netcdf_path = Path(get_diagnostic_filename(group, cfg))
+    io.iris_save(cubes, netcdf_path)
+    return netcdf_path
+
+
 def main(cfg: dict) -> None:
     """Run diagnostic."""
     cfg = _get_default_cfg(cfg)
@@ -399,7 +414,7 @@ def main(cfg: dict) -> None:
     input_data = _load_and_preprocess_data(cfg)
     grouped_anomaly_data = _get_grouped_anomaly_data(cfg, input_data)
 
-    # Plot data
+    # Plot temperature vs. emissions
     with mpl.rc_context(cfg["matplotlib_rc_params"]):
         plot_path = _plot(cfg, grouped_anomaly_data)
     provenance_record = {
@@ -414,19 +429,24 @@ def main(cfg: dict) -> None:
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_path, provenance_record)
 
+    # Save temperature vs. emissions
+    provenance_record.pop("plot_types")
+    for group, (cube_e, cube_t) in grouped_anomaly_data.items():
+        netcdf_path = _save(cube_e, cube_t, group, cfg)
+        provenance_record["ancestors"] = [
+            d["filename"]
+            for d in group_metadata(input_data, cfg["groupby_facet"])[group]
+        ]
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(netcdf_path, provenance_record)
+
     # Calculate TCRE
     netcdf_path = _calculate_tcre(cfg, grouped_anomaly_data)
-    provenance_record = {
-        "authors": ["schlund_manuel"],
-        "ancestors": [d["filename"] for d in input_data],
-        "caption": (
-            "Transient Climate Response to Cumulative CO2 Emissions (TCRE) "
-            "for multiple datasets."
-        ),
-        "references": ["sanderson24gmd"],
-        "realms": ["atmos"],
-        "themes": ["carbon", "bgphys"],
-    }
+    provenance_record["ancestors"] = [d["filename"] for d in input_data]
+    provenance_record["caption"] = (
+        "Transient Climate Response to Cumulative CO2 Emissions (TCRE) for "
+        "multiple datasets."
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 

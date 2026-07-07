@@ -45,12 +45,17 @@ def setup_basename_file(
 ) -> str:
     """Generate the file basename for a newly computed variable.
 
-    the filename of an ancestor variable is used as template.
+    The filename of an ancestor variable is used as template.
 
-    Example: If the ancestor filename is
-    CMIP6_MPI-ESM1-2-LR_Amon_historical-ssp370_r1i1p1f1_pr_gn_2010-2020.nc
-    then the returned basename will have the following structure
-    CMIP6_MPI-ESM1-2-LR_{table}_historical-ssp370_r1i1p1f1_{var}_gn_2010-2020.
+    Example:
+    - If the ancestor filename is
+        CMIP6_MPI-ESM1-2-LR_Amon_historical-ssp370_r1i1p1f1_tas_gn_...
+        then the returned basename will have the following structure
+        CMIP6_MPI-ESM1-2-LR_{table}_historical-ssp370_r1i1p1f1_{var}_gn_...
+    - For CMIP7 data, for an ancestor filename
+        tas_tavg-h2m-hxy-u_mon_glb_g999_MPI-ESM1-2-LR_historical_r1i1p1f2_...
+        then the returned basename will have the following structure
+        {var}_tavg-h2m-hxy-u_mon_glb_g999_MPI-ESM1-2-LR_historical_r1i1p1f2_...
 
     Parameters
     ----------
@@ -66,11 +71,18 @@ def setup_basename_file(
     basename : str
         Basename for the file in which the processed variable will be saved.
     """
-    # Recover only the filename without path and type then split elements
-    file = Path(filename).stem.split("_")
-    # Fill in variable and table
-    file[2] = table
-    file[-3] = var
+    # CMIP6-like case for filename convention
+    if table == "Amon":
+        # Recover only the filename without path and type then split elements
+        file = Path(filename).stem.split("_")
+        # Fill in variable and table
+        file[2] = table
+        file[-3] = var
+    else:
+        # Recover only the filename without path and type then split elements
+        file = Path(filename).stem.split("_")
+        # Fill in variable
+        file[0] = var
     return "_".join(file)
 
 
@@ -279,7 +291,19 @@ def compute_vpd(
     vpd.attributes["ancestors"] = provenance["ancestors"]
     debug_vpd = f"vapor_pressure_deficit iris cube {vpd}"
     logger.debug(debug_vpd)
-    basename = setup_basename_file(provenance["ancestors"][0], "vpd", "Amon")
+    # Differentiate filename structure for CMIP6/CMIP7 data
+    if "tavg-h2m-hxy" in provenance["ancestors"][0]:
+        basename = setup_basename_file(
+            provenance["ancestors"][0],
+            "vpd",
+            "atmos",
+        )
+    else:
+        basename = setup_basename_file(
+            provenance["ancestors"][0],
+            "vpd",
+            "Amon",
+        )
     msg = f"Saving vapor_pressure_deficit in {cfg['work_dir']}/{basename}"
     logger.info(msg)
     filename = get_diagnostic_filename(basename, cfg, extension="nc")
@@ -310,12 +334,7 @@ def main(cfg: dict) -> None:
     # - user-defined path to files
     # - download files from a Zenodo archive
     # - defaults to the path to files from ESMValTool
-    if "confire_param" in cfg:
-        if "zenodo" not in cfg["confire_param"]:
-            cfg["param_confire"] = (
-                Path(cfg["auxiliary_data_dir"]) / cfg["confire_param"]
-            )
-    else:
+    if "confire_param" not in cfg:
         cfg["confire_param"] = "https://zenodo.org/records/14917245"
     cfg["confire_param_dir"] = get_parameter_directory(cfg)
 
@@ -340,7 +359,6 @@ def main(cfg: dict) -> None:
 
         vars_file = {}
         for i, attributes in enumerate(group):
-            logger.info("Variable %s", attributes["short_name"])
             # Fallback for CMIP7 data for tasmax
             short_name_key = (
                 "tasmax"
@@ -350,6 +368,7 @@ def main(cfg: dict) -> None:
                 else attributes["short_name"]
             )
             vars_file[short_name_key] = attributes
+            logger.info("Variable %s", short_name_key)
             # Save model information for output plot name
             if i == 0:
                 plot_file_info = "_".join(

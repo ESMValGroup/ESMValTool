@@ -16,6 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Atmospheric Science",
     "Topic :: Scientific/Engineering :: GIS",
@@ -24,20 +25,42 @@ classifiers = [
 ]
 dynamic = ["readme", "version"]
 dependencies = [
+    "cf-units",
+    "dask!=2024.8.0",   # https://github.com/dask/dask/issues/11296
+    "distributed",
+    "esmvalcore",
+    "matplotlib",
+    "numpy>=2",
+    "pyyaml",
+    "rich",
+    "scitools-iris>=3.11",
+]
+description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+name = "ESMValTool"
+requires-python = ">=3.12,<3.15"
+
+[project.entry-points."console_scripts"]
+nclcodestyle = "esmvaltool.utils.nclcodestyle.nclcodestyle:_main"
+
+[project.entry-points."esmvaltool_commands"]
+colortables = "esmvaltool.utils.color_tables.show_color_tables:ColorTables"
+data = "esmvaltool.cmorizers.data.cmorizer:DataCommand"
+develop = "esmvaltool.utils.develop:DevelopCommand"
+
+[project.optional-dependencies]
+all = [
     "aiohttp",
     "cartopy",
     "cdo",
     "cdsapi",
-    "cf-units",
     "cfgrib",
     "cftime",
     "cmocean",
-    "dask!=2024.8.0",   # https://github.com/dask/dask/issues/11296
-    "distributed",
     "ecmwf-api-client",
     "eofs",
     # "ESMPy",               # not on PyPI
-    "esmvalcore",
     "esmf-regrid>=0.10.0", # iris-esmf-regrid #342
     "fiona",
     "fire",
@@ -48,26 +71,21 @@ dependencies = [
     "joblib",
     "lime",
     "mapgenerator>=1.0.5",
-    "matplotlib",
     "natsort",
     "nc-time-axis",
     "netCDF4",
     "numba",
-    "numpy>=2",
     "openpyxl",
     "packaging",
     "pandas",
     "progressbar2",
     "pyproj>=2.1",
-    "pys2index",
     "python-dateutil",
-    "pyyaml",
     "rasterio>=1.3.10",
     "requests",
     "scikit-image",
     "scikit-learn>=1.4.0", # github.com/ESMValGroup/ESMValTool/issues/3504
     "scipy",
-    "scitools-iris>=3.11",
     "seaborn",
     "seawater",
     "shapely>=2",
@@ -77,19 +95,6 @@ dependencies = [
     "xlsxwriter",
     "zarr",
 ]
-description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
-license = "Apache-2.0"
-license-files = ["LICENSE", "NOTICE"]
-name = "ESMValTool"
-requires-python = ">=3.12,<3.14"
-
-[project.entry-points."console_scripts"]
-nclcodestyle = "esmvaltool.utils.nclcodestyle.nclcodestyle:_main"
-
-[project.entry-points."esmvaltool_commands"]
-colortables = "esmvaltool.utils.color_tables.show_color_tables:ColorTables"
-data = "esmvaltool.cmorizers.data.cmorizer:DataCommand"
-develop = "esmvaltool.utils.develop:DevelopCommand"
 
 [project.urls]
 Code = "https://github.com/ESMValGroup/ESMValTool"
@@ -127,7 +132,6 @@ env = { MPLBACKEND = "Agg" }
 log_level = "WARNING"
 minversion = "6"
 markers = [
-    "installation: Test requires installation of dependencies",
     "diagnostic_image_output: test produces images that will be compared with imagehash",
 ]
 testpaths = ["tests"]
@@ -205,63 +209,14 @@ max-complexity = 15 # Use a more relaxed value than the default.
 convention = "numpy"
 
 [tool.pixi.dependencies]
-"aiohttp" = "*"
-"cartopy" = "*"
-"cdo" = ">=2.3.0"
-"cdsapi" = "*"
 "cf-units" = "*"
-"cfgrib" = "*"
-"cftime" = "*"
-"cmocean" = "*"
-"cython" = "*"
 "dask" = "!=2024.8.0"  # https://github.com/dask/dask/issues/11296
 "distributed" = "*"
-"ecmwf-api-client" = "*"
-"eofs" = "*"
-"esmpy" = "*"
-"fiona" = "*"
-"fire" = "*"
-"fsspec" = "*"
-"gdal" = ">=3.9.0"
-"ipython" = "*"
-"imagehash" = "*"
 "iris" = ">=3.11"
-"iris-esmf-regrid" = ">=0.10.0"  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
-"jinja2" = "*"
-"joblib" = "*"
-"lime" = "*"
-"mapgenerator" = ">=1.0.5"
 "matplotlib-base" = "*"
-"natsort" = "*"
-"nc-time-axis" = "*"
-"netCDF4" = "*"
-"numba" = "*"
 "numpy" = ">=2"
-"openpyxl" = "*"
-"packaging" = "*"
-"pandas" = "*"
-"pip" = "!=21.3"
-"progressbar2" = "*"
-"prov" = "*"
-"pyproj" = ">=2.1"
-"pys2index" = "*"
-"python" = ">=3.12"
-"python-cdo" = "*"
-"python-dateutil" = "*"
 "pyyaml" = "*"
-"rasterio" = ">=1.3.10"
-"requests" = "*"
-"scikit-image" = "*"
-"scikit-learn" = ">=1.4.0"  # github.com/ESMValGroup/ESMValTool/issues/3504
-"scipy" = "*"
-"seaborn" = "*"
-"seawater" = "*"
-"shapely" = ">=2.0.2"
-"xarray" = ">=0.12.0"
-"xesmf" = ">=0.7.1"
-"xgboost" = ">1.6.1"  # github.com/ESMValGroup/ESMValTool/issues/2779
-"xlsxwriter" = "*"
-"zarr" = "*"
+"rich" = "*"
 
 [tool.pixi.workspace]
 channels = [
@@ -281,22 +236,27 @@ platforms = ["linux-64", "osx-arm64"]
 # and `test` features) and a regular environment without these features.
 #
 # Environment for running diagnostics that only require Python.
-default = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
-esmvaltool-python = { features = ["esmvalcore"], solve-group = "default" }
+default = { features = ["esmvalcore", "all", "dev", "doc", "test"], solve-group = "default" }
+esmvaltool-python = { features = ["esmvalcore", "all"], solve-group = "default" }
+# Environment for running the minimum set of dependencies, just enough to run
+# the Python example diagnostic (examples/recipe_python.yml).
+esmvaltool-base-dev = { features = ["esmvalcore", "dev", "doc", "test"], solve-group = "default" }
+esmvaltool-base = { features = ["esmvalcore"], solve-group = "default" }
 # Environment for running diagnostics that also require NCL.
-esmvaltool-ncl-dev = { features = ["esmvalcore", "ncl", "dev", "doc", "test"], solve-group = "ncl" }
-esmvaltool-ncl = { features = ["esmvalcore", "ncl"], solve-group = "ncl" }
+esmvaltool-ncl-dev = { features = ["esmvalcore", "all", "ncl", "dev", "doc", "pys2index", "test"], solve-group = "ncl" }
+esmvaltool-ncl = { features = ["esmvalcore", "all", "ncl", "pys2index"], solve-group = "ncl" }
 # Environment for running diagnostics that also require R.
-esmvaltool-r-dev = { features = ["esmvalcore", "r", "dev", "doc", "test"], solve-group = "r" }
-esmvaltool-r = { features = ["esmvalcore", "r"], solve-group = "r" }
+esmvaltool-r-dev = { features = ["esmvalcore", "all", "r", "dev", "doc", "test"], solve-group = "r" }
+esmvaltool-r = { features = ["esmvalcore", "all", "r"], solve-group = "r" }
 # Environment for running any diagnostic.
-esmvaltool-dev = { features = ["esmvalcore", "ncl", "r", "dev", "doc", "test"], solve-group = "esmvaltool" }
-esmvaltool = { features = ["esmvalcore", "ncl", "r"], solve-group = "esmvaltool" }
+esmvaltool-dev = { features = ["esmvalcore", "all", "ncl", "r", "dev", "doc", "pys2index", "test"], solve-group = "esmvaltool" }
+esmvaltool = { features = ["esmvalcore", "all", "ncl", "pys2index", "r"], solve-group = "esmvaltool" }
 # Environment with the development version of ESMValCore for testing new features and bug fixes.
-esmvalcore-dev = { features = ["esmvalcore-dev", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
+esmvalcore-dev = { features = ["esmvalcore-dev", "all", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
 # Environments for running tests with specific Python versions.
-test-py312 = { features = ["py312", "esmvalcore", "test"], solve-group = "py312" }
-test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "default" }
+test-py312 = { features = ["py312", "esmvalcore", "all", "test", "pys2index"], solve-group = "py312" }
+test-py313 = { features = ["py313", "esmvalcore", "all", "test", "pys2index"], solve-group = "py313" }
+test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = "default" }
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
@@ -342,7 +302,65 @@ test-py313 = { features = ["py313", "esmvalcore", "test"], solve-group = "defaul
 [tool.pixi.feature.py313.dependencies]
 "python" = "3.13.*"
 
-# Feature for running diagnostics that also require NCL.
+# Feature for running tests with Python 3.14.
+[tool.pixi.feature.py314.dependencies]
+"python" = "3.14.*"
+
+# Feature for running Python diagnostics and CMORizers.
+# This list should match the `all` extra under [project.optional-dependencies].
+[tool.pixi.feature.all.dependencies]
+"aiohttp" = "*"
+"cartopy" = "*"
+"cdo" = ">=2.3.0"
+"cdsapi" = "*"
+"cfgrib" = "*"
+"cftime" = "*"
+"cmocean" = "*"
+"cython" = "*"
+"ecmwf-api-client" = "*"
+"eofs" = "*"
+"esmpy" = "*"
+"fiona" = "*"
+"fire" = "*"
+"fsspec" = "*"
+"gdal" = ">=3.9.0"
+"ipython" = "*"
+"imagehash" = "*"
+"iris-esmf-regrid" = ">=0.10.0"  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+"jinja2" = "*"
+"joblib" = "*"
+"lime" = "*"
+"mapgenerator" = ">=1.0.5"
+"natsort" = "*"
+"nc-time-axis" = "*"
+"netCDF4" = "*"
+"numba" = "*"
+"openpyxl" = "*"
+"packaging" = "*"
+"pandas" = "*"
+"pip" = "!=21.3"
+"progressbar2" = "*"
+"prov" = "*"
+"pyproj" = ">=2.1"
+"python" = ">=3.12"
+"python-cdo" = "*"
+"python-dateutil" = "*"
+"rasterio" = ">=1.3.10"
+"requests" = "*"
+"rich" = "*"
+"scikit-image" = "*"
+"scikit-learn" = ">=1.4.0"  # github.com/ESMValGroup/ESMValTool/issues/3504
+"scipy" = "*"
+"seaborn" = "*"
+"seawater" = "*"
+"shapely" = ">=2.0.2"
+"xarray" = ">=0.12.0"
+"xesmf" = ">=0.7.1"
+"xgboost" = ">1.6.1"  # github.com/ESMValGroup/ESMValTool/issues/2779
+"xlsxwriter" = "*"
+"zarr" = "*"
+
+# Feature for running diagnostics and CMORizers that also require NCL.
 [tool.pixi.feature.ncl]
 platforms = ["linux-64"]
 
@@ -351,6 +369,9 @@ platforms = ["linux-64"]
 "cdo" = "*"
 "nco" = "*"
 "imagemagick" = "*"
+
+[tool.pixi.feature.pys2index.dependencies]
+"pys2index" = "*"
 
 # Feature for running diagnostics that also require R.
 [tool.pixi.feature.r]
