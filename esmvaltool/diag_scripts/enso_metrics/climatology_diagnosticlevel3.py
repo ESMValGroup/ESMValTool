@@ -172,16 +172,16 @@ def provenance_record(var_grp, ancestor_files):
     return record
 
 
-def save_plotdata(plotdata, group, pairs, cfg):
-    """Save both obs and model plotted data."""
-    for i, cube in enumerate(plotdata):
-        data_prov = provenance_record(group, [pairs[i]["filename"]])
-        datafile = [
-            pairs[i]["dataset"],
-            pairs[i]["short_name"],
-            group,
-        ]
-        save_data("_".join(datafile), data_prov, cfg, cube)
+def save_plotdata(plotdata, group, pairs, cfg, i):
+    """Save both obs and model plotted data, i: pairs index."""
+    data_prov = provenance_record(group, [pairs[i]["filename"]])
+    datafile = [
+        pairs[i]["dataset"],
+        pairs[i]["short_name"],
+        group,
+        "level3"
+    ]
+    save_data("_".join(datafile), data_prov, cfg, plotdata[i])
 
 
 def main(cfg):
@@ -206,7 +206,7 @@ def main(cfg):
                 if metadata["project"].startswith("CMIP"):
                     pairs.append(metadata)
                     fig, data_cubes = plotmaps_level3(pairs, itcz=False)
-                    save_plotdata(data_cubes, grp, pairs, cfg)
+                    save_plotdata(data_cubes, grp, pairs, cfg, 1)
                     filename = "_".join(
                         [
                             metadata["dataset"],
@@ -228,8 +228,8 @@ def main(cfg):
                     if grp == "pr_seacycle":
                         # replace pr with doubleITCZ
                         grp_itcz = "doubleITCZ_seacycle"
-                        fig, data_cubes = plotmaps_level3(pairs, itcz=True)
-                        save_plotdata(data_cubes, grp_itcz, pairs, cfg)
+                        fig, itcz_cubes = plotmaps_level3(pairs, itcz=True)
+                        save_plotdata(itcz_cubes, grp_itcz, pairs, cfg, 1)
                         filename = "_".join(
                             [
                                 metadata["dataset"],
@@ -248,6 +248,12 @@ def main(cfg):
                             figure=fig,
                             dpi=300,
                         )
+                        obs_itcz = itcz_cubes[0]
+            # save obs data for each group at end so not repeated for each model
+            save_plotdata(data_cubes, grp, pairs, cfg, 0)
+            if obs_itcz:
+                save_plotdata(itcz_cubes, grp_itcz, pairs, cfg, 0)
+                obs_itcz = None
 
 
 if __name__ == "__main__":

@@ -127,16 +127,15 @@ def provenance_record(var_grp, ancestor_files):
     return record
 
 
-def save_plotdata(plotdata, group, pairs, cfg):
-    """Save both obs and model plotted data."""
-    for i, cube in enumerate(plotdata):
-        data_prov = provenance_record(group, [pairs[i]["filename"]])
-        datafile = [
-            pairs[i]["dataset"],
-            pairs[i]["short_name"],
-            pairs[i]["preprocessor"],
-        ]
-        save_data("_".join(datafile), data_prov, cfg, cube)
+def save_plotdata(plotdata, group, pairs, cfg, i):
+    """Save both obs and model plotted data, i: pairs index."""
+    data_prov = provenance_record(group, [pairs[i]["filename"]])
+    datafile = [
+        pairs[i]["dataset"],
+        pairs[i]["short_name"],
+        pairs[i]["preprocessor"],
+    ]
+    save_data("_".join(datafile), data_prov, cfg, plotdata[i])
 
 
 def main(cfg):
@@ -160,7 +159,7 @@ def main(cfg):
             if metadata["project"].startswith("CMIP"):
                 pairs.append(metadata)
                 fig, data_cubes = plotmaps_level2(pairs, grp)
-                save_plotdata(data_cubes, grp, pairs, cfg)
+                save_plotdata(data_cubes, grp, pairs, cfg, 1)
                 filename = "_".join(
                     [
                         metadata["dataset"],
@@ -175,6 +174,8 @@ def main(cfg):
                     figure=fig,
                     dpi=300,
                 )
+        # save obs data for each group at end so not repeated for each model
+        save_plotdata(data_cubes, grp, pairs, cfg, 0)
 
 
 if __name__ == "__main__":
