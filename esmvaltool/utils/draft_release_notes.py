@@ -74,6 +74,7 @@ LABELS = {
         "iris",
         "preprocessor",
         "release",
+        "issue introduced since last release",
         "testing",
         "UX",
         "variable derivation",
@@ -111,6 +112,7 @@ TITLES = {
     "testing": "Automatic testing",
     "api": "Notebook API (experimental)",
     "REF": "Rapid Evaluation Framework",
+    "issue introduced since last release": "Issues introduced since last release",
     "enhancement": "Improvements",
 }
 
