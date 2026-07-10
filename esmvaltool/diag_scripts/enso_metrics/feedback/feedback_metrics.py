@@ -416,10 +416,20 @@ def main(cfg):
                 variable_group=var_prep,
                 project="OBS6",
             )
+            obs += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="obs4MIPs",
+            )
             models += select_metadata(
                 input_data,
                 variable_group=var_prep,
                 project="CMIP6",
+            )
+            models += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="CMIP7",
             )
 
         # log
