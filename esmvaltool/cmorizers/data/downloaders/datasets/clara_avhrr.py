@@ -178,6 +178,6 @@ def download_dataset(
                     gzip.open(file_path, "rb") as f_in,
                     Path(outdir / file_path.stem).open("rb") as f_out,
                 ):
-                        shutil.copyfileobj(f_in, f_out)
+                    shutil.copyfileobj(f_in, f_out)
         except Exception as ex:
             logger.info("%s: no data downloaded for %s", type(ex), var_name)
