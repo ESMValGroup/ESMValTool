@@ -120,6 +120,7 @@ IGNORE_USERS = (
     "pre-commit-ci[bot]",
     "dependabot[bot]",
     "github-actions[bot]",
+    "esmvalbot[bot]",
 )
 """Ignore all PRs from specific users (e.g., bots)."""
 
