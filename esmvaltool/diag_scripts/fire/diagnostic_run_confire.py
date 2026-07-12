@@ -176,11 +176,8 @@ def _sort_time(
 
     cube.coord("time").bounds = None
     tcoord = cube.coord("time")
-    tcoord.units = cf_units.Unit(tcoord.units.origin, calendar="gregorian")
-    tcoord.convert_units("days since 1661-01-01 00:00:00")
     tcoord.units = cf_units.Unit(
-        tcoord.units.origin,
-        calendar="proleptic_gregorian",
+        tcoord.units.origin, calendar=tcoord.units.origin
     )
     cube.remove_coord("time")
     cube.add_dim_coord(tcoord, 0)
