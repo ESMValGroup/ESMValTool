@@ -588,11 +588,21 @@ diagnostics:
         cbar_kwargs:
           extend: both
           label: Relative RMSE
+          aspect: 45
+
+        matplotlib_rc_params:
+          ytick.labelsize: 4
+          xtick.labelsize: 6
+          axes.labelsize: 12
+          font.size: 12  
+          
         group_by: project
         nan_color: '#828282'
         normalize: centered_median
         plot_kwargs:
           vmax: 0.5
           vmin: -0.5
-        x_by: alias
-        y_by: variable_group
+
+        x_by: variable_group 
+        y_by: alias
+        figsize: [8, 8]
