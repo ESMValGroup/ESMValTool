@@ -177,7 +177,8 @@ def _sort_time(
     cube.coord("time").bounds = None
     tcoord = cube.coord("time")
     tcoord.units = cf_units.Unit(
-        tcoord.units.origin, calendar=tcoord.units.origin
+        tcoord.units.origin,
+        calendar=tcoord.units.origin,
     )
     cube.remove_coord("time")
     cube.add_dim_coord(tcoord, 0)
