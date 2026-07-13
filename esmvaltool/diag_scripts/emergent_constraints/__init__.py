@@ -1285,15 +1285,15 @@ def plot_individual_scatterplots(
                 label=group,
             )
             axes = _create_pred_input_plot(
-                pred_input_data["mean"][feature].values,
-                pred_input_data["error"][feature].values,
+                pred_input_data["mean"][feature].to_numpy()[0],
+                pred_input_data["error"][feature].to_numpy()[0],
                 axes,
             )
             axes = _create_pred_output_plot(
                 x_sub_data,
                 y_sub_data,
-                pred_input_data["mean"][feature].values,
-                pred_input_data["error"][feature].values,
+                pred_input_data["mean"][feature].to_numpy()[0],
+                pred_input_data["error"][feature].to_numpy()[0],
                 axes,
                 hline_kwargs={"color": colors[idx], "linestyle": ":"},
             )
@@ -1417,8 +1417,8 @@ def plot_merged_scatterplots(
             axes = _create_pred_output_plot(
                 x_data,
                 y_data,
-                pred_input_data["mean"][feature].values,
-                pred_input_data["error"][feature].values,
+                pred_input_data["mean"][feature].to_numpy()[0],
+                pred_input_data["error"][feature].to_numpy()[0],
                 axes,
                 hline_kwargs={
                     "color": COLOR_COMBINED_GROUPS,
@@ -1438,8 +1438,8 @@ def plot_merged_scatterplots(
                 axes = _create_pred_output_plot(
                     x_data.loc[group],
                     y_data.loc[group],
-                    pred_input_data["mean"][feature].values,
-                    pred_input_data["error"][feature].values,
+                    pred_input_data["mean"][feature].to_numpy()[0],
+                    pred_input_data["error"][feature].to_numpy()[0],
                     axes,
                     hline_kwargs={"color": colors[idx], "linestyle": ":"},
                 )
@@ -1457,14 +1457,14 @@ def plot_merged_scatterplots(
                 axes = _create_pred_output_plot(
                     x_data.loc[group],
                     y_data.loc[group],
-                    pred_input_data["mean"][feature].values,
-                    pred_input_data["error"][feature].values,
+                    pred_input_data["mean"][feature].to_numpy()[0],
+                    pred_input_data["error"][feature].to_numpy()[0],
                     axes,
                     hline_kwargs={"color": colors[idx], "linestyle": ":"},
                 )
         axes = _create_pred_input_plot(
-            pred_input_data["mean"][feature].values,
-            pred_input_data["error"][feature].values,
+            pred_input_data["mean"][feature].to_numpy()[0],
+            pred_input_data["error"][feature].to_numpy()[0],
             axes,
         )
         set_plot_appearance(
@@ -1608,8 +1608,8 @@ def plot_target_distributions(
             (y_lin, y_pdf) = target_pdf(
                 x_sub_data,
                 y_sub_data,
-                pred_input_data["mean"][feature].values,
-                pred_input_data["error"][feature].values,
+                pred_input_data["mean"][feature].to_numpy()[0],
+                pred_input_data["error"][feature].to_numpy()[0],
             )
 
             # Plots
@@ -1632,8 +1632,8 @@ def plot_target_distributions(
             (y_min, y_mean, y_max) = get_constraint(
                 x_sub_data,
                 y_sub_data,
-                pred_input_data["mean"][feature].values,
-                pred_input_data["error"][feature].values,
+                pred_input_data["mean"][feature].to_numpy()[0],
+                pred_input_data["error"][feature].to_numpy()[0],
                 confidence_level=cfg["confidence_level"],
             )
             y_error = np.max([y_max - y_mean, y_mean - y_min])
@@ -2021,9 +2021,8 @@ def get_constraint_from_df(
     label = training_data.y.columns[0]
     feature = training_data.x.columns[0]
     (x_data, y_data) = get_xy_data_without_nans(training_data, feature, label)
-    x_pred = pred_input_data["mean"][feature].values[0]
-    x_pred_error = pred_input_data["error"][feature].values[0]
-
+    x_pred = pred_input_data["mean"][feature].to_numpy()[0]
+    x_pred_error = pred_input_data["error"][feature].to_numpy()[0]
     # Calculate constraint
     constraint = get_constraint(
         x_data,
