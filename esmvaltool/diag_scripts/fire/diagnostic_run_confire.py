@@ -151,7 +151,7 @@ def _select_key_or_default(
 
 
 # /libs/iris_plus.py
-def make_sort_time_callback(keep_original_time: bool):
+def make_sort_time_callback(*, keep_original_time: bool):
     """Create a _sort_time callback with configurable time coordinate."""
 
     def _sort_time(
@@ -176,7 +176,9 @@ def make_sort_time_callback(keep_original_time: bool):
             Cube with sorted and added time dimensions.
         """
         logger.debug(
-            "Sorting time for variable %s in cube %s", field, filename
+            "Sorting time for variable %s in cube %s",
+            field,
+            filename,
         )
 
         cube.coord("time").bounds = None
@@ -199,7 +201,9 @@ def make_sort_time_callback(keep_original_time: bool):
 
         if not cube.coords("month"):
             iris.coord_categorisation.add_month_number(
-                cube, "time", name="month"
+                cube,
+                "time",
+                name="month",
             )
 
     return _sort_time
@@ -473,7 +477,7 @@ def _read_variable_from_netcdf(
         dataset = iris.load_raw(
             Path(directory) / filename,
             callback=make_sort_time_callback(
-                keep_original_time=keep_original_time
+                keep_original_time=keep_original_time,
             ),
         )
     else:
