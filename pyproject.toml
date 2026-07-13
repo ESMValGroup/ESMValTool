@@ -221,7 +221,7 @@ convention = "numpy"
 [tool.pixi.workspace]
 channels = [
     "conda-forge",
-    # "conda-forge/label/esmvalcore_rc",  # Uncomment to use ESMValCore release candidates.
+    "conda-forge/label/esmvalcore_rc",  # Uncomment to use ESMValCore release candidates.
     "nodefaults",
 ]
 platforms = ["linux-64", "osx-arm64"]
@@ -260,7 +260,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
-"ESMValCore" = ">=2.14.0"
+"ESMValCore" = "==2.15.0rc4"
 
 # Use the development version of ESMValCore to test new features and bug fixes.
 [tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
