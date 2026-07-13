@@ -21,14 +21,14 @@ documentation:
 datasets:
   #- {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
- 
+
     #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
 
 
 preprocessors:
 
   temperature_preproc:
-    ##In the future extract europe or similar with: 
+    ##In the future extract europe or similar with:
     #extract_region:
     #  start_latitude: -30
     #  end_latitude: 30
@@ -43,8 +43,8 @@ preprocessors:
     mask_landsea:
       mask_out: sea
 
-  
-      
+
+
   precipitation_preproc:
     custom_order: true
     regrid:
@@ -84,8 +84,8 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
     climate_statistics:
-      operator: mean  
-    
+      operator: mean
+
 
 
   ocean_preproc:
@@ -99,13 +99,13 @@ preprocessors:
 
 
 
- 
+
 
 
 diagnostics:
-   
+
   plot_days_tmax_40:
-    additional_datasets: 
+    additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: tasmax, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
     description: Map showing number of days where the temperature exceeds 40°C.
     variables:
@@ -135,9 +135,9 @@ diagnostics:
                 cmap: 'coolwarm'
 
   plot_days_tmin_0:
-    additional_datasets: 
+    additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: tasmin, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
-  
+
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
@@ -151,7 +151,7 @@ diagnostics:
           threshold_conversion:
             inverted: true
             accumulated: false
-            threshold: 0 
+            threshold: 0
         plots:
           map:
             caption: 'Number of days per year with temperatures drops below 0°C for {dataset}.'
@@ -162,9 +162,9 @@ diagnostics:
                 cmap: 'coolwarm'
 
   plot_days_prmaxthreshold1:
-    additional_datasets: 
+    additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: pr, tier: 3, type: reanaly, version: 1,  reference_for_monitor_diags: true}
-   
+
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
@@ -180,24 +180,24 @@ diagnostics:
             accumulated: false
             threshold: 1 #1,10
         plots:
-          map:     
+          map:
             caption: 'Number of days per year with rain rate exceeding 1 mm for {dataset}.'
             common_cbar: true
             fontsize: 10
             plot_kwargs:
               default:
                 cmap: 'coolwarm'
-          
+
 
 
   plot_days_prmaxthreshold10:
     additional_datasets:
         - {dataset: ERA5, project: OBS6, type: reanaly, tier: 3, version: 1, short_name: pr ,  reference_for_monitor_diags: true}
-    
+
     description: Map showing number of days where the rain rate exceeds 10 mm.
     variables:
       pr:
-        timerange: 19950101/20141231
+        timerange: 19941226/19950115 #20141231
         mip: day
         preprocessor: precipitation_preproc
     scripts:
@@ -210,7 +210,7 @@ diagnostics:
             threshold: 10 #1,10
         plots:
           # timeseries:
-          map:     
+          map:
             caption: 'Number of days per year with rain rate exceeding 10 mm for {dataset}.'
             common_cbar: true
             fontsize: 10
@@ -218,8 +218,8 @@ diagnostics:
               default:
                 cmap: 'coolwarm'
 
-        
-          
+
+
 
   plot_snwe_10:
     additional_datasets:
@@ -253,7 +253,7 @@ diagnostics:
 
 
   plot_sst:
-    additional_datasets: 
+    additional_datasets:
       - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: tos, raw_name: sosstsst, raw_units: deg_C, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc, reference_for_monitor_diags: true}
     description: Plot maps showing the sea surface temperature.
     variables:
@@ -277,8 +277,8 @@ diagnostics:
                 cmap: 'coolwarm'
 
   plot_mld:
-    additional_datasets: 
-      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc,  reference_for_monitor_diags: true} 
+    additional_datasets:
+      - {dataset: ORAS5, project: native6, mip: Omon, type: OBS6, version: 'CONS_v0.1', tier: 2, ugrid: false, var_name: mlotst, raw_name: somxl030, raw_units: m, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: /work/bd1083/b382555/extraobsraw/Tier2/ORAS5/grids/oras5_mesh_T.nc,  reference_for_monitor_diags: true}
     description: Plot maps showing the mixed layer depth.
     variables:
       mlotst:
@@ -318,4 +318,3 @@ diagnostics:
             plot_kwargs:
               default:
                 cmap: 'coolwarm'
-      
