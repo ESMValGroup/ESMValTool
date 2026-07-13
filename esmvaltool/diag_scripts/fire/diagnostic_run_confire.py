@@ -487,7 +487,7 @@ def _read_variable_from_netcdf(
             Path(directory) / filename[0],
             var,
             callback=make_sort_time_callback(
-                keep_original_time=keep_original_time
+                keep_original_time=keep_original_time,
             ),
         )
     dataset = dataset[0]
