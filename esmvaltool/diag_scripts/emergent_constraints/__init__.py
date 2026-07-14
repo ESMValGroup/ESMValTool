@@ -565,8 +565,6 @@ def _create_pred_input_plot(
         vline_kwargs = {"color": "k", "linestyle": ":", "label": "Observation"}
     if vspan_kwargs is None:
         vspan_kwargs = {"color": "k", "alpha": 0.1}
-    x_pred = x_pred[0]
-    x_pred_error = x_pred_error[0]
     axes.axvline(x_pred, **vline_kwargs)
     axes.axvspan(x_pred - x_pred_error, x_pred + x_pred_error, **vspan_kwargs)
     return axes
