@@ -12,7 +12,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.14.1-pl5321h039972f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.3.1-py314h5bd0f2a_1.conda
@@ -600,7 +600,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: .
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/accessible-pygments-0.0.5-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/adwaita-icon-theme-49.0-unix_0.conda
@@ -2351,7 +2351,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aiohttp-3.14.1-py312h5d8c7f2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
@@ -3011,7 +3011,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.3.1-py314h5bd0f2a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/at-spi2-atk-2.38.0-h0630a04_3.tar.bz2
@@ -3422,7 +3422,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: .
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/adwaita-icon-theme-49.0-unix_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.7.1-pyhd8ed1ab_0.conda
@@ -3801,7 +3801,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.3.1-py314h5bd0f2a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/argon2-cffi-bindings-25.1.0-py314h5bd0f2a_2.conda
@@ -4319,7 +4319,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: .
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/accessible-pygments-0.0.5-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/adwaita-icon-theme-49.0-unix_0.conda
@@ -4807,7 +4807,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aiohttp-3.14.1-py312h5d8c7f2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
@@ -5574,7 +5574,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aiohttp-3.14.1-py312h5d8c7f2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
@@ -6128,7 +6128,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aiohttp-3.14.1-py312h5d8c7f2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.9.1-hac33072_0.conda
@@ -6789,7 +6789,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.14.1-pl5321h039972f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.3.1-py314h5bd0f2a_1.conda
@@ -7270,7 +7270,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: .
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/adwaita-icon-theme-49.0-unix_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_1.conda
@@ -7721,7 +7721,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.14.1-pl5321h039972f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.3.1-py314h5bd0f2a_1.conda
@@ -8322,7 +8322,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.14.1-pl5321h039972f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.3.1-py314h5bd0f2a_1.conda
@@ -9030,7 +9030,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aiohttp-3.14.1-py312h5d8c7f2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.14.1-pl5321h039972f_1.conda
@@ -9522,7 +9522,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: .
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/adwaita-icon-theme-49.0-unix_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_1.conda
@@ -9983,7 +9983,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aiohttp-3.14.1-py313hd6074c6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.14.1-pl5321h039972f_1.conda
@@ -10473,7 +10473,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: .
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/adwaita-icon-theme-49.0-unix_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_1.conda
@@ -10933,7 +10933,7 @@ environments:
     - https://pypi.org/simple
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/aom-3.14.1-pl5321h039972f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/apsw-3.53.3.1-py314h5bd0f2a_1.conda
@@ -11423,7 +11423,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: .
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/adwaita-icon-theme-49.0-unix_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_1.conda
@@ -11875,9 +11875,9 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
       - pypi: .
 packages:
-- conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc4-pyhd57ae23_0.conda
-  sha256: ad68b88c703f9e6969c9034f3a9427c1d5f5cd91789a2e6447909daccacb6ec7
-  md5: 036a30dd63319da45b1e4a7b8cf43e37
+- conda: https://conda.anaconda.org/conda-forge/label/esmvalcore_rc/noarch/esmvalcore-2.15.0rc5-pyhd57ae23_0.conda
+  sha256: 90effa1392adf27df57752b6684ca7008a57faaa0a16c85b69adc7f7a52e1294
+  md5: b29a62a46a9486567709c201466f5a25
   depends:
   - python >=3.12
   - aiohttp
@@ -11927,8 +11927,8 @@ packages:
   license: Apache-2.0
   purls:
   - pkg:pypi/esmvalcore?source=compressed-mapping
-  size: 6617369
-  timestamp: 1783687542810
+  size: 6615549
+  timestamp: 1784016179949
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
   build_number: 20
   sha256: 1dd3fffd892081df9726d7eb7e0dea6198962ba775bd88842135a4ddb4deb3c9
