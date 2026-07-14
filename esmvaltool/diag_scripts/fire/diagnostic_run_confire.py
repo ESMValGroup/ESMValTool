@@ -194,13 +194,6 @@ def make_sort_time_callback(*, keep_original_time: bool):
         if not cube.coords("year"):
             iris.coord_categorisation.add_year(cube, "time")
 
-        if not cube.coords("month"):
-            iris.coord_categorisation.add_month_number(
-                cube,
-                "time",
-                name="month",
-            )
-
     return _sort_time
 
 
