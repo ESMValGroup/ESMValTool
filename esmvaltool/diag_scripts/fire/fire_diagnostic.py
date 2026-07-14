@@ -348,8 +348,7 @@ def main(cfg: dict) -> None:
         cfg["remove_confire_files"] = False
     # Keeping or not the original time coordinates and calendar form the inputs
     # Default is False
-    if "keep_original_time" not in cfg:
-        cfg["keep_original_time"] = False
+    cfg.setdefault("keep_original_time", False)
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.

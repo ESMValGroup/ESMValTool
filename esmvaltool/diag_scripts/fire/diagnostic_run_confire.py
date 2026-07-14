@@ -183,12 +183,7 @@ def make_sort_time_callback(*, keep_original_time: bool):
 
         cube.coord("time").bounds = None
         tcoord = cube.coord("time")
-        if keep_original_time:
-            tcoord.units = cf_units.Unit(
-                tcoord.units.origin,
-                calendar=tcoord.units.calendar,
-            )
-        else:
+        if not keep_original_time:
             tcoord.units = cf_units.Unit(
                 "days since 1850-01-01 00:00:00",
                 calendar="proleptic_gregorian",
