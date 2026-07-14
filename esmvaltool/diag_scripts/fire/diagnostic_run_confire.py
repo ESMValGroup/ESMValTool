@@ -191,6 +191,13 @@ def make_sort_time_callback(*, keep_original_time: bool):
         cube.remove_coord("time")
         cube.add_dim_coord(tcoord, 0)
 
+        if not cube.coords("month"):
+            iris.coord_categorisation.add_month_number(
+                cube,
+                "time",
+                name="month",
+            )
+
         if not cube.coords("year"):
             iris.coord_categorisation.add_year(cube, "time")
 
