@@ -6,6 +6,7 @@ import iris # type: ignore
 import numpy as np
 import numpy.ma as ma
 import cmocean
+import os
 
 from basic_functions import (get_provenance_record, iso_depth_4d, 
                              load_and_update_dict,
@@ -107,9 +108,10 @@ def _separate_obs_and_models(plot_dict):
     input_filenames = set()
     for dataset, info in plot_dict.items():
         file = info['filename']
+        print(f"Processing dataset {dataset} with file(s): {file}")
         input_filenames.update(file if isinstance(file, list) else [file])
         cube = info['cube']
-        if dataset in OBS_DATASETS:
+        if os.path.basename(file).startswith("OBS"):
             obs_entry = (dataset, cube)
         else:
             model_cubes.append(cube)
@@ -160,7 +162,7 @@ def _plot_lontime_panel(ax, fig, lon_edges, month_edges, data, cmap,
 
 
 def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
-                              obs_vmin=None, obs_vmax=None,
+                              variable=None, obs_vmin=None, obs_vmax=None,
                               bias_vlim=None,
                               std_vmax=None):
     """Plot lon-time climatology: obs, MM-median bias, and inter-model std dev.
@@ -182,6 +184,8 @@ def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
         Figure suptitle.
     output_basename : str
         Stem used when saving the figure via save_figure().
+    variable : str, optional
+        Variable name ('tos', 'ua', etc.) for determining default colour limits.
     obs_vmin, obs_vmax : float, optional
         Colour scale limits for the obs panel.  Auto-derived when omitted.
     bias_vlim : float, optional
@@ -221,9 +225,9 @@ def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
 
     # Derive colour limits, with optional overrides.
     if obs_vmin is None or obs_vmax is None:
-        if obs_dataset == 'HadISST':
+        if variable == 'tos':
             _obs_vmin, _obs_vmax = 25.0, 30.0
-        elif obs_dataset == 'NCEP':
+        elif variable in ('ua', 'va', 'wind'):
             vabs = np.nanmax(np.abs(obs_data))
             _obs_vmin, _obs_vmax = -vabs, vabs
         else:
@@ -232,8 +236,10 @@ def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
     obs_vmax = obs_vmax if obs_vmax is not None else _obs_vmax
 
     if bias_vlim is None:
+        # if variable == 'pr':
+        #     bias_vlim = 5
+        # else:
         bias_vlim = round(np.nanmax(np.abs(mm_median_bias)), 1)
-        bias_vlim = bias_vlim if bias_vlim > 0 else 1.0
 
     if std_vmax is None:
         std_vmax = np.nanmax(mm_std)
@@ -453,7 +459,7 @@ def main(cfg):
 
     logger.info("Data loaded, now plotting.")
 
-    eio_t20d = _create_iso_depth_dict(
+    eio_t20d_monthly = _create_iso_depth_dict(
         cfg,
         eio_theta_monthly,
         iso_level=20.0,
@@ -467,6 +473,7 @@ def main(cfg):
         cmap_list=['cmo.delta', 'BrBG', 'RdPu'],
         title='Indian Ocean equatorial zonal wind — monthly climatology',
         output_basename='lon_time_eio_wind',
+        variable='ua',
     )
     plot_lon_time_multimodel(
         cfg,
@@ -474,21 +481,24 @@ def main(cfg):
         cmap_list=['RdYlBu_r', 'RdBu_r', 'RdPu'],
         title='Indian Ocean equatorial SST — monthly climatology',
         output_basename='lon_time_eio_sst',
-        obs_vmin=25.0, obs_vmax=30.0,
+        variable='tos',
     )
     plot_lon_time_multimodel(
         cfg,
-        eio_t20d,
+        eio_t20d_monthly,
         cmap_list=['cmo.deep', 'cmo.tarn', 'RdPu'],
         title='Indian Ocean equatorial 20°C isotherm depth — monthly climatology',
         output_basename='lon_time_eio_t20d',
+        variable='t20d',
     )
     plot_lon_time_multimodel(
         cfg,
         eio_pr_monthly,
-        cmap_list=['cmo.delta', 'BrBG', 'RdPu'],
+        cmap_list=['cmo.rain', 'BrBG', 'RdPu'],
         title='Indian Ocean equatorial precipitation — monthly climatology',
         output_basename='lon_time_eio_pr',
+        variable='pr',
+        bias_vlim=0.00008
     )
 
     plot_map_multimodel(
@@ -507,7 +517,7 @@ def main(cfg):
     )
     plot_map_multimodel(
         cfg,
-        eio_t20d,
+        eio_t20d_monthly,
         cmap_list=['cmo.deep', 'cmo.tarn', 'RdPu'],
         title='Indian Ocean equatorial 20°C isotherm depth — monthly climatology',
         output_basename='map_eio_t20d',
@@ -515,7 +525,7 @@ def main(cfg):
     plot_map_multimodel(
         cfg,
         eio_pr_monthly,
-        cmap_list=['cmo.delta', 'BrBG', 'RdPu'],
+        cmap_list=['cmo.rain', 'BrBG', 'RdPu'],
         title='Indian Ocean equatorial precipitation — monthly climatology',
         output_basename='map_eio_pr',
     )
