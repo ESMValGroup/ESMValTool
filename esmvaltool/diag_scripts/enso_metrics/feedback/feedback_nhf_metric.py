@@ -275,7 +275,9 @@ def main(cfg):
 
     obs += select_metadata(input_data, project="OBS")
     obs += select_metadata(input_data, project="OBS6")
+    obs += select_metadata(input_data, project="obs4MIPs")
     models += select_metadata(input_data, project="CMIP6")
+    models += select_metadata(input_data, project="CMIP7")
 
     # log
     msg = f"{metric} : observation datasets {len(obs)}, models {len(models)}"
