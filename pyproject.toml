@@ -236,7 +236,7 @@ platforms = ["linux-64", "osx-arm64"]
 # and `test` features) and a regular environment without these features.
 #
 # Environment for running diagnostics that only require Python.
-esmvaltool-python-dev = { features = ["esmvalcore", "all", "dev", "doc", "test"], solve-group = "default" }
+default = { features = ["esmvalcore", "all", "dev", "doc", "test"], solve-group = "default" }
 esmvaltool-python = { features = ["esmvalcore", "all"], solve-group = "default" }
 # Environment for running the minimum set of dependencies, just enough to run
 # the Python example diagnostic (examples/recipe_python.yml).
@@ -252,7 +252,7 @@ esmvaltool-r = { features = ["esmvalcore", "all", "r"], solve-group = "r" }
 esmvaltool-dev = { features = ["esmvalcore", "all", "ncl", "r", "dev", "doc", "pys2index", "test"], solve-group = "esmvaltool" }
 esmvaltool = { features = ["esmvalcore", "all", "ncl", "pys2index", "r"], solve-group = "esmvaltool" }
 # Environment with the development version of ESMValCore for testing new features and bug fixes.
-default = { features = ["esmvalcore-dev", "all", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
+esmvalcore-dev = { features = ["esmvalcore-dev", "all", "dev", "doc", "test"], solve-group = "esmvalcore-dev" }
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "all", "test", "pys2index"], solve-group = "py312" }
 test-py313 = { features = ["py313", "esmvalcore", "all", "test", "pys2index"], solve-group = "py313" }
