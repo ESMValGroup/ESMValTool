@@ -543,7 +543,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zict-3.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.0-pyhcf101f3_0.conda
       - pypi: ./
-      - pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=more-cordex-fixes#2eef79e8c4ff3ea39aefa0002d9604bc3e3f0c8e
+      - pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=main#3172e927fbd7a3b523935e4edc573299a8e2df8a
       - pypi: https://files.pythonhosted.org/packages/03/08/1e51f630fb9767969cf5b2e5f240913597064df4831af798789c9e002006/apsw-3.53.3.1-cp314-cp314-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/03/54/60ba51d47ef18907d1a643a0f75dd4c2ac24e5bbefaa02d8ade0b4f20fbf/esgf-pyclient-0.3.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/04/96/92447566d16df59b2a776c0fb82dbc4d9e07cd95062562af01e408583fc4/itsdangerous-2.2.0-py3-none-any.whl
@@ -1117,7 +1117,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-ng-2.3.3-hed4e4f5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
       - pypi: ./
-      - pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=more-cordex-fixes#2eef79e8c4ff3ea39aefa0002d9604bc3e3f0c8e
+      - pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=main#3172e927fbd7a3b523935e4edc573299a8e2df8a
       - pypi: https://files.pythonhosted.org/packages/03/54/60ba51d47ef18907d1a643a0f75dd4c2ac24e5bbefaa02d8ade0b4f20fbf/esgf-pyclient-0.3.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/04/96/92447566d16df59b2a776c0fb82dbc4d9e07cd95062562af01e408583fc4/itsdangerous-2.2.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/10/16/1616a533765f44e3babddfae8c594cf6374c47ed54fd65e2a057471e4f19/pydap-3.5.10-py3-none-any.whl
@@ -38290,9 +38290,9 @@ packages:
   - xlsxwriter ; extra == 'all'
   - zarr ; extra == 'all'
   requires_python: '>=3.12,<3.15'
-- pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=more-cordex-fixes#2eef79e8c4ff3ea39aefa0002d9604bc3e3f0c8e
+- pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=main#3172e927fbd7a3b523935e4edc573299a8e2df8a
   name: esmvalcore
-  version: 2.16.0.dev69+g2eef79e8c
+  version: 2.16.0.dev37+g3172e927f
   requires_dist:
   - aiohttp
   - cartopy
