@@ -76,9 +76,6 @@ References
 * de Mora, L., Yool, A., Palmieri, J., Sellar, A., Kuhlbrodt, T., Popova, E.,
   Jones, C., and Allen, J. I.: BGC-val: a model- and grid-independent Python
   toolkit to evaluate marine biogeochemical models, Geosci. Model Dev., 11,
-* de Mora, L., Yool, A., Palmieri, J., Sellar, A., Kuhlbrodt, T., Popova, E.,
-  Jones, C., and Allen, J. I.: BGC-val: a model- and grid-independent Python
-  toolkit to evaluate marine biogeochemical models, Geosci. Model Dev., 11,
   4215-4240, https://doi.org/10.5194/gmd-11-4215-2018, 2018.
 
 
