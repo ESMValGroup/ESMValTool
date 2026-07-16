@@ -31,11 +31,11 @@ internet, as cartopy may try to download coastline shapefiles. See
 ``diagnostic_maps.py`` for how to provide them offline via
 ``auxiliary_data_dir``.
 
-Author: Kevin Debeire (DLR)
+Author: Kevin Debeire (DLR).
 """
 
 import logging
-import os
+from pathlib import Path
 import sys
 
 import cartopy
@@ -54,7 +54,7 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 # This part sends debug statements to stdout
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 EARTH_RADIUS = 6371000.0  # m
