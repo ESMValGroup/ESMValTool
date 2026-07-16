@@ -113,7 +113,7 @@ diagnostics:
         # ESMValCore native6 on-the-fly CMORizer and needs the oras5_mesh_T.nc
         # grid file, passed via the horizontal_grid facet:
         # additional_datasets:
-        #   - {project: native6, dataset: ORAS5, type: reanaly, version: v1, tier: 3, horizontal_grid: /path/to/oras5_mesh_T.nc}
+        #   - {project: native6, dataset: ORAS5, type: reanaly, version: v0.1, tier: 3, horizontal_grid: /path/to/oras5_mesh_T.nc}
     scripts:
       ssh_gradient:
         script: ocean/diagnostic_ssh_gradient.py
