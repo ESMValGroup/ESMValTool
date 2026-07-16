@@ -71,7 +71,6 @@ SCRIPTS = [
 ]
 
 
-@pytest.mark.installation
 @pytest.mark.parametrize("script_file", SCRIPTS)
 def test_diagnostic_run(tmp_path, script_file):
     local_script_file = Path(__file__).parent / script_file

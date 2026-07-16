@@ -1,0 +1,86 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    Recipe that plots diagnostics regarding climate drivers for fire.
+    The diagnostic uses code for the ConFire model from the following GitHub repository:
+    https://github.com/douglask3/Bayesian_fire_models/tree/AR7_REF
+    The timerange is chosen to overlap with reliable burned area observations.
+
+  title: Climate drivers for fire.
+
+  authors:
+    - lenhardt_julien
+    - kelley_douglas
+
+  maintainer:
+    - lenhardt_julien
+
+datasets:
+  - {dataset: DUMMY-MODEL, institute: MOHC, project: CMIP7, activity: CMIP,
+    ensemble: r1i1p1f2, exp: historical, start_year: 2002, end_year: 2021,
+    region: glb, grid: g999, frequency: mon}
+
+preprocessors:
+
+  preproc: &preproc
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: nearest
+    mask_landsea:
+      mask_out: "sea"
+  preproc_fraction:
+    <<: *preproc
+    convert_units:
+      units: 1
+
+diagnostics:
+
+  fire_evaluation:
+    description: Climate drivers for fire
+    variables:
+      #Precipitation
+      pr:
+        mip: atmos
+        branding_suffix: tavg-u-hxy-u
+        preprocessor: preproc
+      # Maximum surface temperature
+      tasmax:
+        short_name: tas
+        mip: atmos
+        branding_suffix: tmaxavg-h2m-hxy-u
+        preprocessor: preproc
+      # Tree cover percentage
+      treeFrac:
+        mip: land
+        branding_suffix: tavg-u-hxy-u
+        preprocessor: preproc_fraction
+      # Vegetation cover percentage
+      vegFrac:
+        mip: land
+        branding_suffix: tavg-u-hxy-u
+        preprocessor: preproc_fraction
+      # Vegetation carbon mass
+      cVeg:
+        mip: land
+        branding_suffix: tavg-u-hxy-lnd
+        preprocessor: preproc
+      # To compute the vapor pressure deficit (vpd)
+      # Surface temperature
+      tas:
+        mip: atmos
+        branding_suffix: tavg-h2m-hxy-u
+        preprocessor: preproc
+      # Near-surface relative humidity
+      hurs:
+        mip: atmos
+        branding_suffix: tavg-h2m-hxy-u
+        preprocessor: preproc
+
+    scripts:
+      fire_evaluation:
+        script: fire/fire_diagnostic.py
+        # confire_param: https://zenodo.org/records/14917245
+        confire_param: /home/b/b381312/esmvaltool/auxiliary_data/ConFire_parameter_files/
+        # IMPORTANT = the order of the variables should fit the configuration files of the ConFire model run
+        var_order: ['pr', 'tasmax', 'treeFrac', 'vegFrac', 'vpd', 'cVeg']
