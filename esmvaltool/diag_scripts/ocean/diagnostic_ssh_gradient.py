@@ -1,7 +1,7 @@
-"""
-Sea Surface Height gradient diagnostic
-======================================
+"""Sea Surface Height gradient diagnostic.
 
+Description
+-----------
 Diagnostic to produce maps of the horizontal gradient magnitude of Sea Surface
 Height (SSH, ``zos``). The gradient magnitude highlights strong surface
 currents and frontal structures and is used to evaluate the Gulf Stream
