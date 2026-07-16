@@ -248,7 +248,7 @@ diagnostics:
         short_name: od550lt1aer
         additional_datasets:
           - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
-             type: sat, version: SLSTR-SU-v1.12-MONTHLY, start_year: 2017, end_year: 2022}
+             type: sat, version: SLSTR-SU-v1.12-DAILY, start_year: 2017, end_year: 2022}
       od870aer_day:
         <<: *var_aerday
         short_name: od870aer
