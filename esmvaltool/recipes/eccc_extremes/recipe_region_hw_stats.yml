@@ -1,0 +1,112 @@
+documentation:
+  title: process CanESM6 data for Canada
+  description: This is a recipe for processing CanAM data.
+  authors:
+  - malinina_elizaveta
+
+preprocessors:
+
+  mean:
+    custom_order: true
+    extract_shape:
+      shapefile: Stone_regions_WRAF05_v4_1_Canada.shp
+      ids:
+        ID:
+          - Alberta
+    area_statistics:
+      operator: mean
+    convert_units:
+      units: degrees_C       
+
+  regrid_mean:
+    custom_order: true
+    regrid:
+      target_grid: 1x1
+      lon_offset: false
+      scheme: linear
+    extract_shape:
+      shapefile: Stone_regions_WRAF05_v4_1_Canada.shp
+      ids:
+        ID:
+          - Alberta
+    area_statistics:
+      operator: mean
+    convert_units:
+      units: degrees_C   
+ 
+
+datasets_mods: &models
+  - {dataset: CanESM6-0-rc6-MR, institute: CCCma, ensemble: r(1:10)i1p1f1, mip: day, grid: gn}
+
+datasets_obs: &obs
+  - {dataset: ERA5, project: OBS6, mip: day, tier: 3, type: reanaly, version: v1}
+
+diagnostics:
+  hw_stats:
+    description: Figure for factual 
+    variables:
+      models:
+        short_name: tasmax
+        exp: factual
+        activity: CMIP
+        project: CMIP6
+        preprocessor: mean
+        start_year: 1991
+        end_year: 2020
+        additional_datasets: *models
+      reference:
+        short_name: tasmax
+        preprocessor: regrid_mean
+        start_year: 1991
+        end_year: 2020
+        additional_datasets: *obs
+    scripts: 
+      hw_stats:
+        script: eccc_extremes/temp_event_stats.py
+        percentile: 90
+        operator: gt 
+        region: Alberta
+        event_type: HW
+        smooth: 5 
+        half_window: 15
+        min_length: 3
+        mpl_style: malinina24
+        color_style: malinina24
+        months: [4, 6, 7, 8, 9]
+      maxima_timing: 
+        script: eccc_extremes/extremes_timing.py
+        operator: max
+        region: Alberta
+        mpl_style: malinina24
+        color_style: malinina24
+        cluster_length: 5
+
+
+
+  # cw_stats:
+  #   description: Figure for factual
+  #   variables:
+  #     models:
+  #       short_name: tasmin
+  #       exp: factual
+  #       activity: CMIP
+  #       project: CMIP6
+  #       preprocessor: mean
+  #       start_year: 1991
+  #       end_year: 2020
+  #       additional_datasets: *models
+  #     reference:
+  #       short_name: tasmin
+  #       preprocessor: regrid_mean
+  #       start_year: 1991
+  #       end_year: 2020
+  #       additional_datasets: *obs
+  #   scripts: 
+  #     cw_stats:
+  #       script: eccc_extremes/temp_event_stats.py
+  #       percentile: 10
+  #       operator: lt 
+  #       months: [10, 11, 12, 1, 2, 3]
+  #     minima_timing: 
+  #       script: eccc_extremes/extremes_timing.py
+  #       operator: min

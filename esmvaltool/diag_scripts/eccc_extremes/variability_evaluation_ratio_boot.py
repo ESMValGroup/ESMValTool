@@ -1,3 +1,4 @@
+import yaml
 import iris
 import iris.cube
 import logging
@@ -128,6 +129,8 @@ def plot_stdevs(data_dic, reference_dic, cfg):
         config dictionary, comes from ESMValCore
     '''
 
+    plot_data_dic = {}
+
     mpl_st_file = eplot.get_path_to_mpl_style(cfg.get('mpl_style'))
     plt.style.use(mpl_st_file)
     
@@ -141,13 +144,17 @@ def plot_stdevs(data_dic, reference_dic, cfg):
     y_ticks = np.arange(0, len(data_dic.keys()))
     y_labs = np.zeros(len(data_dic.keys()), dtype='<U30')
     for nr, ref_dataset in enumerate(reference_dic.keys()):
+        plot_data_dic[ref_dataset] = {}
         ref_color_st = eplot.get_dataset_style(ref_dataset, cfg.get('color_style'))
         for nm, model in enumerate(data_dic.keys()):
             mod_vals = data_dic[model]['bootstrap']/reference_dic[ref_dataset]['bootstrap']
-            single_dot = ax_stds.scatter(data_dic[model]['best']/reference_dic[ref_dataset]['best'], 
-                                         nm-0.1 + nr*0.2, marker='o', c=ref_color_st['color'], zorder=2, 
+            dot = data_dic[model]['best']/reference_dic[ref_dataset]['best']
+            single_dot = ax_stds.scatter(dot, nm-0.1 + nr*0.2, marker='o',
+                                         c=ref_color_st['color'], zorder=2, 
                                          label=f"model/{ref_dataset}")
             perc_vals = np.percentile(mod_vals, percentiles)
+            plot_data_dic[ref_dataset][model] = {'mean': float(dot), 
+                                                 f'{percentiles} perc range': perc_vals.tolist()}
             ax_stds.hlines(nm-0.1 + nr*0.2, perc_vals[0], perc_vals[1], 
                            colors=ref_color_st['color'], zorder=2)
             y_labs[nm] = model
@@ -164,6 +171,7 @@ def plot_stdevs(data_dic, reference_dic, cfg):
         # remove inf / nan (e.g., division by zero)
         self_ratios = self_ratios[np.isfinite(self_ratios)]
         ref_perc_vals = np.percentile(self_ratios, percentiles)
+        plot_data_dic[ref_dataset]['self_range'] = ref_perc_vals.tolist()
         ax_stds.fill_betweenx([len(data_dic.keys()) -0.5, -0.5], 
                                  ref_perc_vals[0], ref_perc_vals[1],
                                  alpha=0.15, color=ref_color_st['color'], lw=0)
@@ -197,6 +205,11 @@ def plot_stdevs(data_dic, reference_dic, cfg):
     fig_path = os.path.join(cfg['plot_dir'], f'variability_ratio_bootstrap_{variable}_{region}')
 
     save_figure(fig_path, prov_dic, cfg, fig_stds, close=True)        
+
+    yaml_path = os.path.join(cfg['work_dir'], f'variability_ratio_bootstrap_{variable}_{region}.yml')
+
+    with open(yaml_path, 'w') as yml_f:
+        yaml.safe_dump(plot_data_dic, yml_f, sort_keys=False)
 
     return
 
