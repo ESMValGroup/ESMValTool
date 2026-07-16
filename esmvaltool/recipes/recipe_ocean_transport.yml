@@ -109,7 +109,7 @@ diagnostics:
       zos:
         mip: Omon
         preprocessor: ssh_regridded
-        # To overplot the ORAS5 reanalysis reference, add it here. ORAS5 is an
+        # To also plot the ORAS5 reanalysis reference, add it here. ORAS5 is an
         # ESMValCore native6 on-the-fly CMORizer and needs the oras5_mesh_T.nc
         # grid file, passed via the horizontal_grid facet:
         # additional_datasets:
