@@ -1,15 +1,15 @@
 ---
 # Filename (will be extended by variable name)
-filename: 'nbetEXToc_v2024E.flux.nc'
+filename: 'nbetEXToc_v2025.flux.nc'
 
 attributes:
   dataset_id: CarboScope
-  version: 'v2024E'
+  version: 'v2025'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
-  source: 'https://www.bgc-jena.mpg.de/CarboScope/?file=nbetEXToc_v2024E.flux.nc'
-  reference: 'carboscope2024'
+  source: 'https://www.bgc-jena.mpg.de/CarboScope/?file=nbetEXToc_v2025.flux.nc'
+  reference: 'carboscope2025'
   comment: ''
 
 # Variables to cmorize
