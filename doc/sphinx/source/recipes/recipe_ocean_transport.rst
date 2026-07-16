@@ -63,7 +63,11 @@ Observations and reformat scripts
 The recipe runs on a CMIP6 model alone. The SSH gradient can also be compared
 with the ORAS5 reanalysis. ORAS5 is read on the fly by ESMValCore (project
 ``native6``) and needs the ``oras5_mesh_T.nc`` grid file, passed through the
-``horizontal_grid`` facet. See the commented example in the recipe.
+``horizontal_grid`` facet. More details in the `ESMValCore documentation on
+ORAS5`_. See the commented example in the recipe.
+
+.. _ESMValCore documentation on ORAS5: https://docs.esmvaltool.org/projects/
+   ESMValCore/en/latest/quickstart/find_data.html#oras5
 
 
 References
