@@ -365,7 +365,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -660,7 +660,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -2773,7 +2773,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.8.1-pyhecae5ae_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -3244,7 +3244,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fastprogress-1.0.3-pyhd8ed1ab_1.conda
@@ -3385,7 +3385,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fastprogress-1.0.3-pyhd8ed1ab_1.conda
@@ -4003,7 +4003,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/execnet-2.1.2-pyhd8ed1ab_0.conda
@@ -4256,7 +4256,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/execnet-2.1.2-pyhd8ed1ab_0.conda
@@ -5151,7 +5151,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.8.1-pyhecae5ae_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -5811,7 +5811,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.8.1-pyhecae5ae_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -6379,7 +6379,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.8.1-pyhecae5ae_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -6928,7 +6928,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -7126,7 +7126,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -7900,7 +7900,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -8514,7 +8514,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -9111,7 +9111,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -9310,7 +9310,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -10030,7 +10030,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -10228,7 +10228,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -10942,7 +10942,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -11148,7 +11148,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/eofs-2.0.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esgf-pyclient-0.3.1-pyhd8ed1ab_5.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmpy-8.9.1-pyhdfbf58e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/et_xmlfile-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -11572,7 +11572,7 @@ packages:
   license: MIT AND Apache-2.0
   license_family: Apache
   purls:
-  - pkg:pypi/aiohttp?source=compressed-mapping
+  - pkg:pypi/aiohttp?source=hash-mapping
   run_exports: {}
   size: 1078273
   timestamp: 1780913823270
@@ -12690,7 +12690,7 @@ packages:
   - zstd >=1.5.7,<1.6.0a0
   license: BSD-3-Clause AND MIT AND EPL-2.0
   purls:
-  - pkg:pypi/backports-zstd?source=compressed-mapping
+  - pkg:pypi/backports-zstd?source=hash-mapping
   run_exports: {}
   size: 242845
   timestamp: 1781450812380
@@ -13836,7 +13836,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/debugpy?source=compressed-mapping
+  - pkg:pypi/debugpy?source=hash-mapping
   run_exports: {}
   size: 2842115
   timestamp: 1780390153580
@@ -14181,7 +14181,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/fonttools?source=hash-mapping
+  - pkg:pypi/fonttools?source=compressed-mapping
   run_exports: {}
   size: 2995315
   timestamp: 1778770432258
@@ -14265,7 +14265,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/frozenlist?source=hash-mapping
+  - pkg:pypi/frozenlist?source=compressed-mapping
   run_exports: {}
   size: 55016
   timestamp: 1779999817627
@@ -14752,7 +14752,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/greenlet?source=compressed-mapping
+  - pkg:pypi/greenlet?source=hash-mapping
   run_exports: {}
   size: 266770
   timestamp: 1782524633116
@@ -19121,7 +19121,7 @@ packages:
   - python_abi 3.12.* *_cp312
   license: BSD-3-Clause and MIT-CMU
   purls:
-  - pkg:pypi/lxml?source=compressed-mapping
+  - pkg:pypi/lxml?source=hash-mapping
   run_exports: {}
   size: 1571628
   timestamp: 1779194839109
@@ -19596,7 +19596,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/msgpack?source=compressed-mapping
+  - pkg:pypi/msgpack?source=hash-mapping
   run_exports: {}
   size: 112800
   timestamp: 1782460774570
@@ -19612,7 +19612,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/msgpack?source=compressed-mapping
+  - pkg:pypi/msgpack?source=hash-mapping
   run_exports: {}
   size: 112798
   timestamp: 1782460772873
@@ -19868,7 +19868,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/netcdf4?source=compressed-mapping
+  - pkg:pypi/netcdf4?source=hash-mapping
   run_exports: {}
   size: 1094073
   timestamp: 1782151628345
@@ -20104,7 +20104,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/numpy?source=compressed-mapping
+  - pkg:pypi/numpy?source=hash-mapping
   run_exports:
     weak:
     - numpy >=1.23,<3
@@ -20150,7 +20150,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/numpy?source=compressed-mapping
+  - pkg:pypi/numpy?source=hash-mapping
   run_exports:
     weak:
     - numpy >=1.23,<3
@@ -20445,7 +20445,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/pandas?source=compressed-mapping
+  - pkg:pypi/pandas?source=hash-mapping
   run_exports: {}
   size: 15001668
   timestamp: 1778602610159
@@ -20903,7 +20903,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/propcache?source=compressed-mapping
+  - pkg:pypi/propcache?source=hash-mapping
   run_exports: {}
   size: 51586
   timestamp: 1780037816755
@@ -21597,7 +21597,7 @@ packages:
   license: BSD-2-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/xxhash?source=compressed-mapping
+  - pkg:pypi/xxhash?source=hash-mapping
   run_exports: {}
   size: 24805
   timestamp: 1779976911988
@@ -24415,7 +24415,7 @@ packages:
   license: Apache-2.0
   license_family: Apache
   purls:
-  - pkg:pypi/tornado?source=compressed-mapping
+  - pkg:pypi/tornado?source=hash-mapping
   run_exports: {}
   size: 864705
   timestamp: 1781006801632
@@ -24445,7 +24445,7 @@ packages:
   license: Apache-2.0
   license_family: Apache
   purls:
-  - pkg:pypi/tornado?source=compressed-mapping
+  - pkg:pypi/tornado?source=hash-mapping
   run_exports: {}
   size: 918368
   timestamp: 1781006801436
@@ -24664,7 +24664,7 @@ packages:
   license: BSD-2-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/wrapt?source=compressed-mapping
+  - pkg:pypi/wrapt?source=hash-mapping
   run_exports: {}
   size: 117401
   timestamp: 1782133645625
@@ -25362,7 +25362,7 @@ packages:
   license: PSF-2.0
   license_family: PSF
   purls:
-  - pkg:pypi/aiohappyeyeballs?source=compressed-mapping
+  - pkg:pypi/aiohappyeyeballs?source=hash-mapping
   run_exports: {}
   size: 20727
   timestamp: 1779297825279
@@ -25622,7 +25622,7 @@ packages:
   - tinycss2 >=1.1.0,<1.5
   license: Apache-2.0 AND MIT
   purls:
-  - pkg:pypi/bleach?source=compressed-mapping
+  - pkg:pypi/bleach?source=hash-mapping
   run_exports: {}
   size: 142246
   timestamp: 1780675823953
@@ -26054,7 +26054,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/dask?source=compressed-mapping
+  - pkg:pypi/dask?source=hash-mapping
   run_exports: {}
   size: 1069053
   timestamp: 1781221472758
@@ -26275,9 +26275,9 @@ packages:
   run_exports: {}
   size: 2090654
   timestamp: 1767783521974
-- conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.14.0-pyhc364b38_0.conda
-  sha256: c4cc1a0c84900421add513684c79a80467ebfdf3d3c5a8a4f7859f48779a2cc3
-  md5: e4d7acc47b23802da419a8de8a49bbea
+- conda: https://conda.anaconda.org/conda-forge/noarch/esmvalcore-2.15.0-pyhc364b38_0.conda
+  sha256: a4ca997886687ced2cc234a39f934a1af010586392a5de2dcbc78ad8b8969246
+  md5: d653eff46330dc77c48c6f2c8cac3285
   depends:
   - python >=3.12
   - aiohttp
@@ -26294,7 +26294,7 @@ packages:
   - fire
   - geopy
   - humanfriendly
-  - intake-esgf >=2025.10.22
+  - intake-esgf >=2026.4.28
   - intake-esm
   - iris
   - iris-esmf-regrid >=0.11.0
@@ -26325,12 +26325,11 @@ packages:
   - zarr >3
   - python
   license: Apache-2.0
-  license_family: APACHE
   purls:
   - pkg:pypi/esmvalcore?source=hash-mapping
   run_exports: {}
-  size: 6546992
-  timestamp: 1773221341802
+  size: 6615688
+  timestamp: 1784115540195
 - conda: https://conda.anaconda.org/conda-forge/noarch/esmvaltool-sample-data-0.0.4-pyhd8ed1ab_0.conda
   sha256: 73643206d7edda939771f6ddddf3c6ba2ed5708cd0eaca031ab6caf31567e511
   md5: 5a9cee756fa75d44fe09f06a9dc9a649
@@ -26516,7 +26515,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/fonttools?source=compressed-mapping
+  - pkg:pypi/fonttools?source=hash-mapping
   run_exports: {}
   size: 846038
   timestamp: 1778770337113
@@ -26543,7 +26542,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/frozenlist?source=compressed-mapping
+  - pkg:pypi/frozenlist?source=hash-mapping
   run_exports: {}
   size: 19878
   timestamp: 1779999782801
@@ -26886,7 +26885,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/ipykernel?source=compressed-mapping
+  - pkg:pypi/ipykernel?source=hash-mapping
   run_exports: {}
   size: 137725
   timestamp: 1781101860049
@@ -27246,7 +27245,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/jupyter-client?source=compressed-mapping
+  - pkg:pypi/jupyter-client?source=hash-mapping
   run_exports: {}
   size: 117954
   timestamp: 1781019994076
@@ -27317,7 +27316,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/jupyter-server?source=compressed-mapping
+  - pkg:pypi/jupyter-server?source=hash-mapping
   run_exports: {}
   size: 363068
   timestamp: 1781713810089
@@ -27688,7 +27687,7 @@ packages:
   license: Apache-2.0
   license_family: Apache
   purls:
-  - pkg:pypi/multiurl?source=compressed-mapping
+  - pkg:pypi/multiurl?source=hash-mapping
   run_exports: {}
   size: 27886
   timestamp: 1781777345896
@@ -27758,7 +27757,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/myst-parser?source=compressed-mapping
+  - pkg:pypi/myst-parser?source=hash-mapping
   run_exports: {}
   size: 74888
   timestamp: 1778696564508
@@ -27771,7 +27770,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/narwhals?source=compressed-mapping
+  - pkg:pypi/narwhals?source=hash-mapping
   run_exports: {}
   size: 285532
   timestamp: 1780672242196
@@ -28075,7 +28074,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/pip?source=compressed-mapping
+  - pkg:pypi/pip?source=hash-mapping
   run_exports: {}
   size: 1203173
   timestamp: 1780262795392
@@ -28212,7 +28211,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/propcache?source=compressed-mapping
+  - pkg:pypi/propcache?source=hash-mapping
   run_exports: {}
   size: 19936
   timestamp: 1780037707071
@@ -28306,7 +28305,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/xgboost?source=compressed-mapping
+  - pkg:pypi/xgboost?source=hash-mapping
   run_exports: {}
   size: 174786
   timestamp: 1782463242337
@@ -28393,7 +28392,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/pydata-sphinx-theme?source=compressed-mapping
+  - pkg:pypi/pydata-sphinx-theme?source=hash-mapping
   run_exports: {}
   size: 1312203
   timestamp: 1781528227244
@@ -28451,7 +28450,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/pyopenssl?source=compressed-mapping
+  - pkg:pypi/pyopenssl?source=hash-mapping
   run_exports: {}
   size: 129597
   timestamp: 1781402255304
@@ -28672,7 +28671,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/python-discovery?source=compressed-mapping
+  - pkg:pypi/python-discovery?source=hash-mapping
   run_exports: {}
   size: 35514
   timestamp: 1781257630962
@@ -28743,7 +28742,7 @@ packages:
   license: BSD-2-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/python-json-logger?source=compressed-mapping
+  - pkg:pypi/python-json-logger?source=hash-mapping
   run_exports: {}
   size: 19249
   timestamp: 1781036004580
@@ -30256,7 +30255,7 @@ packages:
   license: BSD-2-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/sphinxcontrib-serializinghtml?source=compressed-mapping
+  - pkg:pypi/sphinxcontrib-serializinghtml?source=hash-mapping
   run_exports: {}
   size: 30640
   timestamp: 1781260357443
@@ -30384,7 +30383,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/tifffile?source=compressed-mapping
+  - pkg:pypi/tifffile?source=hash-mapping
   run_exports: {}
   size: 210002
   timestamp: 1780298551604
@@ -30464,7 +30463,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/traitlets?source=compressed-mapping
+  - pkg:pypi/traitlets?source=hash-mapping
   run_exports: {}
   size: 115158
   timestamp: 1780507822178
@@ -30611,7 +30610,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/virtualenv?source=compressed-mapping
+  - pkg:pypi/virtualenv?source=hash-mapping
   run_exports: {}
   size: 3111990
   timestamp: 1781651033074
@@ -30755,8 +30754,7 @@ packages:
   - python >=3.12
   license: Apache-2.0
   license_family: APACHE
-  purls:
-  - pkg:pypi/xgboost?source=compressed-mapping
+  purls: []
   run_exports: {}
   size: 15698
   timestamp: 1782464343154
@@ -30909,7 +30907,7 @@ packages:
   license: MIT AND Apache-2.0
   license_family: Apache
   purls:
-  - pkg:pypi/aiohttp?source=compressed-mapping
+  - pkg:pypi/aiohttp?source=hash-mapping
   run_exports: {}
   size: 1049144
   timestamp: 1780913992605
@@ -31602,7 +31600,7 @@ packages:
   - python_abi 3.12.* *_cp312
   license: BSD-3-Clause AND MIT AND EPL-2.0
   purls:
-  - pkg:pypi/backports-zstd?source=compressed-mapping
+  - pkg:pypi/backports-zstd?source=hash-mapping
   run_exports: {}
   size: 240925
   timestamp: 1781450816363
@@ -32321,7 +32319,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/cython?source=compressed-mapping
+  - pkg:pypi/cython?source=hash-mapping
   run_exports: {}
   size: 3453779
   timestamp: 1782821623606
@@ -32442,7 +32440,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/debugpy?source=compressed-mapping
+  - pkg:pypi/debugpy?source=hash-mapping
   run_exports: {}
   size: 2776045
   timestamp: 1780390212997
@@ -32670,7 +32668,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/fonttools?source=compressed-mapping
+  - pkg:pypi/fonttools?source=hash-mapping
   run_exports: {}
   size: 2904377
   timestamp: 1778771054844
@@ -32745,7 +32743,7 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   purls:
-  - pkg:pypi/frozenlist?source=compressed-mapping
+  - pkg:pypi/frozenlist?source=hash-mapping
   run_exports: {}
   size: 52681
   timestamp: 1780000209812
@@ -35684,7 +35682,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/netcdf4?source=compressed-mapping
+  - pkg:pypi/netcdf4?source=hash-mapping
   run_exports: {}
   size: 996742
   timestamp: 1782151700070
@@ -35885,7 +35883,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/numpy?source=compressed-mapping
+  - pkg:pypi/numpy?source=hash-mapping
   run_exports:
     weak:
     - numpy >=1.23,<3
@@ -36122,7 +36120,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/pandas?source=compressed-mapping
+  - pkg:pypi/pandas?source=hash-mapping
   run_exports: {}
   size: 13926263
   timestamp: 1778602825408
@@ -37278,7 +37276,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/pyzmq?source=compressed-mapping
+  - pkg:pypi/pyzmq?source=hash-mapping
   run_exports: {}
   size: 191432
   timestamp: 1779484184540
@@ -37461,7 +37459,7 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/rpds-py?source=compressed-mapping
+  - pkg:pypi/rpds-py?source=hash-mapping
   run_exports: {}
   size: 285627
   timestamp: 1782831308617
@@ -37662,7 +37660,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/scikit-learn?source=compressed-mapping
+  - pkg:pypi/scikit-learn?source=hash-mapping
   run_exports: {}
   size: 9667030
   timestamp: 1780401292916
@@ -37685,7 +37683,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/scipy?source=compressed-mapping
+  - pkg:pypi/scipy?source=hash-mapping
   run_exports: {}
   size: 14165071
   timestamp: 1781912652942
@@ -38027,7 +38025,7 @@ packages:
   license: Apache-2.0
   license_family: Apache
   purls:
-  - pkg:pypi/tornado?source=compressed-mapping
+  - pkg:pypi/tornado?source=hash-mapping
   run_exports: {}
   size: 915857
   timestamp: 1781007345425
@@ -38056,7 +38054,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/ujson?source=compressed-mapping
+  - pkg:pypi/ujson?source=hash-mapping
   run_exports: {}
   size: 67426
   timestamp: 1781561729386
@@ -38072,7 +38070,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/ujson?source=compressed-mapping
+  - pkg:pypi/ujson?source=hash-mapping
   run_exports: {}
   size: 67627
   timestamp: 1781561793839
@@ -38181,7 +38179,7 @@ packages:
   license: BSD-2-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/wrapt?source=compressed-mapping
+  - pkg:pypi/wrapt?source=hash-mapping
   run_exports: {}
   size: 112459
   timestamp: 1782134073014
@@ -38307,7 +38305,7 @@ packages:
   license: Apache-2.0
   license_family: Apache
   purls:
-  - pkg:pypi/yarl?source=compressed-mapping
+  - pkg:pypi/yarl?source=hash-mapping
   run_exports: {}
   size: 147939
   timestamp: 1779246762355
