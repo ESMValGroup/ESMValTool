@@ -116,8 +116,7 @@ def _time_operations(cube):
         ),
     )
     logger.info("Calculating monthly means")
-    cube = monthly_statistics(cube)
-    return cube
+    return monthly_statistics(cube)
 
 
 def _fix_metadata(cube, short_name, var, cfg):
@@ -237,9 +236,11 @@ def _unzip(zip_path, out_dir):
     logger.info("Found input file '%s'", zip_path)
     unzip_path = Path(out_dir) / zip_path.with_suffix("").name
     logger.info("Unzipping file")
-    with gzip.open(zip_path, "rb") as zip_file:
-        with Path.open(unzip_path, "wb") as unzip_file:
-            shutil.copyfileobj(zip_file, unzip_file)
+    with (
+        gzip.open(zip_path, "rb") as zip_file,
+        Path.open(unzip_path, "wb") as unzip_file,
+    ):
+        shutil.copyfileobj(zip_file, unzip_file)
     logger.info("Succefully extracted file to %s", unzip_path)
     return unzip_path
 

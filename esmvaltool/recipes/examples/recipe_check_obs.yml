@@ -56,7 +56,7 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: CarboScope, project: OBS6, tier: 2, type: reanaly,
-         version: v2024E, start_year: 1957, end_year: 2023}
+         version: v2025, start_year: 1957, end_year: 2024}
     scripts: null
 
   CERES-EBAF:
