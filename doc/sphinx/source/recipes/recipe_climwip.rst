@@ -56,23 +56,35 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * ``recipe_climwip_test_basic.yml``: Basic sample recipe using only a few models
-    * ``recipe_climwip_test_performance_sigma.yml``: Advanced sample recipe for testing the perfect model test in particular
-    * ``recipe_climwip_brunner2019_med.yml``: Slightly modified results for one region from `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ (to change regions see below)
-    * ``recipe_climwip_brunner2020esd.yml``: Slightly modified results for `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_
+* ``recipe_climwip_test_basic.yml``: Basic sample recipe using only a few models
+* ``recipe_climwip_test_performance_sigma.yml``: Advanced sample recipe for testing the perfect model test in particular
+* ``recipe_climwip_brunner2020esd.yml``: Slightly modified results for `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_
+
+Archived recipes (stored in archive/legacy_recipes):
+
+.. note::
+
+   These recipes have been retired and moved to the folder "archive". These
+   recipes are only included for documentation purposes and not maintained any
+   more.
+
+* ``recipe_climwip_brunner2019_med.yml``: Slightly modified results for one
+  region from `Brunner et al. (2019)
+  <https://doi.org/10.1088/1748-9326/ab492f>`_ (to change regions see below)
+  [last known ESMValTool version supporting this recipe is version 2.11.0.]
 
 Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
 
-    * ``main.py``: Compute weights for each input dataset
-    * ``calibrate_sigmas.py``: Compute the sigma values on the fly
-    * ``core_functions.py``: A collection of core functions used by the scripts
-    * ``io_functions.py``: A collection of input/output functions used by the scripts
+* ``main.py``: Compute weights for each input dataset
+* ``calibrate_sigmas.py``: Compute the sigma values on the fly
+* ``core_functions.py``: A collection of core functions used by the scripts
+* ``io_functions.py``: A collection of input/output functions used by the scripts
 
 Plot scripts are stored in esmvaltool/diag_scripts/weighting/
 
-    * ``weighted_temperature_graph.py``: Show the difference between weighted and non-weighted temperature anomalies as time series.
-    * ``weighted_temperature_map.py``: Show the difference between weighted and non-weighted temperature anomalies on a map.
-    * ``plot_utilities.py``: A collection of functions used by the plot scripts.
+* ``weighted_temperature_graph.py``: Show the difference between weighted and non-weighted temperature anomalies as time series.
+* ``weighted_temperature_map.py``: Show the difference between weighted and non-weighted temperature anomalies on a map.
+* ``plot_utilities.py``: A collection of functions used by the plot scripts.
 
 
 User settings in recipe

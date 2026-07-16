@@ -1,0 +1,305 @@
+documentation:
+  title: Weathertyping algorithm
+
+  description: |
+    A diagnostic to calculate Lamb weathertypes over a given region. Furthermore,
+    correlations between weathertypes and precipitation patterns over a given area can be calculated
+    and 'combined' or 'simplified' weathertypes can be derived. Additionally, mean fields, as well as
+    anomalies and standard deviations can be plotted.
+
+  authors:
+    - jury_martin
+    - kroissenbrunner_thomas
+
+  maintainer:
+    - kroissenbrunner_thomas
+
+  projects:
+    - preval
+
+  references:
+    - maraun21jgr
+    - jones93ijc
+
+datasets_psl_CMIP6: &datasets_psl_cmip6
+  - {institute: AS-RCEC, dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200626}
+  - {institute: AWI, dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200212}
+  - {institute: BCC, dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, esgf_version: v20181126}
+  - {institute: BCC, dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, esgf_version: v20181220}
+  - {institute: CAS, dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, esgf_version: v20191019}
+  - {institute: CAS, dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190826}
+  - {institute: CCCma, dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190429}
+  - {institute: CMCC, dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200904}
+  - {institute: CMCC, dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200616}
+  - {institute: CMCC, dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20210114}
+  - {institute: CNRM-CERFACS, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, esgf_version: v20180917}
+  - {institute: CSIRO-ARCCSS, dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191108}
+  - {institute: CSIRO, dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191115}
+  - {institute: EC-Earth-Consortium, dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, esgf_version: v20200624}
+  - {institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, esgf_version: v20210113}
+  - {institute: EC-Earth-Consortium, dataset: EC-Earth3-Veg-LR, ensemble: r1i1p1f1, grid: gr, esgf_version: v20200217}
+  - {institute: EC-Earth-Consortium, dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, esgf_version: v20211207}
+  - {institute: EC-Earth-Consortium, dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, esgf_version: v20200310}
+  - {institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190627}
+  - {institute: INM, dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20190530}
+  - {institute: INM, dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20190610}
+  - {institute: IPSL, dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, esgf_version: v20200729}
+  - {institute: IPSL, dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, esgf_version: v20180803}
+  - {institute: KIOST, dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20210601}
+  - {institute: MIROC, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, esgf_version: v20191129}
+  - {institute: MIROC, dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191016}
+  - {institute: MPI-M, dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190710}
+  - {institute: MPI-M, dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190710}
+  - {institute: MRI, dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190603}
+  - {institute: NASA-GISS, dataset: GISS-E2-2-G, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191120, start_year: 1970}
+  - {institute: NCAR, dataset: CESM2-FV2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191120}
+  - {institute: NCAR, dataset: CESM2-WACCM-FV2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191120}
+  - {institute: NCAR, dataset: CESM2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190308}
+  - {institute: NCC, dataset: NorCPM1, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200724}
+  - {institute: NCC, dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190815}
+  - {institute: NCC, dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191108}
+  - {institute: NOAA-GFDL, dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20180701}
+  - {institute: NOAA-GFDL, dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr2, esgf_version: v20180701}
+  - {institute: NOAA-GFDL, dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20190726}
+  - {institute: NUIST, dataset: NESM3, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190812}
+  - {institute: SNU, dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190323}
+
+datasets_ERA5: &datasets_era5
+  - {project: OBS6, dataset: ERA5, type: reanaly, frequency: day, latestversion: v1, mip: day, tier: 3, start_year: 1958, end_year: 2014}
+
+datasets_EOBS: &datasets_EOBS
+  - {dataset: E-OBS, project: OBS, version: v29.0e-0.25, type: ground, tier: 2, start_year: 1958, end_year: 2014, mip: day}
+
+preprocessors:
+  weathertype_preproc:
+    extract_time: &time
+      start_year: 1950
+      start_month: 1
+      start_day: 1
+      end_year: 2014
+      end_month: 12
+      end_day: 31
+    regrid:
+      # This is the region for which the Lamb weathertypes will be calculated.
+      # The objective classification scheme of Jones et al. 1993 is used,
+      # these grid points are the same ones as used in the paper.
+      target_grid: &grid
+        start_longitude: -5
+        end_longitude: 25
+        step_longitude: 5
+        start_latitude: 35
+        end_latitude: 55
+        step_latitude: 5
+      scheme: linear
+
+  weathertype_preproc_pr:
+    extract_time:
+      *time
+    extract_region:
+      # This is the region for which precipitation data can be used to
+      # calculate correlations between weathertypes and this said region
+      # to further be able to combine them into 'simplified' weathertypes.
+      # Combined weathertypes correspond to a specific precipitation
+      # pattern over this region. You can change this to a region of your liking
+      # to see which types of weathertypes are associated with which precipitation
+      # patterns.
+      start_longitude: 9.5
+      end_longitude: 17.25
+      start_latitude: 46.25
+      end_latitude: 49
+
+  mean_preproc:
+    extract_time:
+      *time
+    extract_region: &reg
+      start_longitude: -15
+      end_longitude: 35
+      start_latitude: 25
+      end_latitude: 65
+
+diagnostics:
+  weathertyping:
+    description: calculate weathertypes and plot means
+    variables:
+      era5_msl_wt: &era5_msl_wt
+        project: OBS6
+        dataset: ERA51
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2014
+        short_name: psl
+        preprocessor: weathertype_preproc
+        additional_datasets:
+          *datasets_era5
+
+      era5_pr_wt: &era5_pr_wt
+        project: OBS6
+        dataset: ERA51
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2014
+        short_name: pr
+        preprocessor: weathertype_preproc_pr
+        additional_datasets:
+          *datasets_era5
+
+      eobs_pr_wt: &eobs_pr_wt
+        project: OBS
+        dataset: E-OBS
+        type: ground
+        mip: day
+        version: v29.0e-0.25
+        tier: 2
+        start_year: 1958
+        end_year: 2014
+        short_name: pr
+        preprocessor: weathertype_preproc_pr
+        additional_datasets:
+          *datasets_EOBS
+
+      era5_msl_mean: &era5_msl
+        project: OBS6
+        dataset: ERA5
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2014
+        short_name: psl
+        preprocessor: mean_preproc
+        additional_datasets:
+          *datasets_era5
+
+      era5_tp_mean: &era5_prcp
+        project: OBS6
+        dataset: ERA5
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2014
+        short_name: pr
+        preprocessor: mean_preproc
+        additional_datasets:
+          *datasets_era5
+
+      era5_tas_mean: &era5_temp
+        project: OBS6
+        dataset: ERA5
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2014
+        short_name: tas
+        preprocessor: mean_preproc
+        additional_datasets:
+          *datasets_era5
+
+      cmip6_historical_psl_day_wt: &cmip6_historical_wt
+        project: CMIP6
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: psl
+        preprocessor: weathertype_preproc
+        start_year: 1950
+        end_year: 2014
+        additional_datasets:
+          *datasets_psl_cmip6
+
+      cmip6_historical_psl_day_mean: &cmip6_historical_psl
+        project: CMIP6
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: psl
+        preprocessor: mean_preproc
+        start_year: 1950
+        end_year: 2014
+        additional_datasets:
+          *datasets_psl_cmip6
+
+      cmip6_historical_prcp_day_mean: &cmip6_historical_prcp
+        project: CMIP6
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: pr
+        preprocessor: mean_preproc
+        start_year: 1950
+        end_year: 2014
+        additional_datasets:
+          *datasets_psl_cmip6
+
+      cmip6_historical_temp_day_mean: &cmip6_historical_ta
+        project: CMIP6
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: tas
+        preprocessor: mean_preproc
+        start_year: 1950
+        end_year: 2014
+        additional_datasets:
+          *datasets_psl_cmip6
+
+    scripts:
+      weathertyping:
+        correlation_threshold: 0.9
+        rmse_threshold: 0.002
+        automatic_slwt: true
+        predefined_slwt:
+          1:
+            - 1
+            - 2
+            - 19
+          2:
+            - 3
+            - 4
+            - 22
+            - 21
+          3:
+            - 5
+            - 6
+            - 15
+            - 16
+          4:
+            - 7
+            - 8
+            - 11
+            - 18
+          5:
+            - 9
+            - 17
+          6:
+            - 10
+            - 20
+          7:
+            - 12
+            - 13
+            - 14
+          8:
+            - 23
+            - 24
+          9:
+            - 25
+            - 26
+          0:
+            - 27
+        plotting: true
+        script: weathertyping/weathertyping.py

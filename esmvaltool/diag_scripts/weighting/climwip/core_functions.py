@@ -25,7 +25,8 @@ def area_weighted_mean(data_array: "xr.DataArray") -> "xr.DataArray":
 
 
 def distance_matrix(
-    values: "np.ndarray", weights: "np.ndarray" = None
+    values: "np.ndarray",
+    weights: "np.ndarray" = None,
 ) -> "np.ndarray":
     """Calculate the pairwise distance between model members.
 
@@ -57,7 +58,8 @@ def distance_matrix(
 
 
 def calculate_model_distances(
-    data_array: "xr.DataArray", dimension: str = "model_ensemble_reference"
+    data_array: "xr.DataArray",
+    dimension: str = "model_ensemble_reference",
 ) -> "xr.DataArray":
     """Calculate pair-wise distances between all values in data_array.
 
@@ -104,7 +106,8 @@ def calculate_model_distances(
 
 
 def compute_overall_mean(
-    dataset: "xr.Dataset", weights: dict
+    dataset: "xr.Dataset",
+    weights: dict,
 ) -> "xr.DataArray":
     """Normalize all variables in a dataset and return their weighted mean.
 
@@ -130,7 +133,7 @@ def compute_overall_mean(
 
 def combine_ensemble_members(
     dataset: Union["xr.DataArray", None],
-    dimensions: Union[str, list] = "model_ensemble",
+    dimensions: str | list = "model_ensemble",
 ) -> (Union["xr.DataArray", None], dict):
     """Combine ensemble members of the same model.
 
@@ -186,8 +189,8 @@ def combine_ensemble_members(
 def calculate_weights_data(
     performance: Union["np.array", None],
     independence: Union["np.array", None],
-    performance_sigma: Union[float, None],
-    independence_sigma: Union[float, None],
+    performance_sigma: float | None,
+    independence_sigma: float | None,
 ) -> "np.array":
     """Calculate normalized weights for each model N.
 
@@ -236,8 +239,8 @@ def calculate_weights_data(
 def calculate_weights(
     performance: Union["xr.DataArray", None],
     independence: Union["xr.DataArray", None],
-    performance_sigma: Union[float, None],
-    independence_sigma: Union[float, None],
+    performance_sigma: float | None,
+    independence_sigma: float | None,
 ) -> "xr.DataArray":
     """Xarray wrapper for calculate_weights_data."""
     performance_core_dims = [] if performance is None else ["model_ensemble"]
@@ -271,7 +274,9 @@ def calculate_weights(
 
 
 def weighted_quantile(
-    values: list, quantiles: list, weights: list = None
+    values: list,
+    quantiles: list,
+    weights: list = None,
 ) -> "np.array":
     """Calculate weighted quantiles.
 

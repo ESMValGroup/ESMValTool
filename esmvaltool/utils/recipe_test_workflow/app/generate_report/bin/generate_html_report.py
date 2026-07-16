@@ -11,9 +11,6 @@ CYLC_WORKFLOW_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
 REPORT_PATH = os.environ.get("REPORT_PATH")
 
 
-SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
-
-
 def main(db_file_path=CYLC_DB_PATH):
     """
     Main function to generate the HTML report.
@@ -33,23 +30,30 @@ def main(db_file_path=CYLC_DB_PATH):
     write_report_to_file(rendered_html)
 
 
-def fetch_report_data(db_file_path):
+def fetch_report_data(db_file_path, target_cycle_point=CYLC_TASK_CYCLE_POINT):
     """
-    Fetch report data from the Cylc SQLite database.
+    Fetch report data for a single cycle from the Cylc SQLite database.
 
     Parameters
     ----------
     db_file_path : str
         The path to the SQLite database file.
+    target_cycle_point : str, default CYLC_TASK_CYCLE_POINT
+        The cycle point to collect data for. Defaults to the current cylc
+        cycle.
 
     Returns
     -------
     list
-        A list of tuples containing rows of data from the database.
+        A list of tuples containing rows of a single cycle's data from the
+        cylc database.
     """
+    sql_query_task_states_target_cycle = (
+        "SELECT name, status FROM task_states WHERE cycle = ?"
+    )
     connection = sqlite3.connect(db_file_path)
     cursor = connection.cursor()
-    cursor.execute(SQL_QUERY_TASK_STATES)
+    cursor.execute(sql_query_task_states_target_cycle, (target_cycle_point,))
     fetched_data = cursor.fetchall()
     connection.close()
     return fetched_data

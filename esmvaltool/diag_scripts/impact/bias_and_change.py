@@ -57,7 +57,6 @@ def load_data(metadata: list):
 
     ``metadata`` is a list of dictionaries with dataset descriptors.
     """
-
     data_arrays = []
     identifiers = []
     ancestors = []
@@ -98,7 +97,8 @@ def area_weighted_mean(data_array: "xr.DataArray") -> "xr.DataArray":
 
 
 def calculate_bias(
-    model_data: "xr.DataArray", obs_data: "xr.DataArray"
+    model_data: "xr.DataArray",
+    obs_data: "xr.DataArray",
 ) -> "xr.DataArray":
     """Calculate area weighted RMSD with respect to (mean of) observations."""
     if len(obs_data["dataset"]) > 1:
@@ -190,12 +190,13 @@ def save_csv(dataframe, ancestors, cfg):
     dataframe = dataframe.unstack("variable")
     dataframe.columns = ["tas_bias", "pr_bias", "tas_change", "pr_change"]
     project_model_member = np.array(
-        [x.split("_") for x in dataframe.index.values]
+        [x.split("_") for x in dataframe.index.values],
     )
 
     # metadata in separate columns
     dataframe[["project", "member", "model"]] = project_model_member[
-        :, [0, -1, 1]
+        :,
+        [0, -1, 1],
     ]
 
     # kg/m2/s to mm/day
@@ -255,7 +256,6 @@ def main(cfg):
     plot_table(tidy_df, ancestors, cfg)
     plot_htmltable(tidy_df, ancestors, cfg)
     save_csv(tidy_df, ancestors, cfg)
-    return
 
 
 if __name__ == "__main__":

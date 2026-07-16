@@ -17,7 +17,8 @@ from esmvaltool.diag_scripts.ensclus.read_netcdf import read_n_2d_fields
 def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     """Find the most representative ensemble member for each cluster.
 
-    METHODS:
+    Methods
+    -------
     - Empirical Orthogonal Function (EOF) analysis of the input file
     - K-means cluster analysis applied to the retained
       Principal Components (PCs)
@@ -25,7 +26,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     Frequency
     """
     print(
-        f"The name of the output files will be <variable>_{name_outputs}.txt"
+        f"The name of the output files will be <variable>_{name_outputs}.txt",
     )
     print(f"Number of ensemble members: {numens}")
 
@@ -66,11 +67,11 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
         numpcs = min(enumerate(acc), key=lambda x: x[1] <= perc)[0] + 1
         print(
             "\nThe number of PCs that explain the percentage closest "
-            f"to {perc}% of variance (but grater than {perc}%) is {numpcs}"
+            f"to {perc}% of variance (but grater than {perc}%) is {numpcs}",
         )
         exctperc = min(enumerate(acc), key=lambda x: x[1] <= perc)[1]
     print(
-        f"(the first {numpcs} PCs explain exactly the {exctperc:.2f}% of variance)"
+        f"(the first {numpcs} PCs explain exactly the {exctperc:.2f}% of variance)",
     )
 
     # ____________Compute k-means analysis using a subset of PCs
@@ -96,15 +97,15 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     labels = clus.labels_  # shape---> (numens,)
 
     print(
-        f"\nClusters are identified for {numpcs} PCs (explained variance {exctperc:.2f}%)"
+        f"\nClusters are identified for {numpcs} PCs (explained variance {exctperc:.2f}%)",
     )
     print(
         f"PCs dim: (number of ensemble members, number of PCs)={pcs_unscal0[:, :numpcs].shape}, "
-        f"EOF dim: (number of ensemble members, lat, lon)={eofs_unscal0[:numpcs].shape}"
+        f"EOF dim: (number of ensemble members, lat, lon)={eofs_unscal0[:numpcs].shape}",
     )
     print(
         f"Centroid coordinates dim: (number of clusters, number of PCs)={centroids.shape}, "
-        f"labels dim: (number of ensemble members,)={labels.shape}\n"
+        f"labels dim: (number of ensemble members,)={labels.shape}\n",
     )
 
     # ____________Save labels
@@ -129,23 +130,23 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     print("_________________________________________________________")
     print(
         "In order to find the most representative ensemble member for each "
-        "cluster\n(which is the closest member to the cluster centroid)"
+        "cluster\n(which is the closest member to the cluster centroid)",
     )
     print(
         "the Euclidean distance between cluster centroids and each ensemble "
-        "member is computed in the PC space"
+        "member is computed in the PC space",
     )
     print("_________________________________________________________")
     print(
         f"Check: cluster #1 centroid coordinates vector dim {centroids[1, :].shape} should be "
-        f"the same as the member #1 PC vector dim {pcs[1, :].shape}\n"
+        f"the same as the member #1 PC vector dim {pcs[1, :].shape}\n",
     )
 
     print("_________________________________________________________")
     print("In order to study the spread of each cluster,")
     print(
         "the standard deviation of the distances between each member "
-        "in a cluster and the cluster centroid is computed in the PC space"
+        "in a cluster and the cluster centroid is computed in the PC space",
     )
     stat_output = []
     repres = []
@@ -157,19 +158,19 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
             norm[nclus, mem] = math.sqrt(sum(normens**2))
         print(
             f"the distances between centroid of cluster {nclus} and its "
-            f"belonging members {members} are:\n{np.round(norm[nclus], 3)}"
+            f"belonging members {members} are:\n{np.round(norm[nclus], 3)}",
         )
         print(
-            f"MINIMUM DISTANCE WITHIN CLUSTER {nclus} IS {round(norm[nclus].min(), 3)} --> member #{members[np.where(norm[nclus] == norm[nclus].min())[0][0]]}"
+            f"MINIMUM DISTANCE WITHIN CLUSTER {nclus} IS {round(norm[nclus].min(), 3)} --> member #{members[np.where(norm[nclus] == norm[nclus].min())[0][0]]}",
         )
         repres.append(
-            members[np.where(norm[nclus] == norm[nclus].min())[0][0]]
+            members[np.where(norm[nclus] == norm[nclus].min())[0][0]],
         )
         print(
-            f"MAXIMUM DISTANCE WITHIN CLUSTER {nclus} IS {round(norm[nclus].max(), 3)} --> member #{members[np.where(norm[nclus] == norm[nclus].max())[0][0]]}"
+            f"MAXIMUM DISTANCE WITHIN CLUSTER {nclus} IS {round(norm[nclus].max(), 3)} --> member #{members[np.where(norm[nclus] == norm[nclus].max())[0][0]]}",
         )
         print(
-            f"INTRA-CLUSTER STANDARD DEVIATION FOR CLUSTER {nclus} IS {norm[nclus].std()}\n"
+            f"INTRA-CLUSTER STANDARD DEVIATION FOR CLUSTER {nclus} IS {norm[nclus].std()}\n",
         )
 
         d_stat = collections.OrderedDict()
@@ -191,7 +192,8 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     stat_output = pd.concat(stat_output, axis=0)
     # ____________Save statistics of cluster analysis
     namef = os.path.join(
-        dir_output, f"statistics_clustering_{name_outputs}.txt"
+        dir_output,
+        f"statistics_clustering_{name_outputs}.txt",
     )
     outfiles.append(namef)
     with open(namef, "w") as text_file:

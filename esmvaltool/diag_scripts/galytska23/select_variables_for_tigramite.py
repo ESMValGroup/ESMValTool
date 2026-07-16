@@ -190,11 +190,13 @@ def calculate_variables(dataset_dict):
         processed_vars[dataset] = {}
 
         logger.debug(
-            "Calculating final variables %s for %s dataset", variables, dataset
+            "Calculating final variables %s for %s dataset",
+            variables,
+            dataset,
         )
 
         if dataset in ignored_variables:
-            to_ignore_vars = ignored_variables.get(dataset, None)
+            to_ignore_vars = ignored_variables.get(dataset)
             for var in variables:
                 var_name = var["preprocessor"]
                 if var_name not in to_ignore_vars:
@@ -214,7 +216,7 @@ def calculate_variables(dataset_dict):
             if len(tmp_list) != 2:
                 raise IndexError(
                     "The preprocessor heat flux requests two \
-                                  variables in the recipe: va and ta"
+                                  variables in the recipe: va and ta",
                 )
             heat_flux = calculate_heat_flux(tmp_list)
             processed_vars[dataset][heat_flux.var_name] = heat_flux
@@ -246,18 +248,25 @@ def plot_timeseries(dictionary, var, cfg):
                 continue
             if dataset != "ERA5":
                 plotting_support(
-                    dictionary[dataset][var], dataset, color=colors[idx]
+                    dictionary[dataset][var],
+                    dataset,
+                    color=colors[idx],
                 )
             else:
                 plotting_support(
-                    dictionary[dataset][var], dataset, color="k", linewidth=2
+                    dictionary[dataset][var],
+                    dataset,
+                    color="k",
+                    linewidth=2,
                 )
         else:
             if dataset == "ERA5":
                 continue
             if dataset != "HadISST":
                 plotting_support(
-                    dictionary[dataset][var], dataset, color=colors[idx]
+                    dictionary[dataset][var],
+                    dataset,
+                    color=colors[idx],
                 )
             else:
                 plotting_support(
@@ -296,11 +305,11 @@ def assemble_cube_list(dataset, var, special_datasets):
     """
     if dataset not in special_datasets:
         cube_list = iris.cube.CubeList(
-            [var[proc_var] for proc_var in proc_vars["all_other_datasets"]]
+            [var[proc_var] for proc_var in proc_vars["all_other_datasets"]],
         )
     else:
         cube_list = iris.cube.CubeList(
-            [var[proc_var] for proc_var in proc_vars[dataset]]
+            [var[proc_var] for proc_var in proc_vars[dataset]],
         )
 
     return cube_list

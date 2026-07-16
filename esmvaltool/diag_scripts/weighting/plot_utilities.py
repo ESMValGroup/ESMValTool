@@ -30,7 +30,9 @@ def read_metadata(cfg: dict, groupby: str = "variable_group") -> dict:
 
 
 def calculate_percentiles(
-    data: "xr.DataArray", percentiles: list, weights: dict = None
+    data: "xr.DataArray",
+    percentiles: list,
+    weights: dict = None,
 ) -> "xr.DataArray":
     """Calculate (weighted) percentiles.
 

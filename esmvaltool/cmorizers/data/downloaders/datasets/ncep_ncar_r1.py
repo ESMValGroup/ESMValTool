@@ -8,14 +8,19 @@ from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -32,7 +37,7 @@ def download_dataset(
     if end_date is None:
         end_date = datetime(2021, 1, 1)
     downloader = FTPDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         server="ftp.cdc.noaa.gov",
         dataset=dataset,
         dataset_info=dataset_info,
@@ -78,11 +83,13 @@ def download_dataset(
         downloader.download_file(f"vwnd.{year}.nc", sub_folder="pressure")
         downloader.set_cwd("/Datasets/ncep.reanalysis.dailyavgs/surface_gauss")
         downloader.download_file(
-            f"prate.sfc.gauss.{year}.nc", sub_folder="surface"
+            f"prate.sfc.gauss.{year}.nc",
+            sub_folder="surface",
         )
         downloader.set_cwd("/Datasets/ncep.reanalysis.dailyavgs/other_gauss")
         downloader.download_file(
-            f"ulwrf.ntat.gauss.{year}.nc", sub_folder="surface"
+            f"ulwrf.ntat.gauss.{year}.nc",
+            sub_folder="surface",
         )
 
         loop_date += relativedelta.relativedelta(years=1)

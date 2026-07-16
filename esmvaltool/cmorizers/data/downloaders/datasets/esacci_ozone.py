@@ -1,18 +1,26 @@
-"""Script to download ESACCI-OZONE from the CDS."""
+"""Script to download ESACCI-OZONE from the CDS and BIRA WebDAV."""
 
 import gzip
 import logging
 import shutil
 import zipfile
-from pathlib import Path
+from datetime import datetime
 
 import cdsapi
+from dateutil import relativedelta
+
+from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download ESACCI-OZONE dataset using CDS API.
 
@@ -20,35 +28,69 @@ def download_dataset(
       https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1.
     - The file named .cdspirc containing the key associated to
       the ECMWF account needs to be saved in user's ${HOME} directory.
-    - All the files will be saved in ${RAWOBS}/Tier2/ESACCI-OZONE.
+    - All the files will be saved in Tier2/ESACCI-OZONE.
     """
-    cds_url = "https://cds.climate.copernicus.eu/api"
-
     if dataset == "ESACCI-OZONE":
+        output_folder = (
+            original_data_dir / f"Tier{dataset_info['tier']}" / dataset
+        )
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        cds_url = "https://cds.climate.copernicus.eu/api"
+
+        if start_date is None:
+            gto_year1 = 1995
+            omps_year1 = 1984
+            megridop_year1 = 2001
+        else:
+            gto_year1 = start_date.year
+            omps_year1 = start_date.year
+            megridop_year1 = start_date.year
+        if end_date is None:
+            gto_year2 = 2024
+            omps_year2 = 2023
+            megridop_year2 = 2023
+        else:
+            gto_year2 = end_date.year
+            omps_year2 = end_date.year
+            megridop_year2 = end_date.year
+
         requests = {
-            "toz": {
+            "toz_gto_ecv": {
                 "processing_level": "level_3",
                 "variable": "atmosphere_mole_content_of_ozone",
-                "vertical_aggregation": "total_column",
-                "sensor": ["merged_uv"],
-                "year": [str(y) for y in range(1995, 2024)],
+                "vertical_aggregation": "total_columns_uv",
+                "sensor": ["gto_ecv"],
+                "year": [str(y) for y in range(gto_year1, gto_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v2000"],
             },
-            "o3": {
+            "o3_sage_omps": {
                 "processing_level": "level_3",
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
-                "sensor": ["cmzm"],
-                "year": [str(y) for y in range(1984, 2023)],
+                "sensor": ["sage_cci_omps_conc"],
+                "year": [str(y) for y in range(omps_year1, omps_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v0008"],
+            },
+            "o3_sage_megridop": {
+                "processing_level": "level_3",
+                "variable": "mole_concentration_of_ozone_in_air",
+                "vertical_aggregation": "vertical_profiles_from_limb_sensors",
+                "sensor": ["megridop_conc"],
+                "year": [
+                    str(y) for y in range(megridop_year1, megridop_year2)
+                ],
+                "month": [f"{m:02d}" for m in range(1, 13)],
+                "version": ["v0004"],
             },
         }
 
         client = cdsapi.Client(cds_url)
-        raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
-        output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
+        output_folder = (
+            original_data_dir / f"Tier{dataset_info['tier']}" / dataset
+        )
         output_folder.mkdir(parents=True, exist_ok=True)
 
         for var_name, request in requests.items():
@@ -58,12 +100,15 @@ def download_dataset(
 
             if file_path.exists() and not overwrite:
                 logger.info(
-                    "File %s already exists. Skipping download.", file_path
+                    "File %s already exists. Skipping download.",
+                    file_path,
                 )
                 continue
 
             client.retrieve(
-                "satellite-ozone-v1", request, file_path.as_posix()
+                "satellite-ozone-v1",
+                request,
+                file_path.as_posix(),
             )
 
             # Handle both .gz and .zip files
@@ -80,5 +125,41 @@ def download_dataset(
                     with open(output_folder / file_path.stem, "wb") as f_out:
                         shutil.copyfileobj(f_in, f_out)
 
+        # download IASI data from BIRA WebDAV (IASI data not available on CDS)
+        # all the files will be saved by in ${RAWOBS}/Tier2/ESACCI-OZONE
+
+        if start_date is None:
+            start_date = datetime(2008, 1, 1)
+        if end_date is None:
+            end_date = datetime(2023, 12, 31)
+
+        downloader = WGetDownloader(
+            original_data_dir=original_data_dir,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
+
+        basepath = "https://webdav.aeronomie.be/guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI"
+
+        wget_options = [
+            "-e robots=off",  # ignore robots.txt
+            "--no-parent",  # don't ascend to the parent directory
+            "--accept=nc",  # download only *.nc files
+            "--user=o3_cci_public",  # user name
+            "--password=",  # empty password (no password needed for public access)
+        ]
+
+        loop_date = start_date
+        while loop_date <= end_date:
+            year = loop_date.year
+
+            # directory on server to download
+            remotepath = f"{basepath}/{year}"
+            downloader.download_folder(remotepath, wget_options)
+
+            loop_date += relativedelta.relativedelta(years=1)
+
     else:
-        raise ValueError(f"Unknown dataset: {dataset}")
+        errmsg = f"Unknown dataset: {dataset}"
+        raise ValueError(errmsg)

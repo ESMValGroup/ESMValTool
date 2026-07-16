@@ -1,7 +1,10 @@
-"""Script to download JRA-25 from ESGF."""
+"""Script to download JRA-25 from RDA."""
 
 import logging
 import os
+from datetime import datetime
+
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
@@ -9,14 +12,19 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -29,7 +37,7 @@ def download_dataset(
         Overwrite already downloaded files
     """
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -37,36 +45,33 @@ def download_dataset(
 
     os.makedirs(downloader.local_folder, exist_ok=True)
 
-    url = (
-        "https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/"
-        "reanalysis/JMA/JRA-25/JRA-25/mon/atmos/"
-    )
+    if start_date is None:
+        start_date = datetime(1979, 1, 1)
+    if end_date is None:
+        end_date = datetime(2007, 12, 31)
+    loop_date = start_date
 
-    downloader.download_file(
-        url + "clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc",
-        wget_options=[],
-    )
-    downloader.download_file(
-        url + "hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc",
-        wget_options=[],
-    )
-    downloader.download_file(
-        url + "prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc",
-        wget_options=[],
-    )
-    downloader.download_file(
-        url + "rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc",
-        wget_options=[],
-    )
-    downloader.download_file(
-        url + "rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc",
-        wget_options=[],
-    )
-    downloader.download_file(
-        url + "rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc",
-        wget_options=[],
-    )
-    downloader.download_file(
-        url + "rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc",
-        wget_options=[],
-    )
+    # download files
+
+    url = "https://data.rda.ucar.edu/ds625.1"
+    download_options = ["--no-check-certificate"]
+
+    # define files to download
+
+    files = ["fcst_phy2m", "fcst_phy3m", "anl_chipsi", "anl_p"]
+
+    # download data
+
+    while loop_date <= end_date:
+        year = loop_date.year
+        month = f"{loop_date.month:0>2}"
+
+        for basename in files:
+            fname = f"{basename}.{year}{month}.nc"
+            # download file
+            downloader.download_file(
+                url + "/" + basename + "/" + fname,
+                download_options,
+            )
+
+        loop_date += relativedelta.relativedelta(months=1)

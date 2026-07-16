@@ -4,7 +4,7 @@ attributes:
   dataset_id: NOAAGlobalTemp
   version: 'v5.0.0'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/
            access/gridded/'

@@ -1,0 +1,26 @@
+---
+
+# Filename
+filename: 'EN.4.2.2.f.analysis.g10.*.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: EN4
+  version: '4.2.2'
+  tier: 2
+  type: reanaly
+  project_id: OBS6
+  source: 'https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html'
+  reference: 'good2013jgr'
+  comment: 'Uses analyses with Gouretski and Reseghetti (2010) XBT corrections and Gouretski and Cheng (2020) MBT corrections applied.'
+
+# Variables to cmorize
+variables:
+  thetao:
+    mip: Omon
+    raw_var: sea_water_potential_temperature
+    srf_var: tos
+  so:
+    mip: Omon
+    raw_var: sea_water_salinity
+    srf_var: sos

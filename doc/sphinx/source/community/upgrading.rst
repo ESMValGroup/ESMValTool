@@ -6,7 +6,7 @@ Upgrading a namelist (recipe) or diagnostic to ESMValTool v2
 
 This guide summarizes the main steps to be taken in order to port an ESMValTool namelist (now called **recipe**) and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``main``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
 
-In the following, it is assumed that the user has successfully installed ESMValTool v2 and has a rough overview of its structure (see `Technical Overview <http://www.esmvaltool.org/download/Righi_ESMValTool2-TechnicalOverview.pdf>`_).
+In the following, it is assumed that the user has successfully installed ESMValTool v2 and has a rough overview of its structure (see `Technical Overview <https://doi.org/10.5194/gmd-13-1179-2020>`_).
 
 Create a github issue
 =====================

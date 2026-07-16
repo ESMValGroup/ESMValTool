@@ -226,7 +226,7 @@ diagnostics:
         preprocessor: create_zonal_mean_profile
         <<: *time_period_o3_profile
         additional_datasets:
-          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, reference_for_monitor_diags: true, mip: AERmon, alias: ESACCI-OZONE}
+          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3-SAGE-OMPS, tier: 2, reference_for_monitor_diags: true, mip: AERmon, alias: ESACCI-OZONE}
     scripts:
       plot:
         script: monitor/multi_datasets.py

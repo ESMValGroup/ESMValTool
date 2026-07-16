@@ -16,7 +16,7 @@ Download and processing instructions
     To download a dataset, the dataset folder can be explored on the source
     website, and downloaded using wget:
         ```wget -m -nH -np -R "index.html*" http://data.rsc4earth.de/EarthSystemDataCube/v3.0.1/```
-"""  # noqa: E501
+"""
 
 import logging
 from copy import deepcopy
@@ -47,7 +47,8 @@ def _fix_cube(var, cube, cfg):
     if old_unit.calendar == "proleptic_gregorian":
         logger.info("Converting time units to gregorian")
         cube.coord("time").units = cf_units.Unit(
-            old_unit.origin, calendar="gregorian"
+            old_unit.origin,
+            calendar="gregorian",
         )
     cube = utils.fix_coords(cube)
     cube.convert_units(cmor_info.units)
@@ -75,7 +76,9 @@ def _open_zarr(path):
         # Happens when the zarr folder is missing metadata, e.g. when
         # it is a zarr array instead of a zarr dataset.
         logger.error(
-            'Could not open zarr dataset "%s": "KeyError: %s"', path, exception
+            'Could not open zarr dataset "%s": "KeyError: %s"',
+            path,
+            exception,
         )
         raise exception
 
@@ -116,7 +119,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize the dataset."""
     if start_date:
         logger.warning(
-            'start_date set to "%s", but will be ignored', start_date
+            'start_date set to "%s", but will be ignored',
+            start_date,
         )
     if end_date:
         logger.warning('end_date set to "%s", but will be ignored', end_date)
@@ -133,7 +137,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     local_path = Path(in_dir)
     in_files = list(local_path.glob(filename_pattern))
     logger.debug(
-        "Pattern %s matched: %s", Path(local_path, filename_pattern), in_files
+        "Pattern %s matched: %s",
+        Path(local_path, filename_pattern),
+        in_files,
     )
 
     if len(in_files) > 1:
@@ -143,7 +149,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             len(in_files),
         )
         logger.warning(
-            'The following files will be ignored.: "%s"', in_files[1:]
+            'The following files will be ignored.: "%s"',
+            in_files[1:],
         )
         zarr_path = in_files[0]
     elif len(in_files) == 0:

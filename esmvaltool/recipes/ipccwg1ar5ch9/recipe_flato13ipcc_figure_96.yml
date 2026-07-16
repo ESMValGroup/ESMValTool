@@ -214,7 +214,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1, start_year: 2003, end_year: 2011}
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -225,7 +225,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: regrid_4_5
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         alternative_dataset: GHCN
         project: CMIP5
         exp: historical
@@ -300,7 +300,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
     scripts:
       fig09-6_pattern_cor:
@@ -382,7 +382,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1, start_year: 2003, end_year: 2011}
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor

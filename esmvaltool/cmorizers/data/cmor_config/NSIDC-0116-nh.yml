@@ -4,7 +4,7 @@ attributes:
   dataset_id: NSIDC-0116-nh
   version: '4.1'
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'https://nsidc.org/data/NSIDC-0116'
   reference: 'nsidc-0116'

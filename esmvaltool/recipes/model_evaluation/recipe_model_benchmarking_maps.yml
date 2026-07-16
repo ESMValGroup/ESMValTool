@@ -103,7 +103,7 @@ diagnostics:
         grid: gr
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, reference_for_metric: true, alias: GPCP-SG}
+          - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2, reference_for_metric: true, alias: GPCP-SG}
     scripts:
       allplots:
         script: monitor/multi_datasets.py

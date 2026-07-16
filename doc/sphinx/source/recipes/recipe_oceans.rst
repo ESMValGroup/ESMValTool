@@ -187,9 +187,9 @@ recipe_ocean_quadmap.yml
 
 The recipe_ocean_quadmap.yml_ is an example recipe showing the
 diagnostic_maps_quad.py_ diagnostic.
-This diagnostic produces an image showing four maps. Each of these four maps
+This diagnostic produces figures showing four maps. Each of these four maps
 show latitude vs longitude and the cube value is used as the colour scale.
-The four plots are:
+The four plots within each figure are:
 
 =================   ====================
 model1              model 1 minus model2
@@ -199,16 +199,25 @@ model2 minus obs    model1 minus obs
 
 These figures are also known as Model vs Model vs Obs plots.
 
+The figures produced by this recipe are intended to replicate Marine Assess plots.
+Plots produced are:
 
-The figure produced by this recipe compares two versions of the HadGEM2 model
-against ATSR sea surface temperature:
+* Sea Surface Temperature
+* Sea Surface Salinity
+* Sea Water Temperature (at various depths)
+* Sea Water Salinity (at various depths)
 
-.. centered:: |pic_quad_plot|
+The figures produced by this recipe compare a HadGEM3 model, UKESM1 model
+and a WOA observational dataset:
 
-.. |pic_quad_plot| image:: /recipes/figures/ocean/ocean_quad_plot1.png
+.. centered:: |pic_ocean_quad_1| |pic_ocean_quad_2| |pic_ocean_quad_3| |pic_ocean_quad_4|
+.. |pic_ocean_quad_1| image:: /recipes/figures/ocean/ocean_quad_plot1.png
+.. |pic_ocean_quad_2| image:: /recipes/figures/ocean/ocean_quad_plot2.png
+.. |pic_ocean_quad_3| image:: /recipes/figures/ocean/ocean_quad_plot3.png
+.. |pic_ocean_quad_4| image:: /recipes/figures/ocean/ocean_quad_plot4.png
 
-This kind of figure can be very useful when developing a model, as it
-allows model developers to quickly see the impact of recent changes
+These kind of figures can be very useful when developing a model, as they
+allow model developers to quickly see the impact of any recent changes
 to the model.
 
 
@@ -412,26 +421,38 @@ An appropriate preprocessor for a 2D field would be:
         climate_statistics:
             operator: mean
 
+An appropriate preprocessor for a 3D field would be:
+
+  .. code-block:: yaml
+
+	prep_quad_map_depth:
+          climate_statistics:
+            operator: mean
+          extract_levels:
+            levels: [100., 200., 300., 400., 500., 1000]
+            scheme: linear
+
 and an example of an appropriate diagnostic section of the recipe would be:
 
   .. code-block:: yaml
 
-	diag_map_1:
-	  variables:
-	    tos: # Temperature ocean surface
-	      preprocessor: prep_quad_map
-	      field: TO2Ms
-	      mip: Omon
-	  additional_datasets:
-	#        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
-	#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
-	    - {dataset: ATSR,  project: obs4MIPs,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
-	  scripts:
-	    Global_Ocean_map:
-	      script: ocean/diagnostic_maps_quad.py
-	      control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-	      exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-	      observational_dataset: {dataset: ATSR, project: obs4MIPs,}
+    sea_surface_temperature:
+        description: Global surface quad plots tos
+        variables:
+          tos:  # Temperature ocean surface
+            preprocessor: prep_quad_map
+            mip: Omon
+        additional_datasets:
+          - {dataset: WOA, project: obs4MIPs, level: L3,
+             start_year: 2000, end_year: 2000, tier: 2}
+        scripts:
+          Global_Ocean_map:  &Global_Ocean_map
+            script: ocean/diagnostic_maps_quad.py
+            control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
+                            exp: historical, ensemble: r1i1p1f3}
+            exper_model: {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon,
+                          exp: historical, ensemble: r1i1p1f2}
+            observational_dataset: {dataset: WOA, project: obs4MIPs}
 
 Note that the details about the control model, the experiment models
 and the observational dataset are all provided in the script section of the

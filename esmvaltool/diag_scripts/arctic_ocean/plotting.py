@@ -124,7 +124,6 @@ def label_and_conversion(cmor_var, data):
 
 def year_ticks(series_lenght, time):
     """Create tick marks with year values."""
-
     ygap = int((np.round(series_lenght / 12.0) / 5) * 12)
     year_indexes = list(range(series_lenght)[::ygap])
     year_value = []
@@ -164,10 +163,10 @@ def hofm_plot(cfg, plot_params):
     -------
     None
     """
-
     # create a basis for the muli panel figure
     figure, axis = create_plot(
-        plot_params["model_filenames"], ncols=plot_params["ncols"]
+        plot_params["model_filenames"],
+        ncols=plot_params["ncols"],
     )
 
     # plot data on the figure, axis by axis
@@ -213,7 +212,8 @@ def hofm_plot(cfg, plot_params):
 
         # convert data if needed and get labeles for colorbars
         cb_label, hofdata = label_and_conversion(
-            plot_params["variable"], hofdata
+            plot_params["variable"],
+            hofdata,
         )
 
         # find index of the model level closes to the `max_level`
@@ -435,15 +435,15 @@ def plot_profile(cfg, plot_params):
     None
     """
     level_clim = Dataset(
-        plot_params["model_filenames"][plot_params["observations"]]
+        plot_params["model_filenames"][plot_params["observations"]],
     ).variables["lev"][:]
     plt.figure(figsize=(5, 6))
     axis = plt.subplot(111)
 
     color = iter(
         plot_params["cmap"](
-            np.linspace(0, 1, len(plot_params["model_filenames"]))
-        )
+            np.linspace(0, 1, len(plot_params["model_filenames"])),
+        ),
     )
     lev_limit_clim = level_clim[level_clim <= cfg["hofm_depth"]].shape[0] + 1
 
@@ -451,7 +451,7 @@ def plot_profile(cfg, plot_params):
         (
             level_clim[:lev_limit_clim].shape[0],
             len(plot_params["model_filenames"]) - 1,
-        )
+        ),
     )
     mean_profile_counter = 0
 
@@ -485,7 +485,8 @@ def plot_profile(cfg, plot_params):
 
         # convert data if needed and set labeles
         cb_label, hofdata = label_and_conversion(
-            plot_params["variable"], hofdata
+            plot_params["variable"],
+            hofdata,
         )
 
         # set index for maximum level (max_level+1)
@@ -503,7 +504,9 @@ def plot_profile(cfg, plot_params):
 
         # interpolate to standard levels and add to mean profile
         profile_interpolated = np.interp(
-            level_clim[:lev_limit_clim], lev[0:lev_limit], profile
+            level_clim[:lev_limit_clim],
+            lev[0:lev_limit],
+            profile,
         )
         if mmodel != plot_params["observations"]:
             print(f"include {mmodel} in to the mean")
@@ -623,7 +626,8 @@ def plot2d_original_grid(cfg, plot_params):
 
         if not plot_params["explicit_depths"]:
             depth_target, level_target = closest_depth(
-                lev, plot_params["depth"]
+                lev,
+                plot_params["depth"],
             )
         else:
             level_target = plot_params["explicit_depths"][mmodel][
@@ -633,11 +637,16 @@ def plot2d_original_grid(cfg, plot_params):
 
         if datafile.variables[plot_params["variable"]].ndim < 4:
             data = datafile.variables[plot_params["variable"]][
-                level_target, :, :
+                level_target,
+                :,
+                :,
             ]
         else:
             data = datafile.variables[plot_params["variable"]][
-                0, level_target, :, :
+                0,
+                level_target,
+                :,
+                :,
             ]
 
         cb_label, data = label_and_conversion(plot_params["variable"], data)
@@ -645,7 +654,8 @@ def plot2d_original_grid(cfg, plot_params):
         left, right, down, upper = plot_params["bbox"]
 
         axis[index].set_extent(
-            [left, right, down, upper], crs=ccrs.PlateCarree()
+            [left, right, down, upper],
+            crs=ccrs.PlateCarree(),
         )
         # Only pcolormesh is working for now with cartopy,
         # contourf is failing to plot curvilinear meshes,
@@ -662,11 +672,14 @@ def plot2d_original_grid(cfg, plot_params):
 
         axis[index].add_feature(
             cfeature.GSHHSFeature(
-                levels=[1], scale="low", facecolor="lightgray"
-            )
+                levels=[1],
+                scale="low",
+                facecolor="lightgray",
+            ),
         )
         axis[index].set_title(
-            f"{mmodel}, {np.round(depth_target, 1)} m", size=18
+            f"{mmodel}, {np.round(depth_target, 1)} m",
+            size=18,
         )
         axis[index].set_rasterization_zorder(-1)
 
@@ -676,7 +689,11 @@ def plot2d_original_grid(cfg, plot_params):
 
     # set common colorbar
     colorbar = figure.colorbar(
-        image, orientation="horizontal", ax=axis, pad=0.01, shrink=0.9
+        image,
+        orientation="horizontal",
+        ax=axis,
+        pad=0.01,
+        shrink=0.9,
     )
     colorbar.set_label(cb_label, rotation="horizontal", size=18)
     colorbar.ax.tick_params(labelsize=18)
@@ -771,7 +788,9 @@ def plot2d_bias(cfg, plot_params):
     index = None
     for index, mmodel in enumerate(model_filenames):
         logger.info(
-            "Plot plot2d_bias %s for %s", plot_params["variable"], mmodel
+            "Plot plot2d_bias %s for %s",
+            plot_params["variable"],
+            mmodel,
         )
         # get the filename with the mean generated by the `timemean`
         ifilename = genfilename(
@@ -791,17 +810,20 @@ def plot2d_bias(cfg, plot_params):
         )
         # get the label and convert data if needed
         cb_label, data_obs = label_and_conversion(
-            plot_params["variable"], data_obs
+            plot_params["variable"],
+            data_obs,
         )
         cb_label, interpolated = label_and_conversion(
-            plot_params["variable"], interpolated
+            plot_params["variable"],
+            interpolated,
         )
         # add to the mean model
         model_mean = model_mean + interpolated
         # set the map extent
         left, right, down, upper = plot_params["bbox"]
         axis[index].set_extent(
-            [left, right, down, upper], crs=ccrs.PlateCarree()
+            [left, right, down, upper],
+            crs=ccrs.PlateCarree(),
         )
         # Only pcolormesh is working for now with cartopy,
         # contourf is failing to plot curvilinear meshes,
@@ -820,8 +842,10 @@ def plot2d_bias(cfg, plot_params):
         # fill continents
         axis[index].add_feature(
             cfeature.GSHHSFeature(
-                levels=[1], scale="low", facecolor="lightgray"
-            )
+                levels=[1],
+                scale="low",
+                facecolor="lightgray",
+            ),
         )
 
         axis[index].set_title(f"{mmodel}, {int(target_depth)} m", size=18)
@@ -833,7 +857,8 @@ def plot2d_bias(cfg, plot_params):
         index = 0
     model_mean = model_mean / len(model_filenames)
     axis[index + 1].set_extent(
-        [left, right, down, upper], crs=ccrs.PlateCarree()
+        [left, right, down, upper],
+        crs=ccrs.PlateCarree(),
     )
     image = axis[index + 1].contourf(
         lonc,
@@ -848,11 +873,12 @@ def plot2d_bias(cfg, plot_params):
     )
 
     axis[index + 1].add_feature(
-        cfeature.GSHHSFeature(levels=[1], scale="low", facecolor="lightgray")
+        cfeature.GSHHSFeature(levels=[1], scale="low", facecolor="lightgray"),
     )
 
     axis[index + 1].set_title(
-        f"Model mean bias, {int(target_depth)} m", size=18
+        f"Model mean bias, {int(target_depth)} m",
+        size=18,
     )
     axis[index + 1].set_rasterization_zorder(-1)
     # delete the axis that are not needed
@@ -860,7 +886,11 @@ def plot2d_bias(cfg, plot_params):
         figure.delaxes(axis[delind])
     # set common colorbar
     colorbar = figure.colorbar(
-        image, orientation="horizontal", ax=axis, pad=0.01, shrink=0.9
+        image,
+        orientation="horizontal",
+        ax=axis,
+        pad=0.01,
+        shrink=0.9,
     )
     colorbar.set_label(cb_label, rotation="horizontal", size=18)
     colorbar.ax.tick_params(labelsize=18)
@@ -869,7 +899,7 @@ def plot2d_bias(cfg, plot_params):
         cfg["plot_dir"],
         plot_params["variable"],
         "MULTIMODEL",
-        data_type=f"plot2d_bias_{str(int(target_depth))}_level",
+        data_type=f"plot2d_bias_{int(target_depth)!s}_level",
     )
 
     plot_params["basedir"] = cfg["plot_dir"]
@@ -880,7 +910,9 @@ def plot2d_bias(cfg, plot_params):
     plt.savefig(pltoutname, dpi=plot_params["dpi"])
 
     provenance_record = get_provenance_record(
-        plot_params, "plot2d_bias", "png"
+        plot_params,
+        "plot2d_bias",
+        "png",
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(pltoutname + ".png", provenance_record)
@@ -971,7 +1003,10 @@ def transect_map(
     lon_s4new, lat_s4new = transect_points(region, mult=mult)
     dist = point_distance(lon_s4new, lat_s4new)
     figure, axis = plt.subplots(
-        1, 1, subplot_kw=dict(projection=projection), constrained_layout=True
+        1,
+        1,
+        subplot_kw=dict(projection=projection),
+        constrained_layout=True,
     )
 
     axis.set_extent(bbox, crs=ccrs.PlateCarree())
@@ -988,10 +1023,15 @@ def transect_map(
 
     colorbar = figure.colorbar(image, ax=axis)
     colorbar.set_label(
-        "Along-track distance, km", rotation="vertical", size=15
+        "Along-track distance, km",
+        rotation="vertical",
+        size=15,
     )
     pltoutname = genfilename(
-        cfg["work_dir"], "allvars", region=region, data_type="transect_map"
+        cfg["work_dir"],
+        "allvars",
+        region=region,
+        data_type="transect_map",
     )
 
     plt.savefig(pltoutname, dpi=100)
@@ -1004,7 +1044,9 @@ def transect_map(
     plot_params["region"] = region
 
     provenance_record = get_provenance_record(
-        plot_params, "transect_map", "png"
+        plot_params,
+        "transect_map",
+        "png",
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(pltoutname + ".png", provenance_record)
@@ -1033,7 +1075,8 @@ def transect_plot(cfg, plot_params):
 
     """
     figure, axis = create_plot(
-        plot_params["model_filenames"], ncols=plot_params["ncols"]
+        plot_params["model_filenames"],
+        ncols=plot_params["ncols"],
     )
 
     # get transect positions and calculate distances between points
@@ -1095,7 +1138,9 @@ def transect_plot(cfg, plot_params):
         # plot settings
         axis[index].set_ylabel("Depth, m", size=15, rotation="vertical")
         axis[index].set_xlabel(
-            "Along-track distance, km", size=15, rotation="horizontal"
+            "Along-track distance, km",
+            size=15,
+            rotation="horizontal",
         )
         axis[index].set_title(mmodel, size=20)
         axis[index].set_ylim(cfg["transects_depth"], 0)

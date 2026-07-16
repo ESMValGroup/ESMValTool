@@ -140,7 +140,7 @@ Recipe output can be copied by doing from the VM:
 
 By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
 becomes available online, see for `example
-<https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
+<https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/>`_.
 Before copying the recipe output to the VM, you may want to clean up your directory containing
 the results by removing any large ``preproc`` directories of failed runs and only keeping the last run for each recipe.
 This will help generating a clearer overview webpage.
@@ -193,7 +193,7 @@ The steps to running the compare tool on the VM are the following:
 
 .. code-block:: bash
 
-  nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
+  nohup python ESMValTool/esmvaltool/utils/develop/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
 Copy the comparison txt file to the release issue.
 Some of the recipes will appear as having identical output to the one from previous release.

@@ -78,7 +78,7 @@ DEGREE_SYMBOL = "\u00b0"
 
 def _fix_lons(lons):
     """Fix the given longitudes into the range ``[-180, 180]``."""
-    lons = np.array(lons, copy=False, ndmin=1)
+    lons = np.atleast_1d(lons)
     fixed_lons = ((lons + 180) % 360) - 180
     # Make the positive 180s positive again.
     fixed_lons[(fixed_lons == -180) & (lons > 0)] *= -1
@@ -133,11 +133,11 @@ def _north_south_formatted(latitude, num_format="g"):
 
 #: A formatter which turns longitude values into nice longitudes such as 110W
 LONGITUDE_FORMATTER = mticker.FuncFormatter(
-    lambda v, pos: _east_west_formatted(v)
+    lambda v, pos: _east_west_formatted(v),
 )
 #: A formatter which turns longitude values into nice longitudes such as 45S
 LATITUDE_FORMATTER = mticker.FuncFormatter(
-    lambda v, pos: _north_south_formatted(v)
+    lambda v, pos: _north_south_formatted(v),
 )
 
 CM_PER_INCH = 2.54
@@ -258,7 +258,7 @@ def setup_figure():
                 fig.add_axes([0.10, 0.10, 0.30, 0.35]),
                 fig.add_axes([0.50, 0.10, 0.30, 0.35]),
             ],
-        ]
+        ],
     )
     return fig, axes
 
@@ -275,7 +275,11 @@ def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
     axes.set_ylim(-5.0, 5.0)
     axes.set_xlim(-90.0, 90.0)
     axes.tick_params(
-        which="both", direction="in", top=True, right=True, labelsize=7.0
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        labelsize=7.0,
     )
     axes.xaxis.set_label_text("Latitude")
     lines = []
@@ -309,7 +313,11 @@ def plot_equatorial_errors(axes, equatorial_errors, ref_line_style):
     axes.set_ylim(-5.0, 5.0)
     axes.set_xlim(25.0, 360.0)
     axes.tick_params(
-        which="both", direction="in", top=True, right=True, labelsize=7.0
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        labelsize=7.0,
     )
     axes.xaxis.set_label_text("Longitude")
     for error in equatorial_errors:
@@ -337,7 +345,11 @@ def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
     axes.set_ylim(-5.0, 5.0)
     axes.set_xlim(-90.0, 90.0)
     axes.tick_params(
-        which="both", direction="in", top=True, right=True, labelsize=7.0
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        labelsize=7.0,
     )
     axes.xaxis.set_label_text("Latitude")
     lat = zonal_mean_errors[0].coord("latitude").points
@@ -345,7 +357,11 @@ def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
     std = data.std(axis=0)
     avg = data.mean(axis=0)
     axes.fill_between(
-        lat, avg - std, avg + std, facecolor="#e61f25", alpha=0.5
+        lat,
+        avg - std,
+        avg + std,
+        facecolor="#e61f25",
+        alpha=0.5,
     )
     axes.plot(lat, avg, color="#e61f25", **ref_line_style)
 
@@ -362,7 +378,11 @@ def plot_equatorials(axes, reference, equatorials, ref_line_style):
     axes.set_ylim(22.0, 31.0)
     axes.set_xlim(25.0, 360.0)
     axes.tick_params(
-        which="both", direction="in", top=True, right=True, labelsize=7.0
+        which="both",
+        direction="in",
+        top=True,
+        right=True,
+        labelsize=7.0,
     )
     axes.xaxis.set_label_text("Longitude")
     lon = reference.coord("longitude").points
@@ -370,7 +390,11 @@ def plot_equatorials(axes, reference, equatorials, ref_line_style):
     std = data.std(axis=0)
     avg = data.mean(axis=0)
     axes.fill_between(
-        lon, avg - std, avg + std, facecolor="#e61f25", alpha=0.5
+        lon,
+        avg - std,
+        avg + std,
+        facecolor="#e61f25",
+        alpha=0.5,
     )
     axes.plot(lon, avg, color="#e61f25", **ref_line_style)
     lines = axes.plot(lon, reference.data, "k", **ref_line_style)
@@ -393,16 +417,25 @@ def produce_plots(config, data):
     ref_line_style = {"linestyle": "-", "linewidth": 2.0}
     fig, axes = setup_figure()
     lines, labels = plot_zonal_mean_errors_ensemble(
-        axes[0, 0], data["zonal_mean_errors"], ref_line_style
+        axes[0, 0],
+        data["zonal_mean_errors"],
+        ref_line_style,
     )
     plot_equatorial_errors(
-        axes[0, 1], data["equatorial_errors"], ref_line_style
+        axes[0, 1],
+        data["equatorial_errors"],
+        ref_line_style,
     )
     plot_zonal_mean_errors_project(
-        axes[1, 0], data["zonal_mean_errors"], ref_line_style
+        axes[1, 0],
+        data["zonal_mean_errors"],
+        ref_line_style,
     )
     ref_ls, ref_labels = plot_equatorials(
-        axes[1, 1], data["equatorial_ref"], data["equatorials"], ref_line_style
+        axes[1, 1],
+        data["equatorial_ref"],
+        data["equatorials"],
+        ref_line_style,
     )
     all_lines = ref_ls + lines
     all_labels = ref_labels + labels
@@ -418,7 +451,7 @@ def write_data(config, data):
         [data["equatorial_ref"]]
         + data["zonal_mean_errors"]
         + data["equatorials"]
-        + data["equatorial_errors"]
+        + data["equatorial_errors"],
     )
     path = get_diagnostic_filename("fig-9-14", config)
     iris.save(cubes, path)

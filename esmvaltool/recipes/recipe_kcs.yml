@@ -52,6 +52,7 @@ preprocessors:
       operator: mean
     annual_statistics:
       operator: mean
+      keep_group_coordinates: true
     anomalies:
       period: full
       reference:

@@ -25,7 +25,8 @@ read_external_file : str, optional
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set_theme` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
+    ``style: ticks``.
 
 """
 
@@ -73,22 +74,22 @@ def _get_anomaly_cube(onepct_cube, pi_cube):
     if onepct_cube.ndim != 1:
         raise ValueError(
             f"This diagnostics needs 1D cubes, got {onepct_cube.ndim:d}D cube "
-            f"for '1pctCO2' experiment"
+            f"for '1pctCO2' experiment",
         )
     if pi_cube.ndim != 1:
         raise ValueError(
             f"This diagnostics needs 1D cubes, got {pi_cube.ndim:d}D cube for "
-            f"'piControl' experiment"
+            f"'piControl' experiment",
         )
     if onepct_cube.shape != pi_cube.shape:
         raise ValueError(
             f"Cube shapes of '1pctCO2' and 'piControl' are not identical, got "
-            f"{onepct_cube.shape} and {pi_cube.shape}"
+            f"{onepct_cube.shape} and {pi_cube.shape}",
         )
     if onepct_cube.shape[0] < END_YEAR_IDX:
         raise ValueError(
             f"Cubes need at least {END_YEAR_IDX:d} points for TCR "
-            f"calculation, got only {onepct_cube.shape[0]:d}"
+            f"calculation, got only {onepct_cube.shape[0]:d}",
         )
 
     # Calculate anomaly
@@ -121,15 +122,20 @@ def _get_anomaly_cubes(cfg):
     for dataset in onepct_data:
         dataset_name = dataset["dataset"]
         pi_data = select_metadata(
-            input_data, short_name="tas", exp="piControl", dataset=dataset_name
+            input_data,
+            short_name="tas",
+            exp="piControl",
+            dataset=dataset_name,
         )
         if not pi_data:
             raise ValueError(
-                "No 'piControl' data available for dataset 'dataset_name'"
+                "No 'piControl' data available for dataset 'dataset_name'",
             )
         onepct_cube = iris.load_cube(dataset["filename"])
         pi_cube = iris.load_cube(pi_data[0]["filename"])
         anomaly_cube = _get_anomaly_cube(onepct_cube, pi_cube)
+        if "ensemble" in dataset:
+            anomaly_cube.attributes["ensemble"] = dataset["ensemble"]
         cubes[dataset_name] = anomaly_cube
         ancestors[dataset_name] = [dataset["filename"], pi_data[0]["filename"]]
 
@@ -178,15 +184,16 @@ def _plot(cfg, cube, dataset_name, tcr):
     """Create scatterplot of temperature anomaly vs. time."""
     if not cfg.get("plot", True):
         return (None, None, None)
-    logger.debug(
-        "Plotting temperature anomaly vs. time for '%s'", dataset_name
-    )
+    dataset_id = dataset_name
+    if "ensemble" in cube.attributes:
+        dataset_id += f" (ensemble member {cube.attributes['ensemble']})"
+    logger.debug("Plotting temperature anomaly vs. time for '%s'", dataset_id)
     (_, axes) = plt.subplots()
 
     # Plot data
     x_data = np.arange(cube.shape[0])
     y_data = cube.data
-    axes.scatter(x_data, y_data, color="b", marker="o")
+    axes.scatter(x_data, y_data, color="C0", marker="o", s=8, alpha=0.7)
 
     # Plot lines
     line_kwargs = {"color": "k", "linewidth": 1.0, "linestyle": "--"}
@@ -198,9 +205,9 @@ def _plot(cfg, cube, dataset_name, tcr):
     units_str = (
         cube.units.symbol if cube.units.origin is None else cube.units.origin
     )
-    axes.set_title(dataset_name)
+    axes.set_title(dataset_id, pad=15.0)
     axes.set_xlabel("Years after experiment start")
-    axes.set_ylabel(f"Temperature anomaly / {units_str}")
+    axes.set_ylabel(f"ΔT [{units_str}]")
     axes.set_ylim([x_data[0] - 1, x_data[-1] + 1])
     axes.set_ylim([-1.0, 7.0])
     axes.text(0.0, tcr + 0.1, f"TCR = {tcr:.1f} {units_str}")
@@ -217,18 +224,15 @@ def _plot(cfg, cube, dataset_name, tcr):
 
     # Provenance
     provenance_record = get_provenance_record(
-        f"Time series of the global mean surface air temperature anomaly "
-        f"(relative to the linear fit of the pre-industrial control run) of "
-        f"{dataset_name} for the 1% CO2 increase per year experiment. The "
-        f"horizontal dashed line indicates the transient climate response "
-        f"(TCR) defined as the 20 year average temperature anomaly centered "
-        f"at the time of CO2 doubling (vertical dashed lines)."
+        f"Time series of the global annual mean near-surface air temperature "
+        f"anomaly ΔT of the 1% CO2 increase per year experiment for model "
+        f"{dataset_id}. Anomalies are calculated relative to a pre-industrial "
+        f"control simulation of the same model. The horizontal dashed line "
+        f"indicates the transient climate response (TCR) defined as the "
+        f"20-year average ΔT centered at the time of CO2 doubling "
+        f"(vertical dashed lines).",
     )
-    provenance_record.update(
-        {
-            "plot_types": ["times"],
-        }
-    )
+    provenance_record["plot_types"] = ["times"]
 
     return (netcdf_path, plot_path, provenance_record)
 
@@ -250,12 +254,18 @@ def calculate_tcr(cfg):
         new_tcr = tas_2x
         tcr[dataset_name] = new_tcr
         logger.info(
-            "TCR (%s) = %.2f %s", dataset_name, new_tcr, anomaly_cube.units
+            "TCR (%s) = %.2f %s",
+            dataset_name,
+            new_tcr,
+            anomaly_cube.units,
         )
 
         # Plot
         (path, plot_path, provenance_record) = _plot(
-            cfg, anomaly_cube, dataset_name, new_tcr
+            cfg,
+            anomaly_cube,
+            dataset_name,
+            new_tcr,
         )
         if path is not None:
             provenance_record["ancestors"] = ancestors[dataset_name]
@@ -271,7 +281,7 @@ def check_input_data(cfg):
     if not variables_available(cfg, ["tas"]):
         raise ValueError(
             "This diagnostic needs variable 'tas' if 'read_external_file' is "
-            "not given"
+            "not given",
         )
     input_data = cfg["input_data"].values()
     project_group = group_metadata(input_data, "project")
@@ -279,14 +289,14 @@ def check_input_data(cfg):
     if len(projects) > 1:
         raise ValueError(
             f"This diagnostic supports only unique 'project' attributes, got "
-            f"{projects}"
+            f"{projects}",
         )
     exp_group = group_metadata(input_data, "exp")
     exps = set(exp_group.keys())
     if exps != {"piControl", "1pctCO2"}:
         raise ValueError(
             f"This diagnostic needs '1pctCO2' and 'piControl' experiment, got "
-            f"{exps}"
+            f"{exps}",
         )
 
 
@@ -307,13 +317,13 @@ def get_provenance_record(caption):
 def read_external_file(cfg):
     """Read external file to get TCR."""
     filepath = os.path.expanduser(
-        os.path.expandvars(cfg["read_external_file"])
+        os.path.expandvars(cfg["read_external_file"]),
     )
     if not os.path.isabs(filepath):
         filepath = os.path.join(os.path.dirname(__file__), filepath)
     if not os.path.isfile(filepath):
         raise FileNotFoundError(
-            f"Desired external file '{filepath}' does not exist"
+            f"Desired external file '{filepath}' does not exist",
         )
     with open(filepath) as infile:
         external_data = yaml.safe_load(infile)
@@ -353,7 +363,8 @@ def write_data(cfg, tcr, external_file=None):
     ancestor_files = []
     for dataset_name in tcr.keys():
         datasets = select_metadata(
-            cfg["input_data"].values(), dataset=dataset_name
+            cfg["input_data"].values(),
+            dataset=dataset_name,
         )
         ancestor_files.extend(sorted([d["filename"] for d in datasets]))
     if external_file is not None:
@@ -366,7 +377,7 @@ def write_data(cfg, tcr, external_file=None):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set_theme(**cfg.get("seaborn_settings", {}))
+    sns.set_theme(**cfg.get("seaborn_settings", {"style": "ticks"}))
 
     # Read external file if desired
     if cfg.get("read_external_file"):

@@ -1,0 +1,867 @@
+# ESMValTool
+---
+documentation:
+  title: Basic sanity checks.
+  description: >
+    Calculate basic sanity checks on monthly output e.g. for monitoring new model runs.
+  authors:
+    - bock_lisa
+    - castellani_giulia
+    - lauer_axel
+    - schulze_kirsten
+  maintainer:
+    - lauer_axel
+
+
+# YAML anchors for later use
+
+plot_script: &plot_script
+  script: monitor/multi_datasets.py
+  facet_used_for_labels: legend_label
+  group_variables_by: short_name # variable_group
+  plot_filename: "{plot_type}_{exp}_{real_name}_{dataset}_{mip}"
+  plot_folder: "{plot_dir}"
+
+timeseries_plot: &timeseries_plot
+  caption: >
+    Timeseries of global mean {long_name} (solid line) and global min/max values
+    (dashed lines). As "reasonable" ranges for the global mean, red lines show
+    min and max values found in reference datasets (observations, reanalyses)
+    across all months and all reference datasets.
+  plot_kwargs:
+    'global mean':
+      color: blue
+      label: null
+      linestyle: '-'
+      linewidth: 2
+      label: '{dataset}'
+    'global min':
+      color: blue
+      label: null
+      linestyle: '--'
+      linewidth: 1
+    'global max':
+      color: blue
+      label: null
+      linestyle: '--'
+      linewidth: 1
+
+
+# Note: The following model is just an example
+datasets:
+  - {dataset: MPI-ESM1-2-LR, grid: gn, project: CMIP6, exp: historical, ensemble: r1i1p1f1, timerange: '1980/2014'}
+
+
+preprocessors:
+
+  globalmean: &pp_globalmean
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    area_statistics:
+      operator: mean
+
+  globalmean_pr:
+    <<: *pp_globalmean
+    convert_units:
+      units: mm day-1
+
+  globalmin: &pp_globalmin
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    area_statistics:
+      operator: min
+
+  globalmin_pr:
+    <<: *pp_globalmin
+    convert_units:
+      units: mm day-1
+
+  globalmax: &pp_globalmax
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    area_statistics:
+      operator: max
+
+  globalmax_pr:
+    <<: *pp_globalmax
+    convert_units:
+      units: mm day-1
+
+  global_sum:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    area_statistics:
+      operator: sum
+
+  global_sum_air_anom:
+    custom_order: true
+    convert_units:
+      units: kg m-2
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    area_statistics:
+      operator: sum
+    anomalies:
+      period: full
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 1990
+        end_month: 12
+        end_day: 31
+
+
+diagnostics:
+
+  # *******************
+  # *** global sums ***
+  # *******************
+
+  air_mass_anom:
+    description: time series of global air mass anomaly
+    variables:
+      ps:
+        preprocessor: global_sum_air_anom
+        legend_label: 'global sum'
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            caption: "Timeseries of global air mass anomaly (solid blue line)."
+            pyplot_kwargs:
+              title: "Anomaly of global air mass"
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+  moisture_flux:
+    description: time series of moisture flux into the atmosphere
+    variables:
+      qep:
+        derive: true
+        preprocessor: global_sum
+        legend_label: 'global sum'
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            caption: >
+              Timeseries of global moisture flux into the atmosphere (solid line) and
+              global min/max values (dashed lines). As "reasonable" ranges for the global
+              mean, red lines show min and max values found in reference datasets
+              (observations, reanalyses) across all months and all reference datasets.
+            pyplot_kwargs:
+              title: "Anomaly of global moisture flux into the atmosphere"
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+              - y: 4.381299e+08
+                color: red
+              - y: -7.258987e+08
+                color: red
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+  prw_mass:
+    description: time series of global water vapour mass
+    variables:
+      prw_sum:
+        short_name: prw
+        preprocessor: global_sum
+        legend_label: 'global sum'
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            caption: >
+              Timeseries of global water vapour mass (solid line) and
+              global min/max values (dashed lines). As "reasonable" ranges for the global
+              sum, red lines show min and max values found in reference datasets
+              (observations, reanalyses) across all months and all reference datasets.
+            pyplot_kwargs:
+              title: "Global sum of water vapour"
+            hlines:
+              - y: 1.420688e+16
+                color: red
+                linewidth: 2
+              - y: 1.128716e+16
+                color: red
+                linewidth: 2
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+
+  # ***************************
+  # *** global min/max/mean ***
+  # ***************************
+
+  asr:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      asr_mean:
+        legend_label: 'global mean'
+        short_name: asr
+        preprocessor: globalmean
+        derive: true
+        mip: Amon
+      asr_min:
+        short_name: asr
+        legend_label: 'global min'
+        preprocessor: globalmin
+        derive: true
+        mip: Amon
+      asr_max:
+        short_name: asr
+        legend_label: 'global max'
+        preprocessor: globalmax
+        derive: true
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 215.4
+                color: red
+              - y: 248.7
+                color: red
+
+  clivi:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      clivi_mean:
+        legend_label: 'global mean'
+        short_name: clivi
+        preprocessor: globalmean
+        mip: Amon
+      clivi_min:
+        short_name: clivi
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      clivi_max:
+        short_name: clivi
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 0.092597
+                color: red
+              - y: 0.0290555
+                color: red
+
+  clt:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      clt_mean:
+        legend_label: 'global mean'
+        short_name: clt
+        preprocessor: globalmean
+        mip: Amon
+      clt_min:
+        short_name: clt
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      clt_max:
+        short_name: clt
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 58.7
+                color: red
+              - y: 74.9
+                color: red
+
+  hfls:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      hfls_mean:
+        short_name: hfls
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        mip: Amon
+      hfls_min:
+        short_name: hfls
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      hfls_max:
+        short_name: hfls
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 76.4
+                color: red
+              - y: 92.3
+                color: red
+
+  hfss:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      hfss_mean:
+        short_name: hfss
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        mip: Amon
+      hfss_min:
+        short_name: hfss
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      hfss_max:
+        short_name: hfss
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 21.5
+                color: red
+              - y: 15.8
+                color: red
+
+  lwcre:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      lwcre_mean:
+        short_name: lwcre
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        derive: true
+        force_derivation: true
+        mip: Amon
+      lwcre_min:
+        short_name: lwcre
+        legend_label: 'global min'
+        preprocessor: globalmin
+        derive: true
+        force_derivation: true
+        mip: Amon
+      lwcre_max:
+        short_name: lwcre
+        legend_label: 'global max'
+        preprocessor: globalmax
+        derive: true
+        force_derivation: true
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 30.5
+                color: red
+              - y: 23.6
+                color: red
+
+  lwp:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      lwp_mean:
+        short_name: lwp
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        derive: true
+        force_derivation: true
+        mip: Amon
+      lwp_min:
+        short_name: lwp
+        legend_label: 'global min'
+        preprocessor: globalmin
+        derive: true
+        force_derivation: true
+        mip: Amon
+      lwp_max:
+        short_name: lwp
+        legend_label: 'global max'
+        preprocessor: globalmax
+        derive: true
+        force_derivation: true
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 0.1569
+                color: red
+              - y: 0.0229
+                color: red
+
+  netcre:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      netcre_mean:
+        short_name: netcre
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        derive: true
+        force_derivation: true
+        mip: Amon
+      netcre_min:
+        short_name: netcre
+        legend_label: 'global min'
+        preprocessor: globalmin
+        derive: true
+        force_derivation: true
+        mip: Amon
+      netcre_max:
+        short_name: netcre
+        legend_label: 'global max'
+        preprocessor: globalmax
+        derive: true
+        force_derivation: true
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: -12.3
+                color: red
+              - y: -47.1
+                color: red
+
+  pr:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      pr_mean:
+        short_name: pr
+        legend_label: 'global mean'
+        preprocessor: globalmean_pr
+        mip: Amon
+      pr_min:
+        short_name: pr
+        legend_label: 'global min'
+        preprocessor: globalmin_pr
+        mip: Amon
+      pr_max:
+        short_name: pr
+        legend_label: 'global max'
+        preprocessor: globalmax_pr
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 2.50
+                color: red
+              - y: 3.21
+                color: red
+
+  prc:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      prc_mean:
+        short_name: prc
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        mip: Amon
+      prc_min:
+        short_name: prc
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      prc_max:
+        short_name: prc
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 1.115665e-05
+                color: red
+              - y: 7.41801e-06
+                color: red
+
+  prw:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      prw_mean:
+        legend_label: 'global mean'
+        short_name: prw
+        preprocessor: globalmean
+        mip: Amon
+      prw_min:
+        short_name: prw
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      prw_max:
+        short_name: prw
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 28.7
+                color: red
+              - y: 22.3
+                color: red
+
+  rlds:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rlds_mean:
+        legend_label: 'global mean'
+        short_name: rlds
+        preprocessor: globalmean
+        mip: Amon
+      rlds_min:
+        short_name: rlds
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      rlds_max:
+        short_name: rlds
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 360.4
+                color: red
+              - y: 319.2
+                color: red
+
+  rlut:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rlut_mean:
+        short_name: rlut
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        mip: Amon
+      rlut_min:
+        short_name: rlut
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      rlut_max:
+        short_name: rlut
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 246.3
+                color: red
+              - y: 226.4
+                color: red
+
+  rtnt:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rtnt_mean:
+        short_name: rtnt
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        derive: true
+        force_derivation: true
+        mip: Amon
+      rtnt_min:
+        short_name: rtnt
+        legend_label: 'global min'
+        preprocessor: globalmin
+        derive: true
+        force_derivation: true
+        mip: Amon
+      rtnt_max:
+        short_name: rtnt
+        legend_label: 'global max'
+        preprocessor: globalmax
+        derive: true
+        force_derivation: true
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 13.4
+                color: red
+              - y: -22.7
+                color: red
+
+  rsds:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rsds_mean:
+        legend_label: 'global mean'
+        short_name: rsds
+        preprocessor: globalmean
+        mip: Amon
+      rsds_min:
+        short_name: rsds
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      rsds_max:
+        short_name: rsds
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 231.8
+                color: red
+              - y: 166.3
+                color: red
+
+  rsut:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rsut_mean:
+        legend_label: 'global mean'
+        short_name: rsut
+        preprocessor: globalmean
+        mip: Amon
+      rsut_min:
+        short_name: rsut
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      rsut_max:
+        short_name: rsut
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 128.8
+                color: red
+              - y: 91.1
+                color: red
+
+  swcre:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      swcre_mean:
+        short_name: swcre
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        derive: true
+        force_derivation: true
+        mip: Amon
+      swcre_min:
+        short_name: swcre
+        legend_label: 'global min'
+        preprocessor: globalmin
+        derive: true
+        force_derivation: true
+        mip: Amon
+      swcre_max:
+        short_name: swcre
+        legend_label: 'global max'
+        preprocessor: globalmax
+        derive: true
+        force_derivation: true
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: -40.6
+                color: red
+              - y: -73.5
+                color: red
+
+  tas:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      tas_mean:
+        short_name: tas
+        legend_label: 'global mean'
+        preprocessor: globalmean
+        mip: Amon
+      tas_min:
+        short_name: tas
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      tas_max:
+        short_name: tas
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 293.7
+                color: red
+              - y: 283.9
+                color: red
+
+  tauu:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      tauu_mean:
+        legend_label: 'global mean'
+        short_name: tauu
+        preprocessor: globalmean
+        mip: Amon
+      tauu_min:
+        short_name: tauu
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      tauu_max:
+        short_name: tauu
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 0.0198
+                color: red
+              - y: -0.0528
+                color: red
+
+  tauv:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      tauv_mean:
+        legend_label: 'global mean'
+        short_name: tauv
+        preprocessor: globalmean
+        mip: Amon
+      tauv_min:
+        short_name: tauv
+        legend_label: 'global min'
+        preprocessor: globalmin
+        mip: Amon
+      tauv_max:
+        short_name: tauv
+        legend_label: 'global max'
+        preprocessor: globalmax
+        mip: Amon
+    scripts:
+      timeseries:
+        <<: *plot_script
+        plots:
+          timeseries:
+            <<: *timeseries_plot
+            hlines:
+              - y: 0.0283
+                color: red
+              - y: -0.0144
+                color: red

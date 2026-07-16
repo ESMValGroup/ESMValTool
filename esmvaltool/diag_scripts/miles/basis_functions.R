@@ -336,7 +336,7 @@ ncdf_opener_universal <- # nolint
              interp2grid = FALSE,
              fillmiss = FALSE,
              grid = "r144x73",
-             remap_method = "remapscon2",
+             remap_method = "remapcon",
              exportlonlat = TRUE,
              verbose = TRUE) {
     # load package
@@ -645,7 +645,7 @@ ncdf_opener <- function(namefile,
                         interp2grid = FALSE,
                         fillmiss = FALSE,
                         grid = "r144x73",
-                        remap_method = "remapscon2",
+                        remap_method = "remapcon",
                         exportlonlat = TRUE,
                         verbose = FALSE) {
   field <- ncdf_opener_universal(

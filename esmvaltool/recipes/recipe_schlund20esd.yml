@@ -1398,7 +1398,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
     additional_datasets:
       - {dataset: ACCESS-CM2,      ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
       - {dataset: ACCESS-ESM1-5,   ensemble: r1i1p1f1, grid: gn}

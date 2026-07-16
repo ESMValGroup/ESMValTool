@@ -4,8 +4,9 @@ import logging
 import shutil
 from pathlib import Path
 
+import esmvalcore.cmor.table
+import esmvalcore.config
 import iris
-from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
@@ -25,12 +26,18 @@ def main(cfg):
 
         if info["diagnostic"] == "daily":
             for mip in ["day", "Eday", "CFday"]:
-                if CMOR_TABLES["CMIP6"].get_variable(mip, info["short_name"]):
+                if esmvalcore.cmor.table.CMOR_TABLES["CMIP6"].get_variable(
+                    mip,
+                    info["short_name"],
+                ):
                     basename = basename.replace("E1hr", mip)
             basename = basename.replace("E1hr", "day")
         elif info["diagnostic"] == "3hourly":
             for mip in ["3hr", "E3hr", "CF3hr"]:
-                if CMOR_TABLES["CMIP6"].get_variable(mip, info["short_name"]):
+                if esmvalcore.cmor.table.CMOR_TABLES["CMIP6"].get_variable(
+                    mip,
+                    info["short_name"],
+                ):
                     basename = basename.replace("E1hr", mip)
             basename = basename.replace("E1hr", "3hr")
 

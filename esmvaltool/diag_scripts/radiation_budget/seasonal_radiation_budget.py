@@ -83,7 +83,9 @@ def main(config):
         seasonal_data = organise_seasonal_data(model_data)
 
         write_seasonal_data_output(
-            config["work_dir"], model_dataset, seasonal_data
+            config["work_dir"],
+            model_dataset,
+            seasonal_data,
         )
 
 

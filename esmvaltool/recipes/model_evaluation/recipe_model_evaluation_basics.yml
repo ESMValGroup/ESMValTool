@@ -100,7 +100,7 @@ diagnostics:
         mip: Amon
         preprocessor: full_climatology_pr
         additional_datasets:
-          - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
+          - {project: OBS, dataset: GPCP-SG, type: sat, version: 2.3, tier: 2, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default

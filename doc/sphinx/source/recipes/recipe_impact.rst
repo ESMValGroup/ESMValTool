@@ -69,7 +69,7 @@ Example plots
 .. figure::  /recipes/figures/impact/bias_vs_change.png
    :align:   center
 
-   "Bias and change for each variable"
+   Bias and change for each variable
 
 .. raw:: html
     <embed>
