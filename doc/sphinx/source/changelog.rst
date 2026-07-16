@@ -7,9 +7,13 @@ Changelog
 
 v2.15.0
 --------
-Highlights
 
-TODO: add highlights
+Highlights
+~~~~~~~~~~
+
+- Preparation of recipes that are run by the `Rapid Evaluation Framework`_ (REF) for CMIP7.
+- An option to install ESMValTool with minimal dependencies (:pull:`4517`)
+- Use pixi to manage development environments (:pull:`4407`) see :ref:`install_from_source` more information.
 
 This release includes
 
@@ -31,6 +35,9 @@ Bug fixes
 -  Fix removal of ``month_number`` and ``year`` coordinates after ``monthly_statistics`` preprocessor in E-OBS cmorizer (:pull:`4396`) by :user:`jlenh`
 -  Fix ESACCI-CLOUD formatter: removing group coordinates is not necessary anymore (:pull:`4410`) by :user:`schlunma`
 -  Fix ESACCI-OC CMORizer (:pull:`4464`) by :user:`schlunma`
+-  Fix handling of the time coordinate in outputs of `recipe_ref_fire.yml` (:pull:`4538`) by :user:`jlenh`
+-  Fix dates for ESACCI-AEROSOL in recipe_check_obs.yml (:pull:`4547`) by :user:`axel-lauer`
+-  Fix ``ValueError: setting an array element with a sequence.`` in ``diag_shapeselect.py`` (:pull:`4532`) by :user:`schlunma`
 
 Documentation
 ~~~~~~~~~~~~~
@@ -42,6 +49,12 @@ Documentation
 -  Minimise content on main documentation page (:pull:`4449`) by :user:`ehogan`
 -  Documentation for contributor license agreement & CLA-assistant (:pull:`4440`) by :user:`alistairsellar`
 -  Small improvements to documentation on obtaining input data (:pull:`4462`) by :user:`bouweandela`
+-  Remove redundant information from ``zenodo.json`` (:pull:`4518`) by :user:`schlunma`
+
+Diagnostics
+~~~~~~~~~~~
+
+-  Radiation budget: labelling plots with alias (:pull:`4292`) by :user:`NParsonsMO`
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,7 +62,7 @@ Observational and re-analysis dataset support
 -  Extension of ESA CCI OZONE CMORizer (:pull:`4125`) by :user:`axel-lauer`
 -  Cmoriser update WOA to 2023 (:pull:`4337`) by :user:`flicj191`
 -  Updated calipso-icecloud downloader and formatter from v1.00 to v2.00 (:pull:`4441`) by :user:`axel-lauer`
-
+-  Update CMORizer CLARA-AVHRR (A3) (:pull:`4463`) by :user:`axel-lauer`
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
@@ -67,6 +80,7 @@ Installation
 
 -  Use pixi to manage development conda environments (:pull:`4407`) by :user:`bouweandela`
 -  Support for Python 3.14 (:pull:`4303`) by :user:`valeriupredoi`
+-  Add an option to install with minimal dependencies (:pull:`4517`) by :user:`bouweandela`
 
 Rapid Evaluation Framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,6 +98,8 @@ Rapid Evaluation Framework
 -  Update REF recipe ``recipe_calculate_gwl_exceedance_stats.yml`` for CMIP7 datasets (:pull:`4486`) by :user:`rswamina`
 -  Sea ice sensitivity to GMST - Calculate from observational datasets (:pull:`4220`) by :user:`NParsonsMO`
 -  Adding CMIP7 version of ``recipe_seaice_sensitivity.yml`` (:pull:`4453`) by :user:`NParsonsMO`
+-  Update REF recipe `recipe_ref_fire.yml` for CMIP7 datasets (:pull:`4479`) by :user:`jlenh`
+-  Update REF ENSO recipes for CMIP7 (:pull:`4470`) by :user:`flicj191`
 
 Improvements
 ~~~~~~~~~~~~
