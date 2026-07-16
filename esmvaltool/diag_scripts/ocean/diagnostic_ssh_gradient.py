@@ -35,8 +35,8 @@ Author: Kevin Debeire (DLR).
 """
 
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import cartopy
 import iris
