@@ -1,8 +1,10 @@
-"""Diagnostic to vizualize the climate impact drivers defined in
-Elling et al. (2026).
+"""Diagnostic vizualizing climate impact drivers.
 
 Description
 -----------
+This diagnostic vizualizes climate impact drivers that were defined
+in Elling et al. (2026) for various models.
+
 The code is based on the monitor/multi_datasets.py diagnostic adding
 pre-processing routines to allow for plots of the number of days in a
 year that certain thresholds are exceeded. With this diagnostic,
@@ -798,35 +800,29 @@ class MultiDatasets(MonitorBase):
         raise ValueError(msg)
 
     def _check_timeframe(self, cube: Cube) -> bool:
-        """Check that the timeframe is a full year period"""
+        """Check that the timeframe is a full year period."""
         # Function ``convert_data_thresholded`` not implemented for
         # a start/end date within the year:
         # For partial years the count is biased, since the value
         # corresponds to the scenario where the variable is 0 for the
         # days in the rest of the year. Thus, this leads to an error.
 
-        cat.add_day_of_month(cube, "time")
-        cat.add_month(cube, "time")
+        time = cube.coord("time")
+        start = cube.coord("time").points[0]
+        end = cube.coord("time").points[-1]
+        startc = time.units.num2date(start)
+        endc = time.units.num2date(end)
+        start_day = startc.day
+        start_month = startc.month
+        end_day = endc.day
+        end_month = endc.month
 
-        print(cube.coord("time"))
-        # print(cube.coord("time").values)
-        # start = cube.coord("time")[0]
-        # end = cube.coord("time")[-1]
-        start_day = cube.coord("day_of_month").points[0]
-        print(start_day)
-        start_month = cube.coord("month").points[0]
-        print(start_month)
-        end_day = cube.coord("day_of_month").points[-1]
-        print(end_day)
-        print(cube.coord("day_of_month").points)
-        end_month = cube.coord("month").points[-1]
-        print(end_month)
-        # print(start)
-        # print(start.day)
         check_timeframe = (
             start_day == 1
-            and start_month == "Jan"  # and end_day == 31 and end_day == "Dec"
-        )  # and cube["time"][0].month == 1 and cube["time"][-1].day == 31 and cube["time"][-1].month == 12)
+            and start_month == 1
+            and (end_day == 30 or end_day == 31)
+            and end_month == 12
+        )
         if not check_timeframe:
             msg = (
                 "Currently, support for not full year periods is not "
@@ -1218,9 +1214,8 @@ class MultiDatasets(MonitorBase):
             if cube.coords("time", dim_coords=True):
                 ih.unify_time_coord(cube)
 
-            # TODO: make this function work properly
-            # check if the time period are only full years
-            # self._check_timeframe(cube)
+            # Check if the time period are only full years
+            self._check_timeframe(cube)
 
             dims = {"latitude": "degrees_north", "longitude": "degrees_east"}
             for dim, deg in dims.items():
@@ -1267,8 +1262,8 @@ class MultiDatasets(MonitorBase):
             if "threshold_conversion" in self.options:
                 cube = self.convert_data_thresholded(cube)
                 logger.info(
-                    "Converted the data by counting the days"
-                    "where the threshold is exceeded"
+                    "Converted the data by counting the days "
+                    "at which the threshold is exceeded"
                 )
 
             if slices:
@@ -1337,7 +1332,7 @@ class MultiDatasets(MonitorBase):
         linestyle_iter = iter(["--", "-.", ":", (0, (3, 5, 1, 5, 1, 5))])
 
         datasets_labels = list(
-            dict.fromkeys(self._get_label(d) for d in datasets)
+            dict.fromkeys(self._get_label(d) for d in datasets),
         )
 
         colors = sns.color_palette("husl", len(datasets_labels))
@@ -1348,7 +1343,7 @@ class MultiDatasets(MonitorBase):
         if "threshold_conversion" in self.options:
             threshold = self.options["threshold_conversion"]["threshold"]
             operators = self.options["threshold_conversion"]["operators"] or [
-                "mean"
+                "mean",
             ]
             for operator in operators:
                 linestyle[operator] = (
@@ -1358,7 +1353,7 @@ class MultiDatasets(MonitorBase):
             axes.set_title(
                 "Average number of days per year on which the "
                 f"{multi_dataset_facets['long_name']} exceeds "
-                f"{threshold} {multi_dataset_facets['units']} at some point"
+                f"{threshold} {multi_dataset_facets['units']} at some point",
             )
             var_label = (
                 f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
@@ -1473,12 +1468,21 @@ class MultiDatasets(MonitorBase):
 
         # Plot legend
         col_handles = [
-            mlines.Line2D([], [], color=dataset_colors[dl], label=dl)
+            mlines.Line2D(
+                [],
+                [],
+                color=dataset_colors[dl],
+                label=dl,
+            )
             for dl in datasets_labels
         ]
         style_handles = [
             mlines.Line2D(
-                [], [], color="gray", linestyle=linestyle[o], label=o
+                [],
+                [],
+                color="gray",
+                linestyle=linestyle[o],
+                label=o,
             )
             for o in operators
         ]
@@ -1681,6 +1685,7 @@ class MultiDatasets(MonitorBase):
         self,
         cube,
     ):
+        """Counting the dayse per year on which the threshold is exceeded"""
         # Preventing that this option is executed several times
         if cube.coords("day_of_year"):
             msg = "Reusing already aggregated cube"
@@ -1700,16 +1705,19 @@ class MultiDatasets(MonitorBase):
                 # should accumulate the values (accumulated: true).
                 if self.options[options_type]["accumulated"]:
                     cube = cube.aggregated_by(
-                        ["year", "day_of_year"], iris.analysis.SUM
+                        ["year", "day_of_year"],
+                        iris.analysis.SUM,
                     )
                 elif self.options[options_type]["inverted"]:
                     cube = cube.aggregated_by(
-                        ["year", "day_of_year"], iris.analysis.MIN
+                        ["year", "day_of_year"],
+                        iris.analysis.MIN,
                     )
 
                 else:
                     cube = cube.aggregated_by(
-                        ["year", "day_of_year"], iris.analysis.MAX
+                        ["year", "day_of_year"],
+                        iris.analysis.MAX,
                     )
 
                 threshold = self.options[options_type]["threshold"]
@@ -1922,6 +1930,7 @@ class MultiDatasets(MonitorBase):
         operator: str,
         **operator_kwargs: Any,
     ) -> Cube:
+        """Calculate spatial mean."""
         has_cell_measure = bool(cube.cell_measures("cell_area"))
 
         # Get aggregator and correct kwargs (incl. weights)
@@ -1956,7 +1965,6 @@ class MultiDatasets(MonitorBase):
 
     def create_2d_plot(self, plot_type: str, datasets: list[dict]) -> None:
         """Create 2D plot."""
-
         dataset_ref = self._get_reference_dataset(datasets)
         if dataset_ref is not None:
             logger.info(
