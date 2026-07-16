@@ -21,7 +21,6 @@ Download and processing instructions
 
 import gzip
 import logging
-import os
 import shutil
 import warnings
 from pathlib import Path
@@ -39,8 +38,8 @@ logger = logging.getLogger(__name__)
 
 def _clean(filepath):
     """Remove unzipped input file."""
-    if os.path.isfile(filepath):
-        os.remove(filepath)
+    if Path.isfile(filepath):
+        Path.unlink(filepath)
         logger.info("Removed cached file %s", filepath)
 
 
@@ -51,9 +50,10 @@ def _calculate_flux(cube, filename, area_type):
     elif area_type == "ocean":
         area_idx = 1
     else:
-        raise ValueError(
+        error_msg = (
             f"Expected 'land' or 'ocean' for 'area_type', got '{area_type}'"
         )
+        raise ValueError(error_msg)
 
     # Get land/sea area fraction
     with warnings.catch_warnings():
@@ -64,7 +64,8 @@ def _calculate_flux(cube, filename, area_type):
             module="iris",
         )
         area_cube = iris.load_cube(
-            str(filename), NameConstraint(var_name="area")
+            str(filename),
+            NameConstraint(var_name="area"),
         )
     area = area_cube[area_idx].core_data()
     area = da.broadcast_to(area, cube.shape)
@@ -95,8 +96,7 @@ def _load_cube(filename, raw_name):
             category=UserWarning,
             module="iris",
         )
-        cube = iris.load_cube(str(filename), NameConstraint(var_name=raw_name))
-    return cube
+    return iris.load_cube(str(filename), NameConstraint(var_name=raw_name))
 
 
 def _time_operations(cube):
@@ -104,14 +104,16 @@ def _time_operations(cube):
     valid_start_year = cube.attributes["yrfi_valid"]
     valid_end_year = cube.attributes["yrfe_valid"]
     logger.info(
-        "Extracting valid years: %d-%d", valid_start_year, valid_end_year
+        "Extracting valid years: %d-%d",
+        valid_start_year,
+        valid_end_year,
     )
     cube = cube.extract(
         iris.Constraint(
             time=lambda cell: valid_start_year
             <= cell.point.year
-            <= valid_end_year
-        )
+            <= valid_end_year,
+        ),
     )
     logger.info("Calculating monthly means")
     cube = monthly_statistics(cube)
@@ -139,11 +141,11 @@ def _fix_metadata(cube, short_name, var, cfg):
     # Fix cell methods
     if short_name == "nbp":
         cube.add_cell_method(
-            iris.coords.CellMethod("mean where land", coords="area")
+            iris.coords.CellMethod("mean where land", coords="area"),
         )
     elif short_name == "fgco2":
         cube.add_cell_method(
-            iris.coords.CellMethod("mean where sea", coords="area")
+            iris.coords.CellMethod("mean where sea", coords="area"),
         )
     elif short_name in ("areacella", "areacello"):
         cube.add_cell_method(iris.coords.CellMethod("sum", coords="area"))
@@ -155,10 +157,12 @@ def _fix_metadata(cube, short_name, var, cfg):
         cube.coord("time").var_name = "time"
         cube.coord("time").long_name = "time"
         cube.coord("time").points = da.around(
-            cube.coord("time").core_points(), 3
+            cube.coord("time").core_points(),
+            3,
         )
         cube.coord("time").bounds = da.around(
-            cube.coord("time").core_bounds(), 3
+            cube.coord("time").core_bounds(),
+            3,
         )
     utils.fix_coords(cube)
     if "depth0m" in cmor_info.dimensions:
@@ -220,7 +224,11 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -230,7 +238,7 @@ def _unzip(zip_path, out_dir):
     unzip_path = Path(out_dir) / zip_path.with_suffix("").name
     logger.info("Unzipping file")
     with gzip.open(zip_path, "rb") as zip_file:
-        with open(unzip_path, "wb") as unzip_file:
+        with Path.open(unzip_path, "wb") as unzip_file:
             shutil.copyfileobj(zip_file, unzip_file)
     logger.info("Succefully extracted file to %s", unzip_path)
     return unzip_path
