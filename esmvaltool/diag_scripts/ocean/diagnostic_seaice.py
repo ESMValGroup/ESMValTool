@@ -424,7 +424,7 @@ def get_year(cube):
         The year as a string
 
     """
-    year = cube.coord("year").points
+    year = cube.coord("year").points[0]
     return str(int(year))
 
 
