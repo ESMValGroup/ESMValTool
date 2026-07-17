@@ -1,0 +1,157 @@
+# ESMValTool
+# recipe_iod.yml
+---
+documentation:
+  title: |
+    Metrics for the Indian Ocean.
+
+  description: |
+    Recipe for calculating the Dipole Mode Index.
+
+  authors:
+    - righi_mattia
+
+datasets:
+   - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f3, start_year: 1950, end_year: 2010, grid: gn}
+   - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1950, end_year: 2010, grid: gn}
+
+preprocessors:
+  global_anomalies:
+    anomalies:
+      period: month
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+  west_pole_anomalies:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    anomalies:
+      period: month
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+    area_statistics:
+      operator: mean
+    regrid_time:
+      calendar: gregorian
+      units: days since 1900-01-01
+  east_pole_anomalies:
+    extract_region:
+      start_longitude: 90
+      end_longitude: 110
+      start_latitude: -10
+      end_latitude: 0
+    anomalies:
+      period: month
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+    area_statistics:
+      operator: mean
+    regrid_time:
+      calendar: gregorian
+      units: days since 1900-01-01
+  west_pole_abs:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    area_statistics:
+      operator: mean
+    regrid_time:
+      calendar: gregorian
+      units: days since 1900-01-01
+    convert_units:
+      units: celsius
+  east_pole_abs:
+    extract_region:
+      start_longitude: 90
+      end_longitude: 110
+      start_latitude: -10
+      end_latitude: 0
+    area_statistics:
+      operator: mean
+    regrid_time:
+      calendar: gregorian
+      units: days since 1900-01-01
+    convert_units:
+      units: celsius
+  nino_3.4_anomalies:
+    extract_region:
+      start_longitude: -170
+      end_longitude: -120
+      start_latitude: -5
+      end_latitude: 5
+    anomalies:
+      period: month
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+    area_statistics:
+      operator: mean
+    regrid_time:
+      calendar: gregorian
+      units: days since 1900-01-01
+
+
+diagnostics:
+  iod_metrics:
+    variables:
+      sst_anomalies_global:
+        short_name: tos
+        mip: Omon
+        preprocessor: global_anomalies
+      sst_anomalies_west:
+        short_name: tos
+        mip: Omon
+        preprocessor: west_pole_anomalies
+      sst_anomalies_east:
+        short_name: tos
+        mip: Omon
+        preprocessor: east_pole_anomalies
+      sst_abs_west:
+        short_name: tos
+        mip: Omon
+        preprocessor: west_pole_abs
+      sst_abs_east:
+        short_name: tos
+        mip: Omon
+        preprocessor: east_pole_abs
+      sst_anomalies_nino:
+        short_name: tos
+        mip: Omon
+        preprocessor: nino_3.4_anomalies
+
+    additional_datasets:
+      - {dataset: HadISST, project: OBS, start_year: 1950, end_year: 2010, type: reanaly, version: 1, tier: 2}
+    scripts:
+      iod_script:
+        script: iod/iod_diag.py
+
