@@ -23,12 +23,12 @@ More details can be found in the :ref:`broken recipe policy
      - Diagnostic error (related to datetimes)
      - :issue:`4353`
    * - ``recipe_weathertyping_CMIP6.yml``
-     - 
+     -
      - v2.14.0
      - Missing data (daily)
      - :issue:`4533`
    * - ``recipe_aod_aeronet_assess.yml``
-     - 
+     -
      - v2.15.0
      - Missing data (version for AERONET)
      - :issue:`4541`
@@ -53,7 +53,7 @@ More details can be found in the :ref:`broken recipe policy
      - Diagnostic error (open filename)
      - :issue:`4546`
    * - ``recipe_climate_patterns.yml``
-     - 
+     -
      - v2.15.0
      - Missing data (Fails to find and download data)
      - :issue:`4558`
