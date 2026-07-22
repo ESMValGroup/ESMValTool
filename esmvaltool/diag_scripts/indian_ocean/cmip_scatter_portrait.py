@@ -251,7 +251,7 @@ def scat_mean_vs_std(cfg, xy_dict, x_label, y_label, title, output_basename):
         file = xy_info['filename']
         input_filenames.update(file if isinstance(file, list) else [file])
         cube = xy_info['cube']
-        
+        print(cube)  # Debug statement
         mean_val = cube.collapsed('time', iris.analysis.MEAN).data
         std_val = cube.collapsed('time', iris.analysis.STD_DEV).data
         print(f"Processing dataset: {dataset}, file: {file}, mean: {mean_val}, std: {std_val}")  # Debug statement
@@ -395,20 +395,20 @@ def main(cfg):
     input_data = cfg['input_data'].values()
     grouped_data = group_metadata(input_data, 'dataset')
 
-    therm_tilt, sst_grad, eq_winds, east_sst, west_sst, skew_dmi, east_sst_son, west_sst_son, sctr_t20d, nino_ssts, dmi = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+    therm_tilt, sst_grad, eq_winds, skew_dmi, east_sst_son, west_sst_son, sctr_t20d, nino_ssts, dmi = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     for group_name, group_md in grouped_data.items():
         logger.info(f"Processing group: {group_name}")
         # If checks are necessary as not all models/obs (group names) have all variables.
 
         # Load west and east SST using load_data and calculate gradient
-        west_ssts = load_data(group_md, 'west_ssts', get_filenames=True)
-        east_ssts = load_data(group_md, 'east_ssts', get_filenames=True)
-        if west_ssts:
-            west_sst.update(west_ssts)
-        if east_ssts:
-            east_sst.update(east_ssts)
-        if west_ssts and east_ssts:
-            sst_grad_item = compute_cube_diff(cfg, west_ssts, east_ssts, 'sst_grad')
+        west_sst_son = load_data(group_md, 'west_sst_son', get_filenames=True)
+        east_sst_son = load_data(group_md, 'east_sst_son', get_filenames=True)
+        if west_sst_son:
+            west_sst_son.update(west_sst_son)
+        if east_sst_son:
+            east_sst_son.update(east_sst_son)
+        if west_sst_son and east_sst_son:
+            sst_grad_item = compute_cube_diff(cfg, west_sst_son, east_sst_son, 'sst_grad')
             if sst_grad_item:
                 sst_grad.update(sst_grad_item)
         
@@ -422,8 +422,8 @@ def main(cfg):
             if t20d_tilt:
                 therm_tilt.update(t20d_tilt)
 
-        load_and_update_dict(group_md, 'east_sst_son', east_sst_son)
-        load_and_update_dict(group_md, 'west_sst_son', west_sst_son)
+        # load_and_update_dict(group_md, 'east_sst_son', east_sst_son)
+        # load_and_update_dict(group_md, 'west_sst_son', west_sst_son)
         load_and_update_dict(group_md, 'eq_winds', eq_winds)
         load_and_update_dict(group_md, 'nino_ssts', nino_ssts)
         sctr_t20d_item = get_iso_data(cfg, group_md, 'sctr_temps')
@@ -432,8 +432,8 @@ def main(cfg):
               
 
         # Load SST anomalies, calculate diff for DMI and find skewness
-        west_anoms = load_data(group_md, 'west_anoms', get_filenames=True)
-        east_anoms = load_data(group_md, 'east_anoms', get_filenames=True)
+        west_anoms = load_data(group_md, 'west_anoms_ts', get_filenames=True)
+        east_anoms = load_data(group_md, 'east_anoms_ts', get_filenames=True)
 
         if west_anoms and east_anoms:
             dmi_item = compute_cube_diff(cfg, west_anoms, east_anoms, 'dmi')
@@ -443,15 +443,15 @@ def main(cfg):
                 skew_dmi.update(skew_dmi_item)
 
     # Build scalar diagnostics and biases (model - observation).
-    obs_sst = get_obs_dataset_name(east_sst, OBS_CANDIDATES['sst'])
+    obs_sst = get_obs_dataset_name(east_sst_son, OBS_CANDIDATES['sst'])
     obs_wind = get_obs_dataset_name(eq_winds, OBS_CANDIDATES['wind'])
     obs_ocean = get_obs_dataset_name(therm_tilt, OBS_CANDIDATES['ocean'])
     obs_dmi = get_obs_dataset_name(dmi, OBS_CANDIDATES['dmi'])
 
     obs_values = {}
-    if obs_sst and obs_sst in east_sst and obs_sst in west_sst and obs_sst in sst_grad:
-        obs_values['EEIO mean SST bias'] = as_scalar(east_sst[obs_sst]['cube'], 'mean')
-        obs_values['WEIO mean SST bias'] = as_scalar(west_sst[obs_sst]['cube'], 'mean')
+    if obs_sst and obs_sst in east_sst_son and obs_sst in west_sst_son and obs_sst in sst_grad:
+        obs_values['EEIO mean SST bias'] = as_scalar(east_sst_son[obs_sst]['cube'], 'mean')
+        obs_values['WEIO mean SST bias'] = as_scalar(west_sst_son[obs_sst]['cube'], 'mean')
         obs_values['WEIO-EEIO SST gradient bias'] = as_scalar(sst_grad[obs_sst]['cube'], 'mean')
     if obs_wind and obs_wind in eq_winds:
         obs_values['CEIO zonal wind bias'] = as_scalar(eq_winds[obs_wind]['cube'], 'mean')
@@ -464,8 +464,8 @@ def main(cfg):
 
     diagnostics_bias = {}
     candidate_models = sorted(
-        set(east_sst.keys()) |
-        set(west_sst.keys()) |
+        set(east_sst_son.keys()) |
+        set(west_sst_son.keys()) |
         set(sst_grad.keys()) |
         set(eq_winds.keys()) |
         set(therm_tilt.keys()) |
@@ -482,16 +482,16 @@ def main(cfg):
         model_metrics = {}
         model_ancestors = set()
 
-        if model in east_sst and 'EEIO mean SST bias' in obs_values:
-            val = as_scalar(east_sst[model]['cube'], 'mean') - obs_values['EEIO mean SST bias']
+        if model in east_sst_son and 'EEIO mean SST bias' in obs_values:
+            val = as_scalar(east_sst_son[model]['cube'], 'mean') - obs_values['EEIO mean SST bias']
             model_metrics['EEIO mean SST bias'] = val
-            model_ancestors.update(to_set(east_sst[model]['filename']))
+            model_ancestors.update(to_set(east_sst_son[model]['filename']))
             save_scalar_bias(cfg, 'eeio_mean_sst', model, val, model_ancestors)
 
-        if model in west_sst and 'WEIO mean SST bias' in obs_values:
-            val = as_scalar(west_sst[model]['cube'], 'mean') - obs_values['WEIO mean SST bias']
+        if model in west_sst_son and 'WEIO mean SST bias' in obs_values:
+            val = as_scalar(west_sst_son[model]['cube'], 'mean') - obs_values['WEIO mean SST bias']
             model_metrics['WEIO mean SST bias'] = val
-            model_ancestors.update(to_set(west_sst[model]['filename']))
+            model_ancestors.update(to_set(west_sst_son[model]['filename']))
             save_scalar_bias(cfg, 'weio_mean_sst', model, val, model_ancestors)
 
         if model in sst_grad and 'WEIO-EEIO SST gradient bias' in obs_values:
@@ -547,6 +547,8 @@ def main(cfg):
     scat_plot(cfg, eq_winds, east_sst_son, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'EEIO SST / $^\\circ$C', 'SON', 'winds_vs_east_sst')
     scat_plot(cfg, eq_winds, west_sst_son, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'WEIO SST / $^\\circ$C', 'SON', 'winds_vs_west_sst')
     scat_mean_vs_std(cfg, east_sst_son, 'SST mean in EEIO / $^\\circ$C', 'STD of EEIO SST / $^\\circ$C', 'SON', 'east_sst_mean_vs_std')
+    scat_mean_vs_std(cfg, west_sst_son, 'SST mean in WEIO / $^\\circ$C', 'STD of WEIO SST / $^\\circ$C', 'SON', 'west_sst_mean_vs_std')
+
 
 if __name__ == '__main__':
 
