@@ -395,7 +395,7 @@ def main(cfg):
     input_data = cfg['input_data'].values()
     grouped_data = group_metadata(input_data, 'dataset')
 
-    therm_tilt, sst_grad, eq_winds, east_sst, west_sst, skew_dmi, east_sst_son, sctr_t20d, nino_anoms, dmi = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+    therm_tilt, sst_grad, eq_winds, east_sst, west_sst, skew_dmi, east_sst_son, west_sst_son, sctr_t20d, nino_ssts, dmi = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     for group_name, group_md in grouped_data.items():
         logger.info(f"Processing group: {group_name}")
         # If checks are necessary as not all models/obs (group names) have all variables.
@@ -423,8 +423,9 @@ def main(cfg):
                 therm_tilt.update(t20d_tilt)
 
         load_and_update_dict(group_md, 'east_sst_son', east_sst_son)
+        load_and_update_dict(group_md, 'west_sst_son', west_sst_son)
         load_and_update_dict(group_md, 'eq_winds', eq_winds)
-        load_and_update_dict(group_md, 'nino_anoms', nino_anoms)
+        load_and_update_dict(group_md, 'nino_ssts', nino_ssts)
         sctr_t20d_item = get_iso_data(cfg, group_md, 'sctr_temps')
         if sctr_t20d_item:
             sctr_t20d.update(sctr_t20d_item) 
@@ -541,9 +542,10 @@ def main(cfg):
     scat_plot(cfg, eq_winds, therm_tilt, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'Thermocline tilt / m', 'SON', 'winds_vs_tilt')
     scat_plot(cfg, eq_winds, skew_dmi, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'Skewness of DMI', 'SON', 'winds_vs_skew')
     scat_plot(cfg, eq_winds, sctr_t20d, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'SCTR 20$^\\circ$C isotherm depth / m', 'SON', 'winds_vs_sctr')
-    scat_plot(cfg, sst_grad, nino_anoms, 'SST gradient / $^\\circ$C', 'Nino 3.4 SST / $^\\circ$C', 'SST gradient-SON, Nino-DJF', 'dmi_vs_nino')
-
-    print('East SST son data:', east_sst_son)  # Debug statement
+    scat_plot(cfg, sst_grad, nino_ssts, 'SST gradient / $^\\circ$C', 'Nino 3.4 SST / $^\\circ$C', 'SST gradient-SON, Nino-DJF', 'dmi_vs_nino')
+    scat_plot(cfg, east_sst_son, west_sst_son, 'EEIO SST / $^\\circ$C', 'WEIO SST / $^\\circ$C', 'SON', 'east_sst_vs_west_sst')
+    scat_plot(cfg, eq_winds, east_sst_son, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'EEIO SST / $^\\circ$C', 'SON', 'winds_vs_east_sst')
+    scat_plot(cfg, eq_winds, west_sst_son, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'WEIO SST / $^\\circ$C', 'SON', 'winds_vs_west_sst')
     scat_mean_vs_std(cfg, east_sst_son, 'SST mean in EEIO / $^\\circ$C', 'STD of EEIO SST / $^\\circ$C', 'SON', 'east_sst_mean_vs_std')
 
 if __name__ == '__main__':
