@@ -8,6 +8,10 @@ datasets:
     info: |
       Aerosol Optical Depth information from a worldwide network of stations.
 
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
+
   AGCD:
     tier: 2
     source: "http://dx.doi.org/10.25914/6009600786063"
@@ -95,12 +99,12 @@ datasets:
 
   CALIPSO-ICECLOUD:
     tier: 3
-    source: https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
-    last_access: 2022-08-04
+    source: https://asdc.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00
+    last_access: 2026-05-12
     info: |
       Download and processing instructions
       (requires EarthData login; see https://urs.earthdata.nasa.gov/)
-      1) Go to https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
+      1) Go to https://asdc.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00
       2) Click on "Get Dataset"
       3) Select Granules "A" containing both, day and night (Day/Night filter = "Both")
       4) Download selected granules
@@ -233,28 +237,27 @@ datasets:
 
   CLARA-AVHRR:
     tier: 3
-    source: https://wui.cmsaf.eu/
-    last_access: 2021-03-22
+    source: https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties
+    last_access: 2026-05-12
     info: |
       Download and processing instructions
-        1) Create ("register") an user account at
-          https://wui.cmsaf.eu/safira/action/viewLogin?menuName=NUTZER_HOME
-        2) login (same URL as above)
-        3) Search data using search form at
-        https://wui.cmsaf.eu/safira/action/viewProduktHome?menuName=PRODUKT_HOME
-          - Product group: Climate Data Records
-          - Product family: CLARA-A ed. 2.1
-          - Product name: CFC - Factional cloud cover
-                          IWP - Ice water path
-                          LWP - Liquid water path
-          - Area: Global
-          - Temporal resolution: Monthly
-        4) Select "CLARA-A ed. 2.1 AVHRR on polar orbiting satellites" from
-          list of results.
-        5) Click on "Add to order cart"
-        6) Follow download instructions in automatic email received when data
-          are ready for download.
-        7) Untar all .tar files into a single directory.
+            https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties?tab=download
+            Put all daily files for one month (mm) of one year (yyyy) under a single
+            directory "daily/<yyyymm>", monthly files for one year (yyyy) under "monthly/<yyyy>".
+            Note: you must accept the terms of use for CC-BY, EUMETSAT CM SAF, ESA CCI
+            Select the following from the CDS:
+                Product family: CLARA-A3
+                Origin: EUMETSAT
+                Variable: Cloud fraction, Cloud physical properties of the ice/liquid phase
+                Climate data record type: TCDR
+                Time aggregation: Daily mean / Monthly mean
+                Year: select all
+                Month: select all
+                Day: select all
+                Geographical area: Whole available region
+      Note: As of May 2026, CLARA-AVHRR (version A3) data on the CDS are only available until 2020.
+            Alternatively, CLARA-AVHRR data could also be obtained from the EUMETSAT data store
+            (https://data.eumetsat.int/).
 
   CLOUDSAT-L2:
     tier: 3
@@ -463,13 +466,31 @@ datasets:
   ESACCI-AEROSOL:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
-    last_access: 2019-01-24
+    last_access: 2025-08-11
     info: |
       Download the data from:
-        ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
-        AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
-      Other years are not considered since they are not complete.
-      Put all files in input_dir_path (no subdirectories with years).
+          AATSR/ATSR2
+            ATSR2_SU/L3/v4.3/DAILY/ (1997-2002)
+            AATSR_SU/L3/v4.3/DAILY/ (2003-2011)
+            ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
+            AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
+            Other years are not considered since they are not complete.
+            Put all daily files under 'AATSR-SU-v4.3-daily' (no subdirectories with years)
+            and all monthly files under 'AATSR-SU-v4.3-monthly'.
+          SLSTR
+            Select the following from the CDS:
+            https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties?tab=download
+            Put all files under a single directory (no subdirectories with years).
+            Time aggregation: "Daily average" and "Monthly average"
+            Variable: "Aerosol optical depth" and "Fine-mode aerosol optical depth"
+            Sensor on satellite: "SLSTR on SENTINEL 3A" and "SLSTR on SENTINEL 3B"
+            Algorithm": "SWANSEA (Swansea University)"
+            Year: select all
+            Month: select all
+            Day: select all
+            Version: "SLSTR", "v1.12"
+            Put all daily files under 'SLSTR-SU-v1.12-daily' (no subdirectories with years)
+            and all monthly files under 'SLSTR-SU-v1.12-monthly'.
 
   ESACCI-BIOMASS:
     tier: 2
@@ -555,17 +576,18 @@ datasets:
   ESACCI-OZONE:
     tier: 2
     source: https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
-    last_access: 2025-02-11
+    last_access: 2026-02-12
     info: |
       Download the data from:
             GTO-ECV total column (variable toz)
             Select the following from the CDS:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Atm. mole content of ozone"
-            Vertical aggregation = "Total column"
-            Sensor = "MERGED-UV"
+            Vertical aggregation = "Total columns UV"
+            Sensor = "GTO-ECV"
             Year = select all (1995-2023)
             Month = select all (1-12)
             Version = "v2000"
@@ -573,16 +595,35 @@ datasets:
             SAGE-CCI-OMPS (variable o3)
             Select the following options from the same link:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
-            Vertical aggregation = " Vertical profiles from limb sensors"
-            Sensor = " CMZM (Monthly zonal mean merged concentration product from limb
-            sensors ACE, GOMOS, MIPAS, OMPS, OSIRIS, SAGE-2 and SCIAMACHY)"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "SAGE-CCI-OMPS_CONC"
             Year = select all (1984-2022)
             Month = select all (1-12)
             Version = "v0008"
-      Put all files under a single directory (no subdirectories with years).
+
+            MEGRIDOP (variable o3)
+            Select the following options from the same link:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
+
+            Processing Level = "Level 3"
+            Variable = "Mole concentration of ozone in air"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "MEGRIDOP_CONC"
+            Year = select all (2001-2022)
+            Month = select all (1-12)
+            Version = "v0004"
+
+            IASI (variables o3, toz)
+            Download from BIRA WebDAV server: https://webdav.aeronomie.be
+            Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/<yyyy>
+            Username: o3_cci_public
+            No password (leave empty)
+            Download each year <yyyy> into the same folder
 
   ESACCI-SEAICE:
     tier: 2
@@ -1223,6 +1264,10 @@ datasets:
       Download the following archive:
       ch4_surface-flask_ccgg_text.tar.gz
 
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
+
   NOAA-GML-SURFACE-FLASK-CO2:
     tier: 2
     source: https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/
@@ -1230,6 +1275,10 @@ datasets:
     info: |
       Download the following archive:
       co2_surface-flask_ccgg_text.tar.gz
+
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   NOAAGlobalTemp:
     tier: 2
@@ -1254,6 +1303,10 @@ datasets:
     info: |
       Download the following archive:
       n2o_surface-flask_ccgg_text.tar.gz
+
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   NSIDC-0116-sh:
     tier: 3

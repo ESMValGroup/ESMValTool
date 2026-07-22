@@ -22,7 +22,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import arviz as az
 import cartopy.crs as ccrs
 import cf_units
 import iris
@@ -32,6 +31,7 @@ import iris.quickplot
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import xarray as xr
 from matplotlib.colors import ListedColormap
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
@@ -151,47 +151,57 @@ def _select_key_or_default(
 
 
 # /libs/iris_plus.py
-def _sort_time(
-    cube: iris.cube.Cube,
-    field: str,
-    filename: str,
-) -> iris.cube.Cube:
-    """Sort time dimension in the iris cube.
+def make_sort_time_callback(*, keep_original_time: bool):
+    """Create a _sort_time callback with configurable time coordinate."""
 
-    Parameters
-    ----------
-    cube: iris cube
-        Input cube.
-    field: str
-        Variable name in cube.
-    filename: str
-        Filename of cube.
+    def _sort_time(
+        cube: iris.cube.Cube,
+        field: str,
+        filename: str,
+    ) -> iris.cube.Cube:
+        """Sort time dimension in the iris cube.
 
-    Returns
-    -------
-    cube: iris cube
-        Cube with sorted and added time dimensions.
-    """
-    logger.debug("Sorting time for variable %s in cube %s", field, filename)
+        Parameters
+        ----------
+        cube: iris cube
+            Input cube.
+        field: str
+            Variable name in cube.
+        filename: str
+            Filename of cube.
 
-    cube.coord("time").bounds = None
-    tcoord = cube.coord("time")
-    tcoord.units = cf_units.Unit(tcoord.units.origin, calendar="gregorian")
-    tcoord.convert_units("days since 1661-01-01 00:00:00")
-    tcoord.units = cf_units.Unit(
-        tcoord.units.origin,
-        calendar="proleptic_gregorian",
-    )
-    cube.remove_coord("time")
-    cube.add_dim_coord(tcoord, 0)
+        Returns
+        -------
+        cube: iris cube
+            Cube with sorted and added time dimensions.
+        """
+        logger.debug(
+            "Sorting time for variable %s in cube %s",
+            field,
+            filename,
+        )
 
-    if not cube.coords("year"):
-        iris.coord_categorisation.add_year(cube, "time")
+        cube.coord("time").bounds = None
+        tcoord = cube.coord("time")
+        if not keep_original_time:
+            tcoord.units = cf_units.Unit(
+                "days since 1850-01-01 00:00:00",
+                calendar="proleptic_gregorian",
+            )
+        cube.remove_coord("time")
+        cube.add_dim_coord(tcoord, 0)
 
-    if not cube.coords("month"):
-        iris.coord_categorisation.add_month_number(cube, "time", name="month")
+        if not cube.coords("month"):
+            iris.coord_categorisation.add_month_number(
+                cube,
+                "time",
+                name="month",
+            )
 
-    return cube
+        if not cube.coords("year"):
+            iris.coord_categorisation.add_year(cube, "time")
+
+    return _sort_time
 
 
 def _insert_data_into_cube(
@@ -357,11 +367,11 @@ def _select_post_param(trace: str) -> dict:
         return np.reshape(out, new_shape)
 
     try:
-        trace = az.from_netcdf(trace, engine="netcdf4")
+        trace = xr.open_datatree(trace, engine="netcdf4")
     except (ValueError, OSError) as expt:
         logger.debug("_select_post_param error %s", expt)
-    params = trace.to_dict()["posterior"]
-    params_names = params.keys()
+    params = trace["posterior"]
+    params_names = list(trace["posterior"].data_vars)
     params = [_select_post_param_name(var) for var in params_names]
     return params, list(params_names)
 
@@ -412,6 +422,8 @@ def _read_variable_from_netcdf(
     make_flat: bool = False,
     return_time_points: bool = False,
     return_extent: bool = False,
+    keep_original_time: bool,
+    verbose: bool = True,
 ) -> iris.cube.Cube:
     """Read data from a netCDF file.
 
@@ -439,6 +451,9 @@ def _read_variable_from_netcdf(
     time_series: list
         List comtaining range of years. If making flat and
         returned a time series, checks if that time series contains year.
+    keep_original_time: bool
+        If True, keep time coordinate from inputs, otherwise replace by
+        Unit("days since 1850-01-01 00:00:00", calendar="proleptic_gregorian")
 
     Returns
     -------
@@ -446,8 +461,9 @@ def _read_variable_from_netcdf(
         if make_flat, a numpy vector of the target variable, otherwise
         returns iris cube.
     """
-    logger.info("Opening:")
-    logger.info(filename)
+    if verbose:
+        logger.info("Opening:")
+        logger.info(filename)
 
     if filename[0] == "~" or filename[0] == "/" or filename[0] == ".":
         directory = ""
@@ -455,13 +471,19 @@ def _read_variable_from_netcdf(
     if isinstance(filename, str):
         dataset = iris.load_raw(
             Path(directory) / filename,
-            callback=_sort_time,
+            callback=make_sort_time_callback(
+                keep_original_time=keep_original_time,
+            ),
         )
     else:
+        # Fallback for CMIP7 data for tasmax
+        var = "tas" if "tasmax/tas_tmaxavg" in filename[0] else filename[1]
         dataset = iris.load_raw(
             Path(directory) / filename[0],
-            filename[1],
-            callback=_sort_time,
+            var,
+            callback=make_sort_time_callback(
+                keep_original_time=keep_original_time,
+            ),
         )
     dataset = dataset[0]
 
@@ -561,6 +583,7 @@ def _read_all_data_from_netcdf(
     add_1s_columne: bool = False,
     x_normalise01: bool = False,
     check_mask: bool = True,
+    keep_original_time: bool,
     **kw: dict,
 ) -> tuple[np.array]:
     """Read data from netCDF files.
@@ -592,6 +615,9 @@ def _read_all_data_from_netcdf(
         you dont want. This could be different in some circumstances.
     frac_random_sample: int
         fraction of data to be returned
+    keep_original_time: bool
+        If True, keep time coordinate from inputs, otherwise replace by
+        Unit("days since 1850-01-01 00:00:00", calendar="proleptic_gregorian")
     args: tuple
         See _read_variable_from_netcdf comments.
     kw: dict
@@ -610,6 +636,8 @@ def _read_all_data_from_netcdf(
         make_flat=True,
         return_time_points=True,
         return_extent=True,
+        verbose=False,
+        keep_original_time=keep_original_time,
         **kw,
     )
 
@@ -620,6 +648,8 @@ def _read_all_data_from_netcdf(
             make_flat=True,
             time_points=time_points,
             extent=extent,
+            verbose=False,
+            keep_original_time=keep_original_time,
             **kw,
         )
 
@@ -636,6 +666,7 @@ def _read_all_data_from_netcdf(
             make_flat=True,
             time_points=time_points,
             extent=extent,
+            keep_original_time=keep_original_time,
             **kw,
         )
 
@@ -874,6 +905,7 @@ def _get_parameters(config: dict) -> tuple:
     """
     work_dir = config["work_dir"]
     confire_param = config["confire_param_dir"]
+    keep_original_time = config["keep_original_time"]
     # **Define Paths for Parameter Files  and for outputs**
     output_dir = work_dir + "/ConFire_outputs/"
     # Parameter files (traces, scalers, and other model parameters)
@@ -895,9 +927,15 @@ def _get_parameters(config: dict) -> tuple:
         x_filename_list=nc_files,
         scalers=scalers,
         directory=nc_dir,
+        keep_original_time=keep_original_time,
     )
     # Load a sample cube (used for inserting data)
-    eg_cube = _read_variable_from_netcdf(nc_files[0], directory=nc_dir)
+    eg_cube = _read_variable_from_netcdf(
+        nc_files[0],
+        directory=nc_dir,
+        verbose=False,
+        keep_original_time=keep_original_time,
+    )
     # **Extract Model Parameters**
     logger.info("Loading ConFire model parameters...")
     params, params_names = _select_post_param(param_file_trace)
