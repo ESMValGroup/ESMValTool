@@ -30,7 +30,7 @@ preprocessors:
     #  end_longitude: 360
     convert_units:
       units: degC
-    local_solar_time: # Needed to ensure dates are local time and not UTC [otherwise extremes at one noon could count for two days. TODO: maybe consider how this could influence results for e.g. low temperatures at night]
+    local_solar_time: # Needed to ensure dates are local time and not UTC (otherwise extremes at one noon could count for two days.)
     mask_landsea:
       mask_out: sea
 
@@ -84,9 +84,6 @@ preprocessors:
       scheme: linear
     area_statistics:
       operator: mean
-      #Todo: Masking does not work with oras5 -> is masking necessary?
-    # mask_landsea:
-    #   mask_out: land
     annual_statistics:
       operator: mean
 
@@ -102,12 +99,6 @@ preprocessors:
 
 
   zostoga_preproc_timeseries:
-    # custom_order: true
-    # regrid:
-    #   target_grid: 2x2
-    #   scheme: linear
-    # mask_landsea:
-    #   mask_out: land
     annual_statistics:
       operator: mean
 
@@ -140,13 +131,7 @@ diagnostics:
             operators: [max, mean, min]
         plots:
           timeseries:
-          # map:
-          #   caption: 'Number of days per year with temperatures exceeding 40°C for {dataset}.'
-          #   common_cbar: true
-          #   fontsize: 10
-          #   plot_kwargs:
-          #     default:
-          #       cmap: 'coolwarm'
+
 
   plot_days_tmin_0:
     additional_datasets:
@@ -210,9 +195,6 @@ diagnostics:
               operators: [max, mean, min]
 
 
-
-
-
   plot_snwe_10:
     additional_datasets:
       - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
@@ -231,9 +213,10 @@ diagnostics:
             accumulated: true
             threshold: 100
             operators: [max, mean, min]
+        plots:
+          timeseries:
 
-
-  ########## data is already a global mean, thus no area statistics needed
+  # Data is already a global mean, thus no area statistics needed
   timeseries_zostoga:
     description: Plot timeseries showing the Global Average Thermosteric Sea Level Change.
     variables:
@@ -246,22 +229,9 @@ diagnostics:
         script: impact/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: dataset
+        facet_used_for_labels: project
         plots:
           timeseries:
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   timeseries_sst:
     additional_datasets:
@@ -327,6 +297,5 @@ diagnostics:
         timerange: 19960101/20141231
         mip: Amon
         preprocessor: radiation_preproc_timeseries_max
-
     scripts:
       plot: *timeseries_config

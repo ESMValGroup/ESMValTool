@@ -485,7 +485,6 @@ class MultiDatasets(MonitorBase):
                 "function": partial(self.create_2d_plot, "map"),
                 "coords": (["longitude", "latitude"],),
                 "provenance": {
-                    "authors": ["schlund_manuel"],
                     "caption": "Map plot of {long_name} of dataset {alias}.",
                     "plot_types": ["map"],
                 },
@@ -504,7 +503,6 @@ class MultiDatasets(MonitorBase):
                 "function": partial(self.create_1d_plot, "timeseries"),
                 "coords": (["time"],),
                 "provenance": {
-                    "authors": ["schlund_manuel"],
                     "caption": (
                         "Time series of {long_name} for various datasets."
                     ),
@@ -808,8 +806,8 @@ class MultiDatasets(MonitorBase):
         # days in the rest of the year. Thus, this leads to an error.
 
         time = cube.coord("time")
-        start = cube.coord("time").points[0]
-        end = cube.coord("time").points[-1]
+        start = cube.coord("time").bounds[0, 0]
+        end = cube.coord("time").bounds[-1, -1]
         startc = time.units.num2date(start)
         endc = time.units.num2date(end)
         start_day = startc.day
@@ -818,10 +816,11 @@ class MultiDatasets(MonitorBase):
         end_month = endc.month
 
         check_timeframe = (
-            start_day == 1
-            and start_month == 1
-            and (end_day == 30 or end_day == 31)
-            and end_month == 12
+            (start_day == 1 and start_month == 1)
+            or (start_day == 31 and start_month == 12)
+        ) and (
+            (end_day == 31 and end_month == 12)
+            or (end_day == 1 and end_month == 1)
         )
         if not check_timeframe:
             msg = (
@@ -1261,10 +1260,6 @@ class MultiDatasets(MonitorBase):
 
             if "threshold_conversion" in self.options:
                 cube = self.convert_data_thresholded(cube)
-                logger.info(
-                    "Converted the data by counting the days "
-                    "at which the threshold is exceeded"
-                )
 
             if slices:
                 slice_coord_name = self.cfg["group_variables_by"]
@@ -1294,36 +1289,42 @@ class MultiDatasets(MonitorBase):
 
         def plot_1d_data(
             cube: Cube,
-            operator: str,
             label_dataset: str,
-            linestyle: dict,
-            dataset_colors: dict,
             plot_type: str,
             axes: Axes,
+            operator: str = None,
+            linestyle: dict = None,
+            dataset_colors: dict = None,
         ) -> None:
-            """Plot single dataset associated to one operator in the plot."""
-            linestyle_op = linestyle[operator]
-            label = f"{label_dataset} - {operator}"
-
+            """Plot single dataset (optional: associated to one operator) in the plot."""
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             coords = self._check_cube_coords(cube, plot_type)
             coord = cube.coord(coords[0], dim_coords=True)
 
+            if operator:
+                linestyle_op = linestyle[operator]
+
+                label = f"{label_dataset} - {operator}"
+                plot_kwargs.setdefault("linestyle", linestyle_op)
+            else:
+                label = f"{label_dataset}"
+
+            if dataset_colors:
+                plot_kwargs.setdefault("color", dataset_colors[label_dataset])
+
             plot_kwargs.setdefault("label", label)
             plot_kwargs["axes"] = axes
+
             if self.plots[plot_type]["transpose_axes"]:
                 iris.plot.plot(
                     cube,
                     coord,
-                    linestyle=linestyle_op,
-                    color=dataset_colors[label_dataset],
                     **plot_kwargs,
                 )
             else:
                 iris.plot.plot(
                     coord,
                     cube,
-                    linestyle=linestyle_op,
-                    color=dataset_colors[label_dataset],
                     **plot_kwargs,
                 )
 
@@ -1377,8 +1378,6 @@ class MultiDatasets(MonitorBase):
                 if "OBS" in str(val):
                     dataset_colors[label_dataset] = "black"
 
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-
             if "threshold_conversion" in self.options:
                 oldcube = cube
                 operators = self.options["threshold_conversion"][
@@ -1389,12 +1388,12 @@ class MultiDatasets(MonitorBase):
                     cube = self.thr_area_statistics(oldcube, operator=operator)
                     plot_1d_data(
                         cube,
-                        operator,
                         label_dataset,
-                        linestyle,
-                        dataset_colors,
                         plot_type,
                         axes,
+                        operator,
+                        linestyle,
+                        dataset_colors,
                     )
 
             else:
@@ -1424,28 +1423,21 @@ class MultiDatasets(MonitorBase):
 
                     plot_1d_data(
                         cube,
-                        operator,
                         label_dataset,
-                        linestyle,
-                        dataset_colors,
                         plot_type,
                         axes,
+                        operator,
+                        linestyle,
+                        dataset_colors,
                     )
 
                 else:
-                    label = label_dataset
-
-                    coords = self._check_cube_coords(cube, plot_type)
-                    coord = cube.coord(coords[0], dim_coords=True)
-
-                    # Actual plot
-                    plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-                    plot_kwargs.setdefault("label", label)
-                    plot_kwargs["axes"] = axes
-                    if self.plots[plot_type]["transpose_axes"]:
-                        iris.plot.plot(cube, coord, **plot_kwargs)
-                    else:
-                        iris.plot.plot(coord, cube, **plot_kwargs)
+                    plot_1d_data(
+                        cube,
+                        label_dataset,
+                        plot_type,
+                        axes,
+                    )
 
         # Plot horizontal lines
         for hline_kwargs in self.plots[plot_type]["hlines"]:
@@ -1466,7 +1458,7 @@ class MultiDatasets(MonitorBase):
         # Customize plot with user-defined settings
         self._customize_plot(plot_type, axes, multi_dataset_facets)
 
-        # Plot legend
+        # Legend
         col_handles = [
             mlines.Line2D(
                 [],
@@ -1487,14 +1479,17 @@ class MultiDatasets(MonitorBase):
             for o in operators
         ]
         handles = col_handles + style_handles
-
-        if len(style_handles) > 1:
-            axes.legend(handles=handles)
-            print("custom legend")
+        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
+        plt_k = self._get_plot_kwargs(plot_type, dataset).keys()
+        if (
+            len(style_handles) > 1
+            and "linestyle" not in plt_k
+            and "color" not in plt_k
+        ):
+            # Legend for default colors and linestyles
+            axes.legend(handles=handles, **legend_kwargs)
         else:
-            # Legend
-            print("plotting default legend")
-            legend_kwargs = self.plots[plot_type]["legend_kwargs"]
+            # Legend for custom colors or linestyles
             if legend_kwargs is not False:
                 axes.legend(**legend_kwargs)
 
@@ -1685,7 +1680,7 @@ class MultiDatasets(MonitorBase):
         self,
         cube,
     ):
-        """Counting the dayse per year on which the threshold is exceeded"""
+        """Count the number of days per year on which the threshold is exceeded"""
         # Preventing that this option is executed several times
         if cube.coords("day_of_year"):
             msg = "Reusing already aggregated cube"
@@ -1847,22 +1842,17 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
         }
-        print(var_attrs)
-        print("copy this style")
 
         if "threshold_conversion" in self.options:
             for operator in operators:
-                print({"operator": operator})
-                print(cubes_threshold[operator])
                 netcdf_path = self._get_netcdf_path(plot_path, option=operator)
-                print(netcdf_path)
                 io.save_1d_data(
                     cubes_threshold[operator],
                     netcdf_path,
                     coord_name,
                     var_attrs,
                     attributes={"operator": operator},
-                )  # attributes = "operator"
+                )
         else:
             netcdf_path = self._get_netcdf_path(plot_path)
             io.save_1d_data(cubes, netcdf_path, coord_name, var_attrs)
@@ -1946,7 +1936,9 @@ class MultiDatasets(MonitorBase):
 
         with ignore_iris_vague_metadata_warnings():
             result = cube.collapsed(
-                ["latitude", "longitude"], agg, **agg_kwargs
+                ["latitude", "longitude"],
+                agg,
+                **agg_kwargs,
             )
 
         # Make sure input cube has not been modified
