@@ -14,32 +14,25 @@ documentation:
     - unmaintained
 
 
-# Update this dataset entry to match your local native6 setup in config-user.yml.
-# Example path from user:
-# /work/bd1179/b309275/icon-ml_models/icon-xpp-ml_from-cap7/experiments/js_atm_amip_r2b4_hybrid1_conv_test
-datasets: []
+datasets:
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
+  - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: CMIP6}
 
 diagnostics:
   tropical_cpt_hovmoeller:
     description: Tropical CPT Hovmoeller with pressure shading and CPT contours.
+    variables:
+      ta:
+        mip: Amon
+        timerange: 2000/2001
+      hus:
+        mip: Amon
+        timerange: 2000/2001
     scripts:
       cpt_hovmoeller:
         script: esmvaltool/diag_scripts/tropopause/cpt_hovmoeller.py
-        dataset_label: ICON-ML-convection
         plot_filename: tropical_cpt_hovmoeller
         pressure_bounds_hpa: [10.0, 500.0]
         tropical_lat_bounds: [-20.0, 20.0]
         lon_resolution: 2.5
         dpi: 300
-        icon:
-          # Update these paths/variable names to your local ICON files.
-          ta_file_pattern: /work/bd1179/b309275/icon-ml_models/icon-xpp-ml_from-cap7/experiments/js_atm_amip_r2b4_hybrid1_conv_test/js_atm_amip_r2b4_hybrid1_conv_test_atm_3d_ml_*.nc
-          hus_file_pattern: /work/bd1179/b309275/icon-ml_models/icon-xpp-ml_from-cap7/experiments/js_atm_amip_r2b4_hybrid1_conv_test/js_atm_amip_r2b4_hybrid1_conv_test_atm_3d_ml_*.nc
-          pressure_file_pattern: /work/bd1179/b309275/icon-ml_models/icon-xpp-ml_from-cap7/experiments/js_atm_amip_r2b4_hybrid1_conv_test/js_atm_amip_r2b4_hybrid1_conv_test_atm_3d_ml_*.nc
-          grid_file: /pool/data/ICON/grids/public/mpim/0012/icon_grid_0012_R02B04_G.nc
-          ta_variable: temp
-          hus_variable: qv
-          pressure_variable: pres
-          start_date: "1979-01-01"
-          time_step_hours: 6
-          chunks_time: 240

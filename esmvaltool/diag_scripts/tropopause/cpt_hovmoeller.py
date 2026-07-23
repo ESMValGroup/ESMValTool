@@ -2,10 +2,21 @@
 
 This diagnostic identifies the tropical cold-point tropopause (CPT) by
 searching for the minimum temperature between configurable pressure bounds and
-creates a longitude-time Hovmoeller plot (20S-20N mean) with:
+creates, per dataset, one standalone Hovmoeller plot per variable for each of
+two views:
 
-- filled colors: CPT pressure
-- line contours: CPT temperature, CPT specific humidity, CPT RH over ice
+- longitude-time (mean over the tropical latitude band, full longitude range)
+- latitude-time (restricted to the tropical latitude band, mean over the
+  full longitude range)
+
+In both views:
+
+- filled colors (all plots): CPT pressure
+- line contours: CPT temperature, CPT specific humidity, or CPT RH over ice
+  (one variable per figure)
+
+If both preprocessed ESMValTool datasets and a raw ``icon`` input block are
+configured, both are processed and each contributes its own set of figures.
 
 Configuration options
 ---------------------
@@ -18,6 +29,10 @@ Configuration options
 - tropical_lat_bounds: Two values [south, north] in degrees (default:
   [-20.0, 20.0]).
 - group_by: Metadata facet used to group inputs (default: ``alias``).
+- lon_resolution: Longitude bin width in degrees for the ICON path's
+  longitude-time Hovmoeller (default: 2.5).
+- lat_resolution: Latitude bin width in degrees for the ICON path's
+  latitude-time Hovmoeller (default: 2.5).
 - plot_filename: Prefix for output file names
   (default: ``tropical_cpt_hovmoeller``).
 - dpi: Figure DPI (default: 300).
@@ -28,11 +43,11 @@ Configuration options
 
 from __future__ import annotations
 
+import calendar
 import glob
 import logging
 import re
 from pathlib import Path
-import calendar
 
 import iris
 import iris.coord_categorisation
@@ -145,7 +160,9 @@ def _select_at_cpt(
     )
     invalid = np.all(np.isinf(ta_masked), axis=ta_z_dim)
     cpt_idx = np.argmin(ta_masked, axis=ta_z_dim)
-    target_z_dim = target_cube.coord_dims(_get_pressure_coord(target_cube).name())[0]
+    target_z_dim = target_cube.coord_dims(
+        _get_pressure_coord(target_cube).name()
+    )[0]
     expanded_idx = np.expand_dims(cpt_idx, axis=target_z_dim)
     selected = np.squeeze(
         np.take_along_axis(target_data, expanded_idx, axis=target_z_dim),
@@ -173,10 +190,7 @@ def _compute_rhi_percent(
 
     vapor_pressure = q * p / (eps + (1.0 - eps) * q)
     log_es_ice = (
-        9.550426
-        - (5723.265 / t)
-        + (3.53068 * np.log(t))
-        - (0.00728332 * t)
+        9.550426 - (5723.265 / t) + (3.53068 * np.log(t)) - (0.00728332 * t)
     )
     es_ice = np.exp(log_es_ice)
     rhi = 100.0 * vapor_pressure / es_ice
@@ -203,11 +217,15 @@ def _ensure_datetime_time_axis(
                 errors="coerce",
             )
             if np.all(~pd.isna(parsed)):
-                return data.assign_coords(time=parsed.to_numpy(dtype="datetime64[ns]"))
+                return data.assign_coords(
+                    time=parsed.to_numpy(dtype="datetime64[ns]")
+                )
     elif raw_time.dtype.kind in {"U", "S", "O"}:
         parsed = pd.to_datetime(raw_time, errors="coerce")
         if np.all(~pd.isna(parsed)):
-            return data.assign_coords(time=parsed.to_numpy(dtype="datetime64[ns]"))
+            return data.assign_coords(
+                time=parsed.to_numpy(dtype="datetime64[ns]")
+            )
 
     try:
         tmp_name = data.name if data.name is not None else "var"
@@ -239,7 +257,9 @@ def _open_icon_dataarray(
 ) -> xr.DataArray:
     files = sorted(glob.glob(file_pattern))
     if not files:
-        raise FileNotFoundError(f"No ICON files found for pattern: {file_pattern}")
+        raise FileNotFoundError(
+            f"No ICON files found for pattern: {file_pattern}"
+        )
 
     dataset = xr.open_mfdataset(
         files,
@@ -256,7 +276,9 @@ def _open_icon_dataarray(
         )
     data = dataset[variable]
     if "time" not in data.dims:
-        raise ValueError(f"ICON variable {variable!r} has no 'time' dimension.")
+        raise ValueError(
+            f"ICON variable {variable!r} has no 'time' dimension."
+        )
     return _ensure_datetime_time_axis(
         data,
         start_date=start_date,
@@ -441,6 +463,48 @@ def _icon_tropical_hovmoeller(
     return hov
 
 
+def _icon_tropical_hovmoeller_lat(
+    data: xr.DataArray,
+    lat_deg: xr.DataArray,
+    horiz_dim: str,
+    lat_bounds: tuple[float, float],
+    lat_resolution: float,
+) -> xr.DataArray:
+    """Time-vs-latitude counterpart of ``_icon_tropical_hovmoeller``.
+
+    Cells are restricted to the tropical latitude band and binned by
+    latitude; each bin is reduced with a plain (unweighted) mean over all
+    cells in that bin, i.e. over longitude. This mirrors the unweighted
+    latitude collapse used for the longitude-time view in
+    ``_monthly_tropical_mean`` on the regular-grid path.
+    """
+    lat_min, lat_max = min(lat_bounds), max(lat_bounds)
+    tropical_mask = (lat_deg >= lat_min) & (lat_deg <= lat_max)
+    tropical_data = data.where(tropical_mask, drop=True)
+    tropical_lat = lat_deg.where(tropical_mask, drop=True)
+
+    nlat = max(int(round((lat_max - lat_min) / lat_resolution)), 1)
+    lat_centers = lat_min + (np.arange(nlat) + 0.5) * lat_resolution
+    lat_bin_values = np.floor(
+        (tropical_lat.values - lat_min) / lat_resolution
+    ).astype(int)
+    lat_bin_values = np.clip(lat_bin_values, 0, nlat - 1)
+
+    lat_bin = xr.DataArray(
+        lat_bin_values,
+        dims=(horiz_dim,),
+        coords={horiz_dim: tropical_data[horiz_dim]},
+        name="lat_bin",
+    )
+
+    hov = tropical_data.groupby(lat_bin).mean(dim=horiz_dim)
+    hov = hov.reindex(lat_bin=np.arange(nlat))
+    hov = hov.assign_coords(latitude=("lat_bin", lat_centers))
+    hov = hov.swap_dims({"lat_bin": "latitude"}).drop_vars("lat_bin")
+    hov = hov.transpose("time", "latitude")
+    return hov
+
+
 def _time_lon_cube_from_xarray(
     data: xr.DataArray,
     *,
@@ -473,12 +537,45 @@ def _time_lon_cube_from_xarray(
     return cube
 
 
+def _time_lat_cube_from_xarray(
+    data: xr.DataArray,
+    *,
+    var_name: str,
+    long_name: str,
+    units: str,
+) -> Cube:
+    values = np.asarray(data.values, dtype=float)
+    lat = np.asarray(data["latitude"].values, dtype=float)
+    times = pd.to_datetime(data["time"].values)
+    time_coord = DimCoord(
+        np.arange(values.shape[0], dtype=float),
+        standard_name="time",
+        units="days since 1970-01-01",
+    )
+    lat_coord = DimCoord(
+        lat,
+        standard_name="latitude",
+        units="degrees_north",
+    )
+    cube = Cube(
+        values,
+        var_name=var_name,
+        long_name=long_name,
+        units=units,
+        dim_coords_and_dims=[(time_coord, 0), (lat_coord, 1)],
+    )
+    cube.add_aux_coord(AuxCoord(times.year, long_name="year"), 0)
+    cube.add_aux_coord(AuxCoord(times.month, long_name="month_number"), 0)
+    return cube
+
+
 def _process_icon_dataset(cfg: dict) -> None:
     icon_cfg = cfg["icon"]
     label = cfg.get("dataset_label", icon_cfg.get("label", "ICON"))
     p_bounds_hpa = tuple(cfg["pressure_bounds_hpa"])
     lat_bounds = tuple(cfg["tropical_lat_bounds"])
     lon_resolution = float(cfg.get("lon_resolution", 2.5))
+    lat_resolution = float(cfg.get("lat_resolution", 2.5))
     start_date = icon_cfg.get("start_date", "1979-01-01")
     time_step_hours = int(icon_cfg.get("time_step_hours", 6))
     chunks_time = int(icon_cfg.get("chunks_time", 240))
@@ -508,7 +605,9 @@ def _process_icon_dataset(cfg: dict) -> None:
         )
 
     pressure_da = None
-    if icon_cfg.get("pressure_file_pattern") and icon_cfg.get("pressure_variable"):
+    if icon_cfg.get("pressure_file_pattern") and icon_cfg.get(
+        "pressure_variable"
+    ):
         pressure_da = _open_icon_dataarray(
             file_pattern=icon_cfg["pressure_file_pattern"],
             variable=icon_cfg["pressure_variable"],
@@ -523,7 +622,9 @@ def _process_icon_dataset(cfg: dict) -> None:
     if pressure_da is not None:
         ta_da, pressure_da = xr.align(ta_da, pressure_da, join="inner")
 
-    lat_deg, lon_deg, horiz_dim = _icon_grid_lat_lon(ta_da, icon_cfg["grid_file"])
+    lat_deg, lon_deg, horiz_dim = _icon_grid_lat_lon(
+        ta_da, icon_cfg["grid_file"]
+    )
     vertical_dim = _get_vertical_dim(ta_da, horiz_dim)
     pressure_hpa = _pressure_hpa_from_icon(ta_da, pressure_da, vertical_dim)
 
@@ -579,25 +680,25 @@ def _process_icon_dataset(cfg: dict) -> None:
         for name, field in monthly.items()
     }
 
-    cpt_p_monthly = _time_lon_cube_from_xarray(
+    cpt_p_monthly_lon = _time_lon_cube_from_xarray(
         hov["pressure"],
         var_name="cpt_p",
         long_name="Cold point tropopause pressure",
         units="hPa",
     )
-    cpt_t_monthly = _time_lon_cube_from_xarray(
+    cpt_t_monthly_lon = _time_lon_cube_from_xarray(
         hov["temperature"],
         var_name="cpt_ta",
         long_name="Cold point tropopause temperature",
         units=str(ta_da.attrs.get("units", "K")),
     )
-    cpt_q_monthly = _time_lon_cube_from_xarray(
+    cpt_q_monthly_lon = _time_lon_cube_from_xarray(
         hov["specific_humidity"],
         var_name="cpt_hus",
         long_name="Cold point tropopause specific humidity",
         units=str(hus_da.attrs.get("units", "1")),
     )
-    cpt_rhi_monthly = _time_lon_cube_from_xarray(
+    cpt_rhi_monthly_lon = _time_lon_cube_from_xarray(
         hov["rhi"],
         var_name="cpt_rhi",
         long_name="Cold point tropopause relative humidity over ice",
@@ -612,6 +713,42 @@ def _process_icon_dataset(cfg: dict) -> None:
             units=str(zg_da.attrs.get("units", "m")),
         )
 
+    hov_lat = {
+        name: _icon_tropical_hovmoeller_lat(
+            field,
+            lat_deg,
+            horiz_dim,
+            lat_bounds,
+            lat_resolution,
+        )
+        for name, field in monthly.items()
+        if name != "height"
+    }
+    cpt_p_monthly_lat = _time_lat_cube_from_xarray(
+        hov_lat["pressure"],
+        var_name="cpt_p",
+        long_name="Cold point tropopause pressure",
+        units="hPa",
+    )
+    cpt_t_monthly_lat = _time_lat_cube_from_xarray(
+        hov_lat["temperature"],
+        var_name="cpt_ta",
+        long_name="Cold point tropopause temperature",
+        units=str(ta_da.attrs.get("units", "K")),
+    )
+    cpt_q_monthly_lat = _time_lat_cube_from_xarray(
+        hov_lat["specific_humidity"],
+        var_name="cpt_hus",
+        long_name="Cold point tropopause specific humidity",
+        units=str(hus_da.attrs.get("units", "1")),
+    )
+    cpt_rhi_monthly_lat = _time_lat_cube_from_xarray(
+        hov_lat["rhi"],
+        var_name="cpt_rhi",
+        long_name="Cold point tropopause relative humidity over ice",
+        units="%",
+    )
+
     ancestors = [icon_cfg["ta_file_pattern"], icon_cfg["hus_file_pattern"]]
     if icon_cfg.get("zg_file_pattern"):
         ancestors.append(icon_cfg["zg_file_pattern"])
@@ -624,21 +761,32 @@ def _process_icon_dataset(cfg: dict) -> None:
         "Monthly tropical CPT diagnostics at longitude-time resolution.",
         ancestors,
     )
-    save_data(f"{base}_pressure", provenance, cfg, cpt_p_monthly)
-    save_data(f"{base}_temperature", provenance, cfg, cpt_t_monthly)
-    save_data(f"{base}_specific_humidity", provenance, cfg, cpt_q_monthly)
-    save_data(f"{base}_rhi", provenance, cfg, cpt_rhi_monthly)
+    save_data(f"{base}_pressure", provenance, cfg, cpt_p_monthly_lon)
+    save_data(f"{base}_temperature", provenance, cfg, cpt_t_monthly_lon)
+    save_data(f"{base}_specific_humidity", provenance, cfg, cpt_q_monthly_lon)
+    save_data(f"{base}_rhi", provenance, cfg, cpt_rhi_monthly_lon)
     if cpt_z_monthly is not None:
         save_data(f"{base}_height", provenance, cfg, cpt_z_monthly)
 
-    _plot_one_dataset(
+    _plot_hovmoeller_set(
         cfg,
         label,
-        cpt_p_monthly,
-        cpt_t_monthly,
-        cpt_q_monthly,
-        cpt_rhi_monthly,
+        cpt_p_monthly_lon,
+        cpt_t_monthly_lon,
+        cpt_q_monthly_lon,
+        cpt_rhi_monthly_lon,
         ancestors,
+        axis="X",
+    )
+    _plot_hovmoeller_set(
+        cfg,
+        label,
+        cpt_p_monthly_lat,
+        cpt_t_monthly_lat,
+        cpt_q_monthly_lat,
+        cpt_rhi_monthly_lat,
+        ancestors,
+        axis="Y",
     )
 
 
@@ -668,15 +816,50 @@ def _monthly_tropical_mean(
     return tropical.collapsed(lat_name, iris.analysis.MEAN)
 
 
-def _as_time_lon(cube: Cube) -> Cube:
+def _monthly_tropical_mean_lat(
+    cube: Cube,
+    lat_bounds: tuple[float, float],
+) -> Cube:
+    """Time-vs-latitude counterpart of ``_monthly_tropical_mean``.
+
+    Restricts latitude to the tropical band (kept as the plotted axis)
+    and collapses over the full longitude range with a plain (unweighted)
+    mean, mirroring the unweighted latitude collapse used on the
+    longitude-time path.
+    """
+    work = cube.copy()
+    if not work.coords("year"):
+        iris.coord_categorisation.add_year(work, "time", name="year")
+    if not work.coords("month_number"):
+        iris.coord_categorisation.add_month_number(
+            work,
+            "time",
+            name="month_number",
+        )
+    monthly = work.aggregated_by(["year", "month_number"], iris.analysis.MEAN)
+
+    lat_name = monthly.coord(axis="Y").name()
+    lon_name = monthly.coord(axis="X").name()
+    lat_min, lat_max = min(lat_bounds), max(lat_bounds)
+    tropical = monthly.extract(
+        iris.Constraint(**{lat_name: lambda lat: lat_min <= lat <= lat_max}),
+    )
+    if tropical is None:
+        msg = f"No latitude data found inside tropical band [{lat_min}, {lat_max}]"
+        raise ValueError(msg)
+    return tropical.collapsed(lon_name, iris.analysis.MEAN)
+
+
+def _as_time_axis(cube: Cube, axis: str) -> Cube:
+    """Ensure ``cube`` has dims ordered (time, <axis>), axis in {'X', 'Y'}."""
     time_name = cube.coord(axis="T").name()
-    lon_name = cube.coord(axis="X").name()
+    other_name = cube.coord(axis=axis).name()
     time_dim = cube.coord_dims(time_name)[0]
-    lon_dim = cube.coord_dims(lon_name)[0]
-    if (time_dim, lon_dim) == (0, 1):
+    other_dim = cube.coord_dims(other_name)[0]
+    if (time_dim, other_dim) == (0, 1):
         return cube
     out_cube = cube.copy()
-    out_cube.transpose((time_dim, lon_dim))
+    out_cube.transpose((time_dim, other_dim))
     return out_cube
 
 
@@ -694,7 +877,7 @@ def _finite_levels(data: np.ndarray, n_levels: int) -> np.ndarray:
     return np.linspace(vmin, vmax, n_levels)
 
 
-def _plot_one_dataset(
+def _plot_hovmoeller_set(
     cfg: dict,
     dataset_label: str,
     cpt_p_cube: Cube,
@@ -702,13 +885,30 @@ def _plot_one_dataset(
     cpt_q_cube: Cube,
     cpt_rhi_cube: Cube,
     ancestors: list[str],
+    *,
+    axis: str,
 ) -> None:
-    cpt_p = _as_time_lon(cpt_p_cube)
-    cpt_t = _as_time_lon(cpt_t_cube)
-    cpt_q = _as_time_lon(cpt_q_cube)
-    cpt_rhi = _as_time_lon(cpt_rhi_cube)
+    """Save one standalone Hovmoeller figure per variable for this dataset.
 
-    lon = cpt_p.coord(axis="X").points
+    Each figure shows CPT pressure as filled colors (shared across all
+    variables) with a single variable's CPT contours overlaid, so every
+    output PNG is a complete, self-contained plot rather than a subplot.
+
+    ``axis`` selects the plotted view: ``"X"`` for time-vs-longitude
+    (``cpt_*_cube`` must already be longitude-resolved, i.e. reduced over
+    latitude), or ``"Y"`` for time-vs-latitude (``cpt_*_cube`` must already
+    be latitude-resolved, i.e. reduced over longitude).
+    """
+    cpt_p = _as_time_axis(cpt_p_cube, axis)
+    cpt_t = _as_time_axis(cpt_t_cube, axis)
+    cpt_q = _as_time_axis(cpt_q_cube, axis)
+    cpt_rhi = _as_time_axis(cpt_rhi_cube, axis)
+
+    coord = cpt_p.coord(axis=axis)
+    coord_points = coord.points
+    coord_name = coord.name()
+    coord_units = coord.units
+
     y = np.arange(cpt_p.shape[0])
     p_data = np.asarray(cpt_p.core_data())
 
@@ -722,65 +922,73 @@ def _plot_one_dataset(
     month_abbrs = [calendar.month_abbr[m].upper() for m in month]
     y_tick_labels = [f"{month_abbrs[i]}{year[i]}" for i in y_ticks]
 
+    p_levels = _finite_levels(p_data, 21)
+
+    # (filename token, panel title, data cube, clabel format)
     panels = [
-        ("CPT temperature contours [K]", cpt_t, "black"),
-        ("CPT specific humidity contours [x10\u2076 kg kg-1]", cpt_q, "darkgreen"),
-        ("CPT RH over ice contours [%]", cpt_rhi, "darkred"),
+        ("temperature", "CPT temperature contours [K]", cpt_t, "%.0f"),
+        (
+            "specific_humidity",
+            "CPT specific humidity contours [x10\u2076 kg kg-1]",
+            cpt_q,
+            lambda x: f"{x * 1e6:.2f}",
+        ),
+        ("rhi", "CPT RH over ice contours [%]", cpt_rhi, "%.0f"),
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(16, 12), constrained_layout=True)
-    p_levels = _finite_levels(p_data, 21)
-    contour_sets = []
-    label_sets = []
-    for ax, (title, contour_cube, color) in zip(axes, panels, strict=True):
+    suffix = "lon" if axis == "X" else "lat"
+    view_desc = "longitude-time" if axis == "X" else "latitude-time"
+    basename = f"{cfg.get('plot_filename', 'tropical_cpt_hovmoeller')}_{_safe_name(dataset_label)}"
+
+    for token, title, contour_cube, clabel_fmt in panels:
         contour_data = np.asarray(contour_cube.core_data())
         contour_levels = _finite_levels(contour_data, 8)
-        cf = ax.contourf(lon, y, p_data, levels=p_levels, cmap="Reds_r", extend="both")
+
+        fig, ax = plt.subplots(figsize=(8, 10), constrained_layout=True)
+        cf = ax.contourf(
+            coord_points,
+            y,
+            p_data,
+            levels=p_levels,
+            cmap="Reds_r",
+            extend="both",
+        )
         cs = ax.contour(
-            lon,
+            coord_points,
             y,
             contour_data,
             levels=contour_levels,
-            colors='k',
+            colors="k",
             linewidths=0.8,
         )
-        contour_sets.append(cf)
-        label_sets.append(cs)
+        ax.clabel(cs, inline=True, fontsize=12, fmt=clabel_fmt)
+
         ax.set_yticks(y_ticks)
         ax.set_yticklabels(y_tick_labels)
         ax.set_title(title, fontsize=16)
-        ax.tick_params(axis='x', labelsize=12)
-        ax.tick_params(axis='y', labelsize=12)
+        ax.tick_params(axis="x", labelsize=12)
+        ax.tick_params(axis="y", labelsize=12)
+        ax.set_ylabel("Time", fontsize=16)
+        ax.set_xlabel(f"{coord_name} [{coord_units}]", fontsize=16)
+        fig.suptitle(f"Tropical CPT Hovmoeller ({dataset_label})", fontsize=18)
 
-    # axes[0] (temperature) and axes[2] (RH): plain whole-number labels
-    for ax, cs in zip((axes[0], axes[2]), (label_sets[0], label_sets[2]), strict=True):
-        ax.clabel(cs, inline=True, fontsize=12, fmt="%.0f")
+        cbar = fig.colorbar(cf, ax=ax, orientation="vertical", shrink=0.95)
+        cbar.set_label("CPT pressure [hPa]", fontsize=16)
+        cbar.set_ticks([80, 90, 100, 110, 120])
+        cbar.ax.tick_params(labelsize=12)
 
-    # axes[1] (specific humidity): scaled by x10^6, 1 decimal place
-    axes[1].clabel(
-        label_sets[1],
-        inline=True,
-        fontsize=12,
-        fmt=lambda x: f"{x * 1e6:.2f}",
-    )
-
-    axes[0].set_ylabel("Time", fontsize=16)
-    axes[1].set_xlabel(f"{cpt_p.coord(axis='X').name()} [{cpt_p.coord(axis='X').units}]", fontsize=16)
-    fig.suptitle(
-        f"Tropical CPT Hovmoeller ({dataset_label})", fontsize=18
-    )
-    cbar = fig.colorbar(contour_sets[0], ax=axes, orientation="vertical", shrink=0.95)
-    cbar.set_label("CPT pressure [hPa]", fontsize=16)
-    cbar.set_ticks([80, 90, 100, 110, 120])
-    cbar.ax.tick_params(labelsize=12)
-
-    basename = f"{cfg.get('plot_filename', 'tropical_cpt_hovmoeller')}_{_safe_name(dataset_label)}"
-    caption = (
-        "Tropical (20S-20N) CPT longitude-time Hovmoeller: colors show CPT pressure; "
-        "contours show CPT temperature, CPT specific humidity, and CPT RH over ice."
-    )
-    provenance = _get_provenance(caption, ancestors)
-    save_figure(basename, provenance, cfg, figure=fig, dpi=cfg.get("dpi", 300))
+        caption = (
+            f"Tropical CPT {view_desc} Hovmoeller for {dataset_label}: "
+            f"colors show CPT pressure; contours show {title.lower()}."
+        )
+        provenance = _get_provenance(caption, ancestors)
+        save_figure(
+            f"{basename}_{token}_{suffix}",
+            provenance,
+            cfg,
+            figure=fig,
+            dpi=cfg.get("dpi", 300),
+        )
 
 
 def _dataset_label(group_key: str, group_items: list[dict]) -> str:
@@ -798,19 +1006,20 @@ def main(cfg: dict) -> None:
     cfg.setdefault("group_by", "alias")
     cfg.setdefault("plot_filename", "tropical_cpt_hovmoeller")
     cfg.setdefault("lon_resolution", 2.5)
+    cfg.setdefault("lat_resolution", 2.5)
 
-    if cfg.get("icon"):
-        logger.info("Processing raw ICON input from script configuration")
-        _process_icon_dataset(cfg)
-        return
-
-    input_data = list(cfg["input_data"].values())
-    if not input_data:
+    input_data = list(cfg.get("input_data", {}).values())
+    if not input_data and not cfg.get("icon"):
         raise ValueError(
             "No input_data provided and no icon block configured. "
             "Provide preprocessed ESMValTool inputs or script.icon settings.",
         )
-    grouped = group_metadata(input_data, cfg["group_by"], sort="short_name")
+
+    grouped = (
+        group_metadata(input_data, cfg["group_by"], sort="short_name")
+        if input_data
+        else {}
+    )
 
     for group_key, group_items in grouped.items():
         label = _dataset_label(group_key, group_items)
@@ -819,7 +1028,9 @@ def main(cfg: dict) -> None:
         hus_attrs = _get_variable_attrs(group_items, cfg["humidity_var"])
         zg_attrs = None
         try:
-            zg_attrs = _get_variable_attrs(group_items, cfg["geopotential_height_var"])
+            zg_attrs = _get_variable_attrs(
+                group_items, cfg["geopotential_height_var"]
+            )
         except ValueError:
             logger.info(
                 "Optional geopotential height variable '%s' not found for %s",
@@ -884,10 +1095,15 @@ def main(cfg: dict) -> None:
             )
             cpt_z_monthly = _monthly_tropical_mean(cpt_z, lat_bounds)
 
-        cpt_p_monthly = _monthly_tropical_mean(cpt_p, lat_bounds)
-        cpt_t_monthly = _monthly_tropical_mean(cpt_t, lat_bounds)
-        cpt_q_monthly = _monthly_tropical_mean(cpt_q, lat_bounds)
-        cpt_rhi_monthly = _monthly_tropical_mean(cpt_rhi, lat_bounds)
+        cpt_p_monthly_lon = _monthly_tropical_mean(cpt_p, lat_bounds)
+        cpt_t_monthly_lon = _monthly_tropical_mean(cpt_t, lat_bounds)
+        cpt_q_monthly_lon = _monthly_tropical_mean(cpt_q, lat_bounds)
+        cpt_rhi_monthly_lon = _monthly_tropical_mean(cpt_rhi, lat_bounds)
+
+        cpt_p_monthly_lat = _monthly_tropical_mean_lat(cpt_p, lat_bounds)
+        cpt_t_monthly_lat = _monthly_tropical_mean_lat(cpt_t, lat_bounds)
+        cpt_q_monthly_lat = _monthly_tropical_mean_lat(cpt_q, lat_bounds)
+        cpt_rhi_monthly_lat = _monthly_tropical_mean_lat(cpt_rhi, lat_bounds)
 
         ancestors = [ta_attrs["filename"], hus_attrs["filename"]]
         if zg_attrs is not None:
@@ -898,22 +1114,39 @@ def main(cfg: dict) -> None:
             "Monthly tropical CPT diagnostics at longitude-time resolution.",
             ancestors,
         )
-        save_data(f"{base}_pressure", provenance, cfg, cpt_p_monthly)
-        save_data(f"{base}_temperature", provenance, cfg, cpt_t_monthly)
-        save_data(f"{base}_specific_humidity", provenance, cfg, cpt_q_monthly)
-        save_data(f"{base}_rhi", provenance, cfg, cpt_rhi_monthly)
+        save_data(f"{base}_pressure", provenance, cfg, cpt_p_monthly_lon)
+        save_data(f"{base}_temperature", provenance, cfg, cpt_t_monthly_lon)
+        save_data(
+            f"{base}_specific_humidity", provenance, cfg, cpt_q_monthly_lon
+        )
+        save_data(f"{base}_rhi", provenance, cfg, cpt_rhi_monthly_lon)
         if cpt_z_monthly is not None:
             save_data(f"{base}_height", provenance, cfg, cpt_z_monthly)
 
-        _plot_one_dataset(
+        _plot_hovmoeller_set(
             cfg,
             label,
-            cpt_p_monthly,
-            cpt_t_monthly,
-            cpt_q_monthly,
-            cpt_rhi_monthly,
+            cpt_p_monthly_lon,
+            cpt_t_monthly_lon,
+            cpt_q_monthly_lon,
+            cpt_rhi_monthly_lon,
             ancestors,
+            axis="X",
         )
+        _plot_hovmoeller_set(
+            cfg,
+            label,
+            cpt_p_monthly_lat,
+            cpt_t_monthly_lat,
+            cpt_q_monthly_lat,
+            cpt_rhi_monthly_lat,
+            ancestors,
+            axis="Y",
+        )
+
+    if cfg.get("icon"):
+        logger.info("Processing raw ICON input from script configuration")
+        _process_icon_dataset(cfg)
 
 
 if __name__ == "__main__":
