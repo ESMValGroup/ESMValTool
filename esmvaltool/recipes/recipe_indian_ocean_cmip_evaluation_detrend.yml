@@ -256,6 +256,20 @@ preprocessors:
       operator: mean
     convert_units:
       units: celsius  
+  west_pole_son_timeseries:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    area_statistics:
+      operator: mean
+    extract_season:
+      season: SON
+    seasonal_statistics:
+      operator: mean
+    convert_units:
+      units: celsius  
   west_pole_3d_son:
     extract_region:
       start_longitude: 50
@@ -459,10 +473,21 @@ diagnostics:
           - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
-      east_sst_son:
+      east_sst_son_ts:
         short_name: tos
         mip: Omon
         preprocessor: east_pole_son_timeseries
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1960, end_year: 2010}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1960, end_year: 2010, grid: gn}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
+      west_sst_son_ts:
+        short_name: tos
+        mip: Omon
+        preprocessor: west_pole_son_timeseries
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2, start_year: 1960, end_year: 2010}
           - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}

@@ -59,6 +59,8 @@ def as_scalar(cube, method='mean'):
 
 def get_obs_dataset_name(data_dict, candidates):
     """Return the first observational dataset name available in the dictionary."""
+    if not data_dict:
+        return None
     for candidate in candidates:
         if candidate in data_dict:
             return candidate
@@ -218,7 +220,7 @@ def get_iso_data(cfg, group_md, variable):
 
     # Collapse the cube
     t20d_mean = t20d_cube.collapsed(['latitude','longitude'], iris.analysis.MEAN)
-
+    print(f"Processed T20D for dataset: {dataset}, mean value: {t20d_mean.data}")  # Debug statement
     iso_results[dataset] = {
                 'cube': t20d_mean,
                 'filename': file
@@ -350,8 +352,7 @@ def scat_plot(cfg, x_dict, y_dict, x_label, y_label, title, output_basename):
         if y_info:
             y_cube = y_info['cube']
             y_file = y_info['filename']
-            if dataset == 'NCEP':
-                logger.debug(f"{y_file}")
+            print(np.shape(x_cube.data), np.shape(y_cube.data))  # Debug statement
             plt.scatter(x_cube.data, y_cube.data, color=color,
                         label=label, alpha=0.7,s=80)
             
@@ -395,20 +396,20 @@ def main(cfg):
     input_data = cfg['input_data'].values()
     grouped_data = group_metadata(input_data, 'dataset')
 
-    therm_tilt, sst_grad, eq_winds, skew_dmi, east_sst_son, west_sst_son, sctr_t20d, nino_ssts, dmi = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+    therm_tilt, sst_grad, eq_winds, skew_dmi, east_sst_son, west_sst_son, sctr_t20d, nino_ssts, dmi, east_sst_son_ts, west_sst_son_ts = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     for group_name, group_md in grouped_data.items():
         logger.info(f"Processing group: {group_name}")
         # If checks are necessary as not all models/obs (group names) have all variables.
 
         # Load west and east SST using load_data and calculate gradient
-        west_sst_son = load_data(group_md, 'west_sst_son', get_filenames=True)
-        east_sst_son = load_data(group_md, 'east_sst_son', get_filenames=True)
-        if west_sst_son:
-            west_sst_son.update(west_sst_son)
-        if east_sst_son:
-            east_sst_son.update(east_sst_son)
-        if west_sst_son and east_sst_son:
-            sst_grad_item = compute_cube_diff(cfg, west_sst_son, east_sst_son, 'sst_grad')
+        west_sst_son_item = load_data(group_md, 'west_sst_son', get_filenames=True)
+        east_sst_son_item = load_data(group_md, 'east_sst_son', get_filenames=True)
+        if west_sst_son_item:
+            west_sst_son.update(west_sst_son_item)
+        if east_sst_son_item:
+            east_sst_son.update(east_sst_son_item)
+        if west_sst_son_item and east_sst_son_item:
+            sst_grad_item = compute_cube_diff(cfg, west_sst_son_item, east_sst_son_item, 'sst_grad')
             if sst_grad_item:
                 sst_grad.update(sst_grad_item)
         
@@ -416,14 +417,14 @@ def main(cfg):
         # Calculate gradient for thermocline tilt
         west_t20d = get_iso_data(cfg, group_md, 'west_temps')
         east_t20d = get_iso_data(cfg, group_md, 'east_temps')
-
+        
         if west_t20d and east_t20d:
             t20d_tilt = compute_cube_diff(cfg, west_t20d, east_t20d, 'therm_tilt')
             if t20d_tilt:
                 therm_tilt.update(t20d_tilt)
 
-        # load_and_update_dict(group_md, 'east_sst_son', east_sst_son)
-        # load_and_update_dict(group_md, 'west_sst_son', west_sst_son)
+        load_and_update_dict(group_md, 'east_sst_son_ts', east_sst_son_ts)
+        load_and_update_dict(group_md, 'west_sst_son_ts', west_sst_son_ts)
         load_and_update_dict(group_md, 'eq_winds', eq_winds)
         load_and_update_dict(group_md, 'nino_ssts', nino_ssts)
         sctr_t20d_item = get_iso_data(cfg, group_md, 'sctr_temps')
@@ -536,7 +537,7 @@ def main(cfg):
 
     build_bias_table(cfg, diagnostics_bias)
 
-    
+    print('therm_tilt', therm_tilt)
     scat_plot(cfg, sst_grad, therm_tilt, 'SST gradient / $^\\circ$C', 'Thermocline tilt / m', 'SON', 'sst_vs_tilt')
     scat_plot(cfg, sst_grad, eq_winds, 'SST gradient / $^\\circ$C', 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'SON', 'sst_vs_winds')
     scat_plot(cfg, eq_winds, therm_tilt, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'Thermocline tilt / m', 'SON', 'winds_vs_tilt')
@@ -546,8 +547,8 @@ def main(cfg):
     scat_plot(cfg, east_sst_son, west_sst_son, 'EEIO SST / $^\\circ$C', 'WEIO SST / $^\\circ$C', 'SON', 'east_sst_vs_west_sst')
     scat_plot(cfg, eq_winds, east_sst_son, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'EEIO SST / $^\\circ$C', 'SON', 'winds_vs_east_sst')
     scat_plot(cfg, eq_winds, west_sst_son, 'Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$', 'WEIO SST / $^\\circ$C', 'SON', 'winds_vs_west_sst')
-    scat_mean_vs_std(cfg, east_sst_son, 'SST mean in EEIO / $^\\circ$C', 'STD of EEIO SST / $^\\circ$C', 'SON', 'east_sst_mean_vs_std')
-    scat_mean_vs_std(cfg, west_sst_son, 'SST mean in WEIO / $^\\circ$C', 'STD of WEIO SST / $^\\circ$C', 'SON', 'west_sst_mean_vs_std')
+    scat_mean_vs_std(cfg, east_sst_son_ts, 'SST mean in EEIO / $^\\circ$C', 'STD of EEIO SST / $^\\circ$C', 'SON', 'east_sst_mean_vs_std')
+    scat_mean_vs_std(cfg, west_sst_son_ts, 'SST mean in WEIO / $^\\circ$C', 'STD of WEIO SST / $^\\circ$C', 'SON', 'west_sst_mean_vs_std')
 
 
 if __name__ == '__main__':
