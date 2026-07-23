@@ -1292,9 +1292,9 @@ class MultiDatasets(MonitorBase):
             label_dataset: str,
             plot_type: str,
             axes: Axes,
-            operator: str = None,
-            linestyle: dict = None,
-            dataset_colors: dict = None,
+            operator: str | None = None,
+            linestyle: dict | None = None,
+            dataset_colors: dict | None = None,
         ) -> None:
             """Plot single dataset (optional: associated to one operator) in the plot."""
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
@@ -1488,10 +1488,9 @@ class MultiDatasets(MonitorBase):
         ):
             # Legend for default colors and linestyles
             axes.legend(handles=handles, **legend_kwargs)
-        else:
+        elif legend_kwargs is not False:
             # Legend for custom colors or linestyles
-            if legend_kwargs is not False:
-                axes.legend(**legend_kwargs)
+            axes.legend(**legend_kwargs)
 
     def _plot_2d(self, plot_type: str, cube: Cube, **plot_kwargs: Any) -> Any:
         """Plot 2D data (plain plotting, no changes in plot appearance)."""
