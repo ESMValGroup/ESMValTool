@@ -22,7 +22,8 @@ supplementary_variables: &supplementary_variables
 datasets:
 #  - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2, type: reanaly, version: 1, start_year: 1993, end_year: 2021}
 #  - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, start_year: 1993, end_year: 2021}
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '1993/2021', alias: 'ERA5'}
+#  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '1993/2021', alias: 'ERA5'}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '1993/2014', alias: 'ERA5'}
 #  - {dataset: ICON-XPP, project: ICON, exp: historical-202510p1, start_year: 1993, end_year: 2014, component: atm, var_type: atm_2d_ml, alias: 'ICON-XPP'}
 
 
@@ -113,9 +114,9 @@ diagnostics:
           y: prw
         plot_object_methods:
           set:
-            xlabel: '$\Delta$T$_{2m}$ [K]'
+            xlabel: '$\Delta T_{2m}$ [K]'
             xlim: [-0.45, 0.45]
-            ylabel: '$\Delta$prw [%]'
+            ylabel: '$\Delta prw$ [%]'
             ylim: [-3.75, 3.75]
         seaborn_settings:
           style: ticks
