@@ -78,6 +78,8 @@ diagnostics:
               default:
                 cmap: YlOrRd
 #                cmap: bwr
+            cbar_label: 'LAI [1]'
+            cbar_label_bias: '$\Delta$LAI [1]'
 
 
   plot_maps_with_references_gpp:
