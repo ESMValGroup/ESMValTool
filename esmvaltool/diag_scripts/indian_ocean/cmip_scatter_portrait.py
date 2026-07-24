@@ -148,6 +148,7 @@ def build_bias_table(cfg, diagnostics):
             (DimCoord(np.arange(len(metric_names)), long_name='diagnostic_index'), 1),
         ],
     )
+    print(f"Saving bias cube with shape {bias_cube.shape} and data:\n{bias_cube.data}")  # Debug statement
     bias_cube.add_aux_coord(AuxCoord(np.array(model_names), long_name='model_name'), 0)
     bias_cube.add_aux_coord(AuxCoord(np.array(metric_names), long_name='diagnostic_name'), 1)
     save_name = 'iod_bias_portrait_matrix'
@@ -161,26 +162,52 @@ def plot_bias_heatmap(cfg, matrix, model_names, metric_names, ancestors):
     """Plot a model-by-diagnostic bias heatmap with fixed model ordering."""
     ordered_matrix = matrix.copy()
     ordered_models = list(model_names)
+    model_mean_z = np.nanmean(np.abs(ordered_matrix), axis=1)[:, np.newaxis]
 
-    fig_width = max(8, len(metric_names) * 1.1)
+    fig_width = max(10, len(metric_names) * 1.2)
     fig_height = max(8, len(ordered_models) * 0.45)
-    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+    fig, (ax_main, ax_gap, ax_mean) = plt.subplots(
+        1,
+        3,
+        figsize=(fig_width, fig_height),
+        gridspec_kw={'width_ratios': [len(metric_names), 0.8, 1.1], 'wspace': 0.02},
+    )
+
     finite_vals = ordered_matrix[np.isfinite(ordered_matrix)]
     vmax = np.nanmax(np.abs(finite_vals)) if finite_vals.size else 1.0
     vmax = 1.0 if vmax == 0 else vmax
-    norm = TwoSlopeNorm(vmin=-vmax, vcenter=0.0, vmax=vmax)
+    norm_main = TwoSlopeNorm(vmin=-vmax, vcenter=0.0, vmax=vmax)
 
-    img = ax.imshow(ordered_matrix, aspect='equal', cmap='BrBG', norm=norm)
-    ax.set_xticks(np.arange(len(metric_names)))
-    ax.set_xticklabels(metric_names, rotation=45, ha='right', fontsize=10)
-    ax.set_yticks(np.arange(len(ordered_models)))
-    ax.set_yticklabels(ordered_models, fontsize=9)
-    ax.set_title('Model-by-diagnostic bias portrait', fontsize=14)
-    ax.set_xlabel('Diagnostics')
-    ax.set_ylabel('Models')
+    img_main = ax_main.imshow(ordered_matrix, aspect='auto', cmap='BrBG', norm=norm_main)
+    ax_main.set_xticks(np.arange(len(metric_names)))
+    ax_main.set_xticklabels(metric_names, rotation=45, ha='right', fontsize=10)
+    ax_main.set_yticks(np.arange(len(ordered_models)))
+    ax_main.set_yticklabels(ordered_models, fontsize=9)
+    ax_main.set_title('Model-by-diagnostic bias portrait', fontsize=14)
+    ax_main.set_xlabel('Diagnostics')
+    ax_main.set_ylabel('Models')
 
-    cbar = fig.colorbar(img, ax=ax, fraction=0.025, pad=0.02)
-    cbar.set_label('Standardized bias (z-score)')
+    # Spacer axis creates a visible gap between the main table and mean-z column.
+    ax_gap.axis('off')
+
+    finite_mean_abs = model_mean_z[np.isfinite(model_mean_z)]
+    vmax_mean_abs = np.nanmax(finite_mean_abs) if finite_mean_abs.size else 1.0
+    vmax_mean_abs = 1.0 if vmax_mean_abs == 0 else vmax_mean_abs
+
+    img_mean = ax_mean.imshow(model_mean_z, aspect='auto', cmap='OrRd', vmin=0.0, vmax=vmax_mean_abs)
+    ax_mean.set_xticks([0])
+    ax_mean.set_xticklabels(['Mean z'], rotation=45, ha='right', fontsize=10)
+    ax_mean.set_yticks(np.arange(len(ordered_models)))
+    ax_mean.set_yticklabels([])
+    ax_mean.tick_params(axis='y', length=0)
+    ax_mean.set_title('Model mean', fontsize=14)
+
+    for row_idx, value in enumerate(model_mean_z[:, 0]):
+        if np.isfinite(value):
+            ax_mean.text(0, row_idx, f"{value:.2f}", ha='center', va='center', fontsize=8, color='black')
+
+    cbar_main = fig.colorbar(img_main, ax=ax_main, fraction=0.025, pad=0.02)
+    cbar_main.set_label('Standardized bias (z-score)')
 
     fig.tight_layout()
     save_name = 'iod_bias_portrait_heatmap'
@@ -253,10 +280,10 @@ def scat_mean_vs_std(cfg, xy_dict, x_label, y_label, title, output_basename):
         file = xy_info['filename']
         input_filenames.update(file if isinstance(file, list) else [file])
         cube = xy_info['cube']
-        print(cube)  # Debug statement
+        
         mean_val = cube.collapsed('time', iris.analysis.MEAN).data
         std_val = cube.collapsed('time', iris.analysis.STD_DEV).data
-        print(f"Processing dataset: {dataset}, file: {file}, mean: {mean_val}, std: {std_val}")  # Debug statement
+        
         color = 'k' if 'HadISST' in dataset else colors[i]
         label = 'Obs' if 'HadISST' in dataset else dataset
         plt.scatter(mean_val, std_val, color=color, label=label, alpha=0.7,s=80)
@@ -265,8 +292,6 @@ def scat_mean_vs_std(cfg, xy_dict, x_label, y_label, title, output_basename):
         all_means.append(mean_val)
         all_stds.append(std_val)
 
-    print(f"All means: {all_means}")  # Debug statement
-    print(f"All stds: {all_stds}")  # Debug statement
     # Calculate and log correlation
     if all_means and all_stds:
         correlation = np.corrcoef(all_means, all_stds)[0, 1]
@@ -534,6 +559,7 @@ def main(cfg):
         if model_metrics:
             model_metrics['ancestors'] = model_ancestors
             diagnostics_bias[model] = model_metrics
+
 
     build_bias_table(cfg, diagnostics_bias)
 
