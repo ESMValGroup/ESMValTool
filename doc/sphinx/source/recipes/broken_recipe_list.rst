@@ -1,3 +1,4 @@
+:html_theme.sidebar_secondary.remove:
 .. _broken-recipe-list:
 
 Broken recipe list
@@ -25,7 +26,7 @@ More details can be found in the :ref:`broken recipe policy
    * - ``recipe_weathertyping_CMIP6.yml``
      -
      - v2.14.0
-     - Missing data (daily)
+     - Missing data (Observations, daily)
      - :issue:`4533`
    * - ``recipe_aod_aeronet_assess.yml``
      -
@@ -55,5 +56,5 @@ More details can be found in the :ref:`broken recipe policy
    * - ``recipe_climate_patterns.yml``
      -
      - v2.15.0
-     - Missing data (Fails to find and download data)
+     - Data/Fix error
      - :issue:`4558`
