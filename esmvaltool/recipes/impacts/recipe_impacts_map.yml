@@ -137,7 +137,6 @@ diagnostics:
   plot_days_tmin_0:
     additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: tasmin, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
-
     description: Map showing number of days where the temperature drops below 0°C.
     variables:
       tasmin:
@@ -164,7 +163,6 @@ diagnostics:
   plot_days_prmaxthreshold1:
     additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: pr, tier: 3, type: reanaly, version: 1,  reference_for_monitor_diags: true}
-
     description: Map showing number of days where the rain rate exceeds 1 mm.
     variables:
       pr:
@@ -193,11 +191,10 @@ diagnostics:
   plot_days_prmaxthreshold10:
     additional_datasets:
         - {dataset: ERA5, project: OBS6, type: reanaly, tier: 3, version: 1, short_name: pr ,  reference_for_monitor_diags: true}
-
     description: Map showing number of days where the rain rate exceeds 10 mm.
     variables:
       pr:
-        timerange: 19941226/19950115 #20141231
+        timerange: 19950101/20141231
         mip: day
         preprocessor: precipitation_preproc
     scripts:
