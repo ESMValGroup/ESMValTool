@@ -1,0 +1,171 @@
+# ESMValTool
+# recipe_santiagol_wheeler_kiladis.yml
+---
+documentation:
+  title: Wheeler-Kiladis tropical wave spectra
+  description: |
+    Compute normalized Wheeler-Kiladis wavenumber-frequency spectra
+    for tropical precipitation and outgoing longwave radiation.
+
+    The diagnostic computes spectra from daily equatorially averaged
+    fields over 15S-15N. Positive zonal wavenumber corresponds to
+    eastward propagation, and negative zonal wavenumber corresponds to
+    westward propagation.
+
+    This recipe uses public or standard ESMValTool-accessible data only.
+    It does not include local ICON simulations.
+
+  authors:
+    - londono-castillo_santiago
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - hannah20james
+    - Kiladis09agu
+
+# -------------------------------------------------------------------------
+# Common analysis period
+# -------------------------------------------------------------------------
+
+YEARS: &years
+  timerange: 2001/2002
+
+preprocessors:
+  wk_tropics_pr:
+    convert_units:
+      units: mm day-1
+
+    daily_statistics:
+      operator: mean
+
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -15.
+      end_latitude: 15.
+
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+
+
+  wk_tropics_rlut:
+    convert_units:
+      units: W m-2
+
+    daily_statistics:
+      operator: mean
+
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -15.
+      end_latitude: 15.
+
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+
+
+diagnostics:
+
+  wheeler_kiladis_pr:
+    title: Wheeler-Kiladis spectra of tropical precipitation
+    description: |
+      Normalized Wheeler-Kiladis wavenumber-frequency spectra of daily
+      equatorially averaged precipitation over 15S-15N.
+
+    themes:
+      - phys
+      - clouds
+
+    realms:
+      - atmos
+
+    variables:
+      pr:
+        short_name: pr
+        mip: day
+        preprocessor: wk_tropics_pr
+        <<: *years
+
+        additional_datasets:
+          - {dataset: PERSIANN-CDR, project: OBS, tier: 2, type: reanaly, version: v01r01, alias: PERSIANN-CDR}
+
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+            mip: E1hr, frequency: 1hr, tier: 3, alias: ERA5}
+
+          - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical,
+            ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR}
+
+    scripts:
+      main:
+        script: wheeler_kiladis/wheeler_kiladis.py
+
+        segment_length: 180
+        segment_overlap: 90
+        sampling_frequency_per_day: 1.0
+
+        annual_harmonics: 3
+        remove_zonal_mean: true
+        mask_zero_wavenumber: false
+
+        sigma_freq: 4.0
+        sigma_wn: 4.0
+
+        max_frequency: 0.5
+        max_wavenumber: 15
+        period_ticks: [2, 3, 5, 10, 20, 30, 60, 100]
+        equivalent_depths: [8, 12, 25, 50]
+        show_dispersion: true
+
+
+  wheeler_kiladis_rlut:
+    title: Wheeler-Kiladis spectra of tropical outgoing longwave radiation
+    description: |
+      Normalized Wheeler-Kiladis wavenumber-frequency spectra of daily
+      equatorially averaged outgoing longwave radiation over 15S-15N.
+
+      Outgoing longwave radiation is commonly used as a proxy for tropical
+      deep convection in Wheeler-Kiladis diagnostics.
+
+    themes:
+      - phys
+      - clouds
+
+    realms:
+      - atmos
+
+    variables:
+      rlut:
+        short_name: rlut
+        mip: day
+        preprocessor: wk_tropics_rlut
+        <<: *years
+
+        additional_datasets:
+          - {dataset: NCEP-NCAR-R1, project: OBS6, tier: 2, type: reanaly, version: 1, alias: NCEP-NCAR-R1}
+          - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR}
+
+    scripts:
+      main:
+        script: wheeler_kiladis/wheeler_kiladis.py
+
+        segment_length: 180
+        segment_overlap: 90
+        sampling_frequency_per_day: 1.0
+
+        annual_harmonics: 3
+        remove_zonal_mean: true
+        mask_zero_wavenumber: false
+
+        sigma_freq: 4.0
+        sigma_wn: 4.0
+
+        max_frequency: 0.5
+        max_wavenumber: 15
+        period_ticks: [2, 3, 5, 10, 20, 30, 60, 100]
+        equivalent_depths: [8, 12, 25, 50]
+        show_dispersion: true
