@@ -57,6 +57,16 @@ def fix_coords(cube):
     cube: iris.cube.Cube
         data cube with fixed coordinates.
     """
+    # This makes fix_dim_coordnames work with GAPFILLED
+    try:
+        cube.coord("lat").standard_name = "latitude"
+    except iris.exceptions.CoordinateNotFoundError:
+        pass
+    try:
+        cube.coord("lon").standard_name = "longitude"
+    except iris.exceptions.CoordinateNotFoundError:
+        pass
+
     # First fix any completely missing coord var names
     fix_dim_coordnames(cube)
 
@@ -86,15 +96,19 @@ def fix_coords(cube):
     return cube
 
 
-def extract_variable(raw_info):
-    """Extract variables."""
+def extract_variable(raw_info, is_gapfilled):
+    """Extract variables.
+    is_gapfilled is True or False to determine if the StdErr is going to
+    load as an ancillary variable or a seperate cube.
+    """
     rawvar = raw_info["name"]
     constraint = iris.Constraint(name=rawvar)
-    if rawvar == "sm_uncertainty":
+    if rawvar == "sm_uncertainty" and not is_gapfilled:
         sm_cube = iris.load_cube(
             raw_info["file"],
             iris.NameConstraint(var_name="sm"),
         )
+
         ancillary_var = sm_cube.ancillary_variable(
             "Volumetric Soil Moisture Uncertainty",
         )
@@ -103,6 +117,7 @@ def extract_variable(raw_info):
         cube = iris.load_cube(raw_info["file"], constraint)
 
     # Remove dysfunctional ancillary data without standard names
+
     for ancillary_variable in cube.ancillary_variables():
         cube.remove_ancillary_variable(ancillary_variable)
 
@@ -127,6 +142,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         var_info = cfg["cmor_table"].get_variable(vals["mip"], var_name)
         glob_attrs["mip"] = vals["mip"]
         raw_info = {"name": vals["raw"]}
+        is_gapfilled = vals["gapfilled"]
         inpfile_pattern = os.path.join(in_dir, vals["filename"])
         logger.info(
             "CMORizing var %s from file type %s",
@@ -139,7 +155,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             inpfiles = sorted(glob.glob(year_inpfile_pattern))
             for inpfile in inpfiles:
                 raw_info["file"] = inpfile
-                cube = extract_variable(raw_info)
+                cube = extract_variable(raw_info, is_gapfilled)
                 all_data_cubes.append(cube)
         final_cube = concatenate(all_data_cubes)
         fix_var_metadata(final_cube, var_info)
