@@ -290,7 +290,7 @@ class _Formatter:
             )
         logger.info("Processing datasets %s", datasets)
 
-        with get_distributed_client():
+        with get_distributed_client(session=self.config):
             # loop through tier/datasets to be cmorized
             failed_datasets = [
                 dataset

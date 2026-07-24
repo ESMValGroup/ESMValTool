@@ -454,17 +454,21 @@ authors:
     given-names: Hannah
   -
     affiliation: "DLR, Germany"
+    family-names: Debeire
+    given-names: Kevin
+    orcid: "https://orcid.org/0000-0001-6006-8750"
+  -
+    affiliation: "DLR, Germany"
     family-names: Londoño Castillo
     given-names: Santiago
     orcid: "https://orcid.org/0000-0002-8437-5031"
 
-
 cff-version: 1.2.0
-date-released: 2026-03-13
+date-released: 2026-07-17
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.14.0"
+version: "v2.15.0"
 ...
