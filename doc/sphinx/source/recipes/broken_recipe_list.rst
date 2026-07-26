@@ -42,7 +42,7 @@ More details can be found in the :ref:`broken recipe policy
    * - ``recipe_flato13ipcc_figures926_927.yml``
      - ``carbon_cycle/main.ncl``
      - v2.15.0
-     - Diagnostic error (``fig09-27bottom/main_global`` hangs)
+     - Diagnostic error (``fig09-27bottom`` hangs)
      - :issue:`4543`
    * - ``recipe_ipccwg1ar6ch3_atmosphere.yml``
      - ``ipcc_ar6/precip_anom.ncl``
@@ -50,7 +50,7 @@ More details can be found in the :ref:`broken recipe policy
      - Diagnostic error (with MulitModelMean)
      - :issue:`4544`
    * - ``recipe_extreme_events.yml``
-     - ``extreme_events/extreme_events.R``
+     - ``extreme_events/ extreme_events.R``
      - v2.15.0
      - Diagnostic error (open filename)
      - :issue:`4546`
