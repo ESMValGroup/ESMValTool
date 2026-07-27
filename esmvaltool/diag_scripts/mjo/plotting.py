@@ -1,0 +1,85 @@
+"""Plotting utilities for the MJO Hovmöller diagnostic."""
+
+import logging
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+logger = logging.getLogger(__name__)
+
+
+def plot_hovmoeller(
+    regression,
+    longitude,
+    lags,
+    cfg,
+    title=None,
+):
+    """Create and return a longitude-lag Hovmöller figure."""
+    regression = np.ma.masked_invalid(regression)
+    longitude = np.asarray(longitude)
+    lags = np.asarray(lags)
+
+    if regression.shape != (lags.size, longitude.size):
+        raise ValueError(
+            "Regression shape must be (lag, longitude), but got "
+            f"{regression.shape} for {lags.size} lags and "
+            f"{longitude.size} longitudes."
+        )
+
+    # Ensure longitudes and corresponding data are ordered.
+    order = np.argsort(longitude)
+    longitude = longitude[order]
+    regression = regression[:, order]
+
+    vmax = np.ma.max(np.ma.abs(regression))
+    if np.ma.is_masked(vmax) or not np.isfinite(vmax) or vmax == 0:
+        vmax = 1.0
+
+    nlevels = int(cfg.get("contour_levels", 21))
+    if nlevels < 3:
+        raise ValueError("contour_levels must be at least 3")
+
+    levels = np.linspace(-float(vmax), float(vmax), nlevels)
+
+    fig, ax = plt.subplots(figsize=(7, 5), constrained_layout=True)
+
+    contour = ax.contourf(
+        longitude,
+        lags,
+        regression,
+        levels=levels,
+        cmap=cfg.get("colormap", "RdYlBu"),
+        extend="both",
+    )
+
+    ax.axhline(0.0, color="black", linewidth=0.8)
+
+    lon0, lon1 = cfg["reference_longitudes"]
+    for ref_lon in (lon0, lon1):
+        ax.axvline(
+            ref_lon,
+            color="black",
+            linestyle="--",
+            linewidth=0.8,
+        )
+
+    ax.set_xlabel("Longitude (°E)")
+    ax.set_ylabel("Lag (days)")
+    ax.set_xlim(cfg.get("longitude_limits", [0.0, 360.0]))
+
+    # Negative lags at the top and positive lags at the bottom.
+    # max_lag = np.max(np.abs(lags))
+    # ax.set_ylim(max_lag, -max_lag)
+
+    ax.set_title(title or cfg.get("plot_title", "MJO Hovmöller diagram"))
+
+    colorbar = fig.colorbar(contour, ax=ax, pad=0.02)
+    colorbar.set_label(
+        cfg.get(
+            "colorbar_label",
+            "Precipitation regression coefficient",
+        )
+    )
+
+    return fig
