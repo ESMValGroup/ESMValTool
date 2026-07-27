@@ -461,11 +461,6 @@
       "affiliation": "DLR, Germany",
       "name": "Debeire, Kevin",
       "orcid": "0000-0001-6006-8750"
-    },
-    {
-      "affiliation": "DLR, Germany",
-      "name": "Schönfeld, Jurij",
-      "orcid": "0009-0000-7453-9517"
     }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
