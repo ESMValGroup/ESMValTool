@@ -52,6 +52,7 @@ Diagnostics are stored in diag_scripts/perfmetrics/
   cycle_latlon.ncl.
 * ``portrait_plot.py``: portrait plot of relative RMSE (used by
   ``recipe_perfmetrics_CORDEX-CMIP5.yml``; see :ref:`recipe_portrait`)
+
 User settings in recipe
 -----------------------
 
