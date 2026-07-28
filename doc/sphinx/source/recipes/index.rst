@@ -66,6 +66,7 @@ Atmosphere
    recipe_aod_aeronet_assess
    recipe_surface_trace_gas
    recipe_weathertyping
+   recipe_wheeler_kiladis_diagnostic
 
 Climate metrics
 ^^^^^^^^^^^^^^^
