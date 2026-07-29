@@ -2,10 +2,10 @@
 # recipe_mjo.yml
 ---
 documentation:
-  title: MJO wavenumber-frequency spectra
+  title: Wheeler-Kiladis wavenumber-frequency spectra 
 
   description:
-     Computes the wavenumber-frequency spectra of variables for the equatorial region.
+     Computes the Wheeler-Kiladis (1999) wavenumber-frequency spectra of variables for the equatorial region.
      Data saved as netcdf files for future use and publication quality figures are plotted.
 
      The scripts are expecting data to be periodic (cyclic) in the longitude direction.

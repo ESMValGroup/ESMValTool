@@ -736,58 +736,28 @@ class WKSpectra:
         save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
 
-    def wk_space_time(self):
-        """Create Wheeler-Kiladis Space-Time  plots.
+    def _setup_window_parameters(self, ntim):
+        """Validate and calculate temporal window parameters.
 
-         Note_1: The full logitudinal domain is used.
-                 This means that every planetary
-                 wavenumber will be represented.
-         Note_2: Tapering in time is done to make the variable periodic.
+        Parameters
+        ----------
+        ntim : int
+            Total number of time steps
 
-         The calculations are also only made for the latitudes
-         between '-lat_bound' and 'lat_bound'.
-
-        ********************   REFERENCES  *******************************
-         Wheeler, M., G.n. Kiladis Convectively Coupled Equatorial Waves:
-            Analysis of Clouds and Temperature in the Wavenumber-Frequency
-            Domain J. Atmos. Sci., 1999,  56: 374-399.
-        ---
-         Hayashi, Y. A Generalized Method of Resolving Disturbances into
-            Progressive and Retrogressive Waves by Space and Fourier and
-            TimeCross Spectral Analysis J. Meteor. Soc. Japan, 1971, 49: 125-128.
+        Returns
+        -------
+        dict
+            Dictionary containing window calculation parameters
         """
-        ntim, nlat, mlon = self.cube.shape
-        lat_n = self.lat_bound
-        lat_s = -1 * self.lat_bound  # make symmetric about the equator
-
-        lon_l = 0  # -180
-        lon_r = 360  # 180
-        f_crit = 1.0 / self.n_day_win  # remove all contributions 'longer'
-
-        tim_taper = 0.1  # time taper [0.1 => 10%]
-        lon_taper = (
-            0.0  # longitude taper [0.0 for globe only global supported]
-        )
-
-        if lon_taper > 0.0 or lon_r - lon_l != 360.0:
-            logging.error(
-                "Code does currently allow lon_taper>0 or (lon_r-lon_l)<360.",
-            )
-            msg = "wkSpaceTime lon_taper>0 or (lon_r-lon_l)<360"
-            raise ValueError(msg)
-
-        n_day_tot = ntim / self.spd  # of days (total) for input variable
-        n_samp_tot = n_day_tot * self.spd  # of samples (total)
-        n_samp_win = (
-            self.n_day_win * self.spd
-        )  # of samples per temporal window
-        n_samp_skip = (
-            self.n_day_skip * self.spd
-        )  # of samples to skip between window segments
-        # neg means overlap
+        # Calculate time-related parameters
+        n_day_tot = ntim / self.spd
+        n_samp_tot = n_day_tot * self.spd
+        n_samp_win = self.n_day_win * self.spd
+        n_samp_skip = self.n_day_skip * self.spd
         n_window = (n_samp_tot - n_samp_win) / (n_samp_win + n_samp_skip) + 1
-        n = n_samp_win  # convenience [historical]
+        f_crit = 1.0 / self.n_day_win
 
+        # Validate parameters
         if n_day_tot < self.n_day_win:
             logging.error(
                 "n_day_tot=%s is not allowed to be less than nDayWin=%s",
@@ -796,90 +766,59 @@ class WKSpectra:
             )
             msg = f"n_day_tot ({n_day_tot}) is less than nDayWin ({self.n_day_win})"
             raise ValueError(msg)
-        # -------------------------------------------------------------------
-        #  Remove dominant signals
-        # (a) Explicitly remove *long term* linear trend
-        #      For consistency with JET code keep the grid point means.
-        #      This necessitates that 'dtrend_msg' be used because 'dtrend'
-        #      always removes the mean(s).
-        #  (b) All variations >= approx 'nDayWin' days if full year available
-        # -------------------------------------------------------------------
 
-        # subset the data for 15S-15N
-        constraint = iris.Constraint(
-            latitude=lambda cell: lat_s <= cell <= lat_n,
-        )
-        self.cube = self.cube.extract(constraint)
-        ntim, nlat, mlon = self.cube.shape
-
-        pee_as = np.zeros([nlat, n_samp_win + 1, mlon + 1])  # initialize
-
-        # Wave numbers
-        wave = np.arange(-mlon / 2, mlon / 2 + 1, 1)
-        # Frequencies
-        freq = (
-            np.linspace(
-                -1 * self.n_day_win * self.spd / 2,
-                self.n_day_win * self.spd / 2,
-                self.n_day_win * self.spd + 1,
-            )
-            / self.n_day_win
-        )
-
-        wave = wave.astype(float)
-        freq = freq.astype(float)
-
-        # Time mean (later to be added to the trend)
-        varmean = self.cube.collapsed("time", iris.analysis.MEAN)
-
-        # remove linear trend
-        self.cube.data = (
-            scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
-        )  # Mean added
-
-        logging.info("n_day_tot = %s", n_day_tot)
-
-        if n_day_tot >= 365:  # remove dominant signals
-            self.cube = self.remove_annual_cycle(
-                self.cube,
-                f_crit,
-                rmv_means=False,
-            )
-        else:
+        if n_day_tot < 365:
             logging.error(
                 "Length of the variable is shorter than 365. Can not continue!",
             )
             msg = f"n_day_tot ({n_day_tot}) is less than 365"
             raise ValueError(msg)
 
-        # -------------------------------------------------------------------
-        #  Decompose to Symmetric and Asymmetric parts
-        # -------------------------------------------------------------------
-        x_as = self.decompose_sym_asym(self.cube)  # create Asym and Sym parts
+        return {
+            "n_day_tot": n_day_tot,
+            "n_samp_tot": n_samp_tot,
+            "n_samp_win": n_samp_win,
+            "n_samp_skip": n_samp_skip,
+            "n_window": n_window,
+            "f_crit": f_crit,
+        }
 
-        # -------------------------------------------------------------------
-        #  Because there is the possibility of overlapping *temporal* segments,
-        #  we must use a less efficient approach and detrend/taper
-        #  each window segment as it arises.
-        #           t0   t1   t2   t3   t4  .................. t(n)
-        #  lon(0):  x00  x01  x02  x03  x04 .................. x0(n)
-        #      :    :   :   :   :   :                     :
-        #  lon(M):  xM0  xM1  xM2  xM3  xM4 .................. xM(n)
-        # -------------------------------------------------------------------
-        #  q     - temporary array to hold the 2D complex results
-        #          for each longitude/time (lon,time) window that is fft'd.
-        #          This is one instance [realization] of space-time decomposition.
-        #
-        #  pee_as - symmetric and asymmetric power values in each latitude hemisphere.
-        #          Add extra lon/time to match JET
-        # -------------------------------------------------------------------
-        logging.info("n_samp_win = %s", n_samp_win)
+    def _compute_fft_windows(self, x_as, nlat, mlon, n_samp_win, n_samp_skip,
+                             n_day_tot, n_window, tim_taper):
+        """Compute FFT for temporal windows over all latitudes.
+
+        Parameters
+        ----------
+        x_as : iris.cube.Cube
+            Data cube with symmetric/asymmetric decomposition
+        nlat : int
+            Number of latitudes
+        mlon : int
+            Number of longitudes
+        n_samp_win : int
+            Number of samples per window
+        n_samp_skip : int
+            Number of samples to skip between windows
+        n_day_tot : int
+            Total number of days
+        n_window : float
+            Total number of windows
+        tim_taper : float
+            Time tapering fraction
+
+        Returns
+        -------
+        np.ndarray
+            Power spectrum array with shape (nlat, n_samp_win+1, mlon+1)
+        """
+        pee_as = np.zeros([nlat, n_samp_win + 1, mlon + 1])
 
         for nl in range(nlat):
-            nw = 0
             logging.info("Latitude: nl = %s", nl)
             nt_strt = 0
             nt_last = n_samp_win
+            nw = 0
+
             while nt_last < n_day_tot:
                 if nl == 0:
                     logging.debug(
@@ -888,17 +827,16 @@ class WKSpectra:
                         nt_strt,
                         nt_last,
                     )
+
                 work = x_as[nt_strt:nt_last, nl].copy()
 
-                # detrend the window
+                # Detrend the window
                 work.data = scipy.signal.detrend(
                     x_as.data[nt_strt:nt_last, nl],
                     axis=0,
                 )
 
-                # taper the window along time axis
-                # equivalent to NCL taper function described as
-                # split-cosine-bell tapering.
+                # Taper the window along time axis
                 for lo in range(mlon):
                     work.data[:, lo] = self.taper(
                         work.data[:, lo],
@@ -910,66 +848,408 @@ class WKSpectra:
                 ft = work.copy()
                 ft.data = np.fft.fft2(work.data) / mlon / n_samp_win
 
-                # Shifting FFTs
+                # Shift FFTs
                 pee = self.resolve_waves_hayashi(ft.data)
 
-                # Average
-                pee_as[nl, :, :] = pee_as[nl, :, :] + (pee / n_window)
+                # Average over windows
+                pee_as[nl, :, :] += pee / n_window
 
                 nw += 1
-
-                nt_strt = (
-                    nt_last + n_samp_skip
-                )  # set index for next temporal window
+                nt_strt = nt_last + n_samp_skip
                 nt_last = nt_strt + n_samp_win
 
-        # -------------------------------------------------------------------
-        #  now that we have the power array for sym and asym: use to
-        #     1) plot raw power spectrum (some smoothing)
-        #     2) derive and plot the background spectrum (lots of smoothing)
-        #     3) derive a denoised spectrum that is raw power/background power
-        # -------------------------------------------------------------------
-        #  psumanti and psumsym will contain the symmetric and asymmetric power
-        #  summed over latitude
-        # -------------------------------------------------------------------
+        return pee_as
+
+    def _aggregate_power_spectra(self, pee_as, nlat, freq, n_samp_win):
+        """Aggregate power spectra over latitudes and apply normalization.
+
+        Parameters
+        ----------
+        pee_as : np.ndarray
+            Power spectrum array
+        nlat : int
+            Number of latitudes
+        freq : np.ndarray
+            Frequency array
+        n_samp_win : int
+            Number of samples per window
+
+        Returns
+        -------
+        tuple
+            (psumanti, psumsym) - Aggregated anti-symmetric and symmetric spectra
+        """
+        # Sum over hemispheres
         if nlat % 2 == 0:
-            psumanti = np.sum(
-                pee_as[nlat // 2 : nlat],
-                axis=0,
-            )  # // for integer result
+            psumanti = np.sum(pee_as[nlat // 2 : nlat], axis=0)
             psumsym = np.sum(pee_as[: nlat // 2], axis=0)
         else:
             psumanti = np.sum(pee_as[nlat // 2 + 1 : nlat], axis=0)
             psumsym = np.sum(pee_as[: nlat // 2 + 1], axis=0)
-        # -------------------------------------------------------------------
-        #  since summing over half the array (symmetric,asymmetric) the
-        #  total variance is 2 x the half sum
-        # -------------------------------------------------------------------
+
+        # Double for total variance
         psumanti = 2.0 * psumanti
         psumsym = 2.0 * psumsym
-        # -------------------------------------------------------------------
-        # set the mean to missing to match original code
-        # ------------------------------------------------------------------
-        zeroind = np.where(freq == 0.0)[0][0]
 
+        # Set zero frequency to nan
+        zeroind = np.where(freq == 0.0)[0][0]
         psumanti[zeroind, :] = np.nan
         psumsym[zeroind, :] = np.nan
         psumanti = np.ma.masked_invalid(psumanti)
         psumsym = np.ma.masked_invalid(psumsym)
 
-        # -------------------------------------------------------------------
-        #  Apply smoothing to the spectrum. smooth over limited wave numbers
-        #  Smoothing in frequency only (check if mean should be smoothed
-        #  not smoothing now)
-        # --
-        #  Smoothing parameters set these larger than the plotting
-        #  wavenumbers to avoid smoothing artifacts
-        # -------------------------------------------------------------------
-        minwav4smth = -27
-        maxwav4smth = 27
+        return psumanti, psumsym
 
+    def _get_contour_levels_dict(self, spectrum_type="raw"):
+        """Get contour levels for different spectrum types.
+
+        Parameters
+        ----------
+        spectrum_type : str
+            Type of spectrum - "raw" or "ratio"
+
+        Returns
+        -------
+        dict
+            Contour levels for each variable
+        """
+        if spectrum_type == "raw":
+            return {
+                "toa_outgoing_longwave_flux": np.array(
+                    [
+                        -1.3,
+                        -1.2,
+                        -1.1,
+                        -1,
+                        -0.8,
+                        -0.6,
+                        -0.4,
+                        -0.2,
+                        0.0,
+                        0.2,
+                        0.4,
+                        0.6,
+                        0.8,
+                        1.0,
+                        1.1,
+                        1.2,
+                        1.3,
+                    ],
+                ),
+                "Precipitation": np.array(
+                    [
+                        -0.5,
+                        -0.4,
+                        -0.3,
+                        -0.2,
+                        -0.1,
+                        0,
+                        0.1,
+                        0.2,
+                        0.3,
+                        0.4,
+                        0.5,
+                        0.6,
+                    ],
+                ),
+                "x_wind_850hPa": np.arange(-3.25, 0.5, 0.25),
+                "x_wind_200hPa": np.arange(-3.3, 1.2, 0.3),
+            }
+        else:  # ratio
+            levels_asym = {
+                "toa_outgoing_longwave_flux": np.array(
+                    [
+                        0.2,
+                        0.3,
+                        0.4,
+                        0.5,
+                        0.6,
+                        0.7,
+                        0.8,
+                        0.9,
+                        1.0,
+                        1.1,
+                        1.2,
+                        1.3,
+                        1.4,
+                        1.5,
+                        1.6,
+                        1.7,
+                        1.8,
+                    ],
+                ),
+                "Precipitation": np.array(
+                    [
+                        0.5,
+                        0.6,
+                        0.7,
+                        0.8,
+                        0.9,
+                        1.0,
+                        1.1,
+                        1.15,
+                        1.2,
+                        1.25,
+                        1.3,
+                        1.35,
+                        1.4,
+                        1.45,
+                        1.5,
+                        1.6,
+                        1.7,
+                    ],
+                ),
+                "x_wind_850hPa": np.array(
+                    [
+                        0.3,
+                        0.4,
+                        0.5,
+                        0.6,
+                        0.7,
+                        0.8,
+                        0.9,
+                        1.0,
+                        1.1,
+                        1.2,
+                        1.3,
+                        1.4,
+                        1.5,
+                        1.6,
+                        1.7,
+                        1.8,
+                        1.9,
+                    ],
+                ),
+                "x_wind_200hPa": np.array(
+                    [
+                        0.3,
+                        0.4,
+                        0.5,
+                        0.6,
+                        0.7,
+                        0.8,
+                        0.9,
+                        1.0,
+                        1.1,
+                        1.2,
+                        1.3,
+                        1.4,
+                        1.5,
+                        1.6,
+                        1.7,
+                        1.8,
+                        2,
+                    ],
+                ),
+            }
+            levels_sym = {
+                "toa_outgoing_longwave_flux": np.array(
+                    [
+                        0.2,
+                        0.3,
+                        0.4,
+                        0.5,
+                        0.6,
+                        0.7,
+                        0.8,
+                        0.9,
+                        1.0,
+                        1.1,
+                        1.2,
+                        1.4,
+                        1.7,
+                        2.0,
+                        2.4,
+                        2.8,
+                        3.2,
+                    ],
+                ),
+                "Precipitation": np.array(
+                    [
+                        0.5,
+                        0.6,
+                        0.7,
+                        0.8,
+                        0.9,
+                        1.0,
+                        1.1,
+                        1.15,
+                        1.2,
+                        1.25,
+                        1.3,
+                        1.35,
+                        1.4,
+                        1.45,
+                        1.5,
+                        1.6,
+                        1.7,
+                    ],
+                ),
+                "x_wind_850hPa": np.array(
+                    [
+                        0.2,
+                        0.4,
+                        0.6,
+                        0.8,
+                        1.0,
+                        1.2,
+                        1.3,
+                        1.4,
+                        1.5,
+                        1.6,
+                        1.7,
+                        1.8,
+                        2,
+                        2.2,
+                        2.4,
+                        2.6,
+                        2.8,
+                    ],
+                ),
+                "x_wind_200hPa": np.array(
+                    [
+                        0.2,
+                        0.4,
+                        0.6,
+                        0.8,
+                        1.0,
+                        1.2,
+                        1.3,
+                        1.4,
+                        1.5,
+                        1.6,
+                        1.7,
+                        1.8,
+                        2,
+                        2.2,
+                        2.4,
+                        2.6,
+                        2.8,
+                    ],
+                ),
+            }
+            return {"asym": levels_asym, "sym": levels_sym}
+
+    def _plot_and_save_spectrum(self, spectrum_data, freq, wave, apzwn, afreq,
+                                 title, figname, forename, cube, symmetry):
+        """Plot and save spectrum with provenance record.
+
+        Parameters
+        ----------
+        spectrum_data : np.ndarray
+            Power spectrum data to plot
+        freq : np.ndarray
+            Frequency array
+        wave : np.ndarray
+            Wavenumber array
+        apzwn : np.ndarray
+            Wave number array for dispersion curves
+        afreq : np.ndarray
+            Frequency array for dispersion curves
+        title : str
+            Title for the plot
+        figname : str
+            Figure filename
+        forename : str
+            Base name for the data file
+        cube : iris.cube.Cube
+            Iris cube to save
+        symmetry : str
+            "asym" for anti-symmetric or "sym" for symmetric
+        """
+        levels = self._get_contour_levels_dict("raw")[self.varname]
+        plot_func = self.plot_anti_symmetric if symmetry == "asym" else self.plot_symmetric
+        plot_func(
+            spectrum_data,
+            freq,
+            wave,
+            apzwn,
+            afreq,
+            levels=levels,
+            title=title,
+            figname=figname,
+        )
+
+        # Save cube with provenance
+        caption = Path(figname).stem
+        provenance_dict = self.get_provenance_record(caption)
+        save_data(forename, provenance_dict, self.cfg, cube)
+
+    def wk_space_time(self):
+        """Create Wheeler-Kiladis Space-Time plots using refactored helper methods.
+
+         Note_1: The full logitudinal domain is used.
+                 This means that every planetary wavenumber will be represented.
+         Note_2: Tapering in time is done to make the variable periodic.
+
+         The calculations are also only made for the latitudes between 
+         '-lat_bound' and 'lat_bound'.
+
+        **REFERENCES**
+         Wheeler, M., G.n. Kiladis Convectively Coupled Equatorial Waves:
+            Analysis of Clouds and Temperature in the Wavenumber-Frequency
+            Domain J. Atmos. Sci., 1999,  56: 374-399.
+         Hayashi, Y. A Generalized Method of Resolving Disturbances into
+            Progressive and Retrogressive Waves by Space and Fourier and
+            TimeCross Spectral Analysis J. Meteor. Soc. Japan, 1971, 49: 125-128.
+        """
+        # Validate longitude taper settings
+        lon_taper = 0.0
+        if lon_taper > 0.0 or 360.0 != 360.0:
+            msg = "wkSpaceTime lon_taper>0 or (lon_r-lon_l)<360"
+            raise ValueError(msg)
+
+        # Get initial dimensions and setup window parameters
+        ntim, nlat, mlon = self.cube.shape
+        params = self._setup_window_parameters(ntim)
+        n_samp_win = params["n_samp_win"]
+        n_samp_skip = params["n_samp_skip"]
+        n_day_tot = params["n_day_tot"]
+        n_window = params["n_window"]
+        f_crit = params["f_crit"]
+
+        # Extract latitude region and preprocess data
+        lat_bound = self.lat_bound
+        constraint = iris.Constraint(
+            latitude=lambda cell: -lat_bound <= cell <= lat_bound,
+        )
+        self.cube = self.cube.extract(constraint)
+        ntim, nlat, mlon = self.cube.shape
+
+        # Remove trend and annual cycle
+        varmean = self.cube.collapsed("time", iris.analysis.MEAN)
+        self.cube.data = scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
+        self.cube = self.remove_annual_cycle(self.cube, f_crit, rmv_means=False)
+        logging.info("n_day_tot = %s", n_day_tot)
+
+        # Decompose into symmetric and asymmetric parts
+        x_as = self.decompose_sym_asym(self.cube)
+
+        # Compute wavenumbers and frequencies
+        wave = np.arange(-mlon / 2, mlon / 2 + 1, 1).astype(float)
+        freq = (
+            np.linspace(
+                -self.n_day_win * self.spd / 2,
+                self.n_day_win * self.spd / 2,
+                self.n_day_win * self.spd + 1,
+            )
+            / self.n_day_win
+        ).astype(float)
+
+        # Compute FFT windows for all latitudes
+        tim_taper = 0.1
+        pee_as = self._compute_fft_windows(
+            x_as, nlat, mlon, n_samp_win, n_samp_skip, n_day_tot, n_window, tim_taper
+        )
+
+        # Aggregate power spectra over latitudes
+        psumanti, psumsym = self._aggregate_power_spectra(pee_as, nlat, freq, n_samp_win)
+
+        # Apply smoothing
+        minwav4smth, maxwav4smth = -27, 27
         ind_strt = np.where(minwav4smth == wave)[0][0]
         ind_last = np.where(maxwav4smth == wave)[0][0]
+        n = n_samp_win
 
         for wv in np.arange(ind_strt, ind_last + 1):
             psumanti[n // 2 + 1 : n, wv] = self.wk_smooth121(
@@ -978,369 +1258,113 @@ class WKSpectra:
             psumsym[n // 2 + 1 : n, wv] = self.wk_smooth121(
                 psumsym[n // 2 + 1 : n, wv],
             )
-        # -------------------------------------------------------------------
-        #  Log10 scaling
-        # -------------------------------------------------------------------
-        psumanti_nolog = np.ma.masked_array(psumanti)
-        psumsym_nolog = np.ma.masked_array(psumsym)
 
+        # Store pre-log values and apply log scaling
+        psumanti_nolog = np.ma.masked_array(psumanti.copy())
+        psumsym_nolog = np.ma.masked_array(psumsym.copy())
         psumanti = np.ma.log10(psumanti)
         psumsym = np.ma.log10(psumsym)
 
-        # Creating Iris cube, assigning metadata
+        # Create cubes
         psumanti_cube = self.make_cube(psumanti, wave, freq)
         psumsym_cube = self.make_cube(psumsym, wave, freq)
 
-        # -----------------------------------------------------------------------------
-        #  ******  now derive and plot the background spectrum (red noise) ************
-        #  [1] Sum power over all latitude
-        #  [2] Put fill value in mean
-        #  [3] Apply smoothing to the spectrum. This smoothing DOES include
-        #      wavenumber zero.
-        # -----------------------------------------------------------------------------
-
+        # Compute background spectrum
         psumb = self.compute_background(pee_as, freq, ind_strt, ind_last)
         psumb_nolog = np.ma.masked_array(psumb)
         psumb = np.ma.log10(psumb)
         psumb_cube = self.make_cube(psumb, wave, freq)
 
-        # -------------------------------------------------------------------------------
-        #  Plot section
-
-        # Generate dispersion cuves
+        # Generate dispersion curves
         afreq, apzwn = self.generate_dispersion_curves()
+        levels_raw = self._get_contour_levels_dict("raw")
+        levels_ratio = self._get_contour_levels_dict("ratio")
 
-        # Define contour levels for plots
-        levels_dict = {
-            "toa_outgoing_longwave_flux": np.array(
-                [
-                    -1.3,
-                    -1.2,
-                    -1.1,
-                    -1,
-                    -0.8,
-                    -0.6,
-                    -0.4,
-                    -0.2,
-                    0.0,
-                    0.2,
-                    0.4,
-                    0.6,
-                    0.8,
-                    1.0,
-                    1.1,
-                    1.2,
-                    1.3,
-                ],
-            ),
-            "Precipitation": np.array(
-                [
-                    -0.5,
-                    -0.4,
-                    -0.3,
-                    -0.2,
-                    -0.1,
-                    0,
-                    0.1,
-                    0.2,
-                    0.3,
-                    0.4,
-                    0.5,
-                    0.6,
-                ],
-            ),
-            "x_wind_850hPa": np.arange(-3.25, 0.5, 0.25),
-            "x_wind_200hPa": np.arange(-3.3, 1.2, 0.3),
-        }
-
-        # Anti-symmetric
-        title = f"{self.label}_{self.varname} \n  Anti-symmetric log(power) [15S-15N]"
-        forename = f"{self.runid}_{self.varname}_Raw_Spec_Asym"
-        figname = str(Path(self.plot_dir) / forename)
-        self.plot_anti_symmetric(
-            psumanti,
-            freq,
-            wave,
-            apzwn,
-            afreq,
-            levels=levels_dict[self.varname],
-            title=title,
-            figname=figname,
+        # Plot and save raw spectra
+        self._plot_and_save_spectrum_pair(
+            psumanti, psumsym, freq, wave, apzwn, afreq,
+            "Raw_Spec", psumanti_cube, psumsym_cube, levels_raw
         )
 
-        # Add provenance information
-        caption = f"{self.varname}_Raw_Spec_Asym"
-        provenance_dict = self.get_provenance_record(caption)
-
-        # Save the cube
-        save_data(forename, provenance_dict, self.cfg, psumanti_cube)
-
-        # Symmetric
-        title = (
-            f"{self.label}_{self.varname} \n Symmetric log(power) [15S-15N]"
-        )
-        forename = f"{self.runid}_{self.varname}_Raw_Spec_Sym"
-        figname = str(Path(self.plot_dir) / forename)
-        self.plot_symmetric(
-            psumsym,
-            freq,
-            wave,
-            apzwn,
-            afreq,
-            levels=levels_dict[self.varname],
-            title=title,
-            figname=figname,
-        )
-
-        # Add provenance information
-        caption = f"{self.varname}_Raw_Spec_Sym"
-        provenance_dict = self.get_provenance_record(caption)
-
-        # Save the cube
-        save_data(forename, provenance_dict, self.cfg, psumsym_cube)
-
-        # Background spectra
-        title = f"{self.label} {self.varname} \n Background power log(power) [15S-15N]"
-        forename = f"{self.runid}_{self.varname}_BG_Spec"
-        figname = f"{forename}"
-
-        # Add provenance information
+        # Save background spectrum
         caption = f"{self.varname}_BG_Spec"
         provenance_dict = self.get_provenance_record(caption)
+        save_data(
+            f"{self.runid}_{self.varname}_BG_Spec",
+            provenance_dict,
+            self.cfg,
+            psumb_cube,
+        )
 
-        # Save the cube
-        save_data(forename, provenance_dict, self.cfg, psumb_cube)
-
-        # *************************************************************
-        #  Fig 3a, 3b:  psum_nolog/psumb_nolog  [ratio]
-        # ***************************************************************
+        # Compute and plot ratio spectra
         psumanti_nolog = np.ma.masked_array(psumanti_nolog / psumb_nolog)
-        psumsym_nolog = np.ma.masked_array(
-            psumsym_nolog / psumb_nolog,
-        )  # (wave,freq)
-        # Make cubes
+        psumsym_nolog = np.ma.masked_array(psumsym_nolog / psumb_nolog)
         psumanti_nolog_cube = self.make_cube(psumanti_nolog, wave, freq)
         psumsym_nolog_cube = self.make_cube(psumsym_nolog, wave, freq)
 
-        # Anti-symmetric
-        # Define contour levels for plots
-        levels_dict = {
-            "toa_outgoing_longwave_flux": np.array(
-                [
-                    0.2,
-                    0.3,
-                    0.4,
-                    0.5,
-                    0.6,
-                    0.7,
-                    0.8,
-                    0.9,
-                    1.0,
-                    1.1,
-                    1.2,
-                    1.3,
-                    1.4,
-                    1.5,
-                    1.6,
-                    1.7,
-                    1.8,
-                ],
-            ),
-            "Precipitation": np.array(
-                [
-                    0.5,
-                    0.6,
-                    0.7,
-                    0.8,
-                    0.9,
-                    1.0,
-                    1.1,
-                    1.15,
-                    1.2,
-                    1.25,
-                    1.3,
-                    1.35,
-                    1.4,
-                    1.45,
-                    1.5,
-                    1.6,
-                    1.7,
-                ],
-            ),
-            "x_wind_850hPa": np.array(
-                [
-                    0.3,
-                    0.4,
-                    0.5,
-                    0.6,
-                    0.7,
-                    0.8,
-                    0.9,
-                    1.0,
-                    1.1,
-                    1.2,
-                    1.3,
-                    1.4,
-                    1.5,
-                    1.6,
-                    1.7,
-                    1.8,
-                    1.9,
-                ],
-            ),
-            "x_wind_200hPa": np.array(
-                [
-                    0.3,
-                    0.4,
-                    0.5,
-                    0.6,
-                    0.7,
-                    0.8,
-                    0.9,
-                    1.0,
-                    1.1,
-                    1.2,
-                    1.3,
-                    1.4,
-                    1.5,
-                    1.6,
-                    1.7,
-                    1.8,
-                    2,
-                ],
-            ),
-        }
-
-        title = f"{self.label} {self.varname} \n Anti-symmetric/Background log(power) [15S-15N]"
-        forename = f"{self.runid}_{self.varname}_Ratio_Spec_Asym"
-        figname = str(Path(self.plot_dir) / forename)
-        self.plot_anti_symmetric(
-            psumanti_nolog,
-            freq,
-            wave,
-            apzwn,
-            afreq,
-            levels=levels_dict[self.varname],
-            title=title,
-            figname=figname,
+        self._plot_and_save_spectrum_pair(
+            psumanti_nolog, psumsym_nolog, freq, wave, apzwn, afreq,
+            "Ratio_Spec", psumanti_nolog_cube, psumsym_nolog_cube, levels_ratio
         )
 
-        # Add provenance information
-        caption = f"{self.varname}_Ratio_Spec_Asym"
-        provenance_dict = self.get_provenance_record(caption)
+    def _plot_and_save_spectrum_pair(self, psumanti, psumsym, freq, wave, apzwn,
+                                      afreq, spec_type, cube_asym, cube_sym, levels_dict):
+        """Plot and save both anti-symmetric and symmetric spectra.
 
-        # Save the cube
-        save_data(forename, provenance_dict, self.cfg, psumanti_nolog_cube)
+        Parameters
+        ----------
+        psumanti : np.ndarray
+            Anti-symmetric spectrum data
+        psumsym : np.ndarray
+            Symmetric spectrum data
+        freq : np.ndarray
+            Frequency array
+        wave : np.ndarray
+            Wavenumber array
+        apzwn : np.ndarray
+            Wavenumber array for dispersion curves
+        afreq : np.ndarray
+            Frequency array for dispersion curves
+        spec_type : str
+            Spectrum type suffix ("Raw_Spec" or "Ratio_Spec")
+        cube_asym : iris.cube.Cube
+            Cube for anti-symmetric data
+        cube_sym : iris.cube.Cube
+            Cube for symmetric data
+        levels_dict : dict
+            Contour levels by variable and symmetry
+        """
+        # Anti-symmetric
+        title_asym = (
+            f"{self.label} {self.varname} \n Anti-symmetric {spec_type} [15S-15N]"
+        )
+        forename_asym = f"{self.runid}_{self.varname}_{spec_type}_Asym"
+        figname_asym = str(Path(self.plot_dir) / forename_asym)
+        levels_asym = levels_dict.get("asym", levels_dict)[self.varname]
+
+        self.plot_anti_symmetric(
+            psumanti, freq, wave, apzwn, afreq,
+            levels=levels_asym, title=title_asym, figname=figname_asym,
+        )
+        caption_asym = f"{self.varname}_{spec_type}_Asym"
+        provenance_dict = self.get_provenance_record(caption_asym)
+        save_data(forename_asym, provenance_dict, self.cfg, cube_asym)
 
         # Symmetric
-        # Define contour levels for plots
-        levels_dict = {
-            "toa_outgoing_longwave_flux": np.array(
-                [
-                    0.2,
-                    0.3,
-                    0.4,
-                    0.5,
-                    0.6,
-                    0.7,
-                    0.8,
-                    0.9,
-                    1.0,
-                    1.1,
-                    1.2,
-                    1.4,
-                    1.7,
-                    2.0,
-                    2.4,
-                    2.8,
-                    3.2,
-                ],
-            ),
-            "Precipitation": np.array(
-                [
-                    0.5,
-                    0.6,
-                    0.7,
-                    0.8,
-                    0.9,
-                    1.0,
-                    1.1,
-                    1.15,
-                    1.2,
-                    1.25,
-                    1.3,
-                    1.35,
-                    1.4,
-                    1.45,
-                    1.5,
-                    1.6,
-                    1.7,
-                ],
-            ),
-            "x_wind_850hPa": np.array(
-                [
-                    0.2,
-                    0.4,
-                    0.6,
-                    0.8,
-                    1.0,
-                    1.2,
-                    1.3,
-                    1.4,
-                    1.5,
-                    1.6,
-                    1.7,
-                    1.8,
-                    2,
-                    2.2,
-                    2.4,
-                    2.6,
-                    2.8,
-                ],
-            ),
-            "x_wind_200hPa": np.array(
-                [
-                    0.2,
-                    0.4,
-                    0.6,
-                    0.8,
-                    1.0,
-                    1.2,
-                    1.3,
-                    1.4,
-                    1.5,
-                    1.6,
-                    1.7,
-                    1.8,
-                    2,
-                    2.2,
-                    2.4,
-                    2.6,
-                    2.8,
-                ],
-            ),
-        }
-
-        title = f"{self.label} {self.varname} \n Symmetric/Background log(power) [15S-15N]"
-        forename = f"{self.runid}_{self.varname}_Ratio_Spec_Sym"
-        figname = str(Path(self.plot_dir) / forename)
-        self.plot_symmetric(
-            psumsym_nolog,
-            freq,
-            wave,
-            apzwn,
-            afreq,
-            levels=levels_dict[self.varname],
-            title=title,
-            figname=figname,
+        title_sym = (
+            f"{self.label} {self.varname} \n Symmetric {spec_type} [15S-15N]"
         )
+        forename_sym = f"{self.runid}_{self.varname}_{spec_type}_Sym"
+        figname_sym = str(Path(self.plot_dir) / forename_sym)
+        levels_sym = levels_dict.get("sym", levels_dict)[self.varname]
 
-        # Add provenance information
-        caption = f"{self.varname}_Ratio_Spec_Sym"
-        provenance_dict = self.get_provenance_record(caption)
-
-        # Save the cube
-        save_data(forename, provenance_dict, self.cfg, psumsym_nolog_cube)
+        self.plot_symmetric(
+            psumsym, freq, wave, apzwn, afreq,
+            levels=levels_sym, title=title_sym, figname=figname_sym,
+        )
+        caption_sym = f"{self.varname}_{spec_type}_Sym"
+        provenance_dict = self.get_provenance_record(caption_sym)
+        save_data(forename_sym, provenance_dict, self.cfg, cube_sym)
 
     def mjo_wavenum_freq_season(self, sea_name):
         """
