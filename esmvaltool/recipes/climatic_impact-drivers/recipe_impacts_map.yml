@@ -11,7 +11,7 @@
 documentation:
   title: Impact diagnostic.
   description: >
-    Diagnostic to plot the temporal mean of selected climate impact drivers discussed in Elling et al. 2026 on a global map.
+    Diagnostic to plot the temporal mean of selected Climate Impact-Drivers discussed in Elling et al. 2026 on a global map.
   authors:
     - caspers_laura
   maintainer:

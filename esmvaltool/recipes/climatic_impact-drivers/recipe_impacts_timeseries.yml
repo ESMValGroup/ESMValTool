@@ -240,17 +240,17 @@ diagnostics:
     variables:
       tos:
         timerange: 19950101/20141231
-        mip: Oday
+        mip: Omon
         preprocessor: ocean_preproc_timeseries
       tos_max:
         short_name: tos
         timerange: 19950101/20141231
-        mip: Oday
+        mip: Omon
         preprocessor: ocean_preproc_timeseries_max
       tos_min:
         short_name: tos
         timerange: 19950101/20141231
-        mip: Oday
+        mip: Omon
         preprocessor: ocean_preproc_timeseries_min
     scripts:
       plot: *timeseries_config

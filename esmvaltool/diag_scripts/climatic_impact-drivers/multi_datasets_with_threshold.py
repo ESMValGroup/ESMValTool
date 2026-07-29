@@ -5,7 +5,7 @@ Description
 This diagnostic vizualizes climate impact drivers that were defined
 in Elling et al. (2026) for various models.
 
-The code is based on the monitor/multi_datasets.py diagnostic adding
+This diagnostic adapts the monitor/multi_datasets.py diagnostic adding
 pre-processing routines to allow for plots of the number of days in a
 year that certain thresholds are exceeded. With this diagnostic,
 multiple datasets can be visualized in a single plot.
@@ -532,7 +532,7 @@ class MultiDatasetsThreshold(MultiDatasets):
         self,
         cube,
     ):
-        """Count the number of days per year on which the threshold is exceeded"""
+        """Count the number of days per year on which the threshold is exceeded."""
         # Preventing that this option is executed several times
         if cube.coords("day_of_year"):
             msg = "Reusing already aggregated cube"
