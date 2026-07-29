@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - gha_conda_install_py314
   schedule:
     - cron: "0 4 * * *"
 
@@ -29,6 +30,7 @@ jobs:
         python-version:
           - "3.12"
           - "3.13"
+          - "3.14"
     name: Install esmvaltool-python with Python ${{ matrix.python-version }} on ${{ matrix.os }}
     steps:
       - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
