@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """MJO lag-regression Hovmöller diagnostic.
 
 Description

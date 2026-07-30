@@ -68,10 +68,6 @@ def plot_hovmoeller(
     ax.set_ylabel("Lag (days)")
     ax.set_xlim(cfg.get("longitude_limits", [0.0, 360.0]))
 
-    # Negative lags at the top and positive lags at the bottom.
-    # max_lag = np.max(np.abs(lags))
-    # ax.set_ylim(max_lag, -max_lag)
-
     ax.set_title(title or cfg.get("plot_title", "MJO Hovmöller diagram"))
 
     colorbar = fig.colorbar(contour, ax=ax, pad=0.02)
