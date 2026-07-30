@@ -477,10 +477,11 @@ error.
    The previous release manager ensures the current release manager has the
    required administrative permissions to make the release.
    Consider the following services:
-   `esmvaltool-suite-feedstock <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__,for
-   making the conda-forge package, and the virtual machine on Levante,
+   `esmvaltool-suite-feedstock <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__,
+   for making the conda-forge package, and the virtual machine on Levante,
    `esmvaltool.dkrz.de <https://esmvaltool.dkrz.de>`__ for sharing recipe
    runs for the ESMValTool release.
+
    Ask someone with administrative permissions to add you to the
    `@release-managers <https://github.com/orgs/ESMValGroup/teams/release-managers>`_
    team because only members of this team have permission to create tags in the
