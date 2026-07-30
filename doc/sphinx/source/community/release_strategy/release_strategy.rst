@@ -342,6 +342,13 @@ These are the detailed steps to take to make a release.
    - Any contributor is welcome to add issues or pull requests that they intend to work on themselves to a milestone.
 
 
+#. Determine dates, update schedule, inform all issues in the milestone.
+
+   - The release manager will determine the dates for the feature freeze and planned release, and update the :ref:`release_schedule`.
+   - Add the freeze dates as due date to the milestones for ESMValCore and ESMValTool. e.g. `ESMValTool Milestones <https://github.com/ESMValGroup/ESMValTool/milestones>`__
+   - Comment on any issues and PRs in the milestone to inform the assignees of the feature freeze date two weeks in advance.
+
+
 #. ESMValCore feature freeze, testing, and release candidates
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
@@ -393,7 +400,7 @@ These are the detailed steps to take to make a release.
 
 #. Announce the releases
 
-   - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on twitter.
+   - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on linkedin.
 
 
 #. Core development team meets to coordinate the content of next milestone
@@ -576,6 +583,7 @@ If not making an ESMValTool release candidate, you can tag the ``main`` branch a
 with these commands, before making the release branch at that point.
 
 .. code-block:: bash
+
    git checkout main
    git pull
    git tag v2.1.0rc1
@@ -591,6 +599,7 @@ branch ``v2.1.x`` for the releases ``v2.1.0``, ``v2.1.1``, etc.
 For the ``v2.1`` release, the command to create the release branch would be:
 
 .. code-block:: bash
+
    git checkout -b v2.1.x tags/v2.1.0rc1
 
 where ``v2.1.0rc1`` is the tag of the first release candidate.
