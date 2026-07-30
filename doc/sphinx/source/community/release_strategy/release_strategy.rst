@@ -38,9 +38,9 @@ Timeline
 1. Contributors assign issues (and pull requests) that they intend to finish before the due date, there is a separate milestone for ESMValCore and ESMValTool
 2. The ESMValCore feature freeze takes place on the ESMValCore due date
 3. Some additional testing of ESMValCore takes place
-4. ESMValCore release
-5. The ESMValTool feature freeze takes place
-6. Some additional testing of ESMValTool takes place
+4. The ESMValTool feature freeze takes place
+5. Some additional testing of ESMValTool takes place
+6. ESMValCore release
 7. ESMValTool release
 8. Soon after the release, the core development team meets to coordinate the content of the milestone for the next release
 
