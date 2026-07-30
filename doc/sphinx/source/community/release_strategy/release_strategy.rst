@@ -470,7 +470,16 @@ error.
    The previous release manager ensures the current release manager has the
    required administrative permissions to make the release.
    Consider the following services:
-   `conda-forge <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__,
+   `esmvaltool-suite-feedstock <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__,for
+   making the conda-forge package, and the virtual machine on Levante,
+   `esmvaltool.dkrz.de <https://esmvaltool.dkrz.de>`__ for sharing recipe
+   runs for the ESMValTool release.
+   Ask someone with administrative permissions to add you to the
+   `@release-managers <https://github.com/orgs/ESMValGroup/teams/release-managers>`_
+   team because only members of this team have permission to create tags in the
+   GitHub repository.
+
+   If automation fails you may need access to the following services:
    `DockerHub <https://hub.docker.com/orgs/esmvalgroup>`__,
    `PyPI <https://pypi.org/project/ESMValTool/>`__, and
    `readthedocs <https://readthedocs.org/dashboard/esmvaltool/users/>`__.
@@ -515,9 +524,14 @@ Use the script :ref:`draft_release_notes.py` to create a draft of the
 release notes.
 This script uses the titles and labels of merged pull requests since the
 previous release.
+Review the results, and if anything needs changing, change it on GitHub and
+re-run the script until the changelog looks acceptable.
+Copy the result to the file ``doc/sphinx/source/changelog.rst``.
+
 Open a discussion to allow members of the development team to nominate pull requests
 as highlights. Add the most voted pull requests as highlights at the beginning of
 changelog.
+
 After the highlights section, list any backward incompatible changes that the
 release may include.
 The :ref:`backward compatibility policy <guidance-on-releasing-backward-incompatible-changes>`
@@ -525,67 +539,67 @@ lists the information that should be provided by the developer of any backward
 incompatible change.
 Make sure to also list any deprecations that the release may include, as well
 as a brief description on how to upgrade a deprecated feature.
-Review the results, and if anything needs changing, change it on GitHub and
-re-run the script until the changelog looks acceptable.
-Copy the result to the file ``doc/sphinx/source/changelog.rst``.
+
+Ensure that any pull request labelled as
+`issue introduced since last release <https://github.com/ESMValGroup/ESMValCore/pulls?q=is%3Apr+label%3A%22issue+introduced+since+last+release%22+is%3Aclosed>`__
+is listed on the same line as the pull request that introduced the issue.
+This label is intended for pull requests that fix a mistake that was
+introduced after the last release and therefore is not a bug that is present in
+any released version of the code.
+
 If possible, try to set the script dates to the date of the release
 you are managing.
 Make a pull request and get it merged into ``main``.
 
-4. Create a release branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-Create a branch off the ``main`` branch and push it to GitHub.
-The name of the release branch should be of the form ``vX.Y.x``,
-where ``X.Y`` is the major and minor version number of the release, e.g.
-``v2.1.x`` for the releases ``v2.1.0``, ``v2.1.1``, etc.
-Ask someone with administrative permissions to set up branch protection rules
-for it so only you and the person helping you with the release can push to it.
-Announce the name of the branch in an issue and ask the members of the
-`ESMValTool development team <https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam>`__
-to run their favourite recipe using this branch.
-
-5. Make the release on GitHub
+4. Make the release on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Do a final check that all tests on CircleCI and GitHub Actions completed
 successfully.
-Then click the
+A tag is required on the ``main`` branch to inform
+`setuptools-scm <https://setuptools-scm.readthedocs.io/>`_ about the release,
+so that it increases the version number in ``main``.
+This can be done by creating a *first* release candidate and tag off ``main``:
+click the
 `releases tab <https://github.com/ESMValGroup/ESMValTool/releases>`__
-and create the new release from the release branch (i.e. not from ``main``).
+and create the new release.
+
 The release tag always starts with the letter ``v`` followed by the version
-number, e.g. ``v2.1.0``.
+number, e.g. ``v2.1.0``. Create a tag corresponding to the release candidate or final release, e.g.
+``v2.1.0rc1`` or ``v2.1.0``. You can add a link to the relevant changelog in the
+release notes.
 
-6. Merge the release branch back into the main branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tick the `This is a pre-release` box if working with a release candidate.
 
-When the (pre-)release is tagged, it is time to merge the release branch back into `main`.
-We do this for two reasons, namely, one, to mark the point up to which commits in `main`
-have been considered for inclusion into the present release, and, two, to inform
-setuptools-scm about the version number so that it creates the correct version number in
-`main`.
-However, unlike in a normal merge, we do not want to integrate any of the changes from the
-release branch into main.
-This is because all changes that should be in both branches, i.e. bug fixes, originate from
-`main` anyway and the only other changes in the release branch relate to the release itself.
-To take this into account, we perform the merge in this case on the command line using `the
-ours merge strategy <https://git-scm.com/docs/merge-strategies#Documentation/merge-strategies.txt-ours-1>`__
-(``git merge -s ours``), not to be confused with the ``ours`` option to the ort merge strategy
-(``git merge -X ours``).
-For details about merge strategies, see the above-linked page.
-To execute the merge use following sequence of steps
+All subsequent release candidates and the final release are created off the release branch.
+If not making an ESMValTool release candidate, you can tag the ``main`` branch and push to GitHub
+with these commands, before making the release branch at that point.
 
 .. code-block:: bash
-
-   git fetch
    git checkout main
    git pull
-   git merge -s ours v2.1.x
-   git push
+   git tag v2.1.0rc1
+   git push origin tag v2.1.0rc1
+   git checkout -b v2.1.x
 
-Note that the release branch remains intact and you should continue any work on the release
-on that branch.
+5. Create a release branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-7. Create and upload the PyPI package
+Create a branch off the first release candidate tag and push it to GitHub.
+This step only needs to be performed once for every minor release. e.g.
+branch ``v2.1.x`` for the releases ``v2.1.0``, ``v2.1.1``, etc.
+For the ``v2.1`` release, the command to create the release branch would be:
+
+.. code-block:: bash
+   git checkout -b v2.1.x tags/v2.1.0rc1
+
+where ``v2.1.0rc1`` is the tag of the first release candidate.
+
+Release branches must be named ``vX.Y.x`` where ``X`` is the major and ``Y`` is
+the minor version number of the release to ensure setuptools-scm_ provides the
+correct version number for the release.
+
+6. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
@@ -599,7 +613,7 @@ If the automatic build and upload has failed for some reason, do it manually by
 following these instructions:
 
 -  Check out the tag corresponding to the release,
-   e.g. ``git checkout tags/v2.1.0``
+   e.g. ``git checkout tags/v2.1.0``
 -  Make sure your current working directory is clean by checking the output
    of ``git status`` and by running ``git clean -xdf`` to remove any files
    ignored by git.
