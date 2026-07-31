@@ -400,7 +400,7 @@ These are the detailed steps to take to make a release.
 
 #. Announce the releases
 
-   - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on linkedin.
+   - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on LinkedIn.
 
 
 #. Core development team meets to coordinate the content of next milestone
@@ -549,7 +549,7 @@ Make sure to also list any deprecations that the release may include, as well
 as a brief description on how to upgrade a deprecated feature.
 
 Ensure that any pull request labelled as
-`issue introduced since last release <https://github.com/ESMValGroup/ESMValCore/pulls?q=is%3Apr+label%3A%22issue+introduced+since+last+release%22+is%3Aclosed>`__
+`issue introduced since last release <https://github.com/ESMValGroup/ESMValTool/pulls?q=is%3Apr+label%3A%22issue+introduced+since+last+release%22+is%3Aclosed>`__
 is listed on the same line as the pull request that introduced the issue.
 This label is intended for pull requests that fix a mistake that was
 introduced after the last release and therefore is not a bug that is present in
