@@ -199,6 +199,12 @@ def finish_plot(fig, labels, pltdir, name, pdf):
         filename for png output without extension
     pdf : obj
         pdf object collection all pages in case of pdf output
+
+    Returns
+    -------
+    str or None
+        Path to plot or None if PDF output is desired.
+
     """
     fig.subplots_adjust(bottom=0.20)
     caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
@@ -210,12 +216,22 @@ def finish_plot(fig, labels, pltdir, name, pdf):
     if pdf is None:
         filepath = os.path.join(pltdir, name + ".png")
         fig.savefig(filepath)
-    else:
-        fig.savefig(pdf, dpi=80, format="pdf")
-        plt.close()
+        return filepath
+
+    fig.savefig(pdf, dpi=80, format="pdf")
+    plt.close()
+    return None
 
 
-def make_landcover_bars(cfg, regnam, modnam, values, var):
+def make_landcover_bars(
+    cfg,
+    regnam,
+    modnam,
+    values,
+    var,
+    *,
+    provenance_record=None,
+):
     """Make bar plots for regional values.
 
     Parameters
@@ -232,6 +248,9 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
         frac --> region average fractions in %
     var : str
         variable short name
+    provenance_record : None or dict
+        Provenance record.
+
     """
     # Get colorscheme from recipe
     plt.style.use(cfg.get("colorscheme", "seaborn"))
@@ -244,7 +263,12 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
         # Plot plot with bars
         fig = plot_bars(info, metr, values[metr], regnam)
         # Add legend and finish plot
-        finish_plot(fig, modnam[metr], info["pd"], "_".join([metr, var]), pdf)
+        plot_path = finish_plot(
+            fig, modnam[metr], info["pd"], "_".join([metr, var]), pdf
+        )
+        if plot_path is not None and provenance_record is not None:
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
 
     if pdf is not None:
         pdf.close()
@@ -319,9 +343,17 @@ def get_timmeans(attr, cubes, refset, prov_rec):
         cubes["exp"][var].append(mean_cube)
     # Add information to provenance record
     if prov_rec[var] == {}:
+        if "start_year" in attr and "end_year" in attr:
+            timerange_str = " between {start_year} and {end_year}".format(
+                **attr
+            )
+        else:
+            timerange_str = ""
         caption = (
-            "Mean land cover fraction for {long_name} between "
-            "{start_year} and {end_year} for different datasets".format(**attr)
+            "Mean land cover fraction for {long_name}{timerange_str} for "
+            "different datasets".format(
+                **{**attr, "timerange_str": timerange_str}
+            )
         )
         prov_rec[var] = {
             "caption": caption,
@@ -558,12 +590,14 @@ def main(cfg):
         )
 
         # Plot area values
+        provenance_record = None if prov_rec is None else prov_rec[target]
         make_landcover_bars(
             cfg,
             regnam,
             lcdata[target]["groups"],
             lcdata[target]["values"],
             target,
+            provenance_record=provenance_record,
         )
 
 
