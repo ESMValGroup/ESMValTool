@@ -351,10 +351,10 @@ These are the detailed steps to take to make a release.
 
 #. ESMValCore feature freeze, testing, and release candidates
 
-   - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
    - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
-   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``pyproject.toml`` of ESMValTool to add it to the list of channels used. Adjust the pin on ESMValCore after each release candidate (e.g. ``esmvalcore==2.8.0rc1``). Check that the environment creation of ESMValTool works fine and contains the latest release candidate version.
-   - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate.
+   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``pyproject.toml`` of ESMValTool to add it to the list of channels used.
+   - Check that the environment creation of ESMValTool works fine and contains the latest release candidate version. Adjust the pin if necessary (e.g. ``esmvalcore==2.8.0rc1``).
+   - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate. See :ref:`Release recipe runs <detailed_release_procedure>`.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
    - Make as many release candidates for ESMValCore as needed in order to fix all the detected bugs.
@@ -362,7 +362,6 @@ These are the detailed steps to take to make a release.
 
 #. ESMValTool feature freeze
 
-   - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
    - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step).
 
 
@@ -391,8 +390,9 @@ These are the detailed steps to take to make a release.
 
 #. ESMValTool release
 
-   - Pin ESMValCore to the same version as ESMValTool in the ``pyproject.toml`` and on `conda-forge
-     <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
+   - Pin ESMValCore to the same version as ESMValTool in the ``pyproject.toml`` e.g. ``"ESMValCore" = ">=2.1.0"``
+      and on `conda-forge
+     <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__ e.g. ``esmvalcore 2.1.*`` in the recipe.
      This way, we make sure that ESMValTool uses the ESMValCore version with which it has been tested.
      Make sure to comment again the release candidate channel once ESMValCore has been released.
    - Make the release by following :ref:`How to make a release`.
