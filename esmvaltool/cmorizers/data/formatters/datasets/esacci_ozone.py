@@ -83,7 +83,9 @@ logger = logging.getLogger(__name__)
 
 
 def _convert_units(
-    cubes: iris.cube.CubeList, short_name: str, var: dict,
+    cubes: iris.cube.CubeList,
+    short_name: str,
+    var: dict,
 ) -> iris.cube.Cube:
     """Perform variable-specific conversion of units.
 
