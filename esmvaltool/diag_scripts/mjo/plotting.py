@@ -21,11 +21,12 @@ def plot_hovmoeller(
     lags = np.asarray(lags)
 
     if regression.shape != (lags.size, longitude.size):
-        raise ValueError(
+        msg = (
             "Regression shape must be (lag, longitude), but got "
             f"{regression.shape} for {lags.size} lags and "
-            f"{longitude.size} longitudes.",
+            f"{longitude.size} longitudes."
         )
+        raise ValueError(msg)
 
     # Ensure longitudes and corresponding data are ordered.
     order = np.argsort(longitude)
@@ -38,7 +39,8 @@ def plot_hovmoeller(
 
     nlevels = int(cfg.get("contour_levels", 21))
     if nlevels < 3:
-        raise ValueError("contour_levels must be at least 3")
+        msg = "contour_levels must be at least 3"
+        raise ValueError(msg)
 
     levels = np.linspace(-float(vmax), float(vmax), nlevels)
 

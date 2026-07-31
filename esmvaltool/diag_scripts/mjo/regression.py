@@ -48,22 +48,23 @@ def lag_regression(cube, index, max_lag=60, *, standardize_index=True):
     data = np.moveaxis(data, time_axis, 0)
 
     if data.ndim != 2:
-        raise ValueError(
+        msg = (
             "Expected a two-dimensional time-longitude cube, "
-            f"got shape {data.shape}",
+            f"got shape {data.shape}"
         )
+        raise ValueError(msg)
 
     index = np.ma.asarray(index, dtype=float).squeeze()
     if index.ndim != 1 or index.size != data.shape[0]:
-        raise ValueError(
-            "The index must be one-dimensional and match the time axis",
-        )
+        msg = "The index must be one-dimensional and match the time axis"
+        raise ValueError(msg)
 
     if standardize_index:
         index_mean = np.ma.mean(index)
         index_std = np.ma.std(index)
         if not np.isfinite(index_std) or index_std == 0:
-            raise ValueError("The MJO index has zero or invalid variance")
+            msg = "The MJO index has zero or invalid variance"
+            raise ValueError(msg)
         index = (index - index_mean) / index_std
 
     lags = np.arange(-max_lag, max_lag + 1)

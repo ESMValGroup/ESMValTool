@@ -6,11 +6,11 @@ import numpy as np
 def lanczos_weights(low_period, high_period, weights):
     """Return Lanczos band-pass weights for daily data."""
     if weights < 3 or weights % 2 == 0:
-        raise ValueError("weights must be an odd integer greater than 1")
+        msg = "weights must be an odd integer greater than 1"
+        raise ValueError(msg)
     if low_period <= 0 or high_period <= low_period:
-        raise ValueError(
-            "Expected 0 < low_period < high_period, e.g. 20 and 100 days",
-        )
+        msg = "Expected 0 < low_period < high_period, e.g. 20 and 100 days"
+        raise ValueError(msg)
 
     half_width = weights // 2
     n = np.arange(-half_width, half_width + 1, dtype=float)
@@ -70,7 +70,8 @@ def lanczos_bandpass(
 ):
     """Apply a Lanczos band-pass filter along the cube time dimension."""
     if not cube.coords("time"):
-        raise ValueError("Input cube has no time coordinate")
+        msg = "Input cube has no time coordinate"
+        raise ValueError(msg)
 
     time_axis = cube.coord_dims("time")[0]
     coefficients = lanczos_weights(low_period, high_period, weights)

@@ -184,9 +184,8 @@ def main(cfg):
 
     for label, entries in groups.items():
         if len(entries) != 1:
-            raise ValueError(
-                f"Expected one input file for {label!r}, got {len(entries)}",
-            )
+            msg = f"Expected one input file for {label!r}, got {len(entries)}"
+            raise ValueError(msg)
 
         metadata = entries[0]
         logger.info("Processing %s", label)
