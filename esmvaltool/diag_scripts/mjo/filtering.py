@@ -9,7 +9,7 @@ def lanczos_weights(low_period, high_period, weights):
         raise ValueError("weights must be an odd integer greater than 1")
     if low_period <= 0 or high_period <= low_period:
         raise ValueError(
-            "Expected 0 < low_period < high_period, e.g. 20 and 100 days"
+            "Expected 0 < low_period < high_period, e.g. 20 and 100 days",
         )
 
     half_width = weights // 2

@@ -111,7 +111,7 @@ def load_test_setups(path: str | Path) -> list:
 
     return [
         pytest.param(
-            s["input_data"], s["settings"], s["expected_pngs"], id=test_id
+            s["input_data"], s["settings"], s["expected_pngs"], id=test_id,
         )
         for test_id, s in setups.items()
     ]

@@ -24,7 +24,7 @@ def plot_hovmoeller(
         raise ValueError(
             "Regression shape must be (lag, longitude), but got "
             f"{regression.shape} for {lags.size} lags and "
-            f"{longitude.size} longitudes."
+            f"{longitude.size} longitudes.",
         )
 
     # Ensure longitudes and corresponding data are ordered.
@@ -75,7 +75,7 @@ def plot_hovmoeller(
         cfg.get(
             "colorbar_label",
             "Precipitation regression coefficient",
-        )
+        ),
     )
 
     return fig

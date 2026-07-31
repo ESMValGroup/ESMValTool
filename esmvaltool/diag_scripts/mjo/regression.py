@@ -50,13 +50,13 @@ def lag_regression(cube, index, max_lag=60, standardize_index=True):
     if data.ndim != 2:
         raise ValueError(
             "Expected a two-dimensional time-longitude cube, "
-            f"got shape {data.shape}"
+            f"got shape {data.shape}",
         )
 
     index = np.ma.asarray(index, dtype=float).squeeze()
     if index.ndim != 1 or index.size != data.shape[0]:
         raise ValueError(
-            "The index must be one-dimensional and match the time axis"
+            "The index must be one-dimensional and match the time axis",
         )
 
     if standardize_index:

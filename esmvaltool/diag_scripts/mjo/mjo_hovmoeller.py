@@ -120,7 +120,7 @@ def process_tropical_cube(cube, cfg):
                 f"{cfg['low_period']}-{cfg['high_period']} days"
             ),
             "lanczos_weights": cfg["lanczos_weights"],
-        }
+        },
     )
     return result
 
@@ -185,7 +185,7 @@ def main(cfg):
     for label, entries in groups.items():
         if len(entries) != 1:
             raise ValueError(
-                f"Expected one input file for {label!r}, got {len(entries)}"
+                f"Expected one input file for {label!r}, got {len(entries)}",
             )
 
         metadata = entries[0]
