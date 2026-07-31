@@ -262,7 +262,11 @@ def make_landcover_bars(
         fig = plot_bars(info, metr, values[metr], regnam)
         # Add legend and finish plot
         plot_path = finish_plot(
-            fig, modnam[metr], info["pd"], f"{metr}_{var}", pdf,
+            fig,
+            modnam[metr],
+            info["pd"],
+            f"{metr}_{var}",
+            pdf,
         )
         if plot_path is not None and provenance_record is not None:
             with ProvenanceLogger(cfg) as provenance_logger:
