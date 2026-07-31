@@ -37,7 +37,7 @@ def _paired_regression(field, index):
     return output
 
 
-def lag_regression(cube, index, max_lag=60, standardize_index=True):
+def lag_regression(cube, index, max_lag=60, *, standardize_index=True):
     """Regress a time-longitude field against an index at multiple lags.
 
     Negative lag means that the field leads the index. Positive lag means
