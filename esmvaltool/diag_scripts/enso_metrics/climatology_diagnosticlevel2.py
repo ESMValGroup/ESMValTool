@@ -26,6 +26,7 @@ def plotmaps_level2(input_data, grp):
     """Create map plots for pair of input data."""
     fig = plt.figure(figsize=(18, 6))
     proj = ccrs.Orthographic(central_longitude=210.0)
+    cubes = []
     for plt_pos, dataset in enumerate(input_data, start=121):
         logger.info(
             "dataset: %s - %s",
@@ -33,6 +34,9 @@ def plotmaps_level2(input_data, grp):
             dataset["long_name"],
         )
         cube, cbar_label = load_seacycle_stdev(dataset)
+
+        # return cubes to save
+        cubes.append(cube)
 
         ax1 = plt.subplot(plt_pos, projection=proj)
         ax1.add_feature(cfeature.LAND, facecolor="gray")
@@ -61,7 +65,7 @@ def plotmaps_level2(input_data, grp):
     cbar = fig.colorbar(cf1, cax=cax, orientation="horizontal", extend="both")
     cbar.set_label(cbar_label)
 
-    return fig
+    return fig, cubes
 
 
 def load_seacycle_stdev(dataset):
@@ -123,16 +127,15 @@ def provenance_record(var_grp, ancestor_files):
     return record
 
 
-def save_plotdata(plotdata, group, pairs, cfg):
-    """Save both obs and model plotted data."""
-    for i, cube in enumerate(plotdata):
-        data_prov = provenance_record(group, [pairs[i]["filename"]])
-        datafile = [
-            pairs[i]["dataset"],
-            pairs[i]["short_name"],
-            pairs[i]["preprocessor"],
-        ]
-        save_data("_".join(datafile), data_prov, cfg, cube)
+def save_plotdata(plotdata, group, pairs, cfg, i):
+    """Save both obs and model plotted data, i: pairs index."""
+    data_prov = provenance_record(group, [pairs[i]["filename"]])
+    datafile = [
+        pairs[i]["dataset"],
+        pairs[i]["short_name"],
+        pairs[i]["preprocessor"],
+    ]
+    save_data("_".join(datafile), data_prov, cfg, plotdata[i])
 
 
 def main(cfg):
@@ -153,9 +156,10 @@ def main(cfg):
             # create pairs, add obs first to list
             pairs = [var_attr[-1]]
             logger.info("iterate though datasets\n %s", pformat(metadata))
-            if metadata["project"] == "CMIP6":
+            if metadata["project"].startswith("CMIP"):
                 pairs.append(metadata)
-                fig = plotmaps_level2(pairs, grp)
+                fig, data_cubes = plotmaps_level2(pairs, grp)
+                save_plotdata(data_cubes, grp, pairs, cfg, 1)
                 filename = "_".join(
                     [
                         metadata["dataset"],
@@ -170,6 +174,8 @@ def main(cfg):
                     figure=fig,
                     dpi=300,
                 )
+        # save obs data for each group at end so not repeated for each model
+        save_plotdata(data_cubes, grp, pairs, cfg, 0)
 
 
 if __name__ == "__main__":
