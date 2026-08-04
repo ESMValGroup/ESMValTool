@@ -3,9 +3,9 @@
 # TODO: currently need to call map function after timeseries such that cube is still intact for timeseries, maybe fix this in diagnostic...
 ---
 documentation:
-  title: Impact diagnostic.
+  title: Climatic Impact-Drivers diagnostic.
   description: >
-    Diagnostic to plot yearly means of the spacial mean of selected climate impact drivers discussed in Elling et al. 2026.
+    Diagnostic to plot yearly means of the spacial mean of selected Climatic Impact-Drivers discussed in Elling et al. 2026.
   authors:
     - caspers_laura
   maintainer:
@@ -119,7 +119,7 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days: &exceeding_day_config
-        script: impact/multi_datasets_with_threshold.py
+        script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -226,7 +226,7 @@ diagnostics:
         preprocessor: zostoga_preproc_timeseries
     scripts:
       thermosteric_sealevel_mean: &timeseries_config
-        script: impact/multi_datasets_with_threshold.py
+        script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: project

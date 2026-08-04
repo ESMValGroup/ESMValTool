@@ -1,8 +1,8 @@
-"""Diagnostic vizualizing climate impact drivers.
+"""Diagnostic vizualizing Climatic Impact-Drivers.
 
 Description
 -----------
-This diagnostic vizualizes climate impact drivers that were defined
+This diagnostic vizualizes Climatic Impact-Drivers that were defined
 in Elling et al. (2026) for various models.
 
 This diagnostic adapts the monitor/multi_datasets.py diagnostic adding

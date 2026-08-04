@@ -9,9 +9,9 @@
 
 ---
 documentation:
-  title: Impact diagnostic.
+  title: Climatic Impact-Drivers diagnostic.
   description: >
-    Diagnostic to plot the temporal mean of selected Climate Impact-Drivers discussed in Elling et al. 2026 on a global map.
+    Diagnostic to plot the temporal mean of selected Climatic Impact-Drivers discussed in Elling et al. 2026 on a global map.
   authors:
     - caspers_laura
   maintainer:
@@ -115,7 +115,7 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days: &exceeding_day_config
-        script: impact/multi_datasets_with_threshold.py
+        script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
@@ -260,7 +260,7 @@ diagnostics:
         preprocessor: ocean_preproc
     scripts:
       plot: &map_config
-        script: impact/multi_datasets_with_threshold.py
+        script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset

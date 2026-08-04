@@ -468,7 +468,7 @@
   },
   "publication_date": "2026-07-28",
   "title": "ESMValTool",
-  "version": "v2.15.0"
+  "version": "v2.15.0",
   "communities": [
     {
       "identifier": "enes-ri"
