@@ -62,13 +62,13 @@ Diagnostics are stored in esmvaltool/diag_scripts/hydrology
     * wflow.py
     * lisflood.py
     * hype.py
-    * globwat.py 
+    * globwat.py
 
 
 User settings in recipe
 -----------------------
 
-All hydrological recipes require a shapefile as an input to produce forcing data. This shapefile determines the shape of the basin for which the data will be cut out and processed. All recipes are tested with `the shapefiles <https://github.com/eWaterCycle/recipes_auxiliary_datasets/tree/main/>`_  that are used for the eWaterCycle project. In principle any shapefile can be used, for example, the freely available basin shapefiles from the `HydroSHEDS project <https://www.hydrosheds.org/>`_. 
+All hydrological recipes require a shapefile as an input to produce forcing data. This shapefile determines the shape of the basin for which the data will be cut out and processed. All recipes are tested with `the shapefiles <https://github.com/eWaterCycle/recipes_auxiliary_datasets/tree/main/>`_  that are used for the eWaterCycle project. In principle any shapefile can be used, for example, the freely available basin shapefiles from the `HydroSHEDS project <https://www.hydrosheds.org/>`_.
 
 #. recipe_pcrglobwb.yml
 
@@ -87,7 +87,7 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 
       *extract_shape:*
 
-         * shapefile: Meuse.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
+         * shapefile: Meuse.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to :ref:`configuration option <esmvalcore:config_options>` ``auxiliary_data_dir``).
          * method: contains
          * crop: true
 
@@ -107,7 +107,7 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 	    * dem_file: netcdf file containing a digital elevation model with
 	      elevation in meters and coordinates latitude and longitude.
               A wflow example dataset is available at: https://github.com/openstreams/wflow/tree/master/examples/wflow_rhine_sbm
-              The example dem_file can be obtained from https://github.com/openstreams/wflow/blob/master/examples/wflow_rhine_sbm/staticmaps/wflow_dem.map 
+              The example dem_file can be obtained from https://github.com/openstreams/wflow/blob/master/examples/wflow_rhine_sbm/staticmaps/wflow_dem.map
 	    * regrid: the regridding scheme for regridding to the digital elevation model. Choose ``area_weighted`` (slow) or ``linear``.
 
 #. recipe_lisflood.yml

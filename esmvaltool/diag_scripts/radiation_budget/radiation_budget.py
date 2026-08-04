@@ -175,7 +175,8 @@ def validate_variable_data(variable_data, name, unit):
     if variable["unit"] != unit:
         raise ValueError(
             f"Unit {unit} does not match the unit {variable['unit']} "
-            f"in {variable} for {name}.")
+            f"in {variable} for {name}.",
+        )
 
     return variable
 
@@ -212,8 +213,11 @@ def order_data(cubes, obs_names, obs_unit):
 
     ordered_model_data = []
     for obs_name in obs_names:
-        validated_variable = validate_variable_data(variable_data, obs_name,
-                                                    obs_unit)
+        validated_variable = validate_variable_data(
+            variable_data,
+            obs_name,
+            obs_unit,
+        )
         ordered_model_data.append(validated_variable["data"])
 
     return ordered_model_data
@@ -234,7 +238,7 @@ def read_yaml_file(filepath):
         to a line in the file and the key of the dictionary is the name
         of the column.
     """
-    with open(filepath, "r") as stream:
+    with open(filepath) as stream:
         contents = yaml.safe_load(stream)
     return contents
 
@@ -287,8 +291,8 @@ def load_obs_data():
 
 
 def plot_data(
-    model_dataset,
     model_data,
+    model_label,
     model_period,
     obs_names,
     obs_unit,
@@ -303,11 +307,11 @@ def plot_data(
 
     Parameters
     ----------
-    model_dataset : string
-        The name of the model.
     model_data : list
         Data values from the model for which this comparison plot is being
         generated.
+    model_label : string
+        An identifier for the model dataset to be used in the plot legend.
     model_period : string
         The start and end years of the model dataset.
     obs_names : list
@@ -337,7 +341,7 @@ def plot_data(
     model_minus_ceres = np.array(model_data) - np.array(ceres_data)
 
     figure, axes = plt.subplots(figsize=(12, 8))
-    title = f"Radiation budget for {model_dataset}"
+    title = f"Radiation budget for {model_label}"
     y_label = f"Difference between model output and observations [{obs_unit}]"
     y_lim = (-20, 20)
     axes.set(title=title, ylabel=y_label, ylim=y_lim)
@@ -353,7 +357,7 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="cornflowerblue",
-        label=f"{model_dataset} ({model_period}) - Stephens et al. (2012)",
+        label=f"{model_label} ({model_period}) - Stephens et al. (2012)",
         yerr=stephens_error,
     )
     axes.bar(
@@ -362,8 +366,10 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="orange",
-        label=(f"{model_dataset} ({model_period}) - {ceres_dataset} "
-               f"({ceres_period})"),
+        label=(
+            f"{model_label} ({model_period}) - {ceres_dataset} "
+            f"({ceres_period})"
+        ),
     )
     axes.bar(
         x_ticks + 0.2 + bar_width * 2,
@@ -371,7 +377,7 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="darkgrey",
-        label=f"{model_dataset} ({model_period}) - Demory et al. (2014)",
+        label=f"{model_label} ({model_period}) - Demory et al. (2014)",
     )
     axes.spines["bottom"].set_position(("data", 0))
     axes.spines["top"].set_position(("data", 0))
@@ -398,7 +404,7 @@ def get_provenance_record(filenames):
         The provenance record describing the plot.
     """
     record = {
-        'ancestors': filenames,
+        "ancestors": filenames,
     }
     return record
 
@@ -430,21 +436,26 @@ def main(config):
     ceres_filenames = [item["filename"] for item in ceres_group]
     raw_ceres_data = iris.load(ceres_filenames)
     ceres_data = order_data(raw_ceres_data, obs_names, obs_unit)
-    ceres_period = (f"{ceres_group[0]['start_year']} - "
-                    f"{ceres_group[0]['end_year']}")
+    ceres_period = (
+        f"{ceres_group[0]['start_year']} - {ceres_group[0]['end_year']}"
+    )
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
-        # 'group' is a list of dictionaries containing metadata.
+        # 'group' is a list of dictionaries containing metadata for each variable.
         logger.info("Processing data for %s", model_dataset)
         filenames = [item["filename"] for item in group]
         unordered_model_data = iris.load(filenames)
         all_model_data = derive_additional_variables(unordered_model_data)
         model_data = order_data(all_model_data, obs_names, obs_unit)
+        # An assumption has been made that the start_year, end_year and alias
+        # from the first variable in the list (for a given dataset)
+        # is the same as all the others.
         model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"
+        model_label = group[0]["alias"]
         figure = plot_data(
-            model_dataset,
             model_data,
+            model_label,
             model_period,
             obs_names,
             obs_unit,
@@ -456,11 +467,13 @@ def main(config):
             ceres_period,
         )
         provenance_record = get_provenance_record(filenames)
-        save_figure(model_dataset,
-                    provenance_record,
-                    config,
-                    figure,
-                    close=True)
+        save_figure(
+            model_dataset,
+            provenance_record,
+            config,
+            figure,
+            close=True,
+        )
 
 
 if __name__ == "__main__":

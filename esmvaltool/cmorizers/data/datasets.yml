@@ -1,6 +1,45 @@
 # Dataset information
 ---
 datasets:
+  AERONET:
+    tier: 3
+    source: "https://aeronet.gsfc.nasa.gov/"
+    last_access: 2025-07-26
+    info: |
+      Aerosol Optical Depth information from a worldwide network of stations.
+
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
+
+  AGCD:
+    tier: 2
+    source: "http://dx.doi.org/10.25914/6009600786063"
+    last_access: 2023-11-21
+    info: |
+      Australian Gridded Climate Data (AGCD) version 2 is the Bureau of Meteorology's official dataset for climate
+      analyses covering analysis of monthly rainfall. The dataset provides consistent temporal and spatial analyses
+      across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
+      Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
+      such as central Australia.
+      Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
+      Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
+      for Australia. Bureau of Meteorology Research Report. No. 41.
+      National Computational Infrastructure (NCI) - Catalogue Record: http://dx.doi.org/10.25914/6009600786063.
+      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/),
+      requires an NCI account and access to Gadi(Supercomputer in Canberra) and the project found in catalogue record.
+      Access can be requested through NCI. NCI is an ESGF node (https://esgf.nci.org.au/projects/esgf-nci/)
+
+  ANUClimate:
+    tier: 3
+    source: "https://dx.doi.org/10.25914/60a10aa56dd1b"
+    last_access: 2023-11-21
+    info: |
+      Data from NCI project requiring an NCI account and access to GADI
+      ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
+      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial
+      models have been developed at the Fenner School of Environment and Society of the Australian National University.
+
   APHRO-MA:
     tier: 3
     source: "http://aphrodite.st.hirosaki-u.ac.jp/download/"
@@ -60,18 +99,27 @@ datasets:
 
   CALIPSO-ICECLOUD:
     tier: 3
-    source: https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
-    last_access: 2022-08-04
+    source: https://asdc.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00
+    last_access: 2026-05-12
     info: |
       Download and processing instructions
       (requires EarthData login; see https://urs.earthdata.nasa.gov/)
-      1) Go to https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
+      1) Go to https://asdc.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard-V2-00_V2-00
       2) Click on "Get Dataset"
       3) Select Granules "A" containing both, day and night (Day/Night filter = "Both")
       4) Download selected granules
       5) Enter EarthData login and password (https://urs.earthdata.nasa.gov/)
       6) Follow download instructions in email from EarthData and put all
          files in the same directory
+
+  CAMS:
+    tier: 3
+    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-greenhouse-gas-inversion?tab=overview
+    last_access: 2024-10-28
+    info: |
+      You will need to make an account with the ADS data store and accept their licenses to download the data.
+      Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
+      as well as the version and years you require to download.
 
   CDS-SATELLITE-ALBEDO:
     tier: 3
@@ -107,7 +155,7 @@ datasets:
         - Tick all available months
         - Tick Nominal day 20
       - Click 'submit form'
-      - According to ESMValTool practice, put them in the right rawobsdir folder
+      - According to ESMValTool practice, put them in the Tier3/CDS-SATELLITE-LAI-FAPAR folder
       - Request might need to be split into chunks to not exceed download limit
       - Fails setting standard name for variable FAPAR
 
@@ -156,10 +204,10 @@ datasets:
 
   CERES-EBAF:
     tier: 2
-    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
-    last_access: 2022-07-01
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA421Selection.jsp
+    last_access: 2026-02-06
     info: |
-      Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+      Select: "TOA Fluxes" (all) and "Solar Flux", "Monthly Mean", "Regional" (0-360, -90-90)
       Enter "Email Address" and click on "Get Data"
       Wait for the processing to be finished and click on "Download"
 
@@ -189,28 +237,27 @@ datasets:
 
   CLARA-AVHRR:
     tier: 3
-    source: https://wui.cmsaf.eu/
-    last_access: 2021-03-22
+    source: https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties
+    last_access: 2026-05-12
     info: |
       Download and processing instructions
-        1) Create ("register") an user account at
-          https://wui.cmsaf.eu/safira/action/viewLogin?menuName=NUTZER_HOME
-        2) login (same URL as above)
-        3) Search data using search form at
-        https://wui.cmsaf.eu/safira/action/viewProduktHome?menuName=PRODUKT_HOME
-          - Product group: Climate Data Records
-          - Product family: CLARA-A ed. 2.1
-          - Product name: CFC - Factional cloud cover
-                          IWP - Ice water path
-                          LWP - Liquid water path
-          - Area: Global
-          - Temporal resolution: Monthly
-        4) Select "CLARA-A ed. 2.1 AVHRR on polar orbiting satellites" from
-          list of results.
-        5) Click on "Add to order cart"
-        6) Follow download instructions in automatic email received when data
-          are ready for download.
-        7) Untar all .tar files into a single directory.
+            https://cds.climate.copernicus.eu/datasets/satellite-cloud-properties?tab=download
+            Put all daily files for one month (mm) of one year (yyyy) under a single
+            directory "daily/<yyyymm>", monthly files for one year (yyyy) under "monthly/<yyyy>".
+            Note: you must accept the terms of use for CC-BY, EUMETSAT CM SAF, ESA CCI
+            Select the following from the CDS:
+                Product family: CLARA-A3
+                Origin: EUMETSAT
+                Variable: Cloud fraction, Cloud physical properties of the ice/liquid phase
+                Climate data record type: TCDR
+                Time aggregation: Daily mean / Monthly mean
+                Year: select all
+                Month: select all
+                Day: select all
+                Geographical area: Whole available region
+      Note: As of May 2026, CLARA-AVHRR (version A3) data on the CDS are only available until 2020.
+            Alternatively, CLARA-AVHRR data could also be obtained from the EUMETSAT data store
+            (https://data.eumetsat.int/).
 
   CLOUDSAT-L2:
     tier: 3
@@ -226,6 +273,15 @@ datasets:
       3) Put all files for a specific year under a single directory
          named like the year (e.g. 2007), no subdirectories with
          days etc.
+
+  CMAP:
+    tier: 2
+    source: https://psl.noaa.gov/data/gridded/data.cmap.html
+    last_access: 2024-09-09
+    info: |
+      To facilitate the download, the links to the https server are provided.
+      https://downloads.psl.noaa.gov/Datasets/cmap/enh/
+        precip.mon.mean.nc
 
   CowtanWay:
     tier: 2
@@ -244,20 +300,26 @@ datasets:
 
   CRU:
     tier: 2
-    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
-    last_access: 2019-05-16
+    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/
+    last_access: 2023-11-06
     info: |
-      Download the following files:
-        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
+      Files can be downloaded using the download script (latest version only)
+      or manually:
+        {raw_name}/cru_ts4.07.1901.2022.{raw_name}.dat.nc.gz
       where {raw_name} is the name of the desired variable(s).
+      Previous versions can be downloaded from the corresponding folders in
+      https://crudata.uea.ac.uk/cru/data/hrg/. ESMValTools formatter can be used
+      for older versions with minor adjustments of
+      ``esmvaltool/cmorizers/data/cmor_config/CRU.yml``
+      Exact time coordinates and number of stations are not available version
+      TS4.02.
 
   CT2019:
     tier: 2
     source: https://www.esrl.noaa.gov/gmd/ccgg/carbontracker/index.php
     last_access: 2020-03-23
     info: |
-      Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-      ``$RAWOBSPATH`` is given by your user configuration file) where the raw
+      Create a new empty directory ``Tier2/CT2019`` where the original
       data will be stored. The download of the data is automatically handled by
       this script. If data is already present in this directory, the download is
       skipped (to force a new download delete your old files).
@@ -280,13 +342,27 @@ datasets:
       Download the ensemble mean files for:
         TG TN TX RR PP
 
+  EN4:
+    tier: 2
+    source: "https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html"
+    last_access: 2025-06-13
+    info: |
+      EN4: quality controlled subsurface ocean temperature and salinity objective analyses.
+      Script tested using analyses with Gouretski and Reseghetti (2010) XBT corrections
+      and Gouretski and Cheng (2020) MBT corrections applied.
+      To download data:
+        - Save this text file in directory for data to be downloaded, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
+        - Edit this .txt. file for your chosen years.
+        - Run 'wget -i EN.4.2.2.analyses.g10.download-list.txt' in the same directory.
+        - Unzip files prior to running the cmorizer script using 'unzip \*.zip'.
+
   Eppley-VGPM-MODIS:
     tier: 2
     source: http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf
     last_access: 2019-05-15
     info: |
       Download and unpack all the *.tar files under a single directory
-      (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
+      (no subdirectories with years) in Tier2/Eppley-VGPM-MODIS
 
   ERA-Interim-Land:
     tier: 3
@@ -390,13 +466,44 @@ datasets:
   ESACCI-AEROSOL:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
-    last_access: 2019-01-24
+    last_access: 2025-08-11
     info: |
       Download the data from:
-        ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
-        AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
-      Other years are not considered since they are not complete.
-      Put all files in input_dir_path (no subdirectories with years).
+          AATSR/ATSR2
+            ATSR2_SU/L3/v4.3/DAILY/ (1997-2002)
+            AATSR_SU/L3/v4.3/DAILY/ (2003-2011)
+            ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
+            AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
+            Other years are not considered since they are not complete.
+            Put all daily files under 'AATSR-SU-v4.3-daily' (no subdirectories with years)
+            and all monthly files under 'AATSR-SU-v4.3-monthly'.
+          SLSTR
+            Select the following from the CDS:
+            https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties?tab=download
+            Put all files under a single directory (no subdirectories with years).
+            Time aggregation: "Daily average" and "Monthly average"
+            Variable: "Aerosol optical depth" and "Fine-mode aerosol optical depth"
+            Sensor on satellite: "SLSTR on SENTINEL 3A" and "SLSTR on SENTINEL 3B"
+            Algorithm": "SWANSEA (Swansea University)"
+            Year: select all
+            Month: select all
+            Day: select all
+            Version: "SLSTR", "v1.12"
+            Put all daily files under 'SLSTR-SU-v1.12-daily' (no subdirectories with years)
+            and all monthly files under 'SLSTR-SU-v1.12-monthly'.
+
+  ESACCI-BIOMASS:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v6.0/netcdf
+    last_access: 2025-07-16
+    info: |
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-BIOMASS
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
+      and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
+      under a single directory as follow: Tier2/ESACCI-BIOMASS
 
   ESACCI-CLOUD:
     tier: 2
@@ -429,24 +536,16 @@ datasets:
 
   ESACCI-LANDCOVER:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
-    last_access: 2019-01-10
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
+    last_access: 2024-07-11
     info: |
-      Download the 3 NetCDF files for 2000, 2005 and 2010.
-      Download the CCI-LC Tools from:
-        http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
-      Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
-        bash lc-user-tools-3.14/bin/aggregate-map.sh \
-          -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-          -PoutputAccuracy=false -PoutputPFTClasses=true \
-          -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-      Put the resulting processed data in input_dir_path.
-
-      Caveats
-        The CCI-LC Tools must be applied before running this script.
-        The CCI-LC Tools require Java Version 7 or higher.
-        The input data are available for a single year and are copied over to
-        generate a time series over their time range of validity.
+      Download and processing instructions:
+      Use the following CLI to download all the files:
+      esmvaltool data download ESACCI-LANDCOVER
+      The underlying downloader is located here:
+      /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+      and it will download all the files currently available on CEDA (1992-2020)
+      under a single directory as follow: Tier2/ESACCI-LANDCOVER
 
   ESACCI-LST:
     tier: 2
@@ -457,7 +556,7 @@ datasets:
         https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
       Download and processing instructions:
         Put all files under a single directory (no subdirectories with years)
-        in ${RAWOBS}/Tier2/ESACCI-LST
+        in Tier2/ESACCI-LST
         BOTH DAY and NIGHT files are needed for each month
 
       Caveats
@@ -472,26 +571,77 @@ datasets:
         OceanColour webpage https://esa-oceancolour-cci.org/
       Username and password are provided on this website
       Put all files under a single directory (no subdirectories with years)
-      in ${RAWOBS}/Tier2/ESACCI-OC
+      in Tier2/ESACCI-OC
 
   ESACCI-OZONE:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/
-    last_access: 2019-02-01
+    source: https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
+    last_access: 2026-02-12
     info: |
       Download the data from:
-        total_columns/l3/merged/v0100/
-        limb_profiles/l3/merged/merged_monthly_zonal_mean/v0002
-      Put all files under a single directory (no subdirectories with years).
+            GTO-ECV total column (variable toz)
+            Select the following from the CDS:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
+
+            Processing Level = "Level 3"
+            Variable = "Atm. mole content of ozone"
+            Vertical aggregation = "Total columns UV"
+            Sensor = "GTO-ECV"
+            Year = select all (1995-2023)
+            Month = select all (1-12)
+            Version = "v2000"
+
+            SAGE-CCI-OMPS (variable o3)
+            Select the following options from the same link:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
+
+            Processing Level = "Level 3"
+            Variable = "Mole concentration of ozone in air"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "SAGE-CCI-OMPS_CONC"
+            Year = select all (1984-2022)
+            Month = select all (1-12)
+            Version = "v0008"
+
+            MEGRIDOP (variable o3)
+            Select the following options from the same link:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
+
+            Processing Level = "Level 3"
+            Variable = "Mole concentration of ozone in air"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "MEGRIDOP_CONC"
+            Year = select all (2001-2022)
+            Month = select all (1-12)
+            Version = "v0004"
+
+            IASI (variables o3, toz)
+            Download from BIRA WebDAV server: https://webdav.aeronomie.be
+            Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/<yyyy>
+            Username: o3_cci_public
+            No password (leave empty)
+            Download each year <yyyy> into the same folder
+
+  ESACCI-SEAICE:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_ice/data/
+    last_access: 2024-11-07
+    info: |
+      Download the data from:
+        sea_ice_concentration/L4/ssmi_ssmis/12.5km/v3.0/*/
+      Put all files under a single directory (no subdirectories with years / months).
 
   ESACCI-SOILMOISTURE:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/
-    last_access: 2019-02-01
+    last_access: 2024-06-19
     info: |
       Download the data from:
-        daily_files/COMBINED/v04.2/
-        ancillary/v04.2/
+        daily_files/COMBINED/v08.1/
+        ancillary/v08.1/
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-SEA-SURFACE-SALINITY:
@@ -504,25 +654,36 @@ datasets:
         v02.31/30days/
       Put all files under a single directory (no subdirectories with years).
 
-  ESACCI-SST:
+  ESACCI-SNOW:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/
-    last_access: 2019-02-01
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/snow/data
+    last_access: 2024-02-14
     info: |
       Download the data from:
-        lt/Analysis/L4/v01.1/
+        scfg/AVHRR-MERGED/v2.0/
+        swe/MERGED/v2.0/
+      Put all scfg files in a single directory called 'scfg'
+      (no subdirectories with years or months).
+      Put all swe files in a single directory called 'swe'
+      (no subdirectories with years or months).
+
+  ESACCI-SST:
+    tier: 2
+    source: dap.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
+    last_access: 2024-12-11
+    info: |
+      Download the data from:
+        CDR_v3/Analysis/L4/v3.0.1/
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-WATERVAPOUR:
     tier: 3
-    source: Marc Schröder, ftp.brockmann-consult.de
-    last_access: 2021-03-29
+    source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
+    last_access: 2024-02-21
     info: |
-      Currently still restricted because preliminary.
-      Download and processing instructions:
-        FTP server: ftp.brockmann-consult.de, access currently restricted
-                    data/tcwv/dataset3_1/CDR-*/...
-        All files need to be in one directory, not in yearly subdirectories.
+      CDR2 requires registration at EUMETSAT CM SAF, the information on how to
+          download the order will be emailed once the order is ready.
+      All files need to be in one directory, not in yearly subdirectories.
 
   ESDC:
     tier: 2
@@ -633,6 +794,17 @@ datasets:
     last_access: 2020-03-03
     info: "Use automatic download feature to get the data"
 
+  GLWD:
+    tier: 2
+    source: https://figshare.com/articles/dataset/Global_Lakes_and_Wetlands_Database_GLWD_version_2_0/28519994
+    last_access: 2025-07-01
+    info: |
+      Use automatic download to download the following file:
+        GLWD_v2_0_combined_classes_tif.zip
+
+      The dataset is representative of the time period (1984 - 2020) and is thus
+      marked with the timestamp of the year 2002.
+
   GPCC:
     tier: 2
     source: |
@@ -642,6 +814,15 @@ datasets:
     info: |
       Download the following files:
         full_data_monthly_{version}.nc.gz
+
+  GPCP-SG:
+    tier: 2
+    source: |
+      https://psl.noaa.gov/data/gridded/data.gpcp.html
+      https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc
+    last_access: 2023-02-15
+    info: |
+      Download the file precip.mon.mean.nc
 
   GRACE:
     tier: 3
@@ -657,7 +838,7 @@ datasets:
           - GRCTellus.JPL.200204_202004.GLO.RL06M.MSCNv02CRI.nc
           - LAND_MASK.CRI.nc
       - Download the grace months table  which holds important information
-        on data coverage. Save it in the RAWOBSDIR.
+        on data coverage. Save it in the Tier3/GRACE directory.
             https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
       - Manually inspect and check the months table
 
@@ -700,6 +881,17 @@ datasets:
         climatology
             [Source]/absolute_v5.nc
 
+  HadEX3:
+    tier: 2
+    source: https://www.metoffice.gov.uk/hadobs/hadex3/download_etccdi.html
+    last_access: 2025-02-05
+    info: |
+      Use automatic download, it will download and unzip all required files:
+      "HadEX3_TXx_MON.nc.gz", "HadEX3_TXx_ANN.nc.gz",
+      "HadEX3_TNn_MON.nc.gz", "HadEX3_TNn_ANN.nc.gz",
+      "HadEX3_Rx1day_MON.nc.gz", "HadEX3_Rx1day_ANN.nc.gz",
+      "HadEX3_Rx5day_MON.nc.gz" and "HadEX3_Rx5day_ANN.nc.gz".
+
   HadISST:
     tier: 2
     source: http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
@@ -732,6 +924,22 @@ datasets:
         HWSD_SOIL_CLM_RES.nc4
       A registration is required
 
+  IAP:
+    tier: 2
+    source: http://www.ocean.iap.ac.cn/pages/dataService/dataService.html
+    last_access: 2025-01-20
+    info: |
+      Download the following files:
+      Temperature_IAPv4.2_gridded_data_1940_1949.zip
+      Temperature_IAPv4.2_gridded_data_1950_1959.zip
+      Temperature_IAPv4.2_gridded_data_1960_1969.zip
+      Temperature_IAPv4.2_gridded_data_1970_1979.zip
+      Temperature_IAPv4.2_gridded_data_1980_1989.zip
+      Temperature_IAPv4.2_gridded_data_1990_1999.zip
+      Temperature_IAPv4.2_gridded_data_2000_2009.zip
+      Temperature_IAPv4.2_gridded_data_2010_2019.zip
+      Temperature_IAPv4.2_gridded_data_2020_2023.zip
+
   ISCCP-FH:
     tier: 2
     source: https://isccp.giss.nasa.gov/pub/flux-fh/tar-nc4_MPF/
@@ -759,17 +967,22 @@ datasets:
 
   JRA-25:
     tier: 2
-    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/
-    last_access: 2022-11-17
+    source: https://data.rda.ucar.edu/ds625.1
+    last_access: 2023-06-14
     info: |
       Download the following files:
-        mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+        fcst_phy2m/fcst_phy2m.yyyymm.nc
+        anl_chipsi/fcst_phy2m.yyyymm.nc
+        anl_p/anl_p.yyyymm.nc
+
+  JRA-55:
+    tier: 2
+    source: https://rda.ucar.edu/datasets/ds628.1/
+    last_access: 2023-03-22
+    info: |
+      Create an account on the research data archive (RDA) in order to be able
+      to download the data (1.25 degree, pressure levels). See
+      https://rda.ucar.edu/login/register/ for more details.
 
   Kadow2020:
     tier: 2
@@ -833,9 +1046,18 @@ datasets:
       individually or by using the option "download all".
       Data is freely available, but a registration is required.
 
+  MERRA:
+    tier: 3
+    source: https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/
+    last_access: 2023-02-01
+    info: |
+      Use automatic download. That will download monthly data.
+
   MERRA2:
     tier: 3
-    source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+    source: |
+      https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+      https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
     last_access: 2022-09-13
     info: |
       Use automatic download. That will download monthly data but with
@@ -849,19 +1071,25 @@ datasets:
     info: |
       Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
       "Instructions for downloading". All *.he5 files need to be saved in the
-      $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-      directory defined in the user configuration file. Apply this procedure to
-      both links provided above. The temperature fields are necessary for quality
+      Tier3/MLS-AURA directory. Apply this procedure to both
+      links provided above. The temperature fields are necessary for quality
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
-      A registration is required
+      A registration is required.
 
-  MOBO-DIC_MPIM:
+  MOBO-DIC-MPIM:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
     last_access: 2022-11-03
     info: |
       Download the file MOBO-DIC_MPIM_monthly_clim.nc
+
+  MOBO-DIC2004-2019:
+    tier: 2
+    source: https://www.nodc.noaa.gov/archive/arc0211/0277099/2.3/data/0-data/
+    last_access: 2023-10-09
+    info: |
+      Download the file MPI_MOBO-DIC_2004-2019_v2.nc
 
   MODIS:
     tier: 3
@@ -901,13 +1129,17 @@ datasets:
       pressure/
         rhum.mon.mean.nc
         air.mon.mean.nc
+        omega.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       gaussian_grid
         tcdc.eatm.mon.mean.nc
+        prate.sfc.mon.mean.nc
+        uflx.sfc.mon.mean.nc
+        vflx.sfc.mon.mean.nc
+        skt.sfc.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface
         pr_wtr.eatm.mon.mean.nc
-
 
   NCEP-NCAR-R1:
     tier: 2
@@ -982,7 +1214,7 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
-  NOAA-CIRES-20CR:
+  NOAA-CIRES-20CR-V2:
     tier: 2
     source: ftp.cdc.noaa.gov/Projects/20thC_ReanV2/Monthlies/
     last_access: 2022-11-17
@@ -992,8 +1224,67 @@ datasets:
         monolevel/pr_wtr.eatm.mon.mean.nc
         pressure/shum.mon.mean.nc
         gaussian/monolevel/tcdc.eatm.mon.mean.nc
-        gaussian/monolevel/ulwrf.ntat.mon.mean.nc  
+        gaussian/monolevel/ulwrf.ntat.mon.mean.nc
         gaussian/monolevel/uswrf.ntat.mon.mean.nc
+        gaussian/monolevel/prate.mon.mean.nc
+        gaussian/monolevel/uflx.mon.mean.nc
+        gaussian/monolevel/vflx.mon.mean.nc
+  NOAA-CIRES-20CR-V3:
+    tier: 2
+    source: ftp.cdc.noaa.gov/Projects/20thC_ReanV3/Monthlies/
+    last_access: 2023-03-27
+    info: |
+      Download the following files:
+        miscSI-MO/cldwtr.eatm.mon.mean.nc
+        miscSI-MO/pr_wtr.eatm.mon.mean.nc
+        prsSI-MO/shum.mon.mean.nc
+        miscMO/tcdc.eatm.mon.mean.nc
+        ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc
+        ntatFlxSI-MO/uswrf.ntat.mon.mean.nc
+        ntatFlxSI-MO/csulf.ntat.mon.mean.nc
+        ntatFlxSI-MO/csusf.ntat.mon.mean.nc
+
+  NOAA-ERSSTv3b:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/
+    last_access: 2023-12-04
+    info: |
+      Download the following files:
+        ersst.yyyymm.nc
+        for years 1854 to 2020
+
+  NOAA-ERSSTv5:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/
+    last_access: 2023-12-04
+    info: |
+      Download the following files:
+        ersst.v5.yyyymm.nc
+        for years 1854 onwards
+
+  NOAA-GML-SURFACE-FLASK-CH4:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      ch4_surface-flask_ccgg_text.tar.gz
+
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
+
+  NOAA-GML-SURFACE-FLASK-CO2:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      co2_surface-flask_ccgg_text.tar.gz
+
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   NOAAGlobalTemp:
     tier: 2
@@ -1002,6 +1293,26 @@ datasets:
     info: |
       Download the following files:
       [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
+
+  NOAA-MBL-CH4:
+    tier: 2
+    source: https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+    last_access: 2023-07-17
+    info: |
+      Download the following file:
+      https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+
+  NOAA-GML-SURFACE-FLASK-N2O:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      n2o_surface-flask_ccgg_text.tar.gz
+
+      NOTE this formatter is currently not working for Python 3.14 since pys2index is
+      not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+      from conda-forge.
 
   NSIDC-0116-sh:
     tier: 3
@@ -1012,20 +1323,28 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
+  NSIDC-G02202-sh:
+    tier: 3
+    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
+    last_access: 2023-05-13
+    info: |
+      Download monthly data.
+      Login required for download, and also requires citation only to use
+
   OceanSODA-ETHZ:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
-    last_access: 2022-11-03
+    last_access: 2024-02-15
     info: |
-      Download the file OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc
+      Download the file OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
 
   OSI-450-nh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
@@ -1038,10 +1357,10 @@ datasets:
   OSI-450-sh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
@@ -1130,6 +1449,14 @@ datasets:
     info: |
       Download the file zmn2o_TCOM_plev_T2Dz_1991_2021.nc.
 
+  TROPFLUX:
+    tier: 2
+    source: "https://incois.gov.in/tropflux"
+    last_access: 2025-01-15
+    info: |
+      The TropFlux project aims at providing daily, timely, accurate air-sea heat and momentum
+      flux data for the entire 30°N-30°S region.
+
   UWisc:
     tier: 3
     source: Data provided by Ralf Bennartz.
@@ -1137,6 +1464,14 @@ datasets:
     info: |
       Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
       University, USA).
+
+  WAD2M:
+    tier: 2
+    source: https://doi.org/10.5281/zenodo.3998453
+    last_access: 2025-07-01
+    info: |
+      Use the automatic download to download the file:
+        WAD2M_wetlands_2000-2020_025deg_Ver2.0.nc
 
   WFDE5:
     tier: 2
@@ -1165,3 +1500,14 @@ datasets:
         silicate/netcdf/all/1.00/woa18_all_i00_01.nc
       (To get WOA13, replace filenames prefix woa18 with woa13 and source with
       https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2)
+
+  Yang2020:
+    tier: 2
+    source: |
+      https://doi.org/10.26008/1912/bco-dmo.810032.1
+    last_access: 2025-06-10
+    info: |
+      Use automatic download feature to get the data. This will download the
+      files:
+        dn2o-mapped-Yang2020.nc
+        n2oFlux-Yang2020.nc

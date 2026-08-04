@@ -293,7 +293,7 @@ gleckler_array <- function(path = land,
         path, paste0(
           "tm_", idx_list[i],
           "_", model_list[m],
-          "*.nc"
+          "_*.nc"
         )
       )))
       idxs <- unlist(strsplit(idx_list[i], split = "_"))[1]

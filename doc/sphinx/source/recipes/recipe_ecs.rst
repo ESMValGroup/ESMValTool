@@ -21,14 +21,15 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-   * recipe_ecs.yml
+* recipe_ecs.yml
+* ref/recipe_ref_ecs.yml
 
 
 Diagnostics are stored in diag_scripts/
 
-   * climate_metrics/ecs.py
-   * climate_metrics/create_barplot.py
-   * climate_metrics/create_scatterplot.py
+* climate_metrics/ecs.py
+* climate_metrics/create_barplot.py
+* climate_metrics/create_scatterplot.py
 
 
 User settings in recipe
@@ -54,8 +55,8 @@ User settings in recipe
      script or as absolute path.
    * ``savefig_kwargs``, *dict*, optional: Keyword arguments for
      :func:`matplotlib.pyplot.savefig`.
-   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
-     (affects all plots).
+   * ``seaborn_settings``, *dict*, optional: Options for
+     :func:`seaborn.set_theme` (affects all plots).
    * ``sep_year``, *int*, optional (default: ``20``): Year to separate
      regressions of complex Gregory plot. Only effective if
      ``complex_gregory_plot`` is ``True``.
@@ -79,8 +80,8 @@ User settings in recipe
      data.
    * ``savefig_kwargs``, *dict*, optional: Keyword arguments for
      :func:`matplotlib.pyplot.savefig`.
-   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
-     (affects all plots).
+   * ``seaborn_settings``, *dict*, optional: Options for
+     :func:`seaborn.set_theme` (affects all plots).
    * ``sort_ascending``, *bool*, optional (default: ``False``): Sort bars in
      ascending order.
    * ``sort_descending``, *bool*, optional (default: ``False``): Sort bars in
@@ -98,8 +99,8 @@ User settings in recipe
    * ``dataset_style``, *str*, optional: Name of the style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
    * ``pattern``, *str*, optional: Pattern to filter list of input files.
-   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
-     (affects all plots).
+   * ``seaborn_settings``, *dict*, optional: Options for
+     :func:`seaborn.set_theme` (affects all plots).
    * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
 

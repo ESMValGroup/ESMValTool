@@ -915,7 +915,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: clim
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.3
         mip: Amon
         project: CMIP6
         exp: historical
@@ -925,8 +925,7 @@ diagnostics:
         end_year: 2014
         additional_datasets: *models_cmip6_historical
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
-         tier: 1}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
     scripts:
       fig_3_13:
         script: ipcc_ar6/model_bias.ncl
@@ -945,7 +944,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: clim
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.3
         mip: Amon
         project: CMIP5
         exp: historical
@@ -954,8 +953,7 @@ diagnostics:
         end_year: 2004
         additional_datasets: *models_cmip5_historical
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
-         tier: 1}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
     scripts:
       fig_3_13:
         script: ipcc_ar6/model_bias.ncl
@@ -1028,8 +1026,7 @@ diagnostics:
         additional_datasets: *models_cmip6_hist-nat
     additional_datasets:
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
-         tier: 1, start_year: 1979}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1, start_year: 1979}
       - {dataset: CRU, mip: Amon, project: OBS, type: reanaly,
          version: TS4.02, tier: 2}
     scripts:

@@ -43,7 +43,8 @@ function legend_lines(wks_in[1],
 ;    It will be saved in the outfile directory and returned as a workstation
 ;
 ; Modification history
-;    20140326-gottschaldt_klaus-dirk: written based on code by frank_franziska
+;    20140326-gottschaldt_klaus-dirk: written based on code by
+;                                     winterstein_franziska
 ;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks
 begin

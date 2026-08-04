@@ -7,7 +7,7 @@ attributes:
   dataset_id: HWSD
   version: '1.2'
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1247'
   reference: 'hwsd'

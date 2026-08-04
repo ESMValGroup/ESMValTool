@@ -16,4 +16,4 @@ Download and processing instructions
 from .gcp2018 import cmorization
 
 # The following line makes it clear that the above import is not an error
-cmorization
+__all__ = ["cmorization"]

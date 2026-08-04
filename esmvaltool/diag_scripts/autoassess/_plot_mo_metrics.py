@@ -13,26 +13,32 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
+from esmvaltool.diag_scripts.shared import save_figure
+
 # Define some colours
-BLACK = '#000000'
-RED = '#FF0000'
-AMBER = '#FF8C00'
-GREEN = '#7CFC00'
-OBS_GREY = '#000000'
-ACC_GREY = '#00FFFF'
-STD_GREY = '#EEEEEE'
-NOOBS_GREY = '#A9A9A9'
+BLACK = "#000000"
+RED = "#FF0000"
+AMBER = "#FF8C00"
+GREEN = "#7CFC00"
+OBS_GREY = "#000000"
+ACC_GREY = "#00FFFF"
+STD_GREY = "#EEEEEE"
+NOOBS_GREY = "#A9A9A9"
 
 # Set available markers
 # Those towards end of list are not really suitable but do extend list
 # - How about custom symbols?
-MARKERS = 'ops*dh^v<>+xDH.,'
+MARKERS = "ops*dh^v<>+xDH.,"
 
 # Create fakelines for legend using MARKERS above
 FAKELINES = [
-    plt.Line2D([0, 0], [0, 1], marker=marker, color=BLACK, linestyle='')
+    plt.Line2D([0, 0], [0, 1], marker=marker, color=BLACK, linestyle="")
     for marker in MARKERS
 ]
+
+
+class TestError(Exception):
+    """Error with the tests provided."""
 
 
 def merge_obs_acc(obs, acc):
@@ -72,13 +78,13 @@ def write_order_metrics(csvfile, metrics):
     """
     if metrics:
         try:
-            outf = open(csvfile, 'w')
-        except IOError as ioerr:
+            outf = open(csvfile, "w")
+        except OSError as ioerr:
             if ioerr.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
-                writer = csv.writer(outf, delimiter=',', quotechar='"')
+                writer = csv.writer(outf, delimiter=",", quotechar='"')
                 for metric in metrics:
                     writer.writerow([metric])
 
@@ -99,13 +105,13 @@ def write_model_metrics(csvfile, metrics):
     """
     if metrics:
         try:
-            outf = open(csvfile, 'w')
-        except IOError as ioerr:
+            outf = open(csvfile, "w")
+        except OSError as ioerr:
             if ioerr.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
-                writer = csv.writer(outf, delimiter=',', quotechar='"')
+                writer = csv.writer(outf, delimiter=",", quotechar='"')
                 for metric in metrics.items():
                     writer.writerow(metric)
 
@@ -132,14 +138,14 @@ def write_obs_metrics(csvfile, obs, acc):
     metrics = merge_obs_acc(obs, acc)
     if metrics:
         try:
-            outf = open(csvfile, 'w')
-        except IOError as ioerr:
+            outf = open(csvfile, "w")
+        except OSError as ioerr:
             if ioerr.errno == errno.EACCES:
                 pass  # Raise Error
         else:
             with outf:
-                writer = csv.writer(outf, delimiter=',', quotechar='"')
-                for (metric, values) in metrics.items():
+                writer = csv.writer(outf, delimiter=",", quotechar='"')
+                for metric, values in metrics.items():
                     writer.writerow([metric] + list(values))
 
 
@@ -161,8 +167,8 @@ def read_order_metrics(csvfile, required=False):
     metrics = []
     if csvfile is not None:
         try:
-            inf = open(csvfile, 'rb')
-        except IOError as ioerr:
+            inf = open(csvfile, "rb")
+        except OSError as ioerr:
             if ioerr.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
@@ -170,7 +176,7 @@ def read_order_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(inf, delimiter=',', quotechar='"')
+                reader = csv.reader(inf, delimiter=",", quotechar='"')
                 for row in reader:
                     if len(row) == 1:
                         metrics.append(row[0])
@@ -200,8 +206,8 @@ def read_model_metrics(csvfile, required=False):
     metrics = {}
     if csvfile is not None:
         try:
-            inf = open(csvfile, 'rt')
-        except IOError as ioerr:
+            inf = open(csvfile)
+        except OSError as ioerr:
             if ioerr.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
@@ -209,7 +215,7 @@ def read_model_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(inf, delimiter=',', quotechar='"')
+                reader = csv.reader(inf, delimiter=",", quotechar='"')
                 for row in reader:
                     metric = row.pop(0)
                     if len(row) == 1:
@@ -244,8 +250,8 @@ def read_obs_metrics(csvfile, required=False):
     acc = {}
     if csvfile is not None:
         try:
-            inf = open(csvfile, 'rt')
-        except IOError as ioerr:
+            inf = open(csvfile)
+        except OSError as ioerr:
             if ioerr.errno == errno.EACCES:
                 if required:
                     pass  # Raise Error
@@ -253,7 +259,7 @@ def read_obs_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(inf, delimiter=',', quotechar='"')
+                reader = csv.reader(inf, delimiter=",", quotechar='"')
                 for row in reader:
                     metric = row.pop(0)
                     # Contrary to documentation, allowing a single entry when
@@ -262,19 +268,19 @@ def read_obs_metrics(csvfile, required=False):
                     #  should be uncertainty ranges (i.e. multiple obs sources)
                     if len(row) == 1:
                         obs[metric] = tuple(
-                            sorted([float(row[0]),
-                                    float(row[0])]))
+                            sorted([float(row[0]), float(row[0])]),
+                        )
                     elif len(row) == 2:
                         obs[metric] = tuple(
-                            sorted([float(row[0]),
-                                    float(row[1])]))
+                            sorted([float(row[0]), float(row[1])]),
+                        )
                     elif len(row) == 4:
                         obs[metric] = tuple(
-                            sorted([float(row[0]),
-                                    float(row[1])]))
+                            sorted([float(row[0]), float(row[1])]),
+                        )
                         acc[metric] = tuple(
-                            sorted([float(row[2]),
-                                    float(row[3])]))
+                            sorted([float(row[2]), float(row[3])]),
+                        )
                     else:
                         msg = "Obs metrics file is not properly configured"
                         raise ValueError(msg)
@@ -312,7 +318,7 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
     # If specified, find if test within model uncertainty
     is_test_in_var = False
     if var is not None:
-        is_test_in_var = (ref - var <= test <= ref + var)
+        is_test_in_var = ref - var <= test <= ref + var
         # Get AMBER automatically if test within model uncertainty, or RED if
         #  not within model uncertainty
         if is_test_in_var:
@@ -326,12 +332,11 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
 
     # Only do the rest if observational uncertainty is specified
     if obs is not None:
-
         # Turn data into logicals:
 
         # Find if reference and test within observational uncertainty
-        is_ref_in_obs = (obs[0] <= ref <= obs[1])
-        is_test_in_obs = (obs[0] <= test <= obs[1])
+        is_ref_in_obs = obs[0] <= ref <= obs[1]
+        is_test_in_obs = obs[0] <= test <= obs[1]
 
         # Is test better than reference, judge by which is closer to
         # observational uncertainty.
@@ -340,7 +345,7 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
         #       situation.
         ref_err = min(abs(ref - obs[0]), abs(ref - obs[1]))
         test_err = min(abs(test - obs[0]), abs(test - obs[1]))
-        is_test_better = (test_err <= ref_err)
+        is_test_better = test_err <= ref_err
 
         # Now for colour logic:
 
@@ -351,13 +356,12 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
         # Get GREEN automatically if test within observational uncertainty
         if is_test_in_obs:
             colour = GREEN
-        else:
-            # If test outside model uncertainty, but reference outside
-            #  observational uncertainty and test is better than reference
-            #  then get AMBER.
-            if not is_test_in_var:
-                if (not is_ref_in_obs) and is_test_better:
-                    colour = AMBER
+        # If test outside model uncertainty, but reference outside
+        #  observational uncertainty and test is better than reference
+        #  then get AMBER.
+        elif not is_test_in_var:
+            if (not is_ref_in_obs) and is_test_better:
+                colour = AMBER
 
     return colour
 
@@ -388,39 +392,42 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     if ref:
         # Test to make sure if reference metrics dictionary not empty then it
         #  contains the same metrics as test metrics dictionary
-        assert sorted(test.keys()) == sorted(ref.keys()), \
+        assert sorted(test.keys()) == sorted(ref.keys()), (
             "If supplying ref it must have same metrics as test"
+        )
     else:
         # Create reference metrics dictionary with values of 1.0 to match
         #  test metrics dictionary
-        ref = {metric: 1.0 for metric in test.keys()}
+        ref = dict.fromkeys(test.keys(), 1.0)
 
     for metric in test.keys():
         colours[metric] = metric_colour(
             test[metric],
             ref=ref[metric],
-            var=var.get(metric, None),
-            obs=obs.get(metric, None),
-            acc=acc.get(metric, None))
+            var=var.get(metric),
+            obs=obs.get(metric),
+            acc=acc.get(metric),
+        )
 
     return colours
 
 
-def normalise(test, ref, strict=False):
+def normalise(test, ref, same=False):
     """
     Routine to normalise contents of test by contents of ref.
 
     :param dict test: Dictionary of test metrics
     :param dict ref: Dictionary of reference metrics
-    :param bool strict: if True then test and ref must have same metrics
+    :param bool same: if True then test and ref must have same metrics
     :returns: Dictionary of normalised test metrics
     :rtype: dict.
     """
-    if strict:
+    if same:
         # Test to make sure reference metrics dictionary contains the same
         # metrics as test metrics dictionary
-        assert sorted(test.keys()) == sorted(ref.keys()), \
+        assert sorted(test.keys()) == sorted(ref.keys()), (
             "ref and test must have same set of metrics"
+        )
 
     norm = {}
     for metric in test.keys():
@@ -431,16 +438,15 @@ def normalise(test, ref, strict=False):
                 if ref[metric] != 0:
                     norm[metric] = test[metric] / ref[metric]
                 else:
-                    ref[metric] = 1.e-20
+                    ref[metric] = 1.0e-20
                     norm[metric] = test[metric] / ref[metric]
+            elif ref[metric] != 0:
+                norm[metric] = tuple(x / ref[metric] for x in test[metric])
             else:
-                if ref[metric] != 0:
-                    norm[metric] = tuple(x / ref[metric]
-                                         for x in test[metric])
-                else:
-                    ref[metric] = 1.
-                    norm[metric] = tuple(x * 0. / ref[metric]
-                                         for x in test[metric])
+                ref[metric] = 1.0
+                norm[metric] = tuple(
+                    x * 0.0 / ref[metric] for x in test[metric]
+                )
 
     return norm
 
@@ -469,10 +475,11 @@ def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
         2.0 * std,
         left=1.0 - std,
         height=1.0,
-        align='center',
+        align="center",
         color=color,
         linewidth=0,
-        zorder=zorder)
+        zorder=zorder,
+    )
 
 
 def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
@@ -504,10 +511,11 @@ def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
         orig,
         coord,
         xerr=err,
-        fmt='none',
+        fmt="none",
         ecolor=color,
         capsize=5,
-        zorder=zorder)
+        zorder=zorder,
+    )
 
 
 def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
@@ -539,7 +547,8 @@ def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
         edgecolors=BLACK,
         c=pcols,
         marker=marker,
-        zorder=zorder)
+        zorder=zorder,
+    )
 
 
 def plot_get_limits(tests, obs, acc, extend_y=False):
@@ -586,17 +595,20 @@ def plot_get_limits(tests, obs, acc, extend_y=False):
     return (minval, maxval)
 
 
-def plot_nac(cref,
-             ctests,
-             ref,
-             tests,
-             metrics=None,
-             var=None,
-             obs=None,
-             acc=None,
-             extend_y=False,
-             title=None,
-             ofile=None):
+def plot_nac(
+    cref,
+    ctests,
+    ref,
+    tests,
+    metrics=None,
+    var=None,
+    obs=None,
+    acc=None,
+    extend_y=False,
+    title=None,
+    ofile=None,
+    config=None,
+):
     """
     Routine to produce NAC plot.
 
@@ -611,6 +623,7 @@ def plot_nac(cref,
     :param bool extend_y: Extend y-axis to include obs/acc ranges
     :param str title: Plot title
     :param str ofile: Plot file name
+    :param dict config: ESMValTool configuration object
     """
     # initialize
     if metrics is None:
@@ -640,11 +653,16 @@ def plot_nac(cref,
     plot_obs(ax, metrics, n_obs, color=OBS_GREY, zorder=2)
 
     # Plot metric data
+    # Check enough MARKERS for number of tests
+    if len(tests) > len(MARKERS):
+        raise TestError(
+            f"Number of tests, {len(tests)}, is larger than available "
+            f"plot MARKERS, {len(MARKERS)}.",
+        )
     n_tests = []
-    for (test, marker) in zip(tests, MARKERS):
-
+    for test, marker in zip(tests, MARKERS[: len(tests)], strict=True):
         # Normalise test by ref
-        n_test = normalise(test, ref, strict=True)
+        n_test = normalise(test, ref, same=True)
 
         # Check for green/amber/red/grey
         colours = metric_colours(n_test, var=n_var, obs=n_obs, acc=n_acc)
@@ -659,38 +677,57 @@ def plot_nac(cref,
     limits = plot_get_limits(n_tests, n_obs, n_acc, extend_y=extend_y)
 
     # Set limits, label axes and add norm=0 & 1 lines
-    ax.axvline(0.0, color=BLACK, linestyle='dotted')
+    ax.axvline(0.0, color=BLACK, linestyle="dotted")
     ax.axvline(1.0, color=BLACK)
     ax.set_yticks(np.arange(len(metrics)) + 1)
-    ax.set_yticklabels(metrics, ha='right', fontsize='x-small')
+    ax.set_yticklabels(metrics, ha="right", fontsize="x-small")
     ax.set_ylim(len(metrics) + 0.5, 0.5)
     ax.set_xlim(limits)
-    ax.set_xlabel('Normalised Assessment Criteria', fontsize='small')
-    ax.tick_params(axis='x', labelsize='small')
+    ax.set_xlabel("Normalised Assessment Criteria", fontsize="small")
+    ax.tick_params(axis="x", labelsize="small")
     if title is not None:
         ax.set_title(title)
 
     # Add plot legend
     legend = ax.legend(
-        FAKELINES[0:len(ctests)],
+        FAKELINES[0 : len(ctests)],
         ctests,
         bbox_to_anchor=(1, 1),
         loc=2,
         numpoints=1,
         fancybox=True,
-        fontsize='small')
-    legend.set_title('Vs %s' % cref, prop={'size': 'small'})
+        fontsize="small",
+    )
+    legend.set_title(f"Vs {cref}", prop={"size": "small"})
 
     # Display or produce file
-    if ofile:
-        # Create directory to write file to
-        odir = os.path.dirname(ofile)
-        if not os.path.isdir(odir):
-            os.makedirs(odir)
+    if ofile and config:
+        os.makedirs(config["plot_dir"], exist_ok=True)
+        provenance = get_provenance_record(config)
         # Note that bbox_inches only works for png plots
-        plt.savefig(ofile, bbox_extra_artists=(legend, ), bbox_inches='tight')
+        save_figure(
+            ofile,
+            provenance,
+            config,
+            fig,
+            bbox_extra_artists=(legend,),
+            bbox_inches="tight",
+        )
     else:
         # Need the following to attempt to display legend in frame
         fig.subplots_adjust(right=0.85)
         plt.show()
     plt.close()
+
+
+def get_provenance_record(config):
+    """Create a provenance record describing the diagnostic data and plot."""
+    filenames = [item["filename"] for item in config["input_data"].values()]
+    record = {
+        "caption": "Normalised assessment criteria plot",
+        "plot_type": "metrics",
+        "authors": ["williams_keith", "predoi_valeriu", "sellar_alistair"],
+        "ancestors": filenames,
+    }
+
+    return record

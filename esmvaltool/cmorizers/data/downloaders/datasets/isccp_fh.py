@@ -8,14 +8,20 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -34,7 +40,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     loop_date = start_date
 
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -44,6 +50,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         downloader.download_file(
             "https://isccp.giss.nasa.gov/pub/flux-fh/tar-nc4_MPF/"
             f"ISCCP-FH_nc4_MPF_v.0.0_{loop_date.year}.tar.gz",
-            wget_options=['--no-check-certificate'])
+            wget_options=["--no-check-certificate"],
+        )
         loop_date += relativedelta.relativedelta(years=1)
     unpack_files_in_folder(downloader.local_folder)

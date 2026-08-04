@@ -258,7 +258,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile, \
+                 outfile + "." + file_type, \
                  var0 + "fractional data coverage " + start_year + "-" \
                  + end_year + ". Similar to Gier et al 2020, Fig 1.", \
                  (/"mean"/), \
@@ -377,7 +377,7 @@ begin
     delete(res)
 
     log_provenance(ncdf_outfile, \
-                   outfile_c3s, \
+                   outfile_c3s + "." + file_type, \
                    var0 + "fractional data coverage for different obs " \
                    + "periods. Similar to Gier et al 2020, Fig 8.", \
                    (/"mean"/), \

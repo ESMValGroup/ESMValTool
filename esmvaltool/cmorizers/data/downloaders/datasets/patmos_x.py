@@ -8,14 +8,20 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -34,7 +40,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     loop_date = start_date
 
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -42,12 +48,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     base_path = (
         "https://www.ncei.noaa.gov/data/"
-        "avhrr-reflectance-cloud-properties-patmos-extended/access/{year}/")
+        "avhrr-reflectance-cloud-properties-patmos-extended/access/{year}/"
+    )
     while loop_date <= end_date:
-
         downloader.download_folder(
             base_path.format(year=loop_date.year),
             # ["--accept='*NOAA*.nc'", "--reject='*preliminary*'"]
-            [])
-        os.remove(os.path.join(downloader.local_folder, 'index.html'))
+            [],
+        )
+        os.remove(os.path.join(downloader.local_folder, "index.html"))
         loop_date += relativedelta.relativedelta(years=1)

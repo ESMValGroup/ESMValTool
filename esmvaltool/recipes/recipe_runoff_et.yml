@@ -8,7 +8,7 @@ documentation:
     water balance components for different catchments and compares the results
     against observations. Currently, the required catchment mask needs to be
     downloaded manually at https://doi.org/10.5281/zenodo.2025776 and saved in
-    the auxiliary_data_dir defined in config-user.yml.
+    the auxiliary_data_dir defined in configuration.
 
   authors:
     - hagemann_stefan

@@ -84,7 +84,7 @@ begin
   dashes = project_style(input_file_info, diag_script_info, "dashes")
   thicks = project_style(input_file_info, diag_script_info, "thicks")
 
-  plotpath = config_user_info@plot_dir + "/russell18jgr-fig5g_" + var0 + "_" \
+  plotpath = config_user_info@plot_dir + "russell18jgr-fig5g_" + var0 + "_" \
     + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
     + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -224,17 +224,6 @@ begin
         overlay(plots(0), plots(iii))
     end if
 
-    ; Call provenance logger
-    log_provenance(ncdf_outfile, \
-                   plotpath, \
-                   "Russell et al 2018 figure 5g", \
-                   "mean", \
-                   "sh",   \
-                   "times",  \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   infile_path)
-
   end do
 
   draw(plots(0))
@@ -260,5 +249,18 @@ begin
               "coordinates had a manual calculation of areacello this is " + \
               "not an error, no responce is needed by user for plotting ")
   end if
+
+  frame(wks)
+
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 5g", \
+                 "mean", \
+                 "sh",   \
+                 "times",  \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 infile_path)
 
 end

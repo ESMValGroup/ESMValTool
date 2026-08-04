@@ -438,7 +438,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_ts_panels, \
+                 outfile_ts_panels + "." + file_type, \
                  "Timeseries, growth rate and seasonal cycle of " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
@@ -550,7 +550,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_grbp, \
+                 outfile_grbp + "." + file_type, \
                  "Growth Rate histogram of " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
@@ -653,7 +653,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_sabp, \
+                 outfile_sabp + "." + file_type, \
                  "Seasonal Cycle Amplitude histogram of " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask, \

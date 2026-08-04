@@ -410,7 +410,6 @@ begin
 
   ; collect meta-data
   nc_file = ncdf_outfile
-  plot_file = work_dir + "/None"
   caption = "Inter-annual variability based on piControl runs."
   statistics = ("var")
   domains = ("global")
@@ -418,7 +417,7 @@ begin
   authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domains, \
+  log_provenance(nc_file, "n/a", caption, statistics, domains, \
                  plot_types, authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")

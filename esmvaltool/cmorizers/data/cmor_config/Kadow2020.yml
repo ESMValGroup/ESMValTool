@@ -4,12 +4,12 @@ attributes:
   dataset_id: Kadow2020
   version: '5.0.1.0'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'http://users.met.fu-berlin.de/~ChristopherKadow/'
   reference: 'kadow20natgeosc'
   comment: |
-    'Temperature anomaly with respect to the period 1961-1990, 
+    'Temperature anomaly with respect to the period 1961-1990,
     ensemble mean, infilled by AI'
 
 filenames:

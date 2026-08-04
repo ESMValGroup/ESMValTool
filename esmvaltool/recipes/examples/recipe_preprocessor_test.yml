@@ -75,10 +75,16 @@ preprocessors:
     multi_model_statistics: false
 
 
-  # Simple ensemble mean and median for multiple models
+  # Simple ensemble mean, median, and percentiles for multiple models
   preprocessor_5:
     ensemble_statistics:
-      statistics: [mean, median]
+      statistics:
+        - mean
+        - median
+        - operator: percentile
+          percent: 5
+        - operator: percentile
+          percent: 95
       exclude: [GFDL-ESM2G]
 
   # Calculate ensemble means, then multi-model mean

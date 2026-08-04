@@ -360,7 +360,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_scaplot, \
+                 outfile_scaplot + "." + file_type, \
                  "Trend of Seasonal Cycle Amplitude with " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
@@ -391,7 +391,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_grplot, \
+                 outfile_grplot + "." + file_type, \
                  "Trend of Growth Rate with " \
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \

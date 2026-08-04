@@ -415,8 +415,7 @@ diagnostics:
         derive: true
         additional_datasets: *cmip3_all
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         script: clouds/clouds_ipcc.ncl
@@ -435,6 +434,8 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
+        modeling_realm: atmos
+        frequency: mon
         additional_datasets: *cmip5_all
 
   fig_9_cmip6:
@@ -447,6 +448,8 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         mip: Amon
+        modeling_realm: atmos
+        frequency: mon
         grid: gr
         additional_datasets: *cmip6_all
 

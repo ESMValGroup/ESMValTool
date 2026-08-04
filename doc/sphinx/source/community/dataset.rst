@@ -42,14 +42,16 @@ and run the recipe, to make sure the CMOR checks pass without warnings or errors
 
 To test a pull request for a new CMORizer script:
 
-#. Download the data following the instructions included in the script and place
-   it in the ``RAWOBS`` path specified in your ``config-user.yml``
+#. Download the data following the instructions included in the script and
+   place it in the directory specified by the ``--original-data-dir`` flag
+   followed by a subdirectory ``Tier1``, ``Tier2`` or ``Tier3``, followed by
+   a subdirectory with the same name as the dataset.
 #. If available, use the downloading script by running
-   ``esmvaltool data download --config_file <config-file>  <dataset>``
-#. Run the cmorization by running ``esmvaltool data format <config-file> <dataset>``
-#. Copy the resulting data to the ``OBS`` (for CMIP5 compliant data) or ``OBS6``
-   (for CMIP6 compliant data) path specified in your
-   ``config-user.yml``
+   ``esmvaltool data download --original-data-dir </path/to/save/data> <dataset>``
+#. Run the cmorization by running ``esmvaltool data format --original-data-dir </path/to/save/data> <dataset>``
+#. Copy the resulting data to the directory specified in your
+   :ref:`configuration <esmvalcore:config-data-sources>` for the ``OBS``
+   (for CMIP5 compliant data) or ``OBS6`` (for CMIP6 compliant data) project.
 #. Run ``recipes/examples/recipe_check_obs.yml`` with the new dataset to check that
    the data can be used
 
@@ -65,10 +67,10 @@ The scientific reviewer needs to check this.
 Data availability
 =================
 
-Once your pull request has been approved by the reviewers, ask
-`@remi-kazeroni <https://github.com/remi-kazeroni>`_
+Once your pull request has been approved by the reviewers, ask a member of
+`@OBS-maintainers <https://github.com/orgs/ESMValGroup/teams/obs-maintainers>`_
 to add the new dataset to the data pool at DKRZ and CEDA-Jasmin.
-He is also the person in charge of merging CMORizer pull requests.
+This team is in charge of merging CMORizer pull requests.
 
 .. _dataset_checklist:
 
@@ -165,14 +167,14 @@ Run ``esmvaltool/recipes/examples/recipe_check_obs.yml`` for new dataset.
 RAW data
 --------
 
-Contact person in charge of ESMValTool data pool (`@remi-kazeroni`_) and
+Contact the team in charge of ESMValTool data pool (`@OBS-maintainers`_) and
 request to copy RAW data to RAWOBS/Tier2 (Tier3).
 
 
 CMORized data
 -------------
 
-Contact person in charge of ESMValTool data pool (`@remi-kazeroni`_) and
+Contact the team in charge of ESMValTool data pool (`@OBS-maintainers`_) and
 request to
 
 * Merge the pull request

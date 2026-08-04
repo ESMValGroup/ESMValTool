@@ -1,6 +1,6 @@
-#--------------------------- 
+#---------------------------
 # TURBINE CHARACTERISTICS
-#--------------------------- 
+#---------------------------
 # Name: Vestas_V110_2.0MW [string]
 # Manufacturer: Vestas [string]
 # Diameter: 110 m
@@ -13,7 +13,7 @@
 # Control: pitch [pitch/stall/active_stall/flaps]
 # HubHeights: 80,95,125 m
 #
-#--------------------------- 
+#---------------------------
 # POWER CURVE
 # Density: 1.225 kg/m^3
 #---------------------------

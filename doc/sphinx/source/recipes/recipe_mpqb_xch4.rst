@@ -45,12 +45,12 @@ User settings in recipe
 #. Preprocessor
 
    * ``pp_lineplots_xx_mon``: Regridding, masking all missing values from all used datasets, area-mean ('xx' can ge replaced by 'gl'=global, 'sh'=southern hemisphere, 'nh'=northern hemisphere), units converted to [ppbv] to obtain one time series of monthly mean values for the selected region (global, southern hemisphere, northern hemisphere)
-   * ``pp_lineplots_xx_ann``: Regridding, masking all missing values from all used datasets, area-mean ('xx' can ge replaced by 'gl'=global, 'sh'=southern hemisphere, 'nh'=northern hemisphere), units converted to [ppbv] to obtain one time series of annual mean values for the selected region (global, southern hemisphere, northern hemisphere)   
+   * ``pp_lineplots_xx_ann``: Regridding, masking all missing values from all used datasets, area-mean ('xx' can ge replaced by 'gl'=global, 'sh'=southern hemisphere, 'nh'=northern hemisphere), units converted to [ppbv] to obtain one time series of annual mean values for the selected region (global, southern hemisphere, northern hemisphere)
    * ``pp_lineplots_anncyc_xx:`` : Regridding, masking all missing values from all used datasets, area-mean ('xx' can ge replaced by 'gl'=global, 'sh'=southern hemisphere, 'nh'=northern hemisphere), units converted to [ppbv], monthly climate statistics applied to one annual cycle for the whole chosen time period and for the selected region (global, southern hemisphere, northern hemisphere)
    * ``xch4_def_xx``: defining the time period over which the analysis should be calculated; options are "cmip6" which overlapping period of the observations and the CMIP6 historical simulations, and "future" which covers the time period of CMIP6 scenarios
 
 #. Additional needed files
-   
+
    * ``mpqb_cfg_xch4.yml``: In this file additional information for the used datasets are defined and stored, e.g. alias of the dataset name and the color that is used to display the dataset in the figures
    * ``mpqb_utils.yml``: In this file the preparations for the dataset displays are made.
 
@@ -61,11 +61,11 @@ User settings in recipe
    * no additional settings required
 
    *Optional settings for script*
-   
+
    * no optional settings available
 
    *Required settings for variables*
-   
+
    * no settings for the variable required
 
 #. Script <mpqb_lineplot_anncyc.py>
@@ -75,11 +75,11 @@ User settings in recipe
    * no additional settings required
 
    *Optional settings for script*
-   
+
    * no optional settings available
 
    *Required settings for variables*
-   
+
    * no settings for the variable required
 
 #. Script <mpqb_lineplot_growthrate.py>
@@ -89,11 +89,11 @@ User settings in recipe
    * no additional settings required
 
    *Optional settings for script*
-   
+
    * no optional settings available
 
    *Required settings for variables*
-   
+
    * no settings for the variable required
 
 
@@ -111,11 +111,8 @@ All variables are necessary to calculate the derived variable xch4.
 Example plots
 -------------
 
-.. _lineplot_xch4_2003-2014_monmean: 
+.. _lineplot_xch4_2003-2014_monmean:
 .. figure::  /recipes/figures/mpqb/lineplot_xch4_2003-2014_monmean.png
    :align:   center
 
    Monthly mean time series of XCH4, calculated over the whole globe, for individual CMIP6 model simulations.
-   
-   
-   

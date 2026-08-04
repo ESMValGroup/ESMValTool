@@ -1,6 +1,6 @@
 ; #############################################################################
 ; PROCEDURE FOR THE LATLON PLOT OF THE PERFORMANCE METRICS
-; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; Authors: Mattia Righi (DLR, Germany) and Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 
@@ -129,7 +129,8 @@ begin
                    (/"mean", "rmsd"/), \
                    diag_script_info@region, \
                    "geo", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
@@ -211,7 +212,8 @@ begin
                    (/"mean", "rmsd", "diff"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

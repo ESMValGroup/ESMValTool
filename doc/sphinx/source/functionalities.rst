@@ -12,9 +12,9 @@ that it can:
 -  execute the workflow; and
 -  output the desired collective data and media.
 
-To facilitate these four steps, the user has control over the tool via
-two main input files: the :ref:`user configuration file <config-user>`
-and the :ref:`recipe <esmvalcore:recipe>`. The configuration file sets
+To facilitate these four steps, the user has control over the tool via the
+:ref:`configuration <esmvalcore:config_overview>` and the :ref:`recipe
+<esmvalcore:recipe>`. The configuration sets
 user and site-specific parameters (like input and output paths, desired
 output graphical formats, logging level, etc.), whereas the recipe file
 sets data, preprocessing and diagnostic-specific parameters (data
@@ -27,7 +27,7 @@ recyclable; the recipe file can be used for a large number of
 applications, since it may include as many datasets, preprocessors and
 diagnostics sections as the user deems useful.
 
-Once the user configuration files and the recipe are at hand, the user
+Once the configuration files and the recipe are at hand, the user
 can start the tool. A schematic overview of the ESMValTool workflow is
 depicted in the figure below.
 

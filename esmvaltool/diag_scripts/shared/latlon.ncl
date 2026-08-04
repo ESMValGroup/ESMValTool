@@ -588,8 +588,8 @@ function select_region(region:string)
 ; Modification history
 ;    20190405-righi_mattia: change region names to match provenance.
 ;    20141205-gottschaldt_klaus-dirk: adjusted names to Righi et al. (2015).
-;    20140410-frank_franziska: extended to midlat, equatorial and polar.
-;    20140129-frank_franziska: written.
+;    20140410-winterstein_franziska: extended to midlat, equatorial and polar.
+;    20140129-winterstein_franziska: written.
 ;
 local funcname, scriptname, region
 begin

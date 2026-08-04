@@ -14,11 +14,11 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_<mynewrecipe>.yml
+* recipe_<mynewrecipe>.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/<mynewdiag>/
 
-    * <mynewdiag.py/.ncl/.r>: one line scription
+* <mynewdiag.py/.ncl/.r>: one line scription
 
 
 User settings in recipe

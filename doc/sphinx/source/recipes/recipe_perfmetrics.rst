@@ -3,12 +3,27 @@
 Performance metrics for essential climate parameters
 ====================================================
 
+.. note::
+  Some of the results of this diagnostics can also be reproduced utilizing
+  python diagnostics:
+  Portrait plot: :ref:`recipe_portrait`
+  Monitoring: :ref:`recipe_monitor`
+
 Overview
 --------
 
-The goal is to create a standard recipe for the calculation of performance metrics to quantify the ability of the models to reproduce the climatological mean annual cycle for selected "Essential Climate Variables" (ECVs) plus some additional corresponding diagnostics and plots to better understand and interpret the results.
+The goal is to create a standard recipe for the calculation of performance
+metrics to quantify the ability of the models to reproduce the climatological
+mean annual cycle for selected "Essential Climate Variables" (ECVs) plus some
+additional corresponding diagnostics and plots to better understand and
+interpret the results.
 
-The recipe can be used to calculate performance metrics at different vertical levels (e.g., 5, 30, 200, 850 hPa as in `Gleckler et al. (2008) <http://dx.doi.org/10.1029/2007JD008972>`_ and in different regions. As an additional reference, we consider `Righi et al. (2015) <https://doi.org/10.5194/gmd-8-733-2015>`_.
+The recipe can be used to calculate performance metrics at different vertical
+levels (e.g., 5, 30, 200, 850 hPa as in
+`Gleckler et al. (2008) <http://dx.doi.org/10.1029/2007JD008972>`_) and in
+different regions. As an additional reference, we consider
+`Righi et al. (2015) <https://doi.org/10.5194/gmd-8-733-2015>`_.
+
 
 Available recipes and diagnostics
 -----------------------------------
@@ -16,17 +31,27 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_perfmetrics_CMIP5.yml
-* recipe_perfmetrics_CMIP5_cds.yml
+* recipe_perfmetrics_CMIP5_4cds.yml
 * recipe_perfmetrics_land_CMIP5.yml
+* recipe_perfmetrics_CORDEX-CMIP5.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
 
-* main.ncl: calculates and (optionally) plots annual/seasonal cycles, zonal means, lat-lon fields and time-lat-lon fields. The calculated fields can also be plotted as difference w.r.t. a given reference dataset. main.ncl also calculates RMSD, bias and taylor metrics. Input data have to be regridded to a common grid in the preprocessor. Each plot type is created by a separated routine, as detailed below.
+* main.ncl: calculates and (optionally) plots annual/seasonal cycles, zonal
+  means, lat-lon fields and time-lat-lon fields. The calculated fields can also
+  be plotted as difference w.r.t. a given reference dataset. main.ncl also
+  calculates RMSD, bias and taylor metrics. Input data have to be regridded to
+  a common grid in the preprocessor. Each plot type is created by a separated
+  routine, as detailed below.
 * cycle.ncl: creates an annual/seasonal cycle plot.
 * zonal.ncl: creates a zonal (lat-pressure) plot.
 * latlon.ncl: creates a lat-lon plot.
-* cycle_latlon.ncl: precalculates the metrics for a time-lat-lon field, with different options for normalization.
-* collect.ncl: collects and plots the metrics previously calculated by cycle_latlon.ncl.
+* cycle_latlon.ncl: precalculates the metrics for a time-lat-lon field, with
+  different options for normalization.
+* collect.ncl: collects and plots the metrics previously calculated by
+  cycle_latlon.ncl.
+* ``portrait_plot.py``: portrait plot of relative RMSE (used by
+  ``recipe_perfmetrics_CORDEX-CMIP5.yml``; see :ref:`recipe_portrait`)
 
 User settings in recipe
 -----------------------
@@ -37,9 +62,12 @@ User settings in recipe
 
    *Required settings (scripts)*
 
-   * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon), cycle_zonal (time, plev, lat)
+   * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon
+     (time, lat, lon), cycle_zonal (time, plev, lat)
    * time_avg: type of time average (monthlyclim, seasonalclim, annualclim)
-   * region: selected region (global, trop, nhext, shext, nhtrop, shtrop, nh, sh, nhmidlat, shmidlat, nhpolar, shpolar, eq)
+   * region: selected region (global, trop, nhext, shext, nhtrop, shtrop, nh,
+     sh, nhmidlat, shmidlat, nhpolar, shpolar, eq)
+
 
    *Optional settings (scripts)*
 
@@ -51,8 +79,12 @@ User settings in recipe
    * projection: map projection for plot_type latlon (default: CylindricalEquidistant)
    * plot_diff: draws difference plots (default: False)
    * calc_grading: calculates grading metrics (default: False)
-   * stippling: uses stippling to mark statistically significant differences (default: False = mask out non-significant differences in gray)
-   * show_global_avg: diplays the global avaerage of the input field as string at the top-right of lat-lon plots (default: False)
+   * stippling: uses stippling to mark statistically significant differences
+     (default: False = mask out non-significant differences in gray)
+   * show_global_avg: displays the global avaerage of the input field as string
+     at the top-right of lat-lon plots (default: False)
+   * annots: choose the annotation style, e.g. ```alias``` which would display
+     the alias of the dataset as title (applies to plot_type zonal and cycle_zonal)
    * metric: chosen grading metric(s) (if calc_grading is True)
    * normalization: metric normalization (for RMSD and BIAS metrics only)
    * abs_levs: list of contour levels for absolute plot
@@ -113,8 +145,8 @@ User settings in recipe
 
    *Optional settings (scripts)*
 
-   * label_lo: adds lower triange for values outside range
-   * label_hi: adds upper triange for values outside range
+   * label_lo: adds lower triangle for values outside range
+   * label_hi: adds upper triangle for values outside range
    * cm_interval: min and max color of the color table
    * cm_reverse: reverses the color table
    * sort: sorts datasets in alphabetic order (excluding MMM)
@@ -153,17 +185,34 @@ Variables
     * et (land, monthly mean, longitude latitude time)
     * rlus, rlds, rsus, rdsd (atmos, monthly mean, longitude latitude time)
 
+#. recipe_perfmetrics_CORDEX-CMIP5.yml
+
+    * clivi, clt, prw, rlut, rsus (atmos, daily mean, EUR-11)
+    * lwp (atmos, daily mean, EUR-11; derived from ``clwvi`` and ``clivi`` for CORDEX
+      models, native ``lwp`` for the ESACCI-CLOUD reference)
+    * sic (sea ice, daily mean, EUR-11)
+    * snw (land, daily mean, EUR-11)
+    * lst, sst (CORDEX ``ts`` with land/sea masking; compared to ESACCI-LST / ESACCI-SST,
+      daily mean, EUR-11)
+
 Observations and reformat scripts
 ---------------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformating. For non-obs4MIPs data use `esmvaltool data info DATASET` or see headers of cmorization scripts (in `/esmvaltool/cmorizers/data/formatters/datasets/
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/datasets/>`_) for downloading and processing instructions.
+The following list shows the currently used observational data sets for this
+recipe with their variable names and the reference to their respective reformat
+scripts in parentheses. Please note that obs4MIPs data can be used directly
+without any reformatitng. For non-obs4MIPs data use `esmvaltool data info DATASET`
+or see headers of cmorization scripts (in `/esmvaltool/cmorizers/data/formatters/datasets/
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/datasets/>`_)
+for downloading and processing instructions.
+
 #.  recipe_perfmetrics_CMIP5.yml
 
     * AIRS (hus - obs4MIPs)
     * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
     * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/data/formatters/datasets/era-interim.py)
-    * ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/cmorizers/data/formatters/datasets/esacci-aerosol.ncl)
+    * ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci-aerosol.ncl)
     * ESACCI-CLOUD (clt - esmvaltool/cmorizers/data/formatters/datasets/esacci-cloud.ncl)
     * ESACCI-OZONE (toz - esmvaltool/cmorizers/data/formatters/datasets/esacci-ozone.ncl)
     * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/data/formatters/datasets/esacci_soilmoisture.ncl)
@@ -186,12 +235,31 @@ The following list shows the currently used observational data sets for this rec
     * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/data/formatters/datasets/landschuetzer2016.py)
     * MTE (gpp - esmvaltool/cmorizers/data/formatters/datasets/mte.py)
 
+#. recipe_perfmetrics_CORDEX-CMIP5.yml
+
+    * ESACCI-CLOUD (clivi, clt, lwp, rlut, rsus -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_cloud.py)
+    * ESACCI-WATERVAPOUR (prw -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py)
+    * ESACCI-SEAICE (sic -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_seaice.py)
+    * ESACCI-SNOW (snw -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_snow.py)
+    * ESACCI-LST (ts -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_lst.py)
+    * ESACCI-SST (tos -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_sst.py)
+
 References
 ----------
 
-* Gleckler, P. J., K. E. Taylor, and C. Doutriaux, Performance metrics for climate models, J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008).
+* Gleckler, P. J., K. E. Taylor, and C. Doutriaux, Performance metrics for climate models, J.
+  Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008).
 
-* Righi, M., Eyring, V., Klinger, C., Frank, F., Gottschaldt, K.-D., Jöckel, P., and Cionni, I.: Quantitative evaluation of oone and selected climate parameters in a set of EMAC simulations, Geosci. Model Dev., 8, 733, doi: 10.5194/gmd-8-733-2015 (2015).
+* Righi, M., Eyring, V., Klinger, C., Frank, F., Gottschaldt, K.-D., Jöckel, P.,
+  and Cionni, I.: Quantitative evaluation of ozone and selected climate parameters in a set of EMAC simulations,
+  Geosci. Model Dev., 8, 733, doi: 10.5194/gmd-8-733-2015 (2015).
+
 
 Example plots
 -------------
@@ -199,17 +267,24 @@ Example plots
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
    :width: 90%
 
-   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP-NCAR-R1 (thick black dashed line) reanalysis data.
+   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005)
+   for different CMIP5 models (historical simulation) (thin colored lines) in comparison to
+   ERA-Interim (thick yellow line) and NCEP-NCAR-R1 (thick black dashed line) reanalysis data.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
    :width: 90%
 
-   Taylor diagram of globally averaged temperature at 850 hPa (ta) and longwave cloud radiative effect (lwcre) for different CMIP5 models (historical simulation, 1980-2005). Reference data (REF) are ERA-Interim for temperature (1980-2005) and CERES-EBAF (2001-2012) for longwave cloud radiative effect.
+   Taylor diagram of globally averaged temperature at 850 hPa (ta) and longwave cloud
+   radiative effect (lwcre) for different CMIP5 models (historical simulation, 1980-2005).
+   Reference data (REF) are ERA-Interim for temperature (1980-2005) and CERES-EBAF (2001-2012)
+   for longwave cloud radiative effect.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
    :width: 90%
 
-   Difference in annual mean of zonally averaged temperature (time period 1980-2005) between the CMIP5 model MPI-ESM-MR (historical simulation) and ERA-Interim. Stippled areas indicdate differences that are statistically significant at a 95% confidence level.
+   Difference in annual mean of zonally averaged temperature (time period 1980-2005) between the
+   CMIP5 model MPI-ESM-MR (historical simulation) and ERA-Interim. Stippled areas indicdate
+   differences that are statistically significant at a 95% confidence level.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
    :width: 90%
@@ -220,4 +295,17 @@ Example plots
    :width: 90%
    :align: center
 
-   Relative space-time root-mean-square deviation (RMSD) calculated from the climatological seasonal cycle of CMIP5 simulations. A relative performance is displayed, with blue shading indicating better and red shading indicating worse performance than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternative data set (upper left triangle). White boxes are used when data are not available for a given model and variable.
+   Relative space-time root-mean-square deviation (RMSD) calculated from the climatological
+   seasonal cycle of CMIP5 simulations. A relative performance is displayed, with blue shading
+   indicating better and red shading indicating worse performance than the median of all model results.
+   A diagonal split of a grid square shows the relative error with respect to the reference data set
+   (lower right triangle) and the alternative data set (upper left triangle).
+   White boxes are used when data are not available for a given model and variable.
+
+.. figure:: /recipes/figures/perfmetrics/cordex_cmip5_portrait.png
+   :width: 70%
+   :align: center
+
+   Relative RMSE (centered median normalization) of CORDEX-CMIP5 EUR-11 models
+   against ESA CCI reference data for 2003–2005, produced by
+   ``recipe_perfmetrics_CORDEX-CMIP5.yml`` using ``portrait_plot.py``.

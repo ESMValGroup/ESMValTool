@@ -35,7 +35,9 @@ preprocessors:
       regrid:
         target_grid: 2.5x2.5
         lat_offset: False
-        scheme: linear_extrapolate
+        scheme:
+          reference: iris.analysis:Linear
+          extrapolation_mode: extrapolate
       extract_region:
         start_longitude: 0.
         end_longitude: 360.

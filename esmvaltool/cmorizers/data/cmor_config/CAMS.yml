@@ -1,0 +1,39 @@
+---
+# Common global attributes for Cmorizer output
+
+# Input
+filename: 'cams73_v23r1_co2_flux_surface_mm_{year}{month}.nc'
+start_year: 1979
+end_year: 2023
+attributes:
+  dataset_id: CAMS
+  version: 'v23r1'
+  tier: 3
+  type: reanaly
+  project_id: OBS6
+  source: "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion"
+  reference: 'cams'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  nbp:
+    mip: Lmon
+    positive: down
+    varname: 'Posterior land surface upward mass flux of carbon for the whole grid box and the whole month without fossile'
+  fgco2:
+    mip: Omon
+    positive: down
+    varname: 'Posterior ocean surface upward mass flux of carbon for the whole grid box and the whole month without fossile'
+  areacella:
+    mip: fx
+    varname: area
+  areacello:
+    mip: Ofx
+    varname: area
+  sftlf:
+    mip: fx
+    varname: lsf
+  sftof:
+    mip: Ofx
+    varname: lsf

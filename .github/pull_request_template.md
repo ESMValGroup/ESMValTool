@@ -62,6 +62,7 @@ It is the responsibility of the author to make sure the pull request is ready to
 
 - [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation) is available
 - [ ] [🛠][1] The dataset has been [added to the CMOR check recipe](https://docs.esmvaltool.org/en/latest/community/dataset.html#testing)
+- [ ] [🛠][1] The dataset has been added to the shared [data pools](https://docs.esmvaltool.org/en/latest/community/dataset.html#cmorized-data) of DKRZ and Jasmin by the @ESMValGroup/OBS-maintainers team
 - [ ] [🧪][2] Numbers and units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/community/dataset.html#scientific-sanity-check)
 
 ***

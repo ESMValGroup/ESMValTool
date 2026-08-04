@@ -90,7 +90,7 @@ end
 
 begin
 
-  plotpath = config_user_info@plot_dir + "/Russell_figure-6a_" \
+  plotpath = config_user_info@plot_dir + "Russell_figure-6a_" \
             + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
             + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -151,10 +151,8 @@ begin
       fx_variable = "volcello"
       error_msg("f", "russell18jgr-fig6.ncl", " ", "volcello file for "  \
                 + vo_datasets(iii) \
-                + " not found in the metadata file, please add "\
-                + "'fx_files: [volcello]' to the variable dictionary in the " \
-                + "recipe or add the location of file to input directory " \
-                + "in config-user.yml ")
+                + " not found in the metadata file, please specify " \
+                + "'volcello' as supplementary variable in the recipe.")
     end if
 
     dataset_so_time = read_data(so_items[iii])
@@ -699,7 +697,7 @@ begin
     ncdf_outfile = ncdf_write(out_var, nc_filename)
 
     log_provenance(ncdf_outfile, \
-                   plotpath, \
+                   plotpath + "." + output_type(), \
                    "Russell et al 2018 figure 6 part a", \
                    "mean", \
                    "sh",   \

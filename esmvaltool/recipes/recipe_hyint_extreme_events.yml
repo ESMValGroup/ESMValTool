@@ -67,19 +67,19 @@ diagnostics:
       hyint:
         script: hyint/hyint.R
         ancestors: [pr, extreme_events]
- 
+
         # Reference normalization period to be used for normalized indices
         norm_years: [1980, 1983]
 
         # Call preprocessing for ETCCDI indices calculated with climdex
         etccdi_preproc: true
 
-        # Specify external path to repository of ETCCDI indices 
+        # Specify external path to repository of ETCCDI indices
         # (unless these are calculated in the same directory)
         #etccdi_dir: "./work/hyint/main"
 
         # Select indices to be imported from the extreme_events metrics:
-        etccdi_list_import: ["tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"] 
+        etccdi_list_import: ["tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"]
 
         # Select one or more indices for timeseries and maps from the following
         # list (order-sensitive):

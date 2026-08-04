@@ -11,6 +11,7 @@ Examples
 --------
 
 * :ref:`recipe_monitor`
+* :ref:`recipe_model_evaluation`
 
 
 Diagnostic scripts

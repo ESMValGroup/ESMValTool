@@ -1,4 +1,5 @@
 """Script to download Landschuetzer2016."""
+
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -6,14 +7,20 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -26,7 +33,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -35,4 +42,5 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.download_file(
         "https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/"
         "spco2_1982-2015_MPI_SOM-FFN_v2016.nc",
-        wget_options=[])
+        wget_options=[],
+    )

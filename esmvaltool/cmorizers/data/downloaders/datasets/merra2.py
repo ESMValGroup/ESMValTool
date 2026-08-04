@@ -7,14 +7,20 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -29,11 +35,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if not start_date:
         start_date = datetime(1980, 1, 1)
     if not end_date:
-        end_date = datetime(2021, 1, 1)
+        end_date = datetime(2022, 1, 1)
     loop_date = start_date
 
     downloader = NASADownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -43,23 +49,38 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         year = loop_date.year
         downloader.download_folder(
             "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2TMNXLND.5.12.4/{year}/")
+            f"M2TMNXLND.5.12.4/{year}/",
+        )
         downloader.download_folder(
             "https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2IMNPANA.5.12.4/{year}/")
+            f"M2IMNPANA.5.12.4/{year}/",
+        )
         downloader.download_folder(
             "https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2IMNPASM.5.12.4/{year}/")
+            f"M2IMNPASM.5.12.4/{year}/",
+        )
         downloader.download_folder(
             "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2TMNXRAD.5.12.4/{year}/")
+            f"M2TMNXRAD.5.12.4/{year}/",
+        )
         downloader.download_folder(
             "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2TMNXSLV.5.12.4/{year}/")
+            f"M2TMNXSLV.5.12.4/{year}/",
+        )
         downloader.download_folder(
             "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2SMNXSLV.5.12.4/{year}/")
+            f"M2SMNXSLV.5.12.4/{year}/",
+        )
         downloader.download_folder(
             "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2TMNXFLX.5.12.4/{year}/")
+            f"M2TMNXFLX.5.12.4/{year}/",
+        )
+        downloader.download_folder(
+            "https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
+            f"M2TMNPCLD.5.12.4/{year}/",
+        )
+        downloader.download_folder(
+            "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
+            f"M2IMNXASM.5.12.4/{year}/",
+        )
         loop_date += relativedelta.relativedelta(years=1)

@@ -27,4 +27,3 @@ indent_size = 2
 
 [*.{md,Rmd}]
 trim_trailing_whitespace = false
-

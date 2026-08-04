@@ -61,7 +61,7 @@
 
 ;;; Code:
 
-
+
 ;; User definable variables
 
 ;;;###autoload
@@ -113,7 +113,7 @@ that key is pressed to begin a block literal."
   :type 'string
   :group 'yaml)
 
-
+
 ;; Constants
 
 (defconst yaml-mode-version "0.0.13" "Version of `yaml-mode'.")
@@ -180,7 +180,7 @@ that key is pressed to begin a block literal."
           " *$")
   "Regexp matching certain scalar constants in scalar context.")
 
-
+
 ;; Mode setup
 
 (defvar yaml-mode-map
@@ -227,7 +227,7 @@ that key is pressed to begin a block literal."
        'yaml-mode-syntax-propertize-function)
   (setq font-lock-defaults '(yaml-font-lock-keywords)))
 
-
+
 ;; Font-lock support
 
 (defvar yaml-font-lock-keywords
@@ -293,7 +293,7 @@ artificially limitted to the value of
                                bound t))
           (set-match-data (nthcdr 2 (match-data))) t))))))
 
-
+
 ;; Indentation and electric keys
 
 (defun yaml-compute-indentation ()

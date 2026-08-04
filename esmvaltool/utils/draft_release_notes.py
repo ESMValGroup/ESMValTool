@@ -8,8 +8,10 @@ https://help.github.com/en/github/authenticating-to-github/creating-a-personal-a
 4) Call the script passing the project to create release notes on: esmvalcore
 or esmvaltool
 """
+
 import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dateutil
 import esmvalcore
@@ -19,81 +21,108 @@ import esmvaltool
 
 try:
     from github import Github
+    from github.Auth import Token
 except ImportError:
     print("Please `pip install pygithub`")
 
 try:
-    GITHUB_API_KEY = Path("~/.github_api_key").expanduser().read_text(
-        encoding='utf-8').strip()
+    GITHUB_API_KEY = (
+        Path("~/.github_api_key")
+        .expanduser()
+        .read_text(encoding="utf-8")
+        .strip()
+    )
 except FileNotFoundError:
-    print("Please create an access token and store it in the file "
-          "~/.github_api_key, see:\nhttps://help.github.com/en/github/"
-          "authenticating-to-github/creating-a-personal-access-token-"
-          "for-the-command-line")
+    print(
+        "Please create an access token and store it in the file "
+        "~/.github_api_key, see:\nhttps://help.github.com/en/github/"
+        "authenticating-to-github/creating-a-personal-access-token-"
+        "for-the-command-line",
+    )
 
 VERSION = {
-    'esmvalcore': f"v{esmvalcore.__version__}",
-    'esmvaltool': f"v{esmvaltool.__version__}"
+    "esmvalcore": f"v{esmvalcore.__version__}",
+    "esmvaltool": f"v{esmvaltool.__version__}",
 }
 GITHUB_REPO = {
-    'esmvalcore': "ESMValGroup/ESMValCore",
-    'esmvaltool': "ESMValGroup/ESMValTool",
+    "esmvalcore": "ESMValGroup/ESMValCore",
+    "esmvaltool": "ESMValGroup/ESMValTool",
 }
+
+TIMEZONE = ZoneInfo("CET")
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2022, 10, 13, 18),
-    'esmvaltool': datetime.datetime(2022, 10, 28, 18),
+    "esmvalcore": datetime.datetime(2026, 3, 10, 0, tzinfo=TIMEZONE),
+    "esmvaltool": datetime.datetime(2026, 3, 13, 0, tzinfo=TIMEZONE),
 }
 
-
 LABELS = {
-    'esmvalcore': (
-        'api',
-        'backwards incompatible change',
-        'bug',
-        'cmor',
-        'containerization',
-        'community',
-        'deployment',
-        'deprecated feature',
-        'documentation',
-        'enhancement',
-        'fix for dataset',
-        'installation',
-        'iris',
-        'preprocessor',
-        'release',
-        'testing',
-        'UX',
-        'variable derivation'
+    "esmvalcore": (
+        "backwards incompatible change",  # important, keep at the top
+        "deprecated feature",  # important, keep at the top
+        "bug",  # important, keep at the top
+        "api",
+        "cmor",
+        "config",
+        "containerization",
+        "community",
+        "dask",
+        "deployment",
+        "documentation",
+        "fix for dataset",
+        "installation",
+        "iris",
+        "preprocessor",
+        "release",
+        "issue introduced since last release",
+        "testing",
+        "UX",
+        "variable derivation",
+        "enhancement",  # uncategorized, keep at the bottom
     ),
-    'esmvaltool': (
-        'backwards incompatible change',
-        'bug',
-        'community',
-        'deprecated feature',
-        'documentation',
-        'diagnostic',
-        'preprocessor',
-        'observations',
-        'testing',
-        'installation',
-        'enhancement',
-    )
+    "esmvaltool": (
+        "backwards incompatible change",  # important, keep at the top
+        "deprecated feature",  # important, keep at the top
+        "bug",  # important, keep at the top
+        "broken recipe",  # important, keep at the top
+        "community",
+        "documentation",
+        "diagnostic",
+        "preprocessor",
+        "observations",
+        "release",
+        "testing",
+        "installation",
+        "REF",
+        "enhancement",  # uncategorized, keep at the bottom
+    ),
 }
 
 TITLES = {
-    'backwards incompatible change': 'Backwards incompatible changes',
-    'deprecated feature': 'Deprecations',
-    'bug': 'Bug fixes',
-    'cmor': 'CMOR standard',
-    'diagnostic': 'Diagnostics',
-    'fix for dataset': 'Fixes for datasets',
-    'observations': 'Observational and re-analysis dataset support',
-    'testing': 'Automatic testing',
-    'api': 'Notebook API (experimental)',
-    'enhancement': 'Improvements',
+    "backwards incompatible change": "Backwards incompatible changes",
+    "deprecated feature": "Deprecations",
+    "broken recipe": "Broken or retired recipes",
+    "bug": "Bug fixes",
+    "cmor": "CMOR standard",
+    "config": "Configuration",
+    "dask": "Computational performance improvements",
+    "diagnostic": "Diagnostics",
+    "fix for dataset": "Fixes for datasets",
+    "observations": "Observational and re-analysis dataset support",
+    "testing": "Automatic testing",
+    "api": "Notebook API (experimental)",
+    "REF": "Rapid Evaluation Framework",
+    "issue introduced since last release": "Issues introduced since last release",
+    "enhancement": "Improvements",
 }
+
+IGNORE_USERS = (
+    "pre-commit-ci[bot]",
+    "dependabot[bot]",
+    "github-actions[bot]",
+    "esmvalbot[bot]",
+)
+"""Ignore all PRs from specific users (e.g., bots)."""
 
 
 def draft_notes_since(project, previous_release_date=None, labels=None):
@@ -121,25 +150,39 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
 
     lines = {label: [] for label in labels}
     labelless_pulls = []
-    print(f"The following PRs (updated after {previous_release_date}) are "
-          f"considered in the changelog")
-    print(f"Note: Unmerged PRs or PRs that have been merged before "
-          f"{previous_release_date} are not shown\n")
+    print(
+        f"The following PRs (updated after {previous_release_date}) are "
+        f"considered in the changelog",
+    )
+    print(
+        f"Note: Unmerged PRs or PRs that have been merged before "
+        f"{previous_release_date} are not shown\n",
+    )
     for pull in pulls:
-        if pull.updated_at < previous_release_date:
+        if pull.updated_at.astimezone(TIMEZONE) < previous_release_date:
             break
-        if not pull.merged or pull.merged_at < previous_release_date:
+        if (
+            not pull.merged
+            or pull.merged_at.astimezone(TIMEZONE) < previous_release_date
+        ):
             continue
-        print(pull.updated_at, pull.merged_at, pull.number, pull.title)
+        if pull.user.login in IGNORE_USERS:
+            continue
+        print(
+            pull.updated_at.astimezone(TIMEZONE),
+            pull.merged_at.astimezone(TIMEZONE),
+            pull.number,
+            pull.title,
+        )
         pr_labels = {label.name for label in pull.labels}
-        if 'automatedPR' in pr_labels:
+        if "automatedPR" in pr_labels:
             continue
         for label in labels:
             if label in pr_labels:
                 break
         else:
             labelless_pulls.append(pull)
-            label = 'enhancement'
+            label = "enhancement"
         lines[label].append((pull.closed_at, _compose_note(pull)))
 
     # Warn about label-less PR:
@@ -153,11 +196,11 @@ def format_notes(lines, version):
     """Format release notes."""
     sections = [
         version,
-        '-' * len(version),
-        'Highlights',
-        '',
-        'TODO: add highlights',
-        '',
+        "-" * len(version),
+        "Highlights",
+        "",
+        "TODO: add highlights",
+        "",
         "This release includes",
     ]
     for label in lines:
@@ -167,50 +210,49 @@ def format_notes(lines, version):
             continue
         title = TITLES.get(label, label.title())
         if entries:
-            sections.append('\n'.join(['', title, '~' * len(title), '']))
-            if label == 'backwards incompatible change':
+            sections.append("\n".join(["", title, "~" * len(title), ""]))
+            if label == "backwards incompatible change":
                 sections.append(
-                    'TODO: add examples of how to deal with these changes\n')
-            sections.append('\n'.join(entry for _, entry in entries))
-    notes = '\n'.join(sections)
+                    "TODO: add examples of how to deal with these changes\n",
+                )
+            sections.append("\n".join(entry for _, entry in entries))
+    notes = "\n".join(sections)
     print("Copy the following lines to changelog.rst:\n")
     print(notes)
 
 
 def _get_pull_requests(project):
-    session = Github(GITHUB_API_KEY)
+    session = Github(auth=Token(GITHUB_API_KEY))
     repo = session.get_repo(GITHUB_REPO[project])
     pulls = repo.get_pulls(
-        state='closed',
-        sort='updated',
-        direction='desc',
-        base='main',
+        state="closed",
+        sort="updated",
+        direction="desc",
+        base="main",
     )
     return pulls
 
 
 def _list_labelless_pulls(labelless_pulls):
     if labelless_pulls:
-        print('\nPlease add labels to the following PR:')
+        print("\nPlease add labels to the following PR:")
         for pull in labelless_pulls:
             print(pull.html_url)
-        print('\n')
+        print("\n")
     else:
-        print('\nNo PR has missing labels!\n')
+        print("\nNo PR has missing labels!\n")
 
 
 def _compose_note(pull):
     user = pull.user
-    username = user.login if user.name is None else user.name
     title = pull.title
     title = title[0].upper() + title[1:]
-    return (f"-  {title} (`#{pull.number} "
-            f"<{pull.html_url}>`__) "
-            f"`{username} <https://github.com/{user.login}>`__")
+    return f"-  {title} (:pull:`{pull.number}`) by :user:`{user.login}`"
 
 
 def main():
-    """Entry point for the scrip."""
+    """Entry point for the script."""
+
     def display(lines, out):
         text = "\n".join(lines) + "\n"
         out.write(text)
@@ -219,5 +261,5 @@ def main():
     fire.Fire(draft_notes_since)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

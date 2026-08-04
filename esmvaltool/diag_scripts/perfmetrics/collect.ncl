@@ -1,6 +1,6 @@
 ; #############################################################################
 ; WRAPPER SCRIPT FOR COLLECTING AND PLOTTING PRECALCULATED METRICS
-; Author: Franziska Frank (DLR, Germany)
+; Author: Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 ; Description
@@ -42,7 +42,7 @@
 ;    20140620-gottschaldt_klaus-dirk: modified output file naming (variable
 ;                                     plotpath) and added option for explicit
 ;                                     plot title.
-;    20140204-frank_franziska: written.
+;    20140204-winterstein_franziska: written.
 ;
 ; #############################################################################
 
@@ -351,9 +351,9 @@ begin
       end if
       if (n_proj .gt. 1) then
         id2 = ind(projectnames.eq.diag_script_info@project_order(1))
-        id2_mm = (/ind(data_all&models(id2) .eq. \
+        id2_mm = (/ind(data_temp&models(id2) .eq. \
                   diag_script_info@project_order(1) + "_mean"), \
-                  ind(data_all&models(id2) .eq. \
+                  ind(data_temp&models(id2) .eq. \
                   diag_script_info@project_order(1) + "_median") /)
         if (any(ismissing(id2_mm))) then
           id2_mm = -1
@@ -368,9 +368,9 @@ begin
         end if
         if (n_proj .gt. 2) then
           id3 = ind(projectnames.eq.diag_script_info@project_order(2))
-          id3_mm = (/ind(data_all&models(id3) .eq. \
+          id3_mm = (/ind(data_temp&models(id3) .eq. \
                     diag_script_info@project_order(2) + "_mean"), \
-                    ind(data_all&models(id3) .eq. \
+                    ind(data_temp&models(id3) .eq. \
                     diag_script_info@project_order(2) + "_median") /)
           if (any(ismissing(id3_mm))) then
             id3_mm = -1
@@ -473,19 +473,19 @@ begin
   if (diag_script_info@metric.eq."RMSD") then
     caption = "RMSD performance metric"
     statistics = (/"rmsd"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."BIAS") then
     caption = "Bias performance metric"
     statistics = (/"diff"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."taylor") then
     caption = "Taylor diagram"
     statistics = (/"rmsd", "corr"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "taylor"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."SMPI") then
@@ -502,8 +502,9 @@ begin
   domains = (/"global"/)
 
   ; Call provenance logger
-  log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, data_files)
+  log_provenance(ncdf_outfile, plotpath + "." + file_type, caption, \
+                 statistics, domains, plottype, authors, references, \
+                 data_files)
 
   leave_msg(DIAG_SCRIPT, "")
 

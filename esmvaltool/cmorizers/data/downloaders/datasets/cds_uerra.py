@@ -8,14 +8,20 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -34,19 +40,19 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     loop_date = start_date
     downloader = CDSDownloader(
-        product_name='reanalysis-uerra-europe-soil-levels',
+        product_name="reanalysis-uerra-europe-soil-levels",
         request_dictionary={
-            'format': 'netcdf',
-            'origin': 'uerra_harmonie',
-            'variable': 'volumetric_soil_moisture',
-            'soil_level': [
-                '1',
-                '2',
-                '3',
+            "format": "netcdf",
+            "origin": "uerra_harmonie",
+            "variable": "volumetric_soil_moisture",
+            "soil_level": [
+                "1",
+                "2",
+                "3",
             ],
-            'time': ['00:00', '06:00', '12:00', '18:00'],
+            "time": ["00:00", "06:00", "12:00", "18:00"],
         },
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -56,9 +62,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     while loop_date <= end_date:
         downloader.download(
             loop_date.year,
-            loop_date.month, [
-                f'{i+1:02d}' for i in range(
-                    calendar.monthrange(loop_date.year, loop_date.month)[1])
+            loop_date.month,
+            [
+                f"{i + 1:02d}"
+                for i in range(
+                    calendar.monthrange(loop_date.year, loop_date.month)[1],
+                )
             ],
-            file_format='nc')
+            file_format="nc",
+        )
         loop_date += relativedelta.relativedelta(months=1)

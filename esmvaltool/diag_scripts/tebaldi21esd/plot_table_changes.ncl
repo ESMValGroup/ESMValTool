@@ -57,13 +57,6 @@ begin
 end
 
 begin
-  ; Get environment variables
-  if (isatt(diag_script_info, "plot_type")) then
-    file_type = diag_script_info@plot_type
-  else
-    file_type = "pdf"
-  end if
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
@@ -159,13 +152,12 @@ begin
   gsn_table(wks, ncr4, x4, y4, text4, res4)
   draw(wks)
   frame(wks)
-  log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
+  log_info(" Wrote " + wks@fullname)
 
   ; Collect meta-data
   netcdf_dir = diag_script_info@input_files(1)
   datapath = netcdf_dir + "/" + variable_info[0]@diagnostic + ".nc"
   nc_file = datapath
-  plot_file = plot_dir + "/" + outfile + "." + file_type
   caption = "Table of global annual mean" + \
     variable_info[0]@long_name + " anomalies (relative to " + \
     diag_script_info@begin_ref_year + "-" + diag_script_info@end_ref_year + \
@@ -177,7 +169,7 @@ begin
   authors = (/"debeire_kevin"/)
   references = (/"tebaldi21esd"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domains, \
+  log_provenance(nc_file, wks@fullname, caption, statistics, domains, \
                  plot_types, authors, references, infiles)
   leave_msg(DIAG_SCRIPT, "")
 end

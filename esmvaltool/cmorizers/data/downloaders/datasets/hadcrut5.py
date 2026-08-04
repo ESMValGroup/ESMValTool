@@ -1,4 +1,5 @@
 """Script to download HadCRUT5 version 5.0.1.0 from its webpage."""
+
 import logging
 import os
 
@@ -7,14 +8,20 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -27,7 +34,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -37,15 +44,18 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.download_file(
         "https://crudata.uea.ac.uk/cru/data/temperature/"
         "HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc",
-        wget_options=[])
+        wget_options=[],
+    )
     downloader.download_file(
-        "https://crudata.uea.ac.uk/cru/data/temperature/"
-        "absolute_v5.nc",
-        wget_options=[])
+        "https://crudata.uea.ac.uk/cru/data/temperature/absolute_v5.nc",
+        wget_options=[],
+    )
     downloader.download_file(
         "https://crudata.uea.ac.uk/cru/data/temperature/"
         "HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc",
-        wget_options=[])
+        wget_options=[],
+    )
     downloader.download_file(
         "https://crudata.uea.ac.uk/cru/data/temperature/absolute.nc",
-        wget_options=[])
+        wget_options=[],
+    )

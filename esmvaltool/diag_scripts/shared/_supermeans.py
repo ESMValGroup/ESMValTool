@@ -13,7 +13,6 @@ import os.path
 import cf_units
 import iris
 import iris.coord_categorisation
-from iris.coord_categorisation import _pt_date
 import numpy as np
 
 
@@ -48,28 +47,28 @@ def get_supermean(name, season, data_dir, obs_flag=None):
     name_constraint = iris.Constraint(name=name)
 
     if not obs_flag:
-        cubes_path = os.path.join(data_dir, 'cubeList.nc')
+        cubes_path = os.path.join(data_dir, "cubeList.nc")
     else:
-        cubes_path = os.path.join(data_dir, obs_flag + '_cubeList.nc')
+        cubes_path = os.path.join(data_dir, obs_flag + "_cubeList.nc")
     cubes = iris.load(cubes_path)
 
     # use STASH if no standard name
     for cube in cubes:
-        if cube.name() == 'unknown':
-            cube.rename(str(cube.attributes['STASH']))
+        if cube.name() == "unknown":
+            cube.rename(str(cube.attributes["STASH"]))
 
     cube = cubes.extract_cube(name_constraint)
 
-    if season in ['djf', 'mam', 'jja', 'son']:
-        supermeans_cube = periodic_mean(cube, period='season')
+    if season in ["djf", "mam", "jja", "son"]:
+        supermeans_cube = periodic_mean(cube, period="season")
         return supermeans_cube.extract(iris.Constraint(season=season))
-    elif season == 'ann':
+    if season == "ann":
         return periodic_mean(cube)
-    else:
-        raise ValueError(
-            "Argument 'season' must be one of "
-            "['ann', 'djf', 'mam', 'jja', 'son']. "
-            "It is: " + str(season))
+    raise ValueError(
+        "Argument 'season' must be one of "
+        "['ann', 'djf', 'mam', 'jja', 'son']. "
+        "It is: " + str(season),
+    )
 
 
 def contains_full_climate_years(cube):
@@ -87,12 +86,12 @@ def contains_full_climate_years(cube):
               in cube are at YYYY-12-01 00:00:00.
     :rtype: boolean
     """
-    origin = cube.coord('time').units.origin
-    calendar = cube.coord('time').units.calendar
-    format_ = 'YYYY-%m-%d %H:%M:%S'
+    origin = cube.coord("time").units.origin
+    calendar = cube.coord("time").units.calendar
+    format_ = "YYYY-%m-%d %H:%M:%S"
 
-    if not cube.coord('time').has_bounds():
-        raise NoBoundsError()
+    if not cube.coord("time").has_bounds():
+        raise NoBoundsError
 
     def _num2date(num):
         return cf_units.num2date(num, origin, calendar)
@@ -100,39 +99,41 @@ def contains_full_climate_years(cube):
     if is_24h_sampled(cube):
         # find out number of sampling intervals (difference < 24 h)
         intervals = []
-        for i in range(len(cube.coord('time').points) - 1):
-            diff = cube.coord('time').points[i] - cube.coord('time').points[0]
+        for i in range(len(cube.coord("time").points) - 1):
+            diff = cube.coord("time").points[i] - cube.coord("time").points[0]
             if diff < 24:
                 intervals.append(round(diff))
         intervals = len(intervals)
 
         year_boundaries = [
-            'YYYY-12-01 {:02d}:00:00'.format(hour) for hour in range(24)
+            f"YYYY-12-01 {hour:02d}:00:00" for hour in range(24)
         ]
 
         bounding_datetimes = []
-        time_bounds = cube.coord('time').bounds
+        time_bounds = cube.coord("time").bounds
         for i in range(intervals):
             start = _num2date(time_bounds[i][0]).strftime(format_)
             end = _num2date(time_bounds[i - intervals][1]).strftime(format_)
             bounding_datetimes.append((start, end))
-        return all(start == end and start in year_boundaries and
-                   end in year_boundaries
-                   for start, end in bounding_datetimes)
-    else:
-        start = _num2date(cube.coord('time').bounds[0][0]).strftime(format_)
-        end = _num2date(cube.coord('time').bounds[-1][1]).strftime(format_)
-        year_boundary = 'YYYY-12-01 00:00:00'
-        return start == year_boundary and end == year_boundary
+        return all(
+            start == end
+            and start in year_boundaries
+            and end in year_boundaries
+            for start, end in bounding_datetimes
+        )
+    start = _num2date(cube.coord("time").bounds[0][0]).strftime(format_)
+    end = _num2date(cube.coord("time").bounds[-1][1]).strftime(format_)
+    year_boundary = "YYYY-12-01 00:00:00"
+    return start == year_boundary and end == year_boundary
 
 
 def is_24h_sampled(cube):
     """Check if cube data was sample once per day."""
     meaning_periods = []
     for c_m in cube.cell_methods:
-        if c_m.method == 'mean' and 'time' in c_m.coord_names:
+        if c_m.method == "mean" and "time" in c_m.coord_names:
             meaning_periods.extend(c_m.intervals)
-    return '24 hour' in meaning_periods
+    return "24 hour" in meaning_periods
 
 
 def periodic_mean(cube, period=None):
@@ -161,43 +162,42 @@ def periodic_mean(cube, period=None):
     of the first period that is averaged over,
     and the end boundary of the last period that is averaged over.
     """
-    if period not in [None, 'month', 'season']:
-        raise InvalidPeriod('Invalid period: ' + str(period))
+    if period not in [None, "month", "season"]:
+        raise InvalidPeriod("Invalid period: " + str(period))
 
     _cube = cube.copy()
 
-    if _cube.coord('time').has_bounds():
-        add_start_hour(_cube, 'time', name='start_hour')
+    if _cube.coord("time").has_bounds():
+        add_start_hour(_cube, "time", name="start_hour")
     else:
-        iris.coord_categorisation.add_hour(_cube, 'time', name='start_hour')
+        iris.coord_categorisation.add_hour(_cube, "time", name="start_hour")
 
-    if period == 'month':
-        iris.coord_categorisation.add_month(_cube, 'time', name='month')
-    elif period == 'season':
-        iris.coord_categorisation.add_season(_cube, 'time')
+    if period == "month":
+        iris.coord_categorisation.add_month(_cube, "time", name="month")
+    elif period == "season":
+        iris.coord_categorisation.add_season(_cube, "time")
     elif period is None:
         pass
     else:
-        raise InvalidPeriod('Invalid period: ' + str(period))
+        raise InvalidPeriod("Invalid period: " + str(period))
 
-    time_points_per_day = len(set(_cube.coord('start_hour').points))
+    time_points_per_day = len(set(_cube.coord("start_hour").points))
     if period is None:  # multi-annual mean
         if time_points_per_day > 1:
-            _cube = time_average_by(_cube, 'start_hour')
+            _cube = time_average_by(_cube, "start_hour")
         else:
-            _cube.remove_coord('start_hour')
+            _cube.remove_coord("start_hour")
             _cube = time_average_by(_cube)
+    elif time_points_per_day > 1:
+        _cube = time_average_by(_cube, [period, "start_hour"])
     else:
-        if time_points_per_day > 1:
-            _cube = time_average_by(_cube, [period, 'start_hour'])
-        else:
-            _cube.remove_coord('start_hour')
-            _cube = time_average_by(_cube, period)
+        _cube.remove_coord("start_hour")
+        _cube = time_average_by(_cube, period)
 
     return _cube
 
 
-def add_start_hour(cube, coord, name='diurnal_sampling_hour'):
+def add_start_hour(cube, coord, name="diurnal_sampling_hour"):
     """Add AuxCoord for diurnal data. Diurnal data is sampled every 24 hours.
 
     The hour value is taken from the first time bound, or the time point if no
@@ -206,16 +206,40 @@ def add_start_hour(cube, coord, name='diurnal_sampling_hour'):
     _add_categorised_coord(cube, name, coord, start_hour_from_bounds)
 
 
+# lifted from iris==3.10 last iris to have it in iris.coord_categorisation
+# Private "helper" function
+def _pt_date(coord, time):
+    """Return the datetime of a time-coordinate point.
+
+    Parameters
+    ----------
+    coord : Coord
+        Coordinate (must be Time-type).
+    time : float
+        Value of a coordinate point.
+
+    Returns
+    -------
+    cftime.datetime
+
+    """
+    # NOTE: All of the currently defined categorisation functions are
+    # calendar operations on Time coordinates.
+    return coord.units.num2date(time, only_use_cftime_datetimes=True)
+
+
 def start_hour_from_bounds(coord, _, bounds):
     """Add hour from bounds."""
     return np.array([_pt_date(coord, _bounds[0]).hour for _bounds in bounds])
 
 
-def _add_categorised_coord(cube,
-                           name,
-                           from_coord,
-                           category_function,
-                           units='1'):
+def _add_categorised_coord(
+    cube,
+    name,
+    from_coord,
+    category_function,
+    units="1",
+):
     """
     Add categorized coordinate.
 
@@ -255,20 +279,21 @@ def _add_categorised_coord(cube,
         from_coord = cube.coord(from_coord)
 
     if cube.coords(name):
-        msg = 'A coordinate "%s" already exists in the cube.' % name
+        msg = f'A coordinate "{name}" already exists in the cube.'
         raise ValueError(msg)
 
     new_coord = iris.coords.AuxCoord(
         category_function(from_coord, from_coord.points, from_coord.bounds),
         units=units,
-        attributes=from_coord.attributes.copy())
+        attributes=from_coord.attributes.copy(),
+    )
     new_coord.rename(name)
 
     # Add into the cube
     cube.add_aux_coord(new_coord, cube.coord_dims(from_coord))
 
 
-def time_average_by(cube, periods='time'):
+def time_average_by(cube, periods="time"):
     """Average cube over time or over periods.
 
     i. e. time-based categorical
@@ -280,14 +305,15 @@ def time_average_by(cube, periods='time'):
     # create new cube with time coord and orig duration as data
     durations_cube = iris.cube.Cube(
         # durations normalised to 1
-        durations(cube.coord('time')) / np.max(durations(cube.coord('time'))),
-        long_name='duration',
-        units='1',
+        durations(cube.coord("time")) / np.max(durations(cube.coord("time"))),
+        long_name="duration",
+        units="1",
         attributes=None,
-        dim_coords_and_dims=[(cube.coord('time').copy(), 0)])
+        dim_coords_and_dims=[(cube.coord("time").copy(), 0)],
+    )
     # there must be an AuxCoord for each period
     for period in periods:
-        if period != 'time':
+        if period != "time":
             durations_cube.add_aux_coord(cube.coord(period), 0)
 
     # calculate weighted sum
@@ -295,17 +321,20 @@ def time_average_by(cube, periods='time'):
 
     # multiply each time slice by its duration
     idx_obj = [None] * cube.data.ndim
-    idx_obj[cube.coord_dims('time')[0]] = slice(
-        None)  # [None, slice(None), None] == [np.newaxis, :, np.newaxis]
+    idx_obj[cube.coord_dims("time")[0]] = slice(
+        None,
+    )  # [None, slice(None), None] == [np.newaxis, :, np.newaxis]
     cube.data *= durations_cube.data[tuple(idx_obj)]
 
-    if periods == ['time']:  # duration weighted averaging
+    if periods == ["time"]:  # duration weighted averaging
         cube = cube.collapsed(periods, iris.analysis.SUM)
         durations_cube = durations_cube.collapsed(periods, iris.analysis.SUM)
     else:
         cube = cube.aggregated_by(periods, iris.analysis.SUM)
-        durations_cube = durations_cube.aggregated_by(periods,
-                                                      iris.analysis.SUM)
+        durations_cube = durations_cube.aggregated_by(
+            periods,
+            iris.analysis.SUM,
+        )
 
     # divide by aggregated weights
     if durations_cube.data.shape == ():
@@ -316,7 +345,9 @@ def time_average_by(cube, periods='time'):
     # correct cell methods
     cube.cell_methods = orig_cell_methods
     time_averaging_method = iris.coords.CellMethod(
-        method='mean', coords=periods)
+        method="mean",
+        coords=periods,
+    )
     cube.add_cell_method(time_averaging_method)
 
     return cube
@@ -324,7 +355,6 @@ def time_average_by(cube, periods='time'):
 
 def durations(time_coord):
     """Return durations of time periods."""
-    assert time_coord.has_bounds(), 'No bounds. Do not guess.'
-    durs = np.array(
-        [bounds[1] - bounds[0] for bounds in time_coord.bounds])
+    assert time_coord.has_bounds(), "No bounds. Do not guess."
+    durs = np.array([bounds[1] - bounds[0] for bounds in time_coord.bounds])
     return durs

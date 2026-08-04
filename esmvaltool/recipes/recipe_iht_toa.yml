@@ -1,0 +1,119 @@
+# ESMValTool
+# recipe_transport.yml
+---
+documentation:
+  title: Implied heat transport
+
+  description: |
+    Horizontal implied heat transport of the entire column derived from
+    TOA radiative fluxes.
+
+#    The 'single_model' script  produces Figures 1 to 6 in Pearce and
+#    Bodas-Salcedo (2023) for each of the datasets chosen.
+
+  authors:
+    - pearce_francesca
+    - bodas-salcedo_alejandro
+
+  maintainer:
+    - bodas-salcedo_alejandro
+
+  references:
+    - pearce23jclim
+
+datasets:
+  # The CERES-EBAF observations reproduce the results of Pearce and
+  # Bodas-Salcedo (2023), but it can be applied to model data.
+  - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1, start_year: 2001, end_year: 2010}
+  # - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f3, grid: gn, mip: Amon, start_year: 1990, end_year: 2005}
+
+preprocessors:
+  # It is recommended to use a low resolution grid as the
+  # calculations are computationally expensive
+  common_grid:
+    regrid:
+      target_grid: 5.0x5.0
+      scheme: area_weighted
+
+  climate_mean_global:
+    regrid:
+      target_grid: 5.0x5.0
+      scheme: area_weighted
+    climate_statistics:
+      operator: mean
+
+diagnostics:
+
+  implied_heat_transport:
+    title: TOA implied heat transports
+    description: Energy flux potential and implied heat transports for TOA radiative fluxes.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rtnt:
+        derive: true
+        short_name: rtnt
+        mip: Amon
+        preprocessor: climate_mean_global
+      rtnt_monthly:
+        derive: true
+        short_name: rtnt
+        mip: Amon
+        preprocessor: common_grid
+      rsnt:
+        derive: true
+        short_name: rsnt
+        mip: Amon
+        preprocessor: climate_mean_global
+      rlut:
+        short_name: rlut
+        mip: Amon
+        preprocessor: climate_mean_global
+      rlutcs:
+        short_name: rlutcs
+        mip: Amon
+        preprocessor: climate_mean_global
+      rlutcs_monthly:
+        short_name: rlutcs
+        mip: Amon
+        preprocessor: common_grid
+      rsutcs:
+        short_name: rsutcs
+        mip: Amon
+        preprocessor: climate_mean_global
+      rsutcs_monthly:
+        short_name: rsutcs
+        mip: Amon
+        preprocessor: common_grid
+      rsut:
+        short_name: rsut
+        mip: Amon
+        preprocessor: climate_mean_global
+      rsdt:
+        short_name: rsdt
+        mip: Amon
+        preprocessor: climate_mean_global
+      rsdt_monthly:
+        short_name: rsdt
+        mip: Amon
+        preprocessor: common_grid
+      netcre:
+        derive: true
+        short_name: netcre
+        mip: Amon
+        preprocessor: climate_mean_global
+      swcre:
+        derive: true
+        short_name: swcre
+        mip: Amon
+        preprocessor: climate_mean_global
+      lwcre:
+        derive: true
+        short_name: lwcre
+        mip: Amon
+        preprocessor: climate_mean_global
+    scripts:
+      single_model:
+        script: iht_toa/single_model_diagnostics.py

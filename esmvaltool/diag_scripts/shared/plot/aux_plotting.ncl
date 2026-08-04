@@ -100,7 +100,7 @@ procedure create_legend_lines(labels:string, \
 ;    20150508-righi_mattia: added lines/markers option.
 ;    20150120-gottschaldt_klaus-dirk: remove pre-existing file type suffix
 ;    20140305-righi_mattia: modified to plot always as epsi format.
-;    20140219-frank_franziska: written.
+;    20140219-winterstein_franziska: written.
 ;
 local funcname, scriptname, region, temp, outfile, n_suff, wks_legend
 begin

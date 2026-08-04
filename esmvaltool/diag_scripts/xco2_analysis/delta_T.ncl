@@ -332,7 +332,7 @@ begin
   ncdf_outfile = ncdf_write(delta_t_detr, outfile_netcdf_dtgr_detr)
 
   log_provenance(ncdf_outfile, \
-                 outfile_netcdf_dtgr_detr, \
+                 outfile_dtgr_detr + "." + file_type, \
                  "Sensitivity of interannual variability of " \
                  + var0 + " growth rate in the " + region + ", " + \
                  start_year + "-" + end_year + "to the interannual " \

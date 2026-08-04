@@ -6,7 +6,7 @@ IPCC AR6 Chapter 3 (selected figures)
 Overview
 --------
 
-This recipe collects selected diagnostics used in IPCC AR6 WGI Chapter 3: 
+This recipe collects selected diagnostics used in IPCC AR6 WGI Chapter 3:
 Human influence on the climate system (`Eyring et al., 2021`_). Plots from IPCC
 AR6 can be readily reproduced and compared to previous versions. The aim is to
 be able to start with what was available now the next time allowing us to focus
@@ -15,7 +15,8 @@ on developing more innovative analysis methods rather than constantly having to
 
 Processing of CMIP3 models currently works only in serial mode, due to an issue
 in the input data still under investigation. To run the recipe for Fig 3.42a
-and Fig. 3.43 set "max_parallel_tasks: 1" in the config-user.yml file.
+and Fig. 3.43 set the :ref:`configuration option <esmvalcore:config_options>`
+``max_parallel_tasks: 1``.
 
 The plots are produced collecting the diagnostics from individual recipes. The
 following figures from `Eyring et al. (2021)`_ can currently be reproduced:
@@ -34,6 +35,8 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.19: Speed-Up Of Zonal Mean Wind
 
+    * Figure 3.24: Biases In Zonal Mean And Equatorial Sea Surface Temperature
+
     * Figure 3.42: Relative Model Performance
 
     * Figure 3.43: Correlation Pattern
@@ -43,10 +46,9 @@ To reproduce Fig. 3.9 you need the shapefile of the `AR6 reference regions
 (`Iturbide et al., 2020 <https://doi.org/10.5194/essd-12-2959-2020>`_).
 Please download the file `IPCC-WGI-reference-regions-v4_shapefile.zip
 <https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip>`_,
-unzip and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir`
-is defined in the `config-user.yml
-<https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_
-file).
+unzip and store it in `<auxiliary_data_dir>/IPCC-regions/` (where
+``auxiliary_data_dir`` is given as :ref:`configuration option
+<esmvalcore:config_options>`).
 
 .. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
 .. _`Eyring et al. (2021)`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
@@ -60,6 +62,7 @@ Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
     * recipe_ipccwg1ar6ch3_atmosphere.yml
     * recipe_ipccwg1ar6ch3_fig_3_9.yml
     * recipe_ipccwg1ar6ch3_fig_3_19.yml
+    * recipe_ipccwg1ar6ch3_fig_3_24.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
     * recipe_ipccwg1ar6ch3_fig_3_43.yml
@@ -96,6 +99,9 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.19:
 
     * ipcc_ar6/zonal_westerly_winds.ncl
+
+    Fig. 3.24:
+    * ocean/diagnostic_biases.py
 
     Fig. 3.42:
 
@@ -179,7 +185,7 @@ User settings in recipe
 
    * start_year: start year in figure
    * end_year: end year in figure
-   * panels: list of variable blocks for each panel 
+   * panels: list of variable blocks for each panel
 
    *Optional settings for script*
 
@@ -205,7 +211,7 @@ User settings in recipe
    * plot_units: variable unit for plotting
    * y-min: set min of y-axis
    * y-max: set max of y-axis
-   * order: order in which experiments should be plotted 
+   * order: order in which experiments should be plotted
    * stat_shading: if true: shading of statistic range
    * ref_shading: if true: shading of reference period
 
@@ -225,7 +231,7 @@ User settings in recipe
 
    * plot_legend: if true, plot legend will be plotted
    * plot_units: variable unit for plotting
-   * multi_model_mean: if true, multi-model mean and uncertaintiy will be 
+   * multi_model_mean: if true, multi-model mean and uncertainty will be
      plotted
 
    *Optional settings for variables*
@@ -304,7 +310,38 @@ User settings in recipe
    * labels: List of labels for each variable on the x-axis
    * model_spread: if True, model spread is shaded
    * plot_median: if True, median is plotted
-   * project_order: give order of projects 
+   * project_order: give order of projects
+
+#. Script ocean/diagnostic_biases.py
+
+   *Required settings for variables*
+
+   * reference_dataset: name of reference observation
+
+   *Required settings for script*
+
+   * data_statistics: a dictionary with the statistics to be calculated
+     for each variable group. Should contain keywords 'best_guess' and
+     'borders'. 'borders' should be a list with two statistics. The statistics
+     values are the same as 'operator' as in the preprocessors.
+
+   *Optional settings for script*
+
+   * bias: boolean flag, indicating, if bias should be calculated.
+     If none provided, absolute values will be used.
+   * mask: a dictionary with the mask information. The accepted
+     keywords are 'flag' (required), 'type' (required) and 'group' (optional).
+     'flag' is a boolean flag if the mask should be used.
+     'type' accepts two values: 'simple' and 'resolved'.
+     If 'simple' option is used, the data will be masked to the existing
+     mask from the reference dataset. If 'resolved' is used, the values
+     along the dimension of the data will be masked using the data from
+     the variable group 'group'.
+   * mpl_style: name of the matplotlib style file. If none provided, the
+     default style will be used.
+   * caption: figure caption. If none, an empty string will be used.
+   * color_style: a name of the color_style to be used. If none provided,
+     the default style file will be used.
 
 
 Variables
@@ -452,7 +489,7 @@ Example plots
    2013). For line colours see the legend of Figure 3.4. Additionally, the
    multi-model mean (red) and standard deviation (grey shading) are shown.
    Observational and model datasets were detrended by removing the
-   least-squares quadratic trend. 
+   least-squares quadratic trend.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/tas_anom_damip_global_1850-2020.png
    :align:   center
@@ -467,7 +504,7 @@ Example plots
    anomalies are shown relative to 1950-2010 for Antarctica and relative to
    1850-1900 for other continents. CMIP6 historical simulations are expanded by
    the SSP2-4.5 scenario simulations. All available ensemble members were used.
-   Regions are defined by Iturbide et al. (2020). 
+   Regions are defined by Iturbide et al. (2020).
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/model_bias_pr_annualclim_CMIP6.png
    :align:   center
@@ -487,7 +524,7 @@ Example plots
    show a change greater than the variability threshold; crossed lines indicate
    regions with conflicting signal, where >=66% of models show change greater
    than the variability threshold and <80% of all models agree on the sign of
-   change. 
+   change.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/precip_anom_1950-2014.png
    :align:   center
@@ -511,7 +548,7 @@ Example plots
    forcings (brown) and natural forcings only (blue). Observed trends for each
    observational product are shown as horizontal lines. Panel (b) shows annual
    mean precipitation rate (mm day-1) of GHCN version 2 for the years 1950-2014
-   over land areas used to compute the plots. 
+   over land areas used to compute the plots.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/zonal_westerly_winds.png
    :align:   center
@@ -524,6 +561,22 @@ Example plots
    negative (easterly) long-term mean zonal wind. Only one ensemble member per
    model is included. Figure is modified from Eyring et al. (2013), their
    Figure 12.
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/sst_bias.png
+   :align:   center
+
+   Figure 3.24: Biases in zonal mean and equatorial sea surface
+   temperature (SST) in CMIP5 and CMIP6 models. CMIP6 (red), CMIP5 (blue)
+   and HighResMIP (green) multi-model mean (a) zonally averaged SST bias;
+   (b) equatorial SST bias; and (c) equatorial SST compared to observed
+   mean SST (black line) for 1979–1999. The inter-model 5th and 95th
+   percentiles are depicted by the respective shaded range.
+   Model climatologies are derived from the 1979–1999 mean of the historical
+   simulations, using one simulation per model. The Hadley Centre Sea Ice and
+   Sea Surface Temperature version 1 (HadISST) observational climatology for
+   1979–1999 is used as the reference for the error calculation in (a) and (b);
+   and for observations in (c). (The panels were obtained individually and
+   combined together.)
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
    :align:   center

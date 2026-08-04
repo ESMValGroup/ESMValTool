@@ -59,7 +59,7 @@ end
 
 begin
 
-  plotpath = config_user_info@plot_dir + "/russell18jgr-fig5_" + var0 + "_" \
+  plotpath = config_user_info@plot_dir + "russell18jgr-fig5_" + var0 + "_" \
             + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
             + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -168,21 +168,22 @@ begin
     ncdf_outfile = ncdf_write(dataset, nc_filename)
     delete(dataset)
 
-    log_provenance(ncdf_outfile, \
-                   plotpath, \
-                   "Russell et al 2018 figure 5 -polar", \
-                   "mean", \
-                   "sh", \
-                   "geo", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   infile_path)
-
   end do
 
   ; Draw the panel
   pres = True
   pres@gsnPanelLabelBar = False
   outfile = panelling(wks, plots, nvert, nhori, pres)
+
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 5 -polar", \
+                 "mean", \
+                 "sh", \
+                 "geo", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 infile_path)
+
 
 end

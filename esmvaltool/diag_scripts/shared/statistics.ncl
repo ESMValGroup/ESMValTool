@@ -1281,7 +1281,7 @@ function calculate_metric(var:numeric,
 ;    20190312-A_bock_lisa: added calculation of RMSDxy
 ;    20140313-righi_mattia: implemented weights calculation within the
 ;                           function, depending on dimensionality.
-;    20140120-frank_franziska: written.
+;    20140120-winterstein_franziska: written.
 ;
 local funcname, scriptname, dims_var, dims_ref, ii, dim_names, mdays, sdays, \
   weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, var3d, wgt3d, \
@@ -1531,7 +1531,7 @@ function normalize_metric(var:numeric,
 ;
 ; Modification history
 ;    20140609-righi_mattia: absolute value added to "mean" normalization.
-;    20140120-frank_franziska: written.
+;    20140120-winterstein_franziska: written.
 ;
 local funcname, scriptname, val_var, norm, stdv, p1
 begin

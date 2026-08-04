@@ -99,7 +99,6 @@ preprocessors:
       operator: mean
       period: month
     mask_landsea:
-      fx_variables: null
       mask_out: sea
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -111,7 +110,6 @@ preprocessors:
       operator: mean
       period: month
     mask_landsea:
-      fx_variables: null
       mask_out: sea
     mask_fillvalues:
       threshold_fraction: 0.66

@@ -8,7 +8,7 @@ documentation:
     Carvalhais et al., 2014, Nature.
     The data required in the obs_details section can be obtained at
     http://www.bgc-jena.mpg.de/geodb/BGI/tau4ESMValTool.php
-    and have to be stored in the auxiliary_data_dir defined i config-user.yml,
+    and have to be stored in the auxiliary_data_dir defined in the configuration
     in a subdirectory obs_data_subdir specified in the obs_details section
     below.
 

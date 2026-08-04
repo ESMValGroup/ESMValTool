@@ -1,24 +1,32 @@
 # ESMValTool
 ---
 documentation:
-  title: Model Monitoring
+  title: Example recipe for model monitoring with reference datasets.
   description: |
     Show plots that include multiple datasets that can be used to monitor
     (ongoing) model simulations.
   authors:
     - schlund_manuel
+    - heuer_helge
+    - kraft_jeremy
+    - kuehbacher_birgit
+    - lindenlaub_lukas
+    - sarauer_ellen
+    - winterstein_franziska
   maintainer:
     - schlund_manuel
 
 
-datasets:
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, start_year: 1979, end_year: 2014, plot_label: 'EC-Earth3 historical'}  # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
-
-
 preprocessors:
 
-  timeseries_regular:
+  timeseries_monthly_mean:
     area_statistics:
+      operator: mean
+
+  timeseries_annual_mean:
+    area_statistics:
+      operator: mean
+    annual_statistics:
       operator: mean
 
   annual_cycle_nh:
@@ -53,32 +61,104 @@ preprocessors:
     zonal_statistics:
       operator: mean
 
+  extract_1d_profile:
+    custom_order: true
+    climate_statistics:
+      period: full
+    area_statistics:
+      operator: mean
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+
+  var_vs_lat:
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: mm day-1
+
+  global_mean_extract_levels:
+    custom_order: true
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: alt16}
+      scheme: linear
+      coordinate: altitude
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: mean
+
+  zonal_mean_2d:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+
+  pp_diurn_Tropics:
+    custom_order: true
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+
 
 diagnostics:
 
   plot_multiple_timeseries:
     description: Plot time series including reference datasets.
     variables:
-      tas:
+      tas_monthly_mean:
+        short_name: tas
         mip: Amon
-        preprocessor: timeseries_regular
-        grid: gr
+        preprocessor: timeseries_monthly_mean
+        timerange: '2000/2014'
         additional_datasets:
-          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014}
+          - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-HR}
+          - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR}
+      tas_annual_mean:
+        short_name: tas
+        mip: Amon
+        preprocessor: timeseries_annual_mean
+        timerange: '2000/2014'
+        additional_datasets:
+          - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-HR-annual-mean}
+          - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR-annual-mean}
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: short_name
+        facet_used_for_labels: alias
         plots:
           timeseries:
-            annual_mean_kwargs:
-              linestyle: '--'
             plot_kwargs:
-              EC-Earth3:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
                 color: C0
-              ERA5:
+              MPI-ESM1-2-LR:
                 color: black
+              MPI-ESM1-2-HR-annual-mean:
+                color: C0
+                linestyle: '--'
+                label: null
+              MPI-ESM1-2-LR-annual-mean:
+                color: black
+                linestyle: '--'
+                label: null
 
   plot_multiple_annual_cycles:
     description: Plot annual cycles including reference datasets.
@@ -86,9 +166,10 @@ diagnostics:
       tas:
         mip: Amon
         preprocessor: annual_cycle_nh
-        grid: gr
-        additional_datasets:
-          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014, plot_label: 'Reference (ERA5)'}
+        timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (MPI-ESM1-2-LR historical)'}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -98,9 +179,9 @@ diagnostics:
             legend_kwargs:
               loc: upper right
             plot_kwargs:
-              'EC-Earth3 historical':  # = plot_label since 'facet_used_for_labels: plot_label'
+              'MPI-ESM1-2-HR historical':  # = plot_label since 'facet_used_for_labels: plot_label'
                 color: C0
-              'Reference (ERA5)':
+              'Reference (MPI-ESM1-2-LR historical)':
                 color: black
             pyplot_kwargs:
               title: Near-Surface Air Temperature on Northern Hemisphere
@@ -112,34 +193,164 @@ diagnostics:
       tas:
         mip: Amon
         preprocessor: full_climatology
-        grid: gr
-        additional_datasets:
-          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014, reference_for_monitor_diags: true}
+        timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plots:
           map:
+            caption: |
+              Map plot of Near-Surface Air Temperature of dataset {dataset}
+              including bias relative to MPI-ESM1-2-LR. The number in the top
+              left corner corresponds to the spatial mean (weighted by grid
+              cell areas).
             common_cbar: true
+            fontsize: 10
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
-  plot_profiles_with_references:
-    description: Plot vertical profiles including reference datasets.
+  plot_zonal_mean_profiles_with_references:
+    description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       ta:
         mip: Amon
         preprocessor: zonal_mean
-        grid: gr
-        additional_datasets:
-          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014, reference_for_monitor_diags: true}
+        timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true
+            fontsize: 10
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
+
+
+  plot_1D_profiles_with_references:
+    description: Plot 1D profiles including reference datasets.
+    variables:
+      ta:
+        mip: Amon
+        preprocessor: extract_1d_profile
+        timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          1d_profile:
+            plot_kwargs:
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+                color: C0
+              MPI-ESM1-2-LR:
+                color: black
+
+  plot_variable_vs_latitude:
+    description: Creates a single-panel variable plot over latitude.
+    variables:
+      pr:
+        preprocessor: var_vs_lat
+        mip: Amon
+        timerange: '20000101/20030101'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          variable_vs_lat:
+
+  plot_hovmoeller_z_vs_time:
+    description: Plot Hovmoeller Z vs. time including reference datasets.
+    variables:
+      ta:
+        preprocessor: global_mean_extract_levels
+        mip: Amon
+        timerange: '2000/2005'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        matplotlib_rc_params:
+          axes.labelsize: small
+          axes.titlesize: small
+          xtick.labelsize: x-small
+          ytick.labelsize: x-small
+        plots:
+          hovmoeller_z_vs_time:
+            plot_func: contourf
+            common_cbar: true
+            time_format: '%Y'
+            log_y: false
+            pyplot_kwargs:
+              ylim: [0, 20000]
+              xticks:
+                rotation: 25
+
+  plot_time_vs_lat_with_references:
+    description: Plot Hovmoeller time vs. latitude including reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: zonal_mean_2d
+        timerange: '2000/2005'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
+            fontsize: 10
+            show_x_minor_ticks: false
+            time_format: '%Y'
+            transpose_axes: true
+
+  plot_diurnal_cycle:
+    description: Example plot diurnal cycle including reference dataset.
+    variables:
+      clt_tropics:
+        preprocessor: pp_diurn_Tropics
+        short_name: clt
+        mip: 3hr
+        timerange: '20060101/20060201'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        plots:
+          diurnal_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              MPI-ESM1-2-HR:
+                color: C0
+              MPI-ESM1-2-LR:
+                color: C1
+            pyplot_kwargs:
+              title: '{short_name}'

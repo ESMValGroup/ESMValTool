@@ -1,0 +1,45 @@
+# this file contains default setup for the diffmap map plots i.e.
+# limits, colormaps, etc. every root level key will be overwritten by
+# optional script parameters in the recipe file.
+# The plot_kwargs_overwrite list however will get merged with the script
+# parameters to allow modifications only for specific variables/metrics.
+# All options are explained in diffmap.py and the ESMValTool documentation.
+
+
+group_by: short_name
+comparison_period: 15
+plot_kwargs:
+  cmap: RdYlBu
+  extend: both
+plot_models: False
+save_models: False
+plot_mmm: True
+save_mmm: True
+clip_land: True
+strip_plots: False
+basename: "{short_name}_{exp}_{diffmap_metric}_{dataset}"
+convert_units:
+  tas: degC
+  tasmax: degC
+  tasmin: degC
+  pr: mm day-1
+  evspsblpot: mm day-1
+  ps: hPa
+  sm: "%"
+
+titles:
+  first: "Mean Historical"
+  last: "Mean Future"
+  trend: "Future - Historical"
+  diff: "Future - Historical"
+  total: "Mean Full Period"
+  percent: "Relative Change"
+
+metrics:
+  - diff
+  - total
+  - first
+  - last
+  - percent
+
+plot_kwargs_overwrite: {}

@@ -12,7 +12,7 @@ documentation:
 
 
 datasets:
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1}
 
 preprocessors:
   timeseries_regular:
@@ -114,6 +114,22 @@ preprocessors:
     climate_statistics:
       period: month
 
+  pp_diurn_tropics:
+    custom_order: true
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    mask_landsea:
+      mask_out: land
+    local_solar_time:
+    area_statistics:
+      operator: mean
+    convert_units:
+      units: mm day-1
+
+
 diagnostics:
   plot_timeseries_annual_cycle:
     description: "Plot time series and annualcycles"
@@ -122,6 +138,7 @@ diagnostics:
         mip: Amon
         preprocessor: timeseries_regular
         grid: gr
+        timerange: 1850/2014
     scripts:
       plot: &plot_default
         script: monitor/monitor.py
@@ -140,12 +157,14 @@ diagnostics:
         mip: Omon
         preprocessor: nino3
         grid: gn
+        timerange: 1850/2014
       nino34:
         plot_name: 'Niño 3.4 index'
         short_name: tos
         mip: Omon
         preprocessor: nino34
         grid: gn
+        timerange: 1850/2014
     scripts:
       plot:
         <<: *plot_default
@@ -161,17 +180,34 @@ diagnostics:
         preprocessor: mlotstnorth
         grid: gn
         plot_name: Mixed layer depth average above 50ºN
+        timerange: 1850/2014
       mlotst-south:
         short_name: mlotst
         mip: Omon
         preprocessor: mlotstsouth
         grid: gn
         plot_name: Mixed layer depth average below 40ºS
+        timerange: 1850/2014
     scripts:
       plot:
         <<: *plot_default
         plots:
           annual_cycle: {}
+
+  plot_diurnal_cycle:
+    description: "Plot diurnal cycle"
+    variables:
+      pr_tropics:
+        timerange: '20010101/20010201'  # can be specified, this is just an example
+        preprocessor: pp_diurn_tropics
+        short_name: pr
+        mip: 3hr
+        grid: gr
+    scripts:
+      plot:
+        script: monitor/monitor.py
+        plots:
+          diurnal_cycle: {}
 
   global_climatologies:
     description: "Plot map data"
@@ -180,76 +216,92 @@ diagnostics:
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       ps:
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       rsns:
         derive: true
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       rlns:
         derive: true
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       hfss:
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       hfls:
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       vas:
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       pr:
         mip: Amon
         preprocessor: climatology_pr
         grid: gr
+        timerange: 1850/2014
       evspsbl:
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       ua200:
         short_name: ua
         mip: Amon
         preprocessor: climatology_200hPa
         grid: gr
         plot_name: Eastward Wind at 200 hPa
+        timerange: 1850/2014
       ua500:
         short_name: ua
         mip: Amon
         preprocessor: climatology_500hPa
         grid: gr
         plot_name: Eastward Wind at 500 hPa
+        timerange: 1850/2014
       zg200:
         short_name: zg
         mip: Amon
         preprocessor: climatology_200hPa
         grid: gr
         plot_name: Geopotential height at 200 hPa
+        timerange: 1850/2014
       zg500:
         short_name: zg
         mip: Amon
         preprocessor: climatology_500hPa
         grid: gr
         plot_name: Geopotential height at 500 hPa
+        timerange: 1850/2014
       tos:
         mip: Omon
         preprocessor: climatology
         grid: gn
+        timerange: 1850/2014
       zos:
         mip: Omon
         preprocessor: climatology
         grid: gn
+        timerange: 1850/2014
       sos:
         mip: Omon
         preprocessor: climatology
         grid: gn
+        timerange: 1850/2014
     scripts:
       plot:
         <<: *plot_default
@@ -265,18 +317,22 @@ diagnostics:
         mip: Amon
         preprocessor: climatology
         grid: gr
+        timerange: 1850/2014
       pr:
         mip: Amon
         preprocessor: climatology_pr
         grid: gr
+        timerange: 1850/2014
       tos:
         mip: Omon
         preprocessor: climatology
         grid: gn
+        timerange: 1850/2014
       sos:
         mip: Omon
         grid: gn
         preprocessor: climatology
+        timerange: 1850/2014
     scripts:
       plot:
         <<: *plot_default
@@ -294,6 +350,7 @@ diagnostics:
         preprocessor: nao_djf
         eof_name: NAO as first EOF in DJF
         pc_name: NAO index as first PC in DJF
+        timerange: 1850/2014
       sam:
         short_name: psl
         mip: Amon
@@ -301,6 +358,7 @@ diagnostics:
         preprocessor: sam_jja
         eof_name: SAM as first EOF in JJA
         pc_name: SAM index as first PC in JJA
+        timerange: 1850/2014
     scripts:
       eof:
         <<: *plot_default
@@ -313,6 +371,7 @@ diagnostics:
         mip: SImon
         preprocessor: climatology
         grid: gn
+        timerange: 1850/2014
 
     scripts:
       plot:
@@ -333,6 +392,7 @@ diagnostics:
         mip: Omon
         preprocessor: clim_fma
         grid: gn
+        timerange: 1850/2014
     scripts:
       plot:
         <<: *plot_default
@@ -348,6 +408,7 @@ diagnostics:
         mip: Omon
         preprocessor: clim_aso
         grid: gn
+        timerange: 1850/2014
     scripts:
       plot:
         <<: *plot_default
