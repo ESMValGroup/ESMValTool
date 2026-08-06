@@ -1,0 +1,701 @@
+# ESMValTool
+---
+documentation:
+  title: Reasonable variable ranges for sanity checks (OBS)
+  description: >
+    Calculate reasonable variable ranges for sanity checks.
+  authors:
+    - lauer_axel
+    - bock_lisa
+  maintainer:
+    - lauer_axel
+
+
+preprocessors:
+
+  pp_min_pr:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: min
+      keep_input_datasets: false
+    convert_units:
+      units: mm day-1
+    climate_statistics:
+      operator: min
+
+  pp_max_pr:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: max
+      keep_input_datasets: false
+    convert_units:
+      units: mm day-1
+    climate_statistics:
+      operator: max
+
+  pp_min:
+    custom_order: true
+    align_metadata:
+      target_project: OBS6
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      ignore_scalar_coords: true
+      span: full
+      statistics:
+        - operator: min
+      keep_input_datasets: false
+    climate_statistics:
+      operator: min
+
+  pp_max:
+    custom_order: true
+    align_metadata:
+      target_project: OBS6
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      ignore_scalar_coords: true
+      span: full
+      statistics:
+        - operator: max
+      keep_input_datasets: false
+    climate_statistics:
+      operator: max
+
+  pp_min_sum:
+    custom_order: true
+    area_statistics:
+      operator: sum
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: min
+      keep_input_datasets: false
+    climate_statistics:
+      operator: min
+
+  pp_max_sum:
+    custom_order: true
+    area_statistics:
+      operator: sum
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: max
+      keep_input_datasets: false
+    climate_statistics:
+      operator: max
+
+  pp_min_sum_air:
+    custom_order: true
+    convert_units:
+      units: kg m-2
+    area_statistics:
+      operator: sum
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: min
+      keep_input_datasets: false
+    climate_statistics:
+      operator: min
+
+  pp_max_sum_air:
+    custom_order: true
+    convert_units:
+      units: kg m-2
+    area_statistics:
+      operator: sum
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: max
+      keep_input_datasets: false
+    climate_statistics:
+      operator: max
+
+  pp_min_sum_air_anom:
+    custom_order: true
+    convert_units:
+      units: kg m-2
+    area_statistics:
+      operator: sum
+    anomalies:
+      period: full
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 1990
+        end_month: 12
+        end_day: 31
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: min
+      keep_input_datasets: false
+    climate_statistics:
+      operator: min
+
+  pp_max_sum_air_anom:
+    custom_order: true
+    convert_units:
+      units: kg m-2
+    area_statistics:
+      operator: sum
+    anomalies:
+      period: full
+      reference:
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 1990
+        end_month: 12
+        end_day: 31
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: max
+      keep_input_datasets: false
+    climate_statistics:
+      operator: max
+
+diagnostics:
+
+  air_mass:
+    description: Calculate range of reasonable monthly values for global air mass anomaly
+    variables:
+      ps_min:
+        short_name: ps
+        preprocessor: pp_min_sum_air
+        mip: Amon
+      ps_max:
+        short_name: ps
+        preprocessor: pp_max_sum_air
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+         tier: 3, start_year: 1990, end_year: 2014}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+          tier: 3, start_year: 1980, end_year: 2021}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+        tier: 2, start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  air_mass_anom:
+    description: Calculate range of reasonable monthly values for global air mass anomaly
+    variables:
+      ps_min:
+        short_name: ps
+        preprocessor: pp_min_sum_air_anom
+        mip: Amon
+      ps_max:
+        short_name: ps
+        preprocessor: pp_max_sum_air_anom
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+         tier: 3, start_year: 1990, end_year: 2014}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+          tier: 3, start_year: 1980, end_year: 2021}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+        tier: 2, start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  moisture_flux:
+    description: Calculate range of reasonable monthly values for moisture flux into the atmosphere
+    variables:
+      qep_min:
+        short_name: qep
+        derive: true
+        preprocessor: pp_min_sum
+        mip: Amon
+      qep_max:
+        short_name: qep
+        derive: true
+        preprocessor: pp_max_sum
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          tier: 3, start_year: 1990, end_year: 2014}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+          tier: 3, start_year: 1980, end_year: 2021}
+    scripts: null
+
+
+  prw_global:
+    description: Calculate range of reasonable monthly values for global water vapour mass
+    variables:
+      prw_min:
+        short_name: prw
+        preprocessor: pp_min_sum
+        mip: Amon
+      prw_max:
+        short_name: prw
+        preprocessor: pp_max_sum
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          tier: 3, start_year: 1995, end_year: 2014}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+          tier: 3, start_year: 1980, end_year: 2021}
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+          tier: 3, start_year: 2002, end_year: 2017}
+    scripts: null
+
+#################################################################################################################
+
+  asr:
+    description: Calculate range of reasonable monthly values for cloud ice path.
+    variables:
+      asr_min:
+        short_name: asr
+        derive: true
+        preprocessor: pp_min
+        mip: Amon
+      asr_max:
+        short_name: asr
+        derive: true
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+        tier: 2, start_year: 2001, end_year: 2022}
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+        tier: 2, start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  clivi:
+    description: Calculate range of reasonable monthly values for cloud ice water path.
+    variables:
+      clivi_min:
+        short_name: clivi
+        preprocessor: pp_min
+        mip: Amon
+      clivi_max:
+        short_name: clivi
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+         version: P1-R05-gridbox-average-noprecip,
+         start_year: 2006, end_year: 2017, tier: 3}
+      - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002-01,
+         tier: 3, start_year: 1982, end_year: 2018}
+      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+         tier: 3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+  clt:
+    description: Calculate range of reasonable monthly values for total cloud cover.
+    variables:
+      clt_min:
+        short_name: clt
+        preprocessor: pp_min
+        mip: Amon
+      clt_max:
+        short_name: clt
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002-01,
+        tier: 3, start_year: 1982, end_year: 2018}
+      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
+        tier: 2, start_year: 1982, end_year: 2016}
+      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+        tier: 3, start_year: 2003, end_year: 2018}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+        tier: 3, start_year: 1995, end_year: 2014}
+    scripts: null
+
+
+  hfls:
+    description: Calculate range of reasonable monthly values for surface upward latent heat flux.
+    variables:
+      hfls_min:
+        short_name: hfls
+        preprocessor: pp_min
+        mip: Amon
+      hfls_max:
+        short_name: hfls
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4',
+        tier: 3, start_year: 1980, end_year: 2021}
+    scripts: null
+
+
+  hfss:
+    description: Calculate range of reasonable monthly values for surface upward sensible heat flux.
+    variables:
+      hfss_min:
+        short_name: hfss
+        preprocessor: pp_min
+        mip: Amon
+      hfss_max:
+        short_name: hfss
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4',
+        tier: 3, start_year: 1980, end_year: 2021}
+    scripts: null
+
+
+  lwcre:
+    description: Calculate range of reasonable monthly values for lw cloud radiative effect.
+    variables:
+      lwcre_min:
+        short_name: lwcre
+        derive: true
+        preprocessor: pp_min
+        mip: Amon
+      lwcre_max:
+        short_name: lwcre
+        derive: true
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
+        tier: 2, start_year: 2001, end_year: 2021}
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+        start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  lwp:
+    description: Calculate range of reasonable monthly values for cloud liquid water path.
+    variables:
+      lwp_min:
+        short_name: lwp
+        derive: true
+        preprocessor: pp_min
+        mip: Amon
+      lwp_max:
+        short_name: lwp
+        derive: true
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: CLARA-AVHRR, project: OBS, type: sat,
+        version: V002-01, tier: 3,
+        start_year: 1982, end_year: 2018}
+      - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+        version: P1-R05-gridbox-average-noprecip,
+        start_year: 2006, end_year: 2017, tier: 3}
+      - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+        tier: 3, start_year: 1988, end_year: 2016}
+      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+        tier: 3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+
+  netcre:
+    description: Calculate range of reasonable monthly values for met cloud radiative effect.
+    variables:
+      netcre_min:
+        short_name: netcre
+        derive: true
+        preprocessor: pp_min
+        mip: Amon
+      netcre_max:
+        short_name: netcre
+        derive: true
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
+        tier: 2, start_year: 2001, end_year: 2021}
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+        start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  pr:
+    description: Calculate range of reasonable monthly values for precipitation.
+    variables:
+      pr_min:
+        short_name: pr
+        preprocessor: pp_min_pr
+        mip: Amon
+      pr_max:
+        short_name: pr
+        preprocessor: pp_max_pr
+        mip: Amon
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+        start_year: 1980, end_year: 2021}
+      - {dataset: GPCP-SG, project: OBS, type: sat, version: 2.3, tier: 2,
+        start_year: 1979, end_year: 2022}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+        tier: 3, start_year: 1979, end_year: 2021}
+    scripts: null
+
+
+  prc:
+    description: Calculate range of reasonable monthly values for convective precipitation flux.
+    variables:
+      prc_min:
+        short_name: prc
+        preprocessor: pp_min
+        mip: Amon
+      prc_max:
+        short_name: prc
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+        start_year: 1980, end_year: 2021}
+    scripts: null
+
+
+  prw:
+    description: Calculate range of reasonable monthly values for atmoshere mass content of water vapor.
+    variables:
+      prw_min:
+        short_name: prw
+        preprocessor: pp_min
+        mip: Amon
+      prw_max:
+        short_name: prw
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          tier: 3, start_year: 1995, end_year: 2014}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+          tier: 3, start_year: 1980, end_year: 2021}
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+          tier: 3, start_year: 2002, end_year: 2017}
+    scripts: null
+
+
+  rlds:
+    description: Calculate range of reasonable monthly values for surface downwelling lw flux.
+    variables:
+      rlds_min:
+        short_name: rlds
+        preprocessor: pp_min
+        mip: Amon
+      rlds_max:
+        short_name: rlds
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+        start_year: 1984, end_year: 2016}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+        tier: 3, start_year: 1995, end_year: 2014}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+        start_year: 1980, end_year: 2021}
+    scripts: null
+
+
+  rlut:
+    description: Calculate range of reasonable monthly values for TOA outgoing lw radiation.
+    variables:
+      rlut_min:
+        short_name: rlut
+        preprocessor: pp_min
+        mip: Amon
+      rlut_max:
+        short_name: rlut
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+        tier: 2, start_year: 2001, end_year: 2022}
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+        tier: 2, start_year: 1984, end_year: 2016}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+        tier: 3, start_year: 1995, end_year: 2014}
+    scripts: null
+
+  rtnt:
+    description: Calculate range of reasonable monthly values for TOA net downward total radiation.
+    variables:
+      rtnt_min:
+        short_name: rtnt
+        derive: true
+        preprocessor: pp_min
+        mip: Amon
+      rtnt_max:
+        short_name: rtnt
+        derive: true
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+        tier: 2, start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  rsds:
+    description: Calculate range of reasonable monthly values for urface downwelling sw flux.
+    variables:
+      rsds_min:
+        short_name: rsds
+        preprocessor: pp_min
+        mip: Amon
+      rsds_max:
+        short_name: rsds
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+        start_year: 1984, end_year: 2016}
+      - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly,
+        tier: 2, start_year: 1979, end_year: 2018}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+        start_year: 1980, end_year: 2021}
+    scripts: null
+
+
+  rsut:
+    description: Calculate range of reasonable monthly values for TOA outgoing sw radiation.
+    variables:
+      rsut_min:
+        short_name: rsut
+        preprocessor: pp_min
+        mip: Amon
+      rsut_max:
+        short_name: rsut
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+        tier: 2, start_year: 2001, end_year: 2022}
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+        tier: 2, start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  swcre:
+    description: Calculate range of reasonable monthly values for sw cloud radiative effect.
+    variables:
+      swcre_min:
+        short_name: swcre
+        derive: true
+        preprocessor: pp_min
+        mip: Amon
+      swcre_max:
+        short_name: swcre
+        derive: true
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
+        tier: 2, start_year: 2001, end_year: 2021}
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
+        start_year: 1982, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+        start_year: 1984, end_year: 2016}
+    scripts: null
+
+
+  tas:
+    description: Calculate range of reasonable monthly values for 2-m temperature.
+    variables:
+      tas_min:
+        short_name: tas
+        preprocessor: pp_min
+        mip: Amon
+      tas_max:
+        short_name: tas
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+          start_year: 1980, end_year: 2021}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          tier: 3, start_year: 1995, end_year: 2014}
+      - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis,
+         tier: 2}
+    scripts: null
+
+
+  tauu:
+    description: Calculate range of reasonable monthly values for surface downward eastward stress.
+    variables:
+      tauu_min:
+        short_name: tauu
+        preprocessor: pp_min
+        mip: Amon
+      tauu_max:
+        short_name: tauu
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly,
+        tier: 2, start_year: 1979, end_year: 2018}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+          start_year: 1980, end_year: 2021}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+        tier: 3, start_year: 1979, end_year: 2018}
+      - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
+        type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null
+
+
+  tauv:
+    description: Calculate range of reasonable monthly values for surface downward westward stress.
+    variables:
+      tauv_min:
+        short_name: tauv
+        preprocessor: pp_min
+        mip: Amon
+      tauv_max:
+        short_name: tauv
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+      - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly,
+        tier: 2, start_year: 1979, end_year: 2018}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+          start_year: 1980, end_year: 2021}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+        tier: 3, start_year: 1979, end_year: 2018}
+      - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
+        type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null

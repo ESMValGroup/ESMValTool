@@ -37,7 +37,8 @@ def _plot_time_series(cfg, cube, dataset):
         cube - the cube to plot
         dataset - name of the dataset to plot
 
-    Returns:
+    Returns
+    -------
         string; makes some time-series plots
 
     Note: this function is private; remove the '_'
@@ -91,7 +92,8 @@ def run_my_diagnostic(cfg):
     Arguments:
         cfg - nested dictionary of metadata
 
-    Returns:
+    Returns
+    -------
         string; runs the user diagnostic
 
     """

@@ -13,7 +13,7 @@ Download and processing instructions
     Download the data from:
       pft/v2.0.8/
     Put all files under a single directory (no subdirectories with years).
-    in ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+    in Tier2/ESACCI-LANDCOVER
 
 """
 
@@ -112,13 +112,17 @@ def regrid_iris(cube):
             (cube.coord("time"), 0),
             (
                 iris.coords.DimCoord(
-                    target_lats, standard_name="latitude", units="degrees"
+                    target_lats,
+                    standard_name="latitude",
+                    units="degrees",
                 ),
                 1,
             ),
             (
                 iris.coords.DimCoord(
-                    target_lons, standard_name="longitude", units="degrees"
+                    target_lons,
+                    standard_name="longitude",
+                    units="degrees",
                 ),
                 2,
             ),
@@ -183,7 +187,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             cubes = iris.load(inpfile)
             for var_name, vals in cfg["variables"].items():
                 var_info = cfg["cmor_table"].get_variable(
-                    vals["mip"], var_name
+                    vals["mip"],
+                    var_name,
                 )
                 glob_attrs["mip"] = vals["mip"]
                 glob_attrs["frequency"] = vals["frequency"]
@@ -204,7 +209,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 else:
                     cube = cubes.extract_cube(vals["long_name"])
                 regridded_cube = regrid_fix(
-                    cube, glob_attrs, var_name, var_info
+                    cube,
+                    glob_attrs,
+                    var_name,
+                    var_info,
                 )
                 if var_name == "baresoilFrac":
                     add_typebare(regridded_cube)

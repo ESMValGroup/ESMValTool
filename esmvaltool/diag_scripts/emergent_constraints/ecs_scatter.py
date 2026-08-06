@@ -77,7 +77,7 @@ def _check_variables(datasets, necessary_short_names):
     if short_names != necessary_short_names:
         raise ValueError(
             f"Expected variables {necessary_short_names} for dataset "
-            f"'{dataset_name}', got {short_names}"
+            f"'{dataset_name}', got {short_names}",
         )
 
 
@@ -105,10 +105,11 @@ def _get_cube(datasets, short_name):
     if len(datasets) != 1:
         raise ValueError(
             f"Expected exactly one dataset with short_name '{short_name}', "
-            f"got {len(datasets):d}:\n{datasets}"
+            f"got {len(datasets):d}:\n{datasets}",
         )
     return iris.load_cube(
-        datasets[0]["filename"], NameConstraint(var_name=short_name)
+        datasets[0]["filename"],
+        NameConstraint(var_name=short_name),
     )
 
 
@@ -136,14 +137,15 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
     if air_pressure_coord.bounds is None:
         raise ValueError(
             f"Derived coordinate 'air_pressure' of cube "
-            f"{cube.summary(shorten=True)} does not have bounds"
+            f"{cube.summary(shorten=True)} does not have bounds",
         )
     if air_pressure_coord.shape == cube.shape:
         air_pressure_bounds = air_pressure_coord.bounds
     else:
         air_pressure_bounds = np.expand_dims(air_pressure_coord.bounds, 0)
         air_pressure_bounds = np.broadcast_to(
-            air_pressure_bounds, cube.shape + (2,)
+            air_pressure_bounds,
+            cube.shape + (2,),
         )
     air_pressure_bounds = np.moveaxis(air_pressure_bounds, z_idx, -2)
     air_pressure_shape = air_pressure_bounds.shape[:-1]
@@ -152,7 +154,8 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
     # Geopotential height (pressure level -> altitude)
     (z_coord_zg, z_idx_zg) = _get_z_coord(zg_cube)
     ref_zg = np.moveaxis(zg_cube.data, z_idx_zg, -1).reshape(
-        -1, zg_cube.shape[z_idx_zg]
+        -1,
+        zg_cube.shape[z_idx_zg],
     )
     mask = np.ma.getmaskarray(ref_zg)
     ref_lev = np.expand_dims(z_coord_zg.points, 0)
@@ -164,7 +167,7 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
             f"Expected identical first dimensions for cubes "
             f"{cube.summary(shorten=True)} and "
             f"{zg_cube.summary(shorten=True)}, got shapes "
-            f"{air_pressure_bounds.shape} and {ref_zg.shape}"
+            f"{air_pressure_bounds.shape} and {ref_zg.shape}",
         )
 
     # Calculate level widths in parallel
@@ -173,9 +176,12 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
         [
             delayed(_get_level_width)(b, lev, z)
             for (b, lev, z) in zip(
-                air_pressure_bounds, ref_lev, ref_zg, strict=True
+                air_pressure_bounds,
+                ref_lev,
+                ref_zg,
+                strict=True,
             )
-        ]
+        ],
     )
     level_widths = np.ma.masked_invalid(level_widths)
     level_widths = level_widths.reshape(air_pressure_shape)
@@ -194,10 +200,10 @@ def _get_level_width_coord(cube, zg_cube, n_jobs=1):
         if altitude_coord.bounds is None:
             raise ValueError(
                 f"Height coordinate 'altitude' of cube "
-                f"{cube.summary(shorten=True)} does not have bounds"
+                f"{cube.summary(shorten=True)} does not have bounds",
             )
         level_widths = np.abs(
-            altitude_coord.bounds[..., 1] - altitude_coord.bounds[..., 0]
+            altitude_coord.bounds[..., 1] - altitude_coord.bounds[..., 0],
         )
         if level_widths.shape != cube.shape:
             level_widths = np.expand_dims(level_widths, 0)
@@ -217,10 +223,14 @@ def _get_mean_over_subsidence(cube, wap_cube, lat_constraint=None):
     """Get mean over subsidence regions."""
     if lat_constraint is not None:
         cube = cube.intersection(
-            latitude=lat_constraint, longitude=(0.0, 360.0), ignore_bounds=True
+            latitude=lat_constraint,
+            longitude=(0.0, 360.0),
+            ignore_bounds=True,
         )
         wap_cube = wap_cube.intersection(
-            latitude=lat_constraint, longitude=(0.0, 360.0), ignore_bounds=True
+            latitude=lat_constraint,
+            longitude=(0.0, 360.0),
+            ignore_bounds=True,
         )
     else:
         cube = cube.copy()
@@ -237,7 +247,9 @@ def _get_mean_over_subsidence(cube, wap_cube, lat_constraint=None):
     cube.data = da.ma.masked_array(cube.core_data(), mask=mask)
     area_weights = iris.analysis.cartography.area_weights(cube)
     cube = cube.collapsed(
-        ["latitude", "longitude"], iris.analysis.MEAN, weights=area_weights
+        ["latitude", "longitude"],
+        iris.analysis.MEAN,
+        weights=area_weights,
     )
     return cube
 
@@ -245,10 +257,14 @@ def _get_mean_over_subsidence(cube, wap_cube, lat_constraint=None):
 def _get_seasonal_mblc_fraction(cl_cube, wap_cube, lat_constraint):
     """Calculate MBLC fraction."""
     cl_cube = cl_cube.intersection(
-        latitude=lat_constraint, longitude=(0.0, 360.0), ignore_bounds=True
+        latitude=lat_constraint,
+        longitude=(0.0, 360.0),
+        ignore_bounds=True,
     )
     wap_cube = wap_cube.intersection(
-        latitude=lat_constraint, longitude=(0.0, 360.0), ignore_bounds=True
+        latitude=lat_constraint,
+        longitude=(0.0, 360.0),
+        ignore_bounds=True,
     )
 
     # Calculate total cloud area fraction below 700 hPa
@@ -282,14 +298,16 @@ def _get_su_cube_dict(grouped_data, var_name, reference_datasets):
         if ref_dataset_name not in grouped_data:
             raise ValueError(
                 f"Reference dataset '{ref_dataset_name}' not found for "
-                f"variable '{var_name}'"
+                f"variable '{var_name}'",
             )
         cube = iris.load_cube(grouped_data[ref_dataset_name][0]["filename"])
         if ref_data is None:
             ref_data = np.ma.array(cube.data)
         else:
             ref_data = np.ma.where(
-                np.ma.getmaskarray(ref_data), np.ma.array(cube.data), ref_data
+                np.ma.getmaskarray(ref_data),
+                np.ma.array(cube.data),
+                ref_data,
             )
         ref_filenames.append(grouped_data[ref_dataset_name][0]["filename"])
     ref_cube = cube.copy(ref_data)
@@ -317,34 +335,33 @@ def _get_su_variable(grouped_data):
         if len(datasets) != 1:
             raise ValueError(
                 f"Expected exactly one file for dataset '{dataset_name}', got "
-                f"{len(datasets):d}"
+                f"{len(datasets):d}",
             )
         new_var_name = datasets[0]["short_name"]
         new_reference_datasets = datasets[0].get("reference_dataset")
         if var_name is None:
             var_name = new_var_name
-        else:
-            if new_var_name != var_name:
-                raise ValueError(
-                    f"Expected identical 'short_name' for all datasets of Su "
-                    f"et al. (2014) constraint, got '{var_name}' and "
-                    f"'{new_var_name}'"
-                )
+        elif new_var_name != var_name:
+            raise ValueError(
+                f"Expected identical 'short_name' for all datasets of Su "
+                f"et al. (2014) constraint, got '{var_name}' and "
+                f"'{new_var_name}'",
+            )
         if reference_datasets is None:
             reference_datasets = new_reference_datasets
-        else:
-            if new_reference_datasets != reference_datasets:
-                raise ValueError(
-                    f"Expected identical 'reference_dataset' for all datasets "
-                    f"of Su et al. (2014) constraint, got "
-                    f"'{reference_datasets}' and '{new_reference_datasets}'"
-                )
+        elif new_reference_datasets != reference_datasets:
+            raise ValueError(
+                f"Expected identical 'reference_dataset' for all datasets "
+                f"of Su et al. (2014) constraint, got "
+                f"'{reference_datasets}' and '{new_reference_datasets}'",
+            )
     if reference_datasets is None:
         raise ValueError(
-            f"'reference_dataset' not given for variable '{var_name}'"
+            f"'reference_dataset' not given for variable '{var_name}'",
         )
     logger.info(
-        "Found variable '%s' for Su et al. (2014) constraint", var_name
+        "Found variable '%s' for Su et al. (2014) constraint",
+        var_name,
     )
     logger.info("Found reference datasets '%s'", reference_datasets)
     return (var_name, reference_datasets)
@@ -380,7 +397,9 @@ def _get_weighted_cloud_fractions(cl_cube, zg_cube, level_limits, n_jobs=1):
         # (Area-weighted) horizontal averaging
         area_weights = iris.analysis.cartography.area_weights(clt_cube)
         clt_cube = clt_cube.collapsed(
-            ["latitude", "longitude"], iris.analysis.MEAN, weights=area_weights
+            ["latitude", "longitude"],
+            iris.analysis.MEAN,
+            weights=area_weights,
         )
         cloud_fractions.append(clt_cube.data)
     return cloud_fractions
@@ -395,7 +414,7 @@ def _get_z_coord(cube):
     else:
         raise ValueError(
             f"Cannot determine height axis (Z) of cube "
-            f"{cube.summary(shorten=True)}"
+            f"{cube.summary(shorten=True)}",
         )
     return (z_coord, cube.coord_dims(z_coord)[0])
 
@@ -413,7 +432,7 @@ def _get_zhai_data_frame(datasets, lat_constraint):
         else:
             raise ValueError(
                 f"No 'air_pressure' coord available in cube "
-                f"{cl_cube.summary(shorten=True)}"
+                f"{cl_cube.summary(shorten=True)}",
             )
 
     # Apply common mask (only ocean)
@@ -453,7 +472,7 @@ def _similarity_metric(cube, ref_cube, metric):
     else:
         raise ValueError(
             f"Expected one of 'regression_slope', 'correlation_coefficient' "
-            f"similarity metric for diagnostic 'su', got '{metric}'"
+            f"similarity metric for diagnostic 'su', got '{metric}'",
         )
     new_data = np.ma.array(cube.data, copy=True).ravel()
     ref_data = np.ma.array(ref_cube.data, copy=True).ravel()
@@ -504,7 +523,7 @@ def brient_shal(grouped_data, cfg):
             else:
                 raise ValueError(
                     f"No 'air_pressure' coord available in cube "
-                    f"{cl_cube.summary(shorten=True)}"
+                    f"{cl_cube.summary(shorten=True)}",
                 )
 
         # TODO: Remove when bug in iris is fixed
@@ -640,7 +659,7 @@ def volodin(grouped_data, _):
         if len(datasets) != 2:
             raise ValueError(
                 f"Expected exactly two 'clt' datasets for dataset "
-                f"'{dataset_name}', got {len(datasets):d}"
+                f"'{dataset_name}', got {len(datasets):d}",
             )
         for dataset in datasets:
             if (
@@ -651,14 +670,14 @@ def volodin(grouped_data, _):
                 if trop.shape != ():
                     raise ValueError(
                         f"Expected scalar data for tropical 'clt' of dataset "
-                        f"'{dataset_name}', got shape {trop.shape}"
+                        f"'{dataset_name}', got shape {trop.shape}",
                     )
                 break
         else:
             raise ValueError(
                 f"Expected exactly one dataset for tropical 'clt' (defined "
                 f"by the string 'trop' in the variable group name or the "
-                f"preprocessor name) for dataset '{dataset_name}', got none"
+                f"preprocessor name) for dataset '{dataset_name}', got none",
             )
         for dataset in datasets:
             if (
@@ -670,7 +689,7 @@ def volodin(grouped_data, _):
                     raise ValueError(
                         f"Expected scalar data for Southern midlatitudes "
                         f"'clt' of dataset '{dataset_name}', got shape "
-                        f"{midlat.shape}"
+                        f"{midlat.shape}",
                     )
                 break
         else:
@@ -678,7 +697,7 @@ def volodin(grouped_data, _):
                 f"Expected exactly one dataset for Southern midlatitudes "
                 f"'clt' (defined by the string 'midlat' in the variable group "
                 f"name or the preprocessor name) for dataset "
-                f"'{dataset_name}', got none"
+                f"'{dataset_name}', got none",
             )
 
         # Cloud fraction difference
@@ -724,7 +743,8 @@ def zhai(grouped_data, cfg):
 
             # MBLC fraction response to SST changes
             reg = linregress(
-                data_frame["tos"].values, data_frame["mblc_fraction"].values
+                data_frame["tos"].values,
+                data_frame["mblc_fraction"].values,
             )
             diag_data[dataset_name].append(reg.slope)
 
@@ -778,7 +798,7 @@ def zhai(grouped_data, cfg):
                         units="%",
                         attributes={"region": hem},
                     ),
-                ]
+                ],
             )
             io.iris_save(cubes, netcdf_path)
             with ProvenanceLogger(cfg) as provenance_logger:
@@ -800,7 +820,7 @@ def check_cfg(cfg):
     if diag not in globals() or not isfunction(globals()[diag]):
         raise ValueError(
             f"Selected diagnostic '{diag}' not available, it needs to be "
-            f"implemented as a function of this diagnostic script"
+            f"implemented as a function of this diagnostic script",
         )
     logger.info("Calculating constraint '%s'", diag)
     return diag

@@ -55,7 +55,8 @@ def _fix_fillvalue(cube, field, filename):
     if hasattr(field.cf_data, "missing_value"):
         # fix for bad missing value definition
         cube.data = da.ma.masked_equal(
-            cube.core_data(), field.cf_data.missing_value
+            cube.core_data(),
+            field.cf_data.missing_value,
         )
 
 

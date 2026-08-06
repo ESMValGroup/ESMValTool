@@ -181,8 +181,10 @@ def data2file(cfg, filename, title, filedata):
     filepath = os.path.join(cfg[diag.names.WORK_DIR], filename)
     with open(filepath, "w") as out:
         out.write(title + "\n\n")
-        for river, value in sorted(filedata.items()):
-            out.write(f"{river:25} : {value:8.2f}\n")
+        out.writelines(
+            f"{river:25} : {value:8.2f}\n"
+            for river, value in sorted(filedata.items())
+        )
 
 
 def write_plotdata(cfg, plotdata, catchments):
@@ -254,7 +256,8 @@ def compute_diags(plotdata, identifier, catchments):
     # 1. Absolute and relative variable biases
     for var in plotdata.keys():
         diags["riv"], diags["ref"][var], diags["exp"][var] = get_expdata(
-            plotdata[var][identifier], catchments[var]
+            plotdata[var][identifier],
+            catchments[var],
         )
         diags["abs"][var] = diags["exp"][var] - diags["ref"][var]
         diags["rel"][var] = diags["exp"][var] / diags["ref"][var] * 100
@@ -363,14 +366,18 @@ def prep_scatplot(coeftype, diags, defs, identifier, pdf):
 
     if coeftype == "prbias":
         for prbias, rocoef in zip(
-            diags["prbias"], diags["rocoef"], strict=True
+            diags["prbias"],
+            diags["rocoef"],
+            strict=True,
         ):
             axs.scatter(prbias, rocoef, marker=next(marker))
         axs.set_xlabel("Relative bias of precipitation [%]")
         tag = "_pr-vs-ro"
     elif coeftype == "etcoef":
         for etcoef, rocoef in zip(
-            diags["etcoef"], diags["rocoef"], strict=True
+            diags["etcoef"],
+            diags["rocoef"],
+            strict=True,
         ):
             axs.scatter(etcoef, rocoef, marker=next(marker))
         axs.set_xlabel("Bias of ET coefficient [%]")
@@ -492,10 +499,11 @@ def get_catchment_data(cfg):
     if not cfg.get("catchmentmask"):
         raise ValueError(
             "A catchment mask file needs to be specified in the "
-            "recipe (see recipe description for details)"
+            "recipe (see recipe description for details)",
         )
     catchment_filepath = os.path.join(
-        cfg["auxiliary_data_dir"], cfg.get("catchmentmask")
+        cfg["auxiliary_data_dir"],
+        cfg.get("catchmentmask"),
     )
     if not os.path.isfile(catchment_filepath):
         raise OSError(f"Catchment file {catchment_filepath} not found")
@@ -505,7 +513,7 @@ def get_catchment_data(cfg):
     if catchments["cube"].coord("longitude").bounds is None:
         catchments["cube"].coord("longitude").guess_bounds()
     catchments["area"] = iris.analysis.cartography.area_weights(
-        catchments["cube"]
+        catchments["cube"],
     )
 
     return catchments
@@ -528,7 +536,7 @@ def get_sim_data(cfg, datapath, catchment_cube):
     """
     datainfo = diag.Datasets(cfg).get_dataset_info(path=datapath)
     identifier = "_".join(
-        [datainfo["dataset"].upper(), datainfo["exp"], datainfo["ensemble"]]
+        [datainfo["dataset"].upper(), datainfo["exp"], datainfo["ensemble"]],
     )
     # Load data into iris cube
     new_cube = iris.load(datapath, diag.Variables(cfg).standard_names())[0]
@@ -578,7 +586,8 @@ def get_catch_avg(catchments, sim_cube):
     avg = {}
     for river, rid in catchments["catchments"].items():
         data_catch = np.ma.masked_where(
-            catchments["cube"].data.astype(np.int64) != rid, sim_cube.data
+            catchments["cube"].data.astype(np.int64) != rid,
+            sim_cube.data,
         )
         area_catch = np.ma.masked_where(
             catchments["cube"].data.astype(np.int64) != rid,
@@ -627,8 +636,7 @@ def update_plotdata(identifier, plotdata, rivervalues, var):
         plotdata[var] = {}
     if identifier in plotdata[var].keys():
         raise ValueError("Variable", var, "already exists in plot dict")
-    else:
-        plotdata[var][identifier] = rivervalues
+    plotdata[var][identifier] = rivervalues
 
 
 def main(cfg):
@@ -646,7 +654,7 @@ def main(cfg):
     # Check for correct variables
     if not diag.Variables(cfg).vars_available("pr", "mrro", "evspsbl"):
         raise ValueError(
-            "Diagnostic requires precipitation, runoff and evaporation data"
+            "Diagnostic requires precipitation, runoff and evaporation data",
         )
 
     # Read catchmentmask
@@ -674,7 +682,7 @@ def main(cfg):
             update_plotdata(identifier, plotdata, rivervalues, var)
 
         # Append to cubelist for temporary output
-        if model not in allcubes.keys():
+        if model not in allcubes:
             allcubes[model] = []
         allcubes[model].append(cube)
 
@@ -682,7 +690,8 @@ def main(cfg):
     # to do: update attributes, something fishy with unlimited dimension
     for model, mcube in allcubes.items():
         filepath = os.path.join(
-            cfg[diag.names.WORK_DIR], "_".join(["postproc", model]) + ".nc"
+            cfg[diag.names.WORK_DIR],
+            "_".join(["postproc", model]) + ".nc",
         )
         iris.save(mcube, filepath)
         logger.info("Writing %s", filepath)

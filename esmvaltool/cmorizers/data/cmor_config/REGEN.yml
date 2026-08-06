@@ -7,7 +7,7 @@ attributes:
   dataset_id: REGEN
   version: 'V1-2019'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'https://researchdata.ands.org.au/rainfall-estimates-gridded-v1-2019/1408744'
   reference: 'regen'

@@ -55,7 +55,6 @@ def compute_diagnostic(filename):
 
 def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
-
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube)
 
@@ -85,7 +84,9 @@ def main(cfg):
     )
 
     grouped_input_data = group_metadata(
-        input_data, "variable_group", sort="dataset"
+        input_data,
+        "variable_group",
+        sort="dataset",
     )
     logger.info(
         "Example of how to group and sort input data by variable groups from "
@@ -108,7 +109,8 @@ def main(cfg):
             if "caption" not in attributes:
                 attributes["caption"] = input_file
             provenance_record = get_provenance_record(
-                attributes, ancestor_files=[input_file]
+                attributes,
+                ancestor_files=[input_file],
             )
             plot_diagnostic(cube, output_basename, provenance_record, cfg)
 

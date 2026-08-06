@@ -445,7 +445,7 @@ class CH4Lifetime(MonitorBase):
             else:
                 raise NotImplementedError(
                     "Lifetime calculation is not implemented for the present "
-                    "type of vertical coordinate"
+                    "type of vertical coordinate",
                 )
 
             if not {"TROP", "STRA"}.isdisjoint(
@@ -751,7 +751,8 @@ class CH4Lifetime(MonitorBase):
                 if not cube.coords("year"):
                     add_year(cube, "time")
                 annual_mean_cube = cube.aggregated_by(
-                    "year", iris.analysis.MEAN
+                    "year",
+                    iris.analysis.MEAN,
                 )
 
                 plot_kwargs.update(self.plots[plot_type]["annual_mean_kwargs"])
@@ -759,7 +760,7 @@ class CH4Lifetime(MonitorBase):
             else:
                 raise ValueError(
                     "Unknown option for annual_mean; choose between False, "
-                    "'both', or 'only'"
+                    "'both', or 'only'",
                 )
 
         # Default plot appearance
@@ -785,7 +786,9 @@ class CH4Lifetime(MonitorBase):
 
         # Save plot
         plot_path = self.get_regional_plot_path(
-            plot_type, multi_dataset_facets, region
+            plot_type,
+            multi_dataset_facets,
+            region,
         )
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)

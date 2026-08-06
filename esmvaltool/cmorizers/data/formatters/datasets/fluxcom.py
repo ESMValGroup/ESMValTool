@@ -49,7 +49,7 @@ def _get_filepath(in_dir, basename):
         if regex.match(filename):
             return os.path.join(in_dir, basename)
     raise OSError(
-        f"Cannot find input file matching pattern  '{basename}' in '{in_dir}'"
+        f"Cannot find input file matching pattern  '{basename}' in '{in_dir}'",
     )
 
 
@@ -72,7 +72,11 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
         utils.set_global_atts(cube, attrs)
         logger.info("Saving file")
         utils.save_variable(
-            cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+            cube,
+            var,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )
 
 

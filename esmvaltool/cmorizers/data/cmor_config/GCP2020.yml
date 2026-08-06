@@ -10,7 +10,7 @@ attributes:
   dataset_id: GCP2020
   version: '1.0'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'https://www.icos-cp.eu/science-and-impact/global-carbon-budget/2020'
   reference: gcp2020

@@ -16,7 +16,7 @@ def test_duplications_in_changelog():
 
     # Find all pull requests
     pr_links = re.compile(
-        "<https://github.com/ESMValGroup/ESMValTool/pull/[0-9]+>"
+        "<https://github.com/ESMValGroup/ESMValTool/pull/[0-9]+>",
     )
     links = pr_links.findall(changelog)
 
@@ -29,7 +29,7 @@ def test_duplications_in_changelog():
                     link
                     for link, count in collections.Counter(links).items()
                     if count > 1
-                )
-            )
+                ),
+            ),
         )
         assert False

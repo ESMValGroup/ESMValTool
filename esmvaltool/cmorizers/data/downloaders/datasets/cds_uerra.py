@@ -9,14 +9,19 @@ from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -47,7 +52,7 @@ def download_dataset(
             ],
             "time": ["00:00", "06:00", "12:00", "18:00"],
         },
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -61,7 +66,7 @@ def download_dataset(
             [
                 f"{i + 1:02d}"
                 for i in range(
-                    calendar.monthrange(loop_date.year, loop_date.month)[1]
+                    calendar.monthrange(loop_date.year, loop_date.month)[1],
                 )
             ],
             file_format="nc",

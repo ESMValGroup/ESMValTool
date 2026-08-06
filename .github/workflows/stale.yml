@@ -1,5 +1,7 @@
 name: Close stale issues and pull requests
 
+permissions: {}
+
 on:
   schedule:
     # Run once a day
@@ -10,7 +12,7 @@ jobs:
     if: "github.repository == 'ESMValGroup/ESMValTool'"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629 # v10.4.0
         with:
           days-before-issue-stale: 1080
           days-before-pr-stale: 360

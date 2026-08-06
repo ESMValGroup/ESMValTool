@@ -283,7 +283,13 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
     if "start_year" in cfg or "end_year" in cfg:
         log.info("selecting time period")
         cube = pp.extract_time(
-            cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31
+            cube,
+            cfg["start_year"],
+            1,
+            1,
+            cfg["end_year"],
+            12,
+            31,
         )
     dtime = cfg.get("comparison_period", 10) * 12
     cubes = {}

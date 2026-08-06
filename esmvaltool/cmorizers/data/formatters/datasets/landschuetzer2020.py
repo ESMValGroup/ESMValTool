@@ -47,7 +47,7 @@ def _fix_climatological_time(cube):
     # https://www.ncei.noaa.gov/access/metadata/landing-page/bin/
     # iso?id=gov.noaa.nodc%3A0209633
     time_points = time_units.date2num(
-        [datetime(2004, m, 15) for m in range(1, 13)]
+        [datetime(2004, m, 15) for m in range(1, 13)],
     )
     time_bounds = [
         [datetime(1988, m, 1), datetime(2019, m + 1, 1)] for m in range(1, 12)

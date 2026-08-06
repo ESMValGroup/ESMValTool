@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 2
   version: "v1"
-  modeling_realm: reanaly
+  type: reanaly
   source: 'https://incois.gov.in/tropflux/'
   reference: 'tropflux'
   comment: |
@@ -26,13 +26,7 @@ variables:
     raw: sst
     file: '/sst_tropflux_1m_\d{4}\.nc$'
 
-  hfls_month_Lmon:
-    short_name: hfls
-    mip: Lmon
-    raw: lhf
-    file: '/lhf_tropflux_1m_\d{4}\.nc$'
-
-  hfls_month_Amon:
+  hfls_month:
     short_name: hfls
     mip: Amon
     raw: lhf

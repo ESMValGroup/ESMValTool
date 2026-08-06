@@ -149,14 +149,16 @@ def _get_cube_for_year(year, in_dir, cfg):
     """Extract cube containing one year from raw file."""
     logger.info("Processing year %i", year)
     bin_files = glob.glob(
-        os.path.join(in_dir, f"{cfg['binary_prefix']}{year}*.bin")
+        os.path.join(in_dir, f"{cfg['binary_prefix']}{year}*.bin"),
     )
 
     # Read files of one year
     cubes = iris.cube.CubeList()
     for bin_file in bin_files:
         raw_data = np.fromfile(bin_file, DTYPE, N_LAT * N_LON).reshape(
-            1, N_LAT, N_LON
+            1,
+            N_LAT,
+            N_LON,
         )
         raw_data = np.ma.masked_equal(raw_data, MISSING_VALUE)
         raw_data = raw_data.astype(np.float32)
@@ -167,7 +169,9 @@ def _get_cube_for_year(year, in_dir, cfg):
         cube = iris.cube.Cube(raw_data, dim_coords_and_dims=coords)
         if cfg.get("regrid"):
             cube = regrid(
-                cube, cfg["regrid"]["target_grid"], cfg["regrid"]["scheme"]
+                cube,
+                cfg["regrid"]["target_grid"],
+                cfg["regrid"]["scheme"],
             )
         cubes.append(cube)
 

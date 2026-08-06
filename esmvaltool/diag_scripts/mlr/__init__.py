@@ -159,7 +159,7 @@ def check_predict_kwargs(predict_kwargs):
     if return_var and return_cov:
         raise RuntimeError(
             "Cannot return variance (return_cov=True) and full covariance "
-            "matrix (return_cov=True) simultaneously"
+            "matrix (return_cov=True) simultaneously",
         )
 
 
@@ -189,13 +189,13 @@ def create_alias(dataset, attributes, delimiter="-"):
     alias = []
     if not attributes:
         raise ValueError(
-            "Expected at least one element for attributes, got empty list"
+            "Expected at least one element for attributes, got empty list",
         )
     for attribute in attributes:
         if attribute not in dataset:
             raise AttributeError(
                 f"Dataset {dataset} does not contain attribute '{attribute}' "
-                f"for alias creation"
+                f"for alias creation",
             )
         alias.append(dataset[attribute])
     return delimiter.join(alias)
@@ -230,7 +230,7 @@ def datasets_have_mlr_attributes(datasets, log_level="debug", mode="full"):
     accepted_modes = ("full", "only_missing", "only_var_type")
     if mode not in accepted_modes:
         raise ValueError(
-            f"'mode' must be one of {accepted_modes}, got '{mode}'"
+            f"'mode' must be one of {accepted_modes}, got '{mode}'",
         )
     for dataset in datasets:
         if mode != "only_var_type":
@@ -287,20 +287,22 @@ def get_1d_cube(x_data, y_data, x_kwargs=None, y_kwargs=None):
     y_data = np.ma.array(y_data)
     if x_data.ndim != 1:
         raise ValueError(
-            f"Expected 1D array for 'x_data', got {x_data.ndim:d}D array"
+            f"Expected 1D array for 'x_data', got {x_data.ndim:d}D array",
         )
     if y_data.ndim != 1:
         raise ValueError(
-            f"Expected 1D array for 'y_data', got {y_data.ndim:d}D array"
+            f"Expected 1D array for 'y_data', got {y_data.ndim:d}D array",
         )
     if x_data.shape != y_data.shape:
         raise ValueError(
             f"Expected identical shapes for 'x_data' and 'y_data', got "
-            f"{x_data.shape} and {y_data.shape}, respectively"
+            f"{x_data.shape} and {y_data.shape}, respectively",
         )
     aux_coord = iris.coords.AuxCoord(x_data, **x_kwargs)
     cube = iris.cube.Cube(
-        y_data, aux_coords_and_dims=[(aux_coord, 0)], **y_kwargs
+        y_data,
+        aux_coords_and_dims=[(aux_coord, 0)],
+        **y_kwargs,
     )
     return cube
 
@@ -331,7 +333,7 @@ def get_absolute_time_units(units):
         units = Unit(units.symbol.split()[0])
     if not units.is_time():
         raise ValueError(
-            f"Cannot convert units '{units}' to reasonable time units"
+            f"Cannot convert units '{units}' to reasonable time units",
         )
     return units
 
@@ -410,7 +412,8 @@ def get_all_weights(
 
     """
     logger.debug(
-        "Calculating all weights of cube %s", cube.summary(shorten=True)
+        "Calculating all weights of cube %s",
+        cube.summary(shorten=True),
     )
     weights = np.ones(cube.shape)
 
@@ -461,13 +464,17 @@ def get_area_weights(cube, normalize=False):
     logger.debug("Calculating area weights")
     _check_coords(cube, ["latitude", "longitude"], "area weights")
     area_weights = iris.analysis.cartography.area_weights(
-        cube, normalize=normalize
+        cube,
+        normalize=normalize,
     )
     return area_weights
 
 
 def get_horizontal_weights(
-    cube, area_weighted=True, landsea_fraction_weighted=None, normalize=False
+    cube,
+    area_weighted=True,
+    landsea_fraction_weighted=None,
+    normalize=False,
 ):
     """Get horizontal (latitude/longitude) weights of cube.
 
@@ -513,7 +520,9 @@ def get_horizontal_weights(
         weights *= get_area_weights(cube, normalize=False)
     if landsea_fraction_weighted is not None:
         weights *= get_landsea_fraction_weights(
-            cube, landsea_fraction_weighted, normalize=False
+            cube,
+            landsea_fraction_weighted,
+            normalize=False,
         )
 
     # No normalization
@@ -586,7 +595,7 @@ def get_input_data(cfg, pattern=None, check_mlr_attributes=True, ignore=None):
     if check_mlr_attributes:
         if not datasets_have_mlr_attributes(valid_data, log_level="error"):
             raise ValueError(
-                "At least one input dataset does not have valid MLR attributes"
+                "At least one input dataset does not have valid MLR attributes",
             )
     valid_data = sorted_metadata(valid_data, ["var_type", "tag", "dataset"])
     logger.debug("Found files:")
@@ -629,11 +638,13 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
     if area_type not in allowed_types:
         raise ValueError(
             f"Expected one of {allowed_types} for 'area_type' of land/sea "
-            f"fraction weighting, got '{area_type}'"
+            f"fraction weighting, got '{area_type}'",
         )
     logger.debug("Calculating %s fraction weights", area_type)
     _check_coords(
-        cube, ["latitude", "longitude"], f"{area_type} fraction weights"
+        cube,
+        ["latitude", "longitude"],
+        f"{area_type} fraction weights",
     )
     lat_coord = cube.coord("latitude")
     lon_coord = cube.coord("longitude")
@@ -641,7 +652,7 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
         if coord.ndim > 1:
             raise iris.exceptions.CoordinateMultiDimError(
                 f"Calculating {area_type} fraction weights for "
-                f"multidimensional coordinate '{coord.name}' is not supported"
+                f"multidimensional coordinate '{coord.name}' is not supported",
             )
     if cube.coord_dims(lat_coord) != ():
         if cube.coord_dims(lat_coord) == cube.coord_dims(lon_coord):
@@ -649,20 +660,22 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
                 f"1D latitude and longitude coordinates share dimensions "
                 f"(this usually happens with unstructured grids) - "
                 f"calculating {area_type} fraction weights for latitude and "
-                "longitude that share dimensions is not possible"
+                "longitude that share dimensions is not possible",
             )
 
     # Calculate land fractions on coordinate grid of cube
     ne_land_mask_cube = _get_ne_land_mask_cube()
     land_fraction = np.empty(
-        (lat_coord.shape[0], lon_coord.shape[0]), dtype=np.float64
+        (lat_coord.shape[0], lon_coord.shape[0]),
+        dtype=np.float64,
     )
     for lat_idx in range(lat_coord.shape[0]):
         for lon_idx in range(lon_coord.shape[0]):
             lat_bounds = lat_coord.bounds[lat_idx]
             lon_bounds = lon_coord.bounds[lon_idx]
             submask = ne_land_mask_cube.intersection(
-                latitude=lat_bounds, longitude=lon_bounds
+                latitude=lat_bounds,
+                longitude=lon_bounds,
             )
             land_fraction[lat_idx, lon_idx] = (
                 submask.data.sum() / submask.data.size
@@ -685,7 +698,9 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
     else:
         fraction_weights = np.squeeze(fraction_weights, axis=0)
     fraction_weights = iris.util.broadcast_to_shape(
-        fraction_weights, cube.shape, tuple(coord_dims)
+        fraction_weights,
+        cube.shape,
+        tuple(coord_dims),
     )
 
     return fraction_weights
@@ -748,14 +763,13 @@ def get_squared_error_cube(ref_cube, error_datasets):
             squared_error_cube.var_name += "_squared"
             squared_error_cube.long_name += " (squared)"
             squared_error_cube.units = units_power(squared_error_cube.units, 2)
+    elif squared_error_cube.attributes.get("squared"):
+        squared_error_cube.var_name += "_error"
+        squared_error_cube.long_name += " (error)"
     else:
-        if squared_error_cube.attributes.get("squared"):
-            squared_error_cube.var_name += "_error"
-            squared_error_cube.long_name += " (error)"
-        else:
-            squared_error_cube.var_name += "_squared_error"
-            squared_error_cube.long_name += " (squared error)"
-            squared_error_cube.units = units_power(squared_error_cube.units, 2)
+        squared_error_cube.var_name += "_squared_error"
+        squared_error_cube.long_name += " (squared error)"
+        squared_error_cube.units = units_power(squared_error_cube.units, 2)
     squared_error_cube.attributes["squared"] = 1
     squared_error_cube.attributes["var_type"] = "prediction_output_error"
 
@@ -770,7 +784,7 @@ def get_squared_error_cube(ref_cube, error_datasets):
         if cube.shape != ref_cube.shape:
             raise ValueError(
                 f"Expected shape {ref_cube.shape} for error cubes, got "
-                f"{cube.shape} for dataset '{path}'"
+                f"{cube.shape} for dataset '{path}'",
             )
 
         # Add squared error
@@ -815,7 +829,9 @@ def get_time_weights(cube, normalize=False):
         time_weights = np.broadcast_to(time_weights, cube.shape)
     else:
         time_weights = iris.util.broadcast_to_shape(
-            time_weights, cube.shape, cube.coord_dims("time")
+            time_weights,
+            cube.shape,
+            cube.coord_dims("time"),
         )
     return time_weights
 
@@ -891,12 +907,12 @@ def units_power(units, power):
     if round(power) != power:
         raise TypeError(
             f"Expected integer-like power for units exponentiation, got "
-            f"{power}"
+            f"{power}",
         )
     power = int(power)
     if any([units.is_no_unit(), units.is_unknown()]):
         raise ValueError(
-            f"Cannot raise units '{units.name}' to power {power:d}"
+            f"Cannot raise units '{units.name}' to power {power:d}",
         )
     if units.origin is None:
         logger.warning(

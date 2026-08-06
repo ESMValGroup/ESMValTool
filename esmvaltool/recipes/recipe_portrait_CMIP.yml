@@ -160,7 +160,7 @@ diagnostics:
         variable: pr
         split: Ref1
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos,
+          - {dataset: GPCP-SG, project: OBS, type: sat,
              version: 2.3, tier: 2, reference_for_metric: true}
       rlut:
         <<: *var_default

@@ -16,7 +16,7 @@ attributes:
   dataset_id: LAI3g
   version: '1-regridded'
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'http://cliveg.bu.edu/modismisr/lai3g-fpar3g.html'
   reference: 'lai3g'

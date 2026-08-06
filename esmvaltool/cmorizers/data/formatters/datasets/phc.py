@@ -39,11 +39,11 @@ def save_fx_variable(cube, var, out_dir, attrs):
             [
                 attrs["project_id"],
                 attrs["dataset_id"],
-                attrs["modeling_realm"],
+                attrs["type"],
                 attrs["version"],
                 attrs["mip"],
                 var,
-            ]
+            ],
         )
         + ".nc"
     )
@@ -67,7 +67,7 @@ def _fix_fx_areacello(xr_time, var):
         name=var,
     )
     grid_areas_xr.attrs = OrderedDict(
-        [("cell_area", "Ocean Grid-Cell Area"), ("units", "m2")]
+        [("cell_area", "Ocean Grid-Cell Area"), ("units", "m2")],
     )
     cube = grid_areas_xr.to_iris()
     return cube.copy()
@@ -97,7 +97,7 @@ def _fix_data(xr_time, var):
             [
                 ("standard_name", "sea_water_potential_temperature"),
                 ("units", "K"),
-            ]
+            ],
         )
         cube = temp_new.to_iris()
     elif var == "so":
@@ -116,7 +116,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     xr_time = xr_file.expand_dims("time")
     xr_time = xr_time.assign_coords(time=[1])
     xr_time.time.attrs = OrderedDict(
-        [("standard_name", "time"), ("units", "days since 1950-1-1 00:00:00")]
+        [("standard_name", "time"), ("units", "days since 1950-1-1 00:00:00")],
     )
 
     cube = _fix_data(xr_time, var)

@@ -7,8 +7,8 @@ import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.stats as stats
 from iris import NameConstraint
+from scipy import stats
 
 import esmvaltool.diag_scripts.land_carbon_cycle.plot_utils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
@@ -52,11 +52,14 @@ def _get_diagonal_colorbar_info():
             np.linspace(64, 128, num=10)[:-1],
             np.linspace(128, 256, num=10)[:-1],
             np.linspace(256, 1000, num=2, endpoint=True),
-        )
+        ),
     )
     cb_info_diagonal["ticksLoc"] = np.array([1, 8, 16, 32, 64, 128, 256])
     clist_ = plut.get_colomap(
-        cb_name, cb_info_diagonal["tickBounds"], lowp=0.0, hip=1
+        cb_name,
+        cb_info_diagonal["tickBounds"],
+        lowp=0.0,
+        hip=1,
     )
     cb_info_diagonal["colMap"] = mpl.colors.ListedColormap(clist_)
     return cb_info_diagonal
@@ -143,11 +146,12 @@ def _get_ratio_colorbar_info():
             np.geomspace(2, 3, num=num_col),
             np.geomspace(3, 4, num=num_col),
             np.geomspace(4, 5, num=num_col),
-        )
+        ),
     )
     colors1 = plt.cm.Blues(np.linspace(0.15, 0.998, (num_col) * 4))[::-1]
     colorsgr = np.tile(np.array([0.8, 0.8, 0.8, 1]), num_gr).reshape(
-        num_gr, -1
+        num_gr,
+        -1,
     )
     colors2 = plt.cm.Reds(np.linspace(0.15, 0.998, (num_col) * 4))
 
@@ -155,7 +159,8 @@ def _get_ratio_colorbar_info():
     colors1g = np.vstack((colors1, colorsgr))
     colors = np.vstack((colors1g, colors2))
     cb_info_ratio["colMap"] = mpl.colors.LinearSegmentedColormap.from_list(
-        "my_colormap", colors
+        "my_colormap",
+        colors,
     )
     cb_info_ratio["ticksLoc"] = [0.2, 0.25, 0.33, 0.5, 0.9, 1.1, 2, 3, 4, 5]
     cb_info_ratio["ticksLab"] = [
@@ -222,7 +227,7 @@ def _get_obs_data(diag_config):
     if not diag_config.get("obs_variable"):
         raise ValueError(
             "The observation variable needs to be specified in "
-            "the recipe (see recipe description for details)"
+            "the recipe (see recipe description for details)",
         )
 
     obs_dir = os.path.join(
@@ -243,11 +248,12 @@ def _get_obs_data(diag_config):
         obs_filename = (
             f"{_var}_{{frequency}}_{{source_label}}_"
             f"{{variant_label}}_{{grid_label}}.nc".format(
-                **diag_config["obs_info"]
+                **diag_config["obs_info"],
             )
         )
         input_files = np.append(
-            input_files, os.path.join(obs_dir, obs_filename)
+            input_files,
+            os.path.join(obs_dir, obs_filename),
         )
     nvars = len(var_list)
     for v_ind in range(nvars):
@@ -353,7 +359,7 @@ def _get_matrix_map_axes(_row_m, _col_m, _fig_config):
                 + _fig_config["ysp_sca"],
                 _fig_config["wp"] * _fig_config["aspect_map"],
                 _fig_config["hp"] * _fig_config["aspect_map"],
-            ]
+            ],
         )
 
     if _row_m > _col_m:
@@ -429,7 +435,10 @@ def _draw_121_line():
 
 
 def _plot_matrix_map(
-    plot_path_matrix, global_tau_mod, global_tau_obs, diag_config
+    plot_path_matrix,
+    global_tau_mod,
+    global_tau_obs,
+    diag_config,
 ):
     """
     Plot the matrix of maps model-observation full factorial comparison.
@@ -443,7 +452,7 @@ def _plot_matrix_map(
     fig_config = _get_fig_config(diag_config)
     models = list(global_tau_mod["grid"].keys())
     models = sorted(models, key=str.casefold)
-    multimodel_stats = "MultiModelMedian MultiModelMean".split()
+    multimodel_stats = ["MultiModelMedian", "MultiModelMean"]
     for _mm in multimodel_stats:
         if _mm in models:
             models.append(models.pop(models.index(_mm)))
@@ -516,7 +525,8 @@ def _plot_matrix_map(
             # diagonal
             if row_m > col_m:
                 plot_dat = _remove_invalid(
-                    dat_row / dat_col, fill_value=fig_config["fill_value"]
+                    dat_row / dat_col,
+                    fill_value=fig_config["fill_value"],
                 )
                 _ax.imshow(
                     _get_data_to_plot(plot_dat),
@@ -531,7 +541,12 @@ def _plot_matrix_map(
                 )
                 _fix_map(_ax)
             t_x = _fix_matrix_axes(
-                row_m, col_m, models, nmodels, diag_config, fig_config
+                row_m,
+                col_m,
+                models,
+                nmodels,
+                diag_config,
+                fig_config,
             )
 
     # plot the colorbar for maps along the diagonal
@@ -587,7 +602,10 @@ def _plot_matrix_map(
 
 
 def _plot_multimodel_agreement(
-    plot_path_multimodel, global_tau_mod, global_tau_obs, diag_config
+    plot_path_multimodel,
+    global_tau_mod,
+    global_tau_obs,
+    diag_config,
 ):
     """
     Plot map of multimodel bias and multimodel agreement.
@@ -615,7 +633,7 @@ def _plot_multimodel_agreement(
     models = list(global_tau_mod["grid"].keys())
 
     # remove multimodel estimates from the list of models
-    multimodel_stats = "MultiModelMedian MultiModelMean".split()
+    multimodel_stats = ["MultiModelMedian", "MultiModelMean"]
     for _mm in multimodel_stats:
         if _mm in models:
             models.remove(_mm)
@@ -629,15 +647,18 @@ def _plot_multimodel_agreement(
         row_mod = models[row_m]
         dat_tau = global_tau_mod["grid"][row_mod]
         dat_tau_full[row_m] = _remove_invalid(
-            dat_tau.data, fill_value=fig_config["fill_value"]
+            dat_tau.data,
+            fill_value=fig_config["fill_value"],
         )
 
     mm_tau = _remove_invalid(
-        np.nanmedian(dat_tau_full, axis=0), fill_value=fig_config["fill_value"]
+        np.nanmedian(dat_tau_full, axis=0),
+        fill_value=fig_config["fill_value"],
     )
     mm_bias_tau = mm_tau / tau_obs
     mm_bias_tau = _remove_invalid(
-        mm_bias_tau, fill_value=fig_config["fill_value"]
+        mm_bias_tau,
+        fill_value=fig_config["fill_value"],
     )
 
     # define figure and main axis to plot the map
@@ -653,7 +674,8 @@ def _plot_multimodel_agreement(
     _ax.imshow(
         _get_data_to_plot(mm_bias_tau),
         norm=mpl.colors.BoundaryNorm(
-            cb_info["tickBounds"], len(cb_info["tickBounds"])
+            cb_info["tickBounds"],
+            len(cb_info["tickBounds"]),
         ),
         interpolation="none",
         cmap=cb_info["colMap"],
@@ -665,7 +687,10 @@ def _plot_multimodel_agreement(
     # get the model agreement mask (less than quarter of the model within the
     # observational uncertainty)
     agreement_mask_tau = _get_agreement_mask(
-        dat_tau_full, tau_obs_5, tau_obs_95, nmodel_reject=int(nmodels / 4)
+        dat_tau_full,
+        tau_obs_5,
+        tau_obs_95,
+        nmodel_reject=int(nmodels / 4),
     )
 
     # plot the hatches for uncertainty/multimodel agreement
@@ -687,7 +712,7 @@ def _plot_multimodel_agreement(
     )
 
     title_str = "multimodel bias and agreement (-)\n{title}".format(
-        title=global_tau_obs["grid"]["tau_ctotal"].long_name
+        title=global_tau_obs["grid"]["tau_ctotal"].long_name,
     )
     plt.title(title_str, fontsize=0.98 * fig_config["ax_fs"])
 
@@ -718,7 +743,12 @@ def _plot_multimodel_agreement(
 
 
 def _plot_single_map(
-    plot_path, _dat, _datglobal, _name, provenance_record, diag_config
+    plot_path,
+    _dat,
+    _datglobal,
+    _name,
+    provenance_record,
+    diag_config,
 ):
     """
     Plot a map for a given variable.
@@ -746,7 +776,8 @@ def _plot_single_map(
     plt.imshow(
         _get_data_to_plot(_dat.data),
         norm=mpl.colors.BoundaryNorm(
-            cb_info["tickBounds"], len(cb_info["tickBounds"])
+            cb_info["tickBounds"],
+            len(cb_info["tickBounds"]),
         ),
         cmap=cb_info["colMap"],
         origin="upper",
@@ -757,7 +788,7 @@ def _plot_single_map(
     # get the data and set the title of the map
 
     _dat_median = np.nanmedian(
-        _remove_invalid(_dat.data, fill_value=fig_config["fill_value"])
+        _remove_invalid(_dat.data, fill_value=fig_config["fill_value"]),
     )
     title_str = (
         f"{_dat.long_name} ({_dat.units}), {_name},\n"
@@ -795,7 +826,8 @@ def main(diag_config):
         diag_config - nested dictionary of metadata
     """
     model_data_dict = group_metadata(
-        diag_config["input_data"].values(), "dataset"
+        diag_config["input_data"].values(),
+        "dataset",
     )
 
     # get the data from the observation
@@ -836,10 +868,12 @@ def main(diag_config):
 
         # apply the GPP threshold and set the data in dictionary
         gpp_global = gpp.collapsed(
-            ["latitude", "longitude"], iris.analysis.SUM
+            ["latitude", "longitude"],
+            iris.analysis.SUM,
         )
         ctotal_global = ctotal.collapsed(
-            ["latitude", "longitude"], iris.analysis.SUM
+            ["latitude", "longitude"],
+            iris.analysis.SUM,
         )
         tau_global = ctotal_global / gpp_global
         tau_global.convert_units("yr")
@@ -892,20 +926,26 @@ def main(diag_config):
 
     # multimodel agreement
     base_name_multimodel = "{prefix}_{base_name}".format(
-        prefix="global_multimodelAgreement", base_name=base_name
+        prefix="global_multimodelAgreement",
+        base_name=base_name,
     )
     plot_path_multimodel = get_plot_filename(base_name_multimodel, diag_config)
     _plot_multimodel_agreement(
-        plot_path_multimodel, global_tau_mod, global_tau_obs, config
+        plot_path_multimodel,
+        global_tau_mod,
+        global_tau_obs,
+        config,
     )
     with ProvenanceLogger(diag_config) as provenance_logger:
         provenance_logger.log(
-            plot_path_multimodel, provenance_record_multimodel
+            plot_path_multimodel,
+            provenance_record_multimodel,
         )
 
     # map of observation
     base_name_obs = "{prefix}_{base_name}".format(
-        prefix="global", base_name=base_name
+        prefix="global",
+        base_name=base_name,
     )
     plot_path_obs = get_plot_filename(base_name_obs, diag_config)
     provenance_record_obs = _get_provenance_record(
@@ -926,7 +966,8 @@ def main(diag_config):
 
     # matrix of maps
     base_name_matrix = "{prefix}_{base_name}".format(
-        prefix="global_matrix_map", base_name=base_name
+        prefix="global_matrix_map",
+        base_name=base_name,
     )
     plot_path_matrix = get_plot_filename(base_name_matrix, diag_config)
     _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs, config)

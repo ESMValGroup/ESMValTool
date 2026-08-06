@@ -168,7 +168,7 @@ class Monitor(MonitorBase):
                             break
                     else:
                         raise ValueError(
-                            f"Can not find cube {var_name} in {cubes}"
+                            f"Can not find cube {var_name} in {cubes}",
                         )
                 cube.var_name = self._real_name(var_name)
                 cube.attributes["plot_name"] = var_info.get("plot_name", "")
@@ -181,7 +181,7 @@ class Monitor(MonitorBase):
                 self.plot_climatology(cube, var_info)
         if self.has_errors:
             raise Exception(
-                "Errors detected. Please check log for more details"
+                "Errors detected. Please check log for more details",
             )
 
     @staticmethod
@@ -202,7 +202,7 @@ class Monitor(MonitorBase):
             points = np.empty(month_number.shape, dtype="|S3")
             for i in range(1, 13):
                 points[month_number.points == i] = str(
-                    calendar.month_name[i].upper()
+                    calendar.month_name[i].upper(),
                 )
             cube.add_aux_coord(
                 AuxCoord(points=points, var_name="month", long_name="month"),
@@ -234,8 +234,9 @@ class Monitor(MonitorBase):
             self.plot_timeseries(
                 cube.extract(
                     iris.Constraint(
-                        year=lambda cell: cell <= (var_info[n.START_YEAR] + 50)
-                    )
+                        year=lambda cell: cell
+                        <= (var_info[n.START_YEAR] + 50),
+                    ),
                 ),
                 var_info,
                 period="start",
@@ -244,8 +245,8 @@ class Monitor(MonitorBase):
             self.plot_timeseries(
                 cube.extract(
                     iris.Constraint(
-                        year=lambda cell: cell >= (var_info[n.END_YEAR] - 50)
-                    )
+                        year=lambda cell: cell >= (var_info[n.END_YEAR] - 50),
+                    ),
                 ),
                 var_info,
                 period="end",
@@ -280,7 +281,9 @@ class Monitor(MonitorBase):
         plotter = PlotSeries()
         plotter.outdir = self.get_plot_folder(var_info)
         plotter.img_template = self.get_plot_path(
-            "annualcycle", var_info, add_ext=False
+            "annualcycle",
+            var_info,
+            add_ext=False,
         )
         plotter.filefmt = self.cfg["output_file_type"]
         region_coords = ("shape_id", "region")
@@ -334,7 +337,9 @@ class Monitor(MonitorBase):
         plotter = PlotSeries()
         plotter.outdir = self.get_plot_folder(var_info)
         plotter.img_template = self.get_plot_path(
-            "diurnalcycle", var_info, add_ext=False
+            "diurnalcycle",
+            var_info,
+            add_ext=False,
         )
         plotter.filefmt = self.cfg["output_file_type"]
         region_coords = ("shape_id", "region")
@@ -385,23 +390,25 @@ class Monitor(MonitorBase):
         rows = self.plots["monclim"].get("rows", 4)
         if months:
             cube = cube.extract(
-                iris.Constraint(month_number=lambda cell: cell in months)
+                iris.Constraint(month_number=lambda cell: cell in months),
             )
         self._add_month_name(cube)
         for map_name in maps:
             map_options = self._get_proj_options(map_name)
             variable_options = self._get_variable_options(
-                var_info["variable_group"], map_name
+                var_info["variable_group"],
+                map_name,
             )
             plt.figure(
-                figsize=(plot_size[0] * columns, plot_size[1] * rows), dpi=120
+                figsize=(plot_size[0] * columns, plot_size[1] * rows),
+                dpi=120,
             )
 
             for cube_slice in cube.slices_over("month_number"):
                 if cube_slice.ndim != 2:
                     logger.error(
                         "Climatologies can only be plotted for 2D vars. "
-                        "Skipping..."
+                        "Skipping...",
                     )
                     self.has_errors = True
                     return
@@ -466,11 +473,10 @@ class Monitor(MonitorBase):
         month_name = cube_slice.coord("month_name").points[0]
         if months:
             index = months.index(month) + 1
+        elif month == 12:
+            index = 1
         else:
-            if month == 12:
-                index = 1
-            else:
-                index = month + 1
+            index = month + 1
         plot_map.plot_cube(
             cube_slice,
             save=False,
@@ -533,7 +539,8 @@ class Monitor(MonitorBase):
         for map_name in maps:
             map_options = self._get_proj_options(map_name)
             variable_options = self._get_variable_options(
-                var_info["variable_group"], map_name
+                var_info["variable_group"],
+                map_name,
             )
             index = 0
             for cube_slice in cube.slices_over("season"):
@@ -542,7 +549,7 @@ class Monitor(MonitorBase):
                 if cube_slice.ndim != 2:
                     logger.error(
                         "Climatologies can only be plotted for 2D vars. "
-                        "Skipping..."
+                        "Skipping...",
                     )
                     self.has_errors = True
                     return
@@ -629,18 +636,21 @@ class Monitor(MonitorBase):
             map_options = self._get_proj_options(map_name)
 
             variable_options = self._get_variable_options(
-                var_info["variable_group"], map_name
+                var_info["variable_group"],
+                map_name,
             )
             if cube.ndim != 2:
                 logger.error(
                     "Climatologies can only be plotted for 2D vars. "
-                    "Skipping..."
+                    "Skipping...",
                 )
                 self.has_errors = True
                 return
 
             plot_map.plot_cube(
-                cube, save=False, **{**map_options, **variable_options}
+                cube,
+                save=False,
+                **{**map_options, **variable_options},
             )
 
             # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
@@ -655,7 +665,10 @@ class Monitor(MonitorBase):
             )
             filename = self.get_plot_path(f"clim{map_name}", var_info)
             plt.savefig(
-                filename, bbox_inches="tight", pad_inches=0.2, dpi=plot_map.dpi
+                filename,
+                bbox_inches="tight",
+                pad_inches=0.2,
+                dpi=plot_map.dpi,
             )
             plt.close(plt.gcf())
             caption = (

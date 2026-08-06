@@ -11,7 +11,7 @@ Source
 
 Download and processing instructions
    Put all files under a single directory (no subdirectories with years)
-   in ${RAWOBS}/Tier2/ESACCI-LST
+   in Tier2/ESACCI-LST
    BOTH DAY and NIGHT files are needed for each month
 
 Currently set to work with only the MODIS AQUA L3 monthly data
@@ -61,7 +61,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         # get years from start_year and end_year
         # note 2003 doesn't start until July so not included at this stage
         for year in range(
-            glob_attrs["start_year"], glob_attrs["end_year"] + 1
+            glob_attrs["start_year"],
+            glob_attrs["end_year"] + 1,
         ):
             this_years_cubes = iris.cube.CubeList()
             for month0 in range(12):  # Change this in final version
@@ -77,7 +78,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 )
 
                 monthly_cube = make_monthly_average(
-                    day_cube, night_cube, year, month
+                    day_cube,
+                    night_cube,
+                    year,
+                    month,
                 )
 
                 # use CMORizer utils
@@ -164,7 +168,7 @@ def make_monthly_average(day_cube, night_cube, year, month):
     # or 23:59:59 ???
 
     monthly_cube.attributes = {
-        "information": "Mean of Day and Night Aqua MODIS monthly LST"
+        "information": "Mean of Day and Night Aqua MODIS monthly LST",
     }
 
     return monthly_cube

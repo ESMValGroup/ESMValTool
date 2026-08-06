@@ -29,7 +29,13 @@ logger = logging.getLogger(__name__)
 
 
 def _extract_variable(
-    short_name, var, version, filename, cfg, in_dir, out_dir
+    short_name,
+    var,
+    version,
+    filename,
+    cfg,
+    in_dir,
+    out_dir,
 ):
     """Extract variable."""
     # load data
@@ -39,7 +45,7 @@ def _extract_variable(
 
     # fix time units
     cube.coord("time").convert_units(
-        Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+        Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
     )
 
     cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
@@ -67,7 +73,11 @@ def _extract_variable(
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -78,5 +88,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for version, filename in cfg["filenames"].items():
             logger.info("CMORizing variable '%s' '%s'", short_name, version)
             _extract_variable(
-                short_name, var, version, filename, cfg, in_dir, out_dir
+                short_name,
+                var,
+                version,
+                filename,
+                cfg,
+                in_dir,
+                out_dir,
             )

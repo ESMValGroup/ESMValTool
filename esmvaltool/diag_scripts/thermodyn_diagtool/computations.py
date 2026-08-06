@@ -76,19 +76,27 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     cdo.ltc("0", input=toab_file, output=loss_file)
     toabgain_file = wdir + f"/{model}_toabGain.nc"
     cdo.setrtomiss(
-        "-1000,0", input=f"-mul {toab_file} {gain_file}", output=toabgain_file
+        "-1000,0",
+        input=f"-mul {toab_file} {gain_file}",
+        output=toabgain_file,
     )
     toabloss_file = wdir + f"/{model}_toabLoss.nc"
     cdo.setrtomiss(
-        "0,1000", input=f"-mul {toab_file} {loss_file}", output=toabloss_file
+        "0,1000",
+        input=f"-mul {toab_file} {loss_file}",
+        output=toabloss_file,
     )
     tegain_file = wdir + f"/{model}_teGain.nc"
     cdo.setrtomiss(
-        "-1000,0", input=f"-mul {te_file} {gain_file}", output=tegain_file
+        "-1000,0",
+        input=f"-mul {te_file} {gain_file}",
+        output=tegain_file,
     )
     teloss_file = wdir + f"/{model}_teLoss.nc"
     cdo.setrtomiss(
-        "-1000,0", input=f"-mul {te_file} {loss_file}", output=teloss_file
+        "-1000,0",
+        input=f"-mul {te_file} {loss_file}",
+        output=teloss_file,
     )
     tegainm_file = wdir + f"/{model}_teGainm.nc"
     cdo.div(
@@ -157,31 +165,49 @@ def budgets(model, wdir, aux_file, input_data):
     """
     cdo = Cdo()
     hfls_file = e.select_metadata(
-        input_data, short_name="hfls", dataset=model
+        input_data,
+        short_name="hfls",
+        dataset=model,
     )[0]["filename"]
     hfss_file = e.select_metadata(
-        input_data, short_name="hfss", dataset=model
+        input_data,
+        short_name="hfss",
+        dataset=model,
     )[0]["filename"]
     rlds_file = e.select_metadata(
-        input_data, short_name="rlds", dataset=model
+        input_data,
+        short_name="rlds",
+        dataset=model,
     )[0]["filename"]
     rlus_file = e.select_metadata(
-        input_data, short_name="rlus", dataset=model
+        input_data,
+        short_name="rlus",
+        dataset=model,
     )[0]["filename"]
     rlut_file = e.select_metadata(
-        input_data, short_name="rlut", dataset=model
+        input_data,
+        short_name="rlut",
+        dataset=model,
     )[0]["filename"]
     rsds_file = e.select_metadata(
-        input_data, short_name="rsds", dataset=model
+        input_data,
+        short_name="rsds",
+        dataset=model,
     )[0]["filename"]
     rsus_file = e.select_metadata(
-        input_data, short_name="rsus", dataset=model
+        input_data,
+        short_name="rsus",
+        dataset=model,
     )[0]["filename"]
     rsdt_file = e.select_metadata(
-        input_data, short_name="rsdt", dataset=model
+        input_data,
+        short_name="rsdt",
+        dataset=model,
     )[0]["filename"]
     rsut_file = e.select_metadata(
-        input_data, short_name="rsut", dataset=model
+        input_data,
+        short_name="rsut",
+        dataset=model,
     )[0]["filename"]
     toab_file = wdir + f"/{model}_toab.nc"
     toab_gmean_file = wdir + f"/{model}_toab_gmean.nc"
@@ -265,7 +291,11 @@ def direntr(logger, model, wdir, input_data, aux_file, te_file, lect, flags):
     """
     lec = flags[1]
     aux_files = mkthe.init_mkthe_direntr(
-        model, wdir, input_data, te_file, flags
+        model,
+        wdir,
+        input_data,
+        te_file,
+        flags,
     )
     htop_file = aux_files[1]
     prr_file = aux_files[2]
@@ -275,20 +305,26 @@ def direntr(logger, model, wdir, input_data, aux_file, te_file, lect, flags):
     tcolumn_file = aux_files[6]
     tlcl_file = aux_files[7]
     hfls_file = e.select_metadata(
-        input_data, short_name="hfls", dataset=model
+        input_data,
+        short_name="hfls",
+        dataset=model,
     )[0]["filename"]
     hfss_file = e.select_metadata(
-        input_data, short_name="hfss", dataset=model
+        input_data,
+        short_name="hfss",
+        dataset=model,
     )[0]["filename"]
     prsn_file = e.select_metadata(
-        input_data, short_name="prsn", dataset=model
+        input_data,
+        short_name="prsn",
+        dataset=model,
     )[0]["filename"]
     ts_file = e.select_metadata(input_data, short_name="ts", dataset=model)[0][
         "filename"
     ]
     logger.info(
         "Computation of the material entropy "
-        "production with the direct method\n"
+        "production with the direct method\n",
     )
     logger.info("1. Sensible heat fluxes\n")
     infile_list = [hfss_file, tabl_file, ts_file]
@@ -311,20 +347,26 @@ def direntr(logger, model, wdir, input_data, aux_file, te_file, lect, flags):
     infile_rain = [prrmask_file, tcloud_file]
     srain, rainentr_file = rainentr(model, wdir, infile_rain, aux_file)
     logger.info(
-        "Material entropy production associated with rainfall: %s\n", srain
+        "Material entropy production associated with rainfall: %s\n",
+        srain,
     )
     logger.info("2.3 Snowfall precipitation\n")
     infile_snow = [prsnmask_file, tcloud_file]
     ssnow, latsnow_file, snowentr_file = snowentr(
-        model, wdir, infile_snow, aux_file
+        model,
+        wdir,
+        infile_snow,
+        aux_file,
     )
     logger.info(
-        "Material entropy production associated with snowfall: %s\n", ssnow
+        "Material entropy production associated with snowfall: %s\n",
+        ssnow,
     )
     logger.info("2.4 Melting of snow at the surface \n")
     smelt, meltentr_file = meltentr(model, wdir, latsnow_file, aux_file)
     logger.info(
-        "Material entropy production associated with snow melting: %s\n", smelt
+        "Material entropy production associated with snow melting: %s\n",
+        smelt,
     )
     logger.info("2.5 Potential energy of the droplet\n")
     infile_pot = [htop_file, prrmask_file, prsnmask_file, tcolumn_file]
@@ -348,7 +390,8 @@ def direntr(logger, model, wdir, input_data, aux_file, te_file, lect, flags):
         - float(smelt)
     )
     logger.info(
-        "Material entropy production with the direct method: %s\n", matentr
+        "Material entropy production with the direct method: %s\n",
+        matentr,
     )
     irrevers = (matentr - float(skin)) / float(skin)
     for filen in aux_files:
@@ -427,7 +470,11 @@ def evapentr(model, wdir, infile, aux_file):
     evapentr_mean_file = wdir + f"/{model}_evapEntropy_gmean.nc"
     flist = [infile[0], infile[1], aux_file]
     evapentr_gmean = entr(
-        flist, "hfls", "sevap", evapentr_file, evapentr_mean_file
+        flist,
+        "hfls",
+        "sevap",
+        evapentr_file,
+        evapentr_mean_file,
     )
     evapentr_gmean = masktonull(evapentr_gmean)
     os.remove(evapentr_mean_file)
@@ -463,16 +510,24 @@ def indentr(model, wdir, infile, input_data, aux_file, toab_gmean):
     """
     cdo = Cdo()
     rlds_file = e.select_metadata(
-        input_data, short_name="rlds", dataset=model
+        input_data,
+        short_name="rlds",
+        dataset=model,
     )[0]["filename"]
     rlus_file = e.select_metadata(
-        input_data, short_name="rlus", dataset=model
+        input_data,
+        short_name="rlus",
+        dataset=model,
     )[0]["filename"]
     rsds_file = e.select_metadata(
-        input_data, short_name="rsds", dataset=model
+        input_data,
+        short_name="rsds",
+        dataset=model,
     )[0]["filename"]
     rsus_file = e.select_metadata(
-        input_data, short_name="rsus", dataset=model
+        input_data,
+        short_name="rsus",
+        dataset=model,
     )[0]["filename"]
     ts_file = e.select_metadata(input_data, short_name="ts", dataset=model)[0][
         "filename"
@@ -488,7 +543,11 @@ def indentr(model, wdir, infile, input_data, aux_file, toab_gmean):
         output=aux_file,
     )
     horzentr_mean = write_eb(
-        "toab", "shor", aux_file, horzentropy_file, horzentropy_mean_file
+        "toab",
+        "shor",
+        aux_file,
+        horzentropy_file,
+        horzentropy_mean_file,
     )
     cdo.yearmonmean(
         input=f" -add {rlds_file} -sub {rsds_file} -add {rlus_file} {rsus_file}",
@@ -499,7 +558,11 @@ def indentr(model, wdir, infile, input_data, aux_file, toab_gmean):
         output=aux_file,
     )
     vertentr_mean = write_eb(
-        "rlds", "sver", aux_file, vertentropy_file, vertentropy_mean_file
+        "rlds",
+        "sver",
+        aux_file,
+        vertentropy_file,
+        vertentropy_mean_file,
     )
     remove_files = [
         horzentropy_mean_file,
@@ -549,12 +612,12 @@ def kinentr(logger, aux_file, tasvert_file, lect, lec):
         minentr_mean = 0.010
         logger.info(
             "I cannot compute the material entropy "
-            "production without the LEC...\n"
+            "production without the LEC...\n",
         )
         logger.info(
             "I will assign a given value for the material "
             "entropy production attributed to LEC "
-            "(0.01 W/m2*K)\n"
+            "(0.01 W/m2*K)\n",
         )
     return minentr_mean
 
@@ -751,7 +814,7 @@ def meltentr(model, wdir, latsnow_file, aux_file):
     meltentr_mean_file = wdir + f"/{model}_snowmeltEntropy_gmean.nc"
     cdo.mulc(
         str(L_S),
-        input=f"-divc,{str(LC_SUB)} {latsnow_file}",
+        input=f"-divc,{LC_SUB!s} {latsnow_file}",
         options="-b F32",
         output=latmelt_file,
     )
@@ -761,10 +824,15 @@ def meltentr(model, wdir, latsnow_file, aux_file):
         output=aux_file,
     )
     cdo.chname(
-        "prsn,smelt", input=aux_file, options="-b F32", output=meltentr_file
+        "prsn,smelt",
+        input=aux_file,
+        options="-b F32",
+        output=meltentr_file,
     )
     cdo.fldmean(
-        input=meltentr_file, options="-b F32", output=meltentr_mean_file
+        input=meltentr_file,
+        options="-b F32",
+        output=meltentr_mean_file,
     )
     with Dataset(meltentr_mean_file) as f_l:
         meltentr_gmean = f_l.variables["smelt"][0, 0, 0]
@@ -818,7 +886,11 @@ def potentr(model, wdir, infile, aux_file):
     )
     flist = [poten_file, tcolumn_file, aux_file]
     potentr_gmean = entr(
-        flist, "htop", "spotp", potentr_file, potentr_mean_file
+        flist,
+        "htop",
+        "spotp",
+        potentr_file,
+        potentr_mean_file,
     )
     potentr_gmean = masktonull(potentr_gmean)
     remove_files = [poten_file, potentr_mean_file]
@@ -863,7 +935,11 @@ def rainentr(model, wdir, infile, aux_file):
     )
     flist = [latrain_file, infile[1], aux_file]
     rainentr_gmean = entr(
-        flist, "prr", "srain", rainentr_file, rainentr_mean_file
+        flist,
+        "prr",
+        "srain",
+        rainentr_file,
+        rainentr_mean_file,
     )
     rainentr_gmean = masktonull(rainentr_gmean)
     remove_files = [latrain_file, rainentr_mean_file]
@@ -913,7 +989,11 @@ def sensentr(model, wdir, infile, aux_file):
     )
     flist = [infile[0], difftemp_file, aux_file]
     sensentr_gmean = entr(
-        flist, "hfss", "ssens", sensentr_file, sensentr_mean_file
+        flist,
+        "hfss",
+        "ssens",
+        sensentr_file,
+        sensentr_mean_file,
     )
     sensentr_gmean = masktonull(sensentr_gmean)
     remove_files = [difftemp_file, sensentr_mean_file]
@@ -958,7 +1038,11 @@ def snowentr(model, wdir, infile, aux_file):
     )
     flist = [latsnow_file, infile[1], aux_file]
     snowentr_gmean = entr(
-        flist, "prsn", "ssnow", snowentr_file, snowentr_mean_file
+        flist,
+        "prsn",
+        "ssnow",
+        snowentr_file,
+        snowentr_mean_file,
     )
     snowentr_gmean = masktonull(snowentr_gmean)
     os.remove(snowentr_mean_file)
@@ -991,13 +1075,17 @@ def wmbudg(model, wdir, aux_file, input_data, auxlist):
     """
     cdo = Cdo()
     hfls_file = e.select_metadata(
-        input_data, short_name="hfls", dataset=model
+        input_data,
+        short_name="hfls",
+        dataset=model,
     )[0]["filename"]
     pr_file = e.select_metadata(input_data, short_name="pr", dataset=model)[0][
         "filename"
     ]
     prsn_file = e.select_metadata(
-        input_data, short_name="prsn", dataset=model
+        input_data,
+        short_name="prsn",
+        dataset=model,
     )[0]["filename"]
     wmbudg_file = wdir + f"/{model}_wmb.nc"
     wm_gmean_file = wdir + f"/{model}_wmb_gmean.nc"
@@ -1008,11 +1096,15 @@ def wmbudg(model, wdir, aux_file, input_data, auxlist):
     wmass_gmean = write_eb("hfls", "wmb", aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
     cdo.sub(
-        input=f"{hfls_file} -add -mulc,{str(LC_SUB)} {prsn_file} -mulc,{str(L_C)} {auxlist[1]}",
+        input=f"{hfls_file} -add -mulc,{LC_SUB!s} {prsn_file} -mulc,{L_C!s} {auxlist[1]}",
         output=aux_file,
     )
     latent_gmean = write_eb(
-        "hfls", "latent", aux_file, latene_file, latene_gmean_file
+        "hfls",
+        "latent",
+        aux_file,
+        latene_file,
+        latene_gmean_file,
     )
     varlist = [wmass_gmean, latent_gmean]
     fileout = [wmbudg_file, latene_file]

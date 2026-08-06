@@ -72,10 +72,14 @@ def fix_time_coord_duveiller2018(cube):
 
     # Convert them
     time_bnds = cf_units.date2num(
-        custom_time_bounds, custom_time_units, cf_units.CALENDAR_GREGORIAN
+        custom_time_bounds,
+        custom_time_units,
+        cf_units.CALENDAR_GREGORIAN,
     )
     time_midpoints = cf_units.date2num(
-        custom_time, custom_time_units, cf_units.CALENDAR_GREGORIAN
+        custom_time,
+        custom_time_units,
+        cf_units.CALENDAR_GREGORIAN,
     )
 
     # Add them to the cube
@@ -103,7 +107,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             # Extracting a certain vegetation transition code
             itr = raw_info["iTr"]
             itr_index = np.where(
-                cube.coord("Vegetation transition code").points == itr
+                cube.coord("Vegetation transition code").points == itr,
             )[0][0]
             cube = cube[itr_index, :, :, :]
             # Add the vegetation transition code as an attribute

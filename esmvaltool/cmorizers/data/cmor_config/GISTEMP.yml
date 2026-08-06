@@ -7,7 +7,7 @@ attributes:
   dataset_id: GISTEMP
   version: 'v4'
   tier: 2
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source: 'https://data.giss.nasa.gov/gistemp/'
   reference: 'gistemp'

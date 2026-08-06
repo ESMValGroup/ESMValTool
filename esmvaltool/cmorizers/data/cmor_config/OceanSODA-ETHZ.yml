@@ -4,7 +4,7 @@ attributes:
   dataset_id: OceanSODA-ETHZ
   version: v2023
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
   reference: oceansoda_ethz

@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
+import pytest
 import yaml
 from imagehash import hex_to_hash, phash
 from PIL import Image
@@ -97,7 +98,7 @@ def get_phash(image_path: Path):
         return phash(img, hash_size=HASH_SIZE)
 
 
-def load_test_setups(path: str | Path) -> list[tuple]:
+def load_test_setups(path: str | Path) -> list:
     """Load test setups (used as input to :func:`pytest.mark.parametrize`)."""
     path = Path(path)
 
@@ -108,11 +109,12 @@ def load_test_setups(path: str | Path) -> list[tuple]:
     with path.open("r", encoding="utf-8") as file:
         setups = yaml.safe_load(file)
 
-    parametrize_input: list[tuple] = [
-        (s["input_data"], s["settings"], s["expected_pngs"]) for s in setups
+    return [
+        pytest.param(
+            s["input_data"], s["settings"], s["expected_pngs"], id=test_id
+        )
+        for test_id, s in setups.items()
     ]
-
-    return parametrize_input
 
 
 def write_imagehashes(
