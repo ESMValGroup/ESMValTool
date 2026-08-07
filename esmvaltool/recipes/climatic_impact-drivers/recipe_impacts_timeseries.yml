@@ -1,6 +1,4 @@
 # ESMValTool
-# TODO: Include warning: Currently not full year periods are deprechiated cause they could produce missleading results...
-# TODO: currently need to call map function after timeseries such that cube is still intact for timeseries, maybe fix this in diagnostic...
 ---
 documentation:
   title: Climatic Impact-Drivers diagnostic.
@@ -14,13 +12,10 @@ documentation:
 # Note: the following models are just examples
 datasets:
   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  # - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-    #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
 
 
 preprocessors:
 
-  #
   temperature_preproc:
     ##In the future extract europe or similar with:
     #extract_region:
@@ -30,7 +25,7 @@ preprocessors:
     #  end_longitude: 360
     convert_units:
       units: degC
-    local_solar_time: # Needed to ensure dates are local time and not UTC (otherwise extremes at one noon could count for two days.)
+    local_solar_time:
     mask_landsea:
       mask_out: sea
 

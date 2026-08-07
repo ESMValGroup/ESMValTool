@@ -1,12 +1,4 @@
 # ESMValTool
-# TODO: Include warning: Currently not full year periods are deprechiated cause they could produce missleading results...
-# TODO: currently need to call map function after timeseries such that cube is still intact for timeseries, maybe fix this in diagnostic...
-
-
-
-
-
-
 ---
 documentation:
   title: Climatic Impact-Drivers diagnostic.
@@ -19,10 +11,7 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
-  #- {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-
-    #- {dataset: ICON-XPP, exp: historical-202510p1, project: ICON} #, timerange: 20010601/20010901
 
 
 preprocessors:
@@ -39,7 +28,7 @@ preprocessors:
       scheme: linear
     convert_units:
       units: degC
-    local_solar_time: # Needed to ensure dates are local time and not UTC [otherwise extremes at one noon could count for two days. TODO: maybe consider how this could influence results for e.g. low temperatures at night]
+    local_solar_time:
     mask_landsea:
       mask_out: sea
 
@@ -72,8 +61,6 @@ preprocessors:
       end_year: 2014
       end_month: 12
       end_day: 31
-    # mask_landsea:
-    #   mask_out: sea
     convert_units:
       units: mm
 
@@ -94,8 +81,7 @@ preprocessors:
       scheme: linear
     climate_statistics:
       operator: mean
-    # mask_landsea:
-    #   mask_out: land
+
 
 
 
@@ -125,7 +111,6 @@ diagnostics:
             accumulated: false
             threshold: 40
         plots:
-          # timeseries:
           map:
             caption: 'Number of days per year with temperatures exceeding 40°C for {dataset}.'
             common_cbar: true
@@ -206,7 +191,6 @@ diagnostics:
             accumulated: false
             threshold: 10 #1,10
         plots:
-          # timeseries:
           map:
             caption: 'Number of days per year with rain rate exceeding 10 mm for {dataset}.'
             common_cbar: true
@@ -236,7 +220,6 @@ diagnostics:
             accumulated: true
             threshold: 100
         plots:
-          #timeseries:
           map:
             caption: 'Number of days per year with more than 10 cm of snow water equivalent surface snow amount for {dataset}.'
             common_cbar: true
