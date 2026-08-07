@@ -38,6 +38,9 @@ Supported pre-processing options
         exceeds the threshold at some point in time should be counted)
         use the default value. The default value is ``false``.
 
+-   ``take_derivative``: Replace the given dataset by the rate of change
+                         of the given data.
+
 Supported plot types
 --------------------
 -   ``timeseries`` (1D plot): Plot time series. Input data needs single

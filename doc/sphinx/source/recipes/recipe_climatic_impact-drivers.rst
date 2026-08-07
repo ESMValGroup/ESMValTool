@@ -39,10 +39,7 @@ The most relevant configuration options include:
 
 *Optional settings*
 
-* options: additional pre-processing options that are applied (threshold_conversion: It is required to add the argument 'threshold' with the threshold that should be exceeded with this option)
-
-
-Variables
+* options: additional pre-processing options that are applied (threshold_conversion: It is required to add the argument 'threshold' with the threshold that should be exceeded with this option, take_derivative)
 ---------
 
 Any possible, but mainly designed for tasmin, tasmax, pr, snw, zostoga, tos, mlotst, rsds:
