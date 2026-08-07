@@ -386,16 +386,22 @@ class MultiDatasetsThreshold(MultiDatasets):
     @property
     def options_settings(self) -> dict[str, dict[str, Any]]:
         """pre-plotting settings."""
-        default_settings = {
+        default_settings_thres = {
             "threshold": np.nan,
             "inverted": False,
             "accumulated": False,
             "operators": [],
         }
+        default_settings_derivative = {}
         return {
             "threshold_conversion": {
                 "default_settings": {
-                    **default_settings,
+                    **default_settings_thres,
+                },
+            },
+            "take_derivative": {
+                "default_settings": {
+                    **default_settings_derivative,
                 },
             },
         }
@@ -705,6 +711,9 @@ class MultiDatasetsThreshold(MultiDatasets):
             if "threshold_conversion" in self.options:
                 cube = self.convert_data_thresholded(cube)
 
+            if "take_derivative" in self.options:
+                cube = self.take_derivative_fct(cube)
+
             if slices:
                 slice_coord_name = self.cfg["group_variables_by"]
                 for subcube in cube.slices_over([slice_coord_name]):
@@ -804,6 +813,13 @@ class MultiDatasetsThreshold(MultiDatasets):
                 f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
                 f"exceeding {threshold} {multi_dataset_facets['units']} "
                 "[days/year]"
+            )
+
+        elif "take_derivative" in self.options:
+            axes.set_title(multi_dataset_facets["long_name"])
+            var_label = (
+                f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+                f"[{multi_dataset_facets['units']}/year]"
             )
 
         else:
@@ -1036,6 +1052,58 @@ class MultiDatasetsThreshold(MultiDatasets):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
+
+    def take_derivative_fct(
+        self,
+        cube,
+    ):
+        """Calculate the change rates of the variable."""
+        cat.add_year(cube, "time")
+        # Ensuring that the data is yearly.
+        cube = cube.aggregated_by(
+            ["year"],
+            iris.analysis.MEAN,
+        )
+        cube.remove_coord("year")
+
+        newtime = (
+            cube.coord("time").points[:-1]
+            + (cube.coord("time").points[1:] - cube.coord("time").points[:-1])
+            / 2
+        )
+        newtbounds = (
+            cube.coord("time").bounds[:-1]
+            + (cube.coord("time").bounds[1:] - cube.coord("time").bounds[:-1])
+            / 2
+        )
+        cube_l = cube[1:]
+        # print(cube_l)
+        # print(cube.coord("time").points[1:])
+        # print(cube.coord("time").points[:-1])
+        # print(newtime)
+        # print(cube_l.coord("time"))
+        # print(cube_l.coord("time").points)
+
+        cube_l.coord("time").bounds = newtbounds
+        cube_l.coord("time").points = newtime
+        # print(cube_l.coord("time"))
+        # print(cube_l.coord("time").points)
+        cube_r = cube[:-1]
+        cube_r.coord("time").points = newtime
+        cube_r.coord("time").bounds = newtbounds
+        print(cube_l.coord("time"))
+        print(cube_r.coord("time"))
+        # print(cube_l.coord("year"))
+        # print(cube_r.coord("year"))
+        print(cube_l)
+        print(cube_r)
+        newcube = cube_l - cube_r
+        newcube.standard_name = None
+        newcube.rename = f"Rate of change of {cube.var_name}"
+        newcube.long_name = f"Rate of change of {cube.long_name}"
+
+        newcube.units = f"{cube.units}/year"
+        return newcube
 
 
 def main(cfg: dict) -> None:

@@ -101,6 +101,9 @@ preprocessors:
   zostoga_preproc_timeseries:
     annual_statistics:
       operator: mean
+    convert_units:
+      units: mm
+
 
 
 
@@ -225,13 +228,16 @@ diagnostics:
         mip: Omon
         preprocessor: zostoga_preproc_timeseries
     scripts:
-      thermosteric_sealevel_mean: &timeseries_config
+      thermosteric_sealevel_mean:
         script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
-        facet_used_for_labels: project
+        facet_used_for_labels: dataset
+        options:
+          take_derivative:
         plots:
           timeseries:
+
 
   timeseries_sst:
     additional_datasets:
@@ -253,7 +259,13 @@ diagnostics:
         mip: Omon
         preprocessor: ocean_preproc_timeseries_min
     scripts:
-      plot: *timeseries_config
+      plot: &timeseries_config
+        script: climatic_impact-drivers/multi_datasets_with_threshold.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        facet_used_for_labels: project
+        plots:
+          timeseries:
 
 
   timeseries_mld:
