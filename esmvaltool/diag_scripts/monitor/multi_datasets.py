@@ -1806,6 +1806,9 @@ class MultiDatasets(MonitorBase):
         axes_left = fig.add_subplot(gridspec[0:2, 0:2], **subplot_kwargs)
         plot_left = self._plot_2d_data(plot_type, dataset_left, axes_left)
 
+        print(plot_left)
+        print("das hier prüfen")
+
         # Plot top right panel
         # Note: make sure to use the same vmin and vmax than the top left plot
         # if a common colorbar is desired
