@@ -1077,26 +1077,14 @@ class MultiDatasetsThreshold(MultiDatasets):
             / 2
         )
         cube_l = cube[1:]
-        # print(cube_l)
-        # print(cube.coord("time").points[1:])
-        # print(cube.coord("time").points[:-1])
-        # print(newtime)
-        # print(cube_l.coord("time"))
-        # print(cube_l.coord("time").points)
 
         cube_l.coord("time").bounds = newtbounds
         cube_l.coord("time").points = newtime
-        # print(cube_l.coord("time"))
-        # print(cube_l.coord("time").points)
+
         cube_r = cube[:-1]
         cube_r.coord("time").points = newtime
         cube_r.coord("time").bounds = newtbounds
-        print(cube_l.coord("time"))
-        print(cube_r.coord("time"))
-        # print(cube_l.coord("year"))
-        # print(cube_r.coord("year"))
-        print(cube_l)
-        print(cube_r)
+
         newcube = cube_l - cube_r
         newcube.standard_name = None
         newcube.rename = f"Rate of change of {cube.var_name}"
