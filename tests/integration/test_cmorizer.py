@@ -151,7 +151,8 @@ def test_cmorize_obs_woa_no_data(tmp_path: Path) -> None:
     with (
         keep_cwd(),
         pytest.raises(
-            NotADirectoryError, match="Data for dataset 'WOA' not found"
+            NotADirectoryError,
+            match="Data for dataset 'WOA' not found",
         ),
     ):
         DataCommand().format(
