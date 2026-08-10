@@ -101,99 +101,99 @@ preprocessors:
 
 diagnostics:
 
-  # south_east_pacific_clouds:
+  # south_east_pacific_preprocess:
   #   description: Create timeseries.
   #   variables:
-  #     clt: &var
-  #       preprocessor: mean_pp_3hr
-  #       mip: 3hr
+  #     reffclwc:
+  #       preprocessor: regrid_prep_lev
   #       frequency: 6hr
-  #       var_type: atm_2d_3h
+  #       mip: CF3hr
+  #       var_type: atm_3d_6h
+  #       shift_time: False
+  #       <<: *years
+  #     clw:
+  #       preprocessor: regrid_prep_lev
+  #       frequency: 6hr
+  #       mip: CF3hr
+  #       var_type: atm_3d_6h
   #       shift_time: False
   #       <<: *years
   #     clwvi:
-  #       <<: *var
+  #       preprocessor: regrid_prep
+  #       mip: 3hr
+  #       frequency: 6hr
   #       mip: CFday
-  #       var_type: atm_2d_3h
+  #       var_type: atm_2d_6h
   #       shift_time: False
-  #   scripts: Null
+  #       <<: *years
+  #     clt:
+  #       preprocessor: regrid_prep
+  #       mip: 3hr
+  #       frequency: 6hr
+  #       mip: CFday
+  #       var_type: atm_2d_6h
+  #       shift_time: False
+  #       <<: *years
+  #   scripts:
+  #     reff:
+  #       script: diag_reff.py
 
-
-  south_east_pacific_preprocess:
+  south_east_pacific_ccfs:
     description: Create timeseries.
     variables:
-      reffclwc:
-        preprocessor: regrid_prep_lev
-        frequency: 6hr
-        mip: CF3hr
-        var_type: atm_3d_6h
+      prw: &var
+        preprocessor: mean_pp
+        frequency: day
+        var_type: atm_2d_daily
         shift_time: False
         <<: *years
-      clw:
-        preprocessor: regrid_prep_lev
-        frequency: 6hr
-        mip: CF3hr
-        var_type: atm_3d_6h
+        mip: Eday
+      psl: &var2
+        <<: *var
+        mip: day
+        var_type: atm_2d_daily
+        shift_time: False
+      hfss:
+        <<: *var
+        mip: day
+        var_type: atm_2d_daily
+        shift_time: False
+      sfcWind:
+        <<: *var
+        mip: day
+        var_type: atm_2d_daily
+        shift_time: False
+      ta700:
+        short_name: ta
+        mip: day
+        frequency: day
+        var_type: atm_3d_daily
         shift_time: False
         <<: *years
-      clwvi:
-        preprocessor: regrid_prep
-        mip: 3hr
-        frequency: 6hr
-        mip: CFday
-        var_type: atm_2d_6h
+        preprocessor: mean_pp_700
+      ta1000:
+        short_name: ta
+        mip: day
+        frequency: day
+        var_type: atm_3d_daily
         shift_time: False
         <<: *years
-      clt:
-        preprocessor: regrid_prep
-        mip: 3hr
-        frequency: 6hr
-        mip: CFday
-        var_type: atm_2d_6h
+        preprocessor: mean_pp_1000
+      ts:
+        <<: *var
+        mip: day
+        var_type: atm_2d_daily
+        shift_time: False
+      wap700:
+        short_name: wap
+        mip: day
+        frequency: day
+        var_type: atm_3d_daily
         shift_time: False
         <<: *years
+        preprocessor: mean_pp_700
     scripts:
-      reff:
-        script: diag_reff.py
-
-  # south_east_pacific_ccfs:
-  #     prw: &var
-  #       preprocessor: mean_pp
-  #       frequency: day
-  #       <<: *years
-  #       mip: Eday
-  #     psl: &var2
-  #       <<: *var
-  #       mip: day
-  #     hfss:
-  #       <<: *var
-  #       mip: day
-  #     sfcWind:
-  #       <<: *var
-  #       mip: day
-      # ta700:
-      #   short_name: ta
-      #   mip: day
-      #   frequency: day
-      #   <<: *years
-      #   preprocessor: mean_pp_700
-      # ta1000:
-      #   short_name: ta
-      #   mip: day
-      #   frequency: day
-      #   <<: *years
-      #   preprocessor: mean_pp_1000
-  #     ts:
-  #       <<: *var
-  #       mip: day
-      # wap700:
-      #   short_name: wap
-      #   mip: day
-      #   frequency: day
-      #   <<: *years
-      #   preprocessor: mean_pp_700
-  #   scripts:
-  #     timeseries:
-  #       script: causal_clouds_timeseries.py
-  #       compute:
-  #         - LTS
+      timeseries:
+        script: causal_clouds_timeseries.py
+        compute:
+          - LTS
