@@ -8,15 +8,17 @@ import logging
 
 import iris
 import iris.coord_categorisation as icc
+import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import dask.array as da
 from distributed import Client
 from distributed import LocalCluster
 from iris.fileformats.netcdf.loader import CHUNK_CONTROL
 from iris import COMBINE_POLICY
-
+import cartopy.crs as ccrs
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -24,6 +26,12 @@ from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
 )
+
+
+import matplotlib.colors as mcolors
+from matplotlib.colors import ListedColormap, BoundaryNorm
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +156,105 @@ def threshcalc(arr, alpha):
     threshinds = np.argmax(arr > threshs[..., None], axis=-1)
     return threshinds
 
+def plot_map(cube, model = 'CMCC', year=2000):
+
+    # ============================================================
+    # Create 12-month × 4-week colourblind-friendly colormap
+    # ============================================================
+
+    month_colours = [
+        "#0072B2",  # Jan
+        "#56B4E9",  # Feb
+        "#009E73",  # Mar
+        "#7CAE00",  # Apr
+        "#D6B000",  # May (darker amber than F0E442)
+        "#E69F00",  # Jun
+        "#D55E00",  # Jul
+        "#CC79A7",  # Aug
+        "#882255",  # Sep
+        "#332288",  # Oct
+        "#44AA99",  # Nov
+        "#999933",  # Dec
+    ]
+
+    week_fades = [0.55, 0.35, 0.15, 0.0]
+    colours = [(1, 1, 1)]
+    
+    for month_colour in month_colours:
+        rgb = np.array(mcolors.to_rgb(month_colour))
+
+        for fade in week_fades:
+            # Mix with white to produce week shades
+            colours.append(rgb * (1 - fade) + fade)
+
+    this_cmap = ListedColormap(colours)
+    this_norm = BoundaryNorm(np.arange(50), this_cmap.N)
+
+    # ============================================================
+    # Convert DOY (1-365/366) -> month/week category (0-47)
+    # ============================================================
+
+    lookup = np.zeros(367, dtype=np.int16)
+
+    for doy in range(1, 367):
+
+        date = pd.Timestamp("2001-01-01") + pd.Timedelta(days=doy - 1)
+
+        month = date.month                    # 1-12
+        week = min((date.day - 1) // 7, 3)    # 0-3
+
+        lookup[doy] = (month - 1) * 4 + week
+
+    # Copy cube and replace DOY values with category values
+    plot_cube = cube.copy()
+    min_val = np.nanmin(cube.data)
+    is_min = cube.data == min_val
+    # Convert DOY -> category
+    plot_cube.data = lookup[cube.data.astype(int)]
+    # Set minima to category 0 (white)
+    plot_cube.data[is_min] = 0
+
+
+
+    # ============================================================
+    # Plot
+    # ============================================================
+
+    fig = plt.figure(figsize=(16,9))
+    
+    pcm = iplt.pcolormesh(
+        plot_cube,
+        cmap=this_cmap,
+        norm=this_norm
+    )
+
+    # ============================================================
+    # Colorbar
+    # ============================================================
+
+    cbar = plt.colorbar(pcm,
+                        ticks=[0.5] + list(np.arange(2.5, 49, 4)),
+                        orientation="horizontal",
+                        )
+
+    cbar.ax.set_xticklabels(["N/A",
+        "Jan", "Feb", "Mar", "Apr",
+        "May", "Jun", "Jul", "Aug",
+        "Sep", "Oct", "Nov", "Dec"
+    ])
+
+    cbar.set_label("Month (shade = week within month)")
+
+    plt.gca().coastlines()
+
+    plt.title(f"Vegetation Onset: {model} {year}", fontsize=24)
+
+    plt.savefig(f'onset_{model}_{year}.png')
+    plt.close()
+    
+    return None
+
+
 def _diagnostic(config):
     """Perform the control for the ESA CCI LST diagnostic.
 
@@ -187,7 +294,7 @@ def _diagnostic(config):
             good_day_inds = np.where(~np.isnan(sam))
             logger.info(f'{good_day_inds=}')
             print(f'{good_day_inds=}')
-
+            print('**********************************')
             # why this note on this line? this should work what ever the data NaN structure????
             good_days = lazarr[good_day_inds]  # NOTE: this is not correct, would only work if every month has 30 days
             data = good_days.transpose((1, 2, 0))
@@ -204,10 +311,11 @@ def _diagnostic(config):
                 meta=np.ma.array(0),
             )
 
-
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
             lat_coord = loaded_data[MODEL]['lai'].coord('latitude')
             lon_coord = loaded_data[MODEL]['lai'].coord('longitude')
-            
+            logger.info(f"{lat_coord=}")
+            logger.info(f"{lon_coord=}")
             result_cube = iris.cube.Cube(thresh_inds,
                                          dim_coords_and_dims = ((lat_coord,0),
                                                                 (lon_coord,1)),
@@ -218,6 +326,9 @@ def _diagnostic(config):
             except:
                 pass
 
+           
+            print('/#/#/#/#/##/#/#/##/#/#')
+
             doy_values = loaded_data[MODEL]['lai'].coord('day_of_year').points
             doy_data = doy_values[thresh_inds]
 
@@ -227,18 +338,19 @@ def _diagnostic(config):
                                       long_name = "Vegeation Onset "
                                          )
             
-            # lat lon from original data
-            # long name
-
+            print(f'{doy_cube=}')
 
             # change to esmvaltool save path for run
 
-            iris.save(result_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_index_{MODEL}.nc')
+            # iris.save(result_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_index_{MODEL}.nc')
             iris.save(doy_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_doy_{MODEL}.nc')
+
+           
         else:
+            print('CONTINUE CONTINUE CONTINUE ---------------------------------')
             continue
  
-
+        plot_map(doy_cube, model=MODEL, year = 2000)
     # record = _get_provenance_record(data_attributes, ancestor_list)
     # plot_file = get_plot_filename("timeseries", config)
     # with ProvenanceLogger(config) as provenance_logger:

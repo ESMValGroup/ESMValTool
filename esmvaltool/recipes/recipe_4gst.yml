@@ -19,11 +19,16 @@ datasets:
   - {dataset: CMCC-ESM2, project: CMIP6, exp: historical,
      ensemble: r1i1p1f1, start_year: 2000, end_year: 2000, grid: gn, mip: Eday}
 
-  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2000, end_year: 2000, grid: gn, mip: Lmon}
-#
-#
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2,
+      start_year: 2000, end_year: 2000, grid: gn, mip: Lmon}
+
 #  - {dataset: CDS-SATELLITE-LAI-FAPAR, project: OBS, type: sat, version: V3, tier: 3,
-#     start_year: 2000, end_year: 2000, mip: Eday, freq: day}
+#     start_year: 2000, end_year: 2000, mip: Eday, frequency: day}
+
+preprocessors:
+  preproc_mask:
+    mask_landsea:
+      mask_out: sea
 
 diagnostics:
 
@@ -36,7 +41,8 @@ diagnostics:
     variables:
       lai:
         short_name: lai
-        project: OBS
+#        preprocessor: preproc_mask
+#        project: OBS
 
     scripts:
       script1:
