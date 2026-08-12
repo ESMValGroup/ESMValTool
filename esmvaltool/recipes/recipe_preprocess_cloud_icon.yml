@@ -153,47 +153,47 @@ diagnostics:
         mip: day
         var_type: atm_2d_daily
         shift_time: False
-      hfss:
-        <<: *var
-        mip: day
-        var_type: atm_2d_daily
-        shift_time: False
-      sfcWind:
-        <<: *var
-        mip: day
-        var_type: atm_2d_daily
-        shift_time: False
-      ta700:
-        short_name: ta
-        mip: day
-        frequency: day
-        var_type: atm_3d_daily
-        shift_time: False
-        <<: *years
-        preprocessor: mean_pp_700
-      ta1000:
-        short_name: ta
-        mip: day
-        frequency: day
-        var_type: atm_3d_daily
-        shift_time: False
-        <<: *years
-        preprocessor: mean_pp_1000
-      ts:
-        <<: *var
-        mip: day
-        var_type: atm_2d_daily
-        shift_time: False
-      wap700:
-        short_name: wap
-        mip: day
-        frequency: day
-        var_type: atm_3d_daily
-        shift_time: False
-        <<: *years
-        preprocessor: mean_pp_700
-    scripts:
-      timeseries:
-        script: causal_clouds_timeseries.py
-        compute:
-          - LTS
+      # hfss:
+      #   <<: *var
+      #   mip: day
+      #   var_type: atm_2d_daily
+      #   shift_time: False
+      # sfcWind:
+      #   <<: *var
+      #   mip: day
+      #   var_type: atm_2d_daily
+      #   shift_time: False
+      # ts:
+      #   <<: *var
+      #   mip: day
+      #   var_type: atm_2d_daily
+      #   shift_time: False
+      # ta700:
+      #   short_name: ta
+      #   mip: day
+      #   frequency: day
+      #   var_type: atm_3d_daily
+      #   shift_time: False
+      #   <<: *years
+      #   preprocessor: mean_pp_700
+      # ta1000:
+      #   short_name: ta
+      #   mip: day
+      #   frequency: day
+      #   var_type: atm_3d_daily
+      #   shift_time: False
+      #   <<: *years
+      #   preprocessor: mean_pp_1000
+      # wap700:
+      #   short_name: wap
+      #   mip: day
+      #   frequency: day
+      #   var_type: atm_3d_daily
+      #   shift_time: False
+      #   <<: *years
+      #   preprocessor: mean_pp_700
+    scripts: null
+      # timeseries:
+      #   script: causal_clouds_timeseries.py
+      #   # compute:
+      #   #   - LTS
