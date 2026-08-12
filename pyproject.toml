@@ -260,7 +260,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
-"ESMValCore" = ">=2.14.0"
+"ESMValCore" = ">=2.15.0"
 
 # Use the development version of ESMValCore to test new features and bug fixes.
 [tool.pixi.feature.esmvalcore-dev.pypi-dependencies]
@@ -284,6 +284,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "myst-nb" = "*"
 "pydata-sphinx-theme" = "*"
 "sphinx" = ">=6.1.3,<9"     # <9 due to ESMValTool/issues/4316
+"sphinx-design" = "*"
 
 # Other development tools.
 [tool.pixi.feature.dev.dependencies]
