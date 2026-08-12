@@ -53,6 +53,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "autodocsumm",
+    "sphinx_design",
 ]
 
 autodoc_default_options = {
