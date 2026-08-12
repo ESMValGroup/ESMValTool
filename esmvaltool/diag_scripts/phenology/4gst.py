@@ -283,75 +283,91 @@ def _diagnostic(config):
     # data is nested dictionaries MODEL LAI
 
     for MODEL in loaded_data.keys():
+        print(f"{loaded_data[MODEL].keys()=}")
         if 'lai' in loaded_data[MODEL].keys():
-            # follow the Dask, onset proceedure
-            cluster, client = setup(n_workers=2, threads_per_worker=1, processes=True)
 
-            lazarr = loaded_data[MODEL]['lai'].core_data()
-            # this is needed for the OBS data where a lot of days are all NaNs
-            # need to find a generic way to do this wit all OBS and MODELS....
-            sam = lazarr[:,  0,0].compute()
-            good_day_inds = np.where(~np.isnan(sam))
-            logger.info(f'{good_day_inds=}')
-            print(f'{good_day_inds=}')
-            print('**********************************')
-            # why this note on this line? this should work what ever the data NaN structure????
-            good_days = lazarr[good_day_inds]  # NOTE: this is not correct, would only work if every month has 30 days
-            data = good_days.transpose((1, 2, 0))
-            
-            # this needs a way to be generic
-            data_r = data.rechunk({-1:-1, 1:20}) # 1186 was C3S LAI
-
-            thresh_inds = da.map_blocks(
-                threshcalc,
-                data_r,
-                alpha=0.2, # can this be passed in from the recipe???????
-                dtype=int,
-                drop_axis=[-1],
-                meta=np.ma.array(0),
-            )
-
-            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-            lat_coord = loaded_data[MODEL]['lai'].coord('latitude')
-            lon_coord = loaded_data[MODEL]['lai'].coord('longitude')
-            logger.info(f"{lat_coord=}")
-            logger.info(f"{lon_coord=}")
-            result_cube = iris.cube.Cube(thresh_inds,
-                                         dim_coords_and_dims = ((lat_coord,0),
-                                                                (lon_coord,1)),
-                                         long_name = "Vegeation Onset Index"
-                                         )
             try:
-                icc.add_day_of_year( loaded_data[MODEL]['lai'], 'time')
+                icc.add_year( loaded_data[MODEL]['lai'], 'time')
             except:
                 pass
 
-           
-            print('/#/#/#/#/##/#/#/##/#/#')
+            YEARS = np.unique(loaded_data[MODEL]['lai'].coord('year').points)
 
-            doy_values = loaded_data[MODEL]['lai'].coord('day_of_year').points
-            doy_data = doy_values[thresh_inds]
-
-            doy_cube = iris.cube.Cube(doy_data,
-                                      dim_coords_and_dims = ((lat_coord,0),
-                                                             (lon_coord,1)),
-                                      long_name = "Vegeation Onset "
-                                         )
+            for this_year in YEARS:
             
-            print(f'{doy_cube=}')
+            # follow the Dask, onset proceedure
+                cluster, client = setup(n_workers=2, threads_per_worker=1, processes=True)
 
-            # change to esmvaltool save path for run
+                this_cube = loaded_data[MODEL]['lai'].extract(iris.Constraint(year=this_year))
 
-            # iris.save(result_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_index_{MODEL}.nc')
-            iris.save(doy_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_doy_{MODEL}.nc')
+                lazarr = this_cube.core_data()
+                # this is needed for the OBS data where a lot of days are all NaNs
+                # need to find a generic way to do this wit all OBS and MODELS....
+                sam = lazarr[:,  0,0].compute()
+                good_day_inds = np.where(~np.isnan(sam))
+                logger.info(f'{good_day_inds=}')
+                print(f'{good_day_inds=}')
+                print('**********************************')
+                # why this note on this line? this should work what ever the data NaN structure????
+                good_days = lazarr[good_day_inds]  # NOTE: this is not correct, would only work if every month has 30 days
+                data = good_days.transpose((1, 2, 0))
 
-           
-        else:
-            print('CONTINUE CONTINUE CONTINUE ---------------------------------')
-            continue
- 
-        plot_map(doy_cube, model=MODEL, year = 2000)
-    # record = _get_provenance_record(data_attributes, ancestor_list)
+                # this needs a way to be generic
+                data_r = data.rechunk({-1:-1, 1:20}) # 1186 was C3S LAI
+
+                thresh_inds = da.map_blocks(
+                    threshcalc,
+                    data_r,
+                    alpha=0.2, # can this be passed in from the recipe???????
+                    dtype=int,
+                    drop_axis=[-1],
+                    meta=np.ma.array(0),
+                )
+
+                print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+                lat_coord = this_cube.coord('latitude')
+                lon_coord = this_cube.coord('longitude')
+                logger.info(f"{lat_coord=}")
+                logger.info(f"{lon_coord=}")
+                result_cube = iris.cube.Cube(thresh_inds,
+                                             dim_coords_and_dims = ((lat_coord,0),
+                                                                    (lon_coord,1)),
+                                             long_name = "Vegeation Onset Index"
+                                             )
+                try:
+                    # icc.add_day_of_year( loaded_data[MODEL]['lai'], 'time')
+                    icc.add_day_of_year( this_cube, 'time')
+                except:
+                    pass
+
+
+                print('/#/#/#/#/##/#/#/##/#/#')
+
+
+                doy_values = this_cube.coord('day_of_year').points
+                #doy_values = loaded_data[MODEL]['lai'].coord('day_of_year').points
+                doy_data = doy_values[thresh_inds]
+
+                doy_cube = iris.cube.Cube(doy_data,
+                                          dim_coords_and_dims = ((lat_coord,0),
+                                                                 (lon_coord,1)),
+                                          long_name = "Vegeation Onset "
+                                             )
+
+                print(f'{doy_cube=}')
+
+                # change to esmvaltool save path for run
+
+                # iris.save(result_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_index_{MODEL}.nc')
+#                iris.save(doy_cube, f'/home/users/robking/CMUG/ESMValTool/esmvaltool/cube_doy_{MODEL}_{this_year}.nc')
+                plot_map(doy_cube, model=MODEL, year = this_year)
+
+            else:
+                print('CONTINUE CONTINUE CONTINUE ---------------------------------')
+                continue
+
+            
+        # record = _get_provenance_record(data_attributes, ancestor_list)
     # plot_file = get_plot_filename("timeseries", config)
     # with ProvenanceLogger(config) as provenance_logger:
     #     provenance_logger.log(plot_file, record)
