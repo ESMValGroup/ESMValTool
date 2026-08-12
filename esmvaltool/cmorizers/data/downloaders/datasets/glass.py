@@ -1,4 +1,5 @@
 """Script to download GLASS."""
+
 import logging
 from datetime import datetime
 
@@ -7,12 +8,20 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
+):
     """Download dataset.
 
     Parameters
     ----------
+    original_data_dir : Path
+        Directory where original data will be stored.
     config : dict
         ESMValTool's user configuration
     dataset : str
@@ -27,7 +36,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -35,22 +44,22 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if start_date is None:
         start_date = datetime(1981, 1, 1)
     if end_date is None:
-        end_date = datetime(2021, 12, 31)
+        end_date = datetime(2024, 12, 31)
     start_year = start_date.year
     end_year = end_date.year
 
-    root = 'http://www.glass.umd.edu/'
+    root = "https://glass.hku.hk/archive/"
     dirs = {
         "LAI/AVHRR/{year}/": (1981, 2018),
-        "GPP/AVHRR/{year}/": (1982, 2018),
+        "GPP/AVHRR/0.5D/GLASS_GPP_0.5D_V40/{year}/": (1982, 2018),
     }
     for year in range(start_year, end_year + 1):
         logger.info("Started download for year %i", year)
-        for (dir, years) in dirs.items():
+        for dir, years in dirs.items():
             # Skip variable if years are not supported
             if not (years[0] <= year <= years[1]):
                 continue
             server_path = root + dir.format(year=year)
             downloader.download_folder(
-                server_path, wget_options=['-np', '-A', '*.hdf,*.hdf.xml']
+                server_path, wget_options=["-np", "-A", "*.hdf,*.hdf.xml"]
             )
