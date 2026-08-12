@@ -1,4 +1,4 @@
-.. :orphan:  # uncomment before merging!
+:orphan:
 
 .. How to use this template
 ..

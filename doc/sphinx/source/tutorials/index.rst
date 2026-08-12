@@ -21,8 +21,13 @@ While these are tailored for ACCESS users, they are still very informative.
 .. and a filename is added
 .. (test by replacing '<add filename here>' with 'template').
 
+
+ESMValTool Tutorial
+-------------------
+
 .. toctree::
    :maxdepth: 1
-   :caption: ESMValTool Tutorial
+   :caption: Basic episodes
 
-   epsiode_0
+   episode_0
+.. <add filename here>

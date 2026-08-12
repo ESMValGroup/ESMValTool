@@ -1,4 +1,4 @@
-.. _title_of_the_tutorial:
+.. _epsiode_0:
 
 Introduction
 =====================
@@ -39,8 +39,7 @@ This tutorial is a first introduction to ESMValTool. Before diving into the
 technical steps, let’s talk about what ESMValTool is all about.
 
 .. admonition:: What is ESMValTool?
-   :class: note
-   :icon: pencil
+   :class: admonition-todo
 
    What do you already know about or expect from ESMValTool?
 
@@ -51,9 +50,9 @@ technical steps, let’s talk about what ESMValTool is all about.
       ESMValTool is many things, but in this tutorial we will focus on the
       following traits:
 
-      :check: **A tool to analyse climate data**
-      :check: **A collection of diagnostics for reproducible climate science**
-      :check: **A community effort**
+      * **A tool to analyse climate data**
+      * **A collection of diagnostics for reproducible climate science**
+      * **A community effort**
 
 A tool to analyse climate data
 ------------------------------
@@ -65,10 +64,10 @@ The central component of ESMValTool that we will see in this tutorial is the
 **recipe**. Any ESMValTool recipe is basically a set of instructions to
 reproduce a certain result. The basic structure of a recipe is as follows:
 
-   * Documentation with relevant (citation) information
-   * Datasets that should be analysed
-   * Preprocessor steps that must be applied
-   * Diagnostic scripts performing more specific evaluation steps
+* **Documentation** with relevant (citation) information
+* **Datasets** that should be analysed
+* **Preprocessor** steps that must be applied
+* **Diagnostic** scripts performing more specific evaluation steps
 
 An example recipe could look like this:
 
@@ -99,8 +98,7 @@ An example recipe could look like this:
       scripts: hockeystick.py
 
 .. admonition:: Understanding the different sections of the recipe
-   :class: note
-   :icon: pencil
+   :class: admonition-todo
 
    Try to figure out the meaning of the different dataset keys. Hint: they can
    be found in the documentation of ESMValTool.
@@ -109,8 +107,10 @@ An example recipe could look like this:
       :color: secondary
       :icon: eye
 
-      The keys are explained in the ESMValTool documentation, in the
-      **Recipe** section, under :ref:`recipe-section-datasets`.
+      The keys are explained in the ESMValCore documentation, in **The
+      recipe format** section under
+      `Overview <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/overview.html>`_.
+
 
 A collection of diagnostics for reproducible climate science
 ------------------------------------------------------------
@@ -120,11 +120,11 @@ diagnostic scripts. This makes it possible to easily reproduce important
 results.
 
 .. admonition:: Explore the available recipes
-   :class: note
-   :icon: pencil
+   :class: admonition-todo
 
-   Go to the :doc:'/' and explore the **Recipes** section in the sidebar.
-   Which recipe(s) would you like to try?
+   Go to the `ESMValTool documentation <https://docs.esmvaltool.org/en/latest/>`_
+   and explore the **Recipes** section in the sidebar. Which recipe(s) would
+   you like to try?
 
 A community effort
 ------------------
@@ -135,10 +135,9 @@ contribute. Many of the interactions take place on GitHub. Here, we briefly
 introduce you to some of the most important pages.
 
 .. admonition:: Meet the ESMValGroup
-   :class: note
-   :icon: pencil
+   :class: admonition-todo
 
-   Go to [github.com/ESMValGroup](https://github.com/ESMValGroup). This is the
+   Go to https://github.com/ESMValGroup. This is the
    GitHub page of our 'organization'. Have a look around. How many
    collaborators are there? Do you know any of them?
 
@@ -148,12 +147,11 @@ introduce you to some of the most important pages.
    have contributed to this tutorial?
 
 .. admonition:: Issues and pull requests
-   :class: note
-   :icon: pencil
+   :class: admonition-todo
 
-   Go back to the repository pages of [ESMValTool](https://github.com/
-   ESMValGroup/ESMValTool) or [ESMValCore](https://github.com/ESMValGroup/
-   ESMValCore). There are tabs for ‘issues’ and ‘pull requests’. You can use
+   Go back to the repository pages of `ESMValTool <https://github.com/
+   ESMValGroup/ESMValTool>`_ or `ESMValCore <https://github.com/ESMValGroup/
+   ESMValCore>`_. There are tabs for ‘issues’ and ‘pull requests’. You can use
    the labels to navigate them a bit more. How many open issues are about
    enhancements of ESMValTool? And how many bugs have been fixed in
    ESMValCore? There is also an ‘insights’ tab, where you can see a summary
