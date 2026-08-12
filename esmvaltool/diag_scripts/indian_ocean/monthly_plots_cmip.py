@@ -149,11 +149,13 @@ def main(cfg):
     """Plot monthly climatologies for multiple datasets and observations."""
     input_data = cfg['input_data'].values()
     grouped_data = group_metadata(input_data, 'dataset')
-    ceio_wind_monthly, east_sst_monthly, west_sst_monthly = {}, {}, {}
+    ceio_wind_monthly, east_sst_monthly, west_sst_monthly, east_pr_monthly, west_pr_monthly = {}, {}, {}, {}, {}
     for group_name, group_md in grouped_data.items():
         load_and_update_dict(group_md, 'ceio_wind_monthly', ceio_wind_monthly)
         load_and_update_dict(group_md, 'east_sst_monthly', east_sst_monthly)
         load_and_update_dict(group_md, 'west_sst_monthly', west_sst_monthly)
+        load_and_update_dict(group_md, 'east_pr_monthly', east_pr_monthly)
+        load_and_update_dict(group_md, 'west_pr_monthly', west_pr_monthly)
         
     # Plot results for all datasets
     plot_ts(
@@ -177,6 +179,20 @@ def main(cfg):
         'SST / $^\\circ$C',
         'west_sst_monthly',
     )
+    plot_ts(
+        cfg,
+        east_pr_monthly,
+        'Monthly precipitation in the EEIO',
+        'Precipitation / mm day$^{-1}$',
+        'east_pr_monthly',
+    )
+    plot_ts(
+        cfg,
+        west_pr_monthly,
+        'Monthly precipitation in the WEIO',
+        'Precipitation / mm day$^{-1}$',
+        'west_pr_monthly',
+    )   
 
 
 if __name__ == '__main__':

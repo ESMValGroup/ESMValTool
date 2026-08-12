@@ -181,6 +181,38 @@ preprocessors:
       period: month
     convert_units:
       units: celsius  
+  west_pole_monthly_atm:
+    extract_region:
+      start_longitude: 50
+      end_longitude: 70
+      start_latitude: -10
+      end_latitude: 10
+    extract_levels:     ## Can't use uas as no matching obs for this variable
+      levels: [100000.]
+      scheme: linear
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+    convert_units:
+      units: mm day-1
+  east_pole_monthly_atm:
+    extract_region:
+      start_longitude: 90
+      end_longitude: 110
+      start_latitude: -10
+      end_latitude: 0
+    extract_levels:     ## Can't use uas as no matching obs for this variable
+      levels: [100000.]
+      scheme: linear
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+    convert_units:
+      units: mm day-1
   east_pole_anomalies_son_ts:
     extract_region:
       start_longitude: 90
@@ -788,7 +820,34 @@ diagnostics:
           - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gn}
-
+      east_pr_monthly:
+        short_name: pr
+        mip: Amon
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        preprocessor: east_pole_monthly_atm
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, mip: Amon, start_year: 1960, end_year: 2010, type: reanaly, version: 1, tier: 2}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
+      west_pr_monthly:
+        short_name: pr  
+        mip: Amon
+        supplementary_variables:
+        - short_name: areacella
+          skip: true
+        preprocessor: west_pole_monthly_atm
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, mip: Amon, start_year: 1960, end_year: 2010, type: reanaly, version: 1, tier: 2}
+          - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
+          - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1960, end_year: 2010, grid: gr}
     scripts: 
       monthly_ts_script:
         script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/monthly_plots_cmip.py
