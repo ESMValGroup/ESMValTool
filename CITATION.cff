@@ -452,6 +452,11 @@ authors:
     affiliation: "Met Office, UK"
     family-names: Ellis
     given-names: Hannah
+  -
+    affiliation: "DLR, Germany"
+    family-names: McQuaid
+    given-names: Aoife
+    orcid: "https://orcid.org/0009-0007-8644-5500"
 
 
 cff-version: 1.2.0
