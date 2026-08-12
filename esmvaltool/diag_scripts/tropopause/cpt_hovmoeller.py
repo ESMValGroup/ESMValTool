@@ -39,12 +39,12 @@ import calendar
 import logging
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING, NamedTuple
 
 import iris
 import iris.coord_categorisation
 import matplotlib.pyplot as plt
 import numpy as np
-from iris.cube import Cube
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
@@ -53,7 +53,13 @@ from esmvaltool.diag_scripts.shared import (
     save_figure,
 )
 
+if TYPE_CHECKING:
+    from iris.cube import Cube
+
 logger = logging.getLogger(Path(__file__).stem)
+
+JANUARY = 1
+JULY = 7
 
 
 def _safe_name(text: str) -> str:
@@ -149,7 +155,7 @@ def _select_at_cpt(
     invalid = np.all(np.isinf(ta_masked), axis=ta_z_dim)
     cpt_idx = np.argmin(ta_masked, axis=ta_z_dim)
     target_z_dim = target_cube.coord_dims(
-        _get_pressure_coord(target_cube).name()
+        _get_pressure_coord(target_cube).name(),
     )[0]
     expanded_idx = np.expand_dims(cpt_idx, axis=target_z_dim)
     selected = np.squeeze(
@@ -273,13 +279,19 @@ def _finite_levels(data: np.ndarray, n_levels: int) -> np.ndarray:
     return np.linspace(vmin, vmax, n_levels)
 
 
+class CptCubes(NamedTuple):
+    """Bundle of CPT cubes for a single view (longitude- or latitude-resolved)."""
+
+    p: Cube
+    t: Cube
+    q: Cube
+    rhi: Cube
+
+
 def _plot_hovmoeller_set(
     cfg: dict,
     dataset_label: str,
-    cpt_p_cube: Cube,
-    cpt_t_cube: Cube,
-    cpt_q_cube: Cube,
-    cpt_rhi_cube: Cube,
+    cubes: CptCubes,
     ancestors: list[str],
     *,
     axis: str,
@@ -291,14 +303,14 @@ def _plot_hovmoeller_set(
     output PNG is a complete, self-contained plot rather than a subplot.
 
     ``axis`` selects the plotted view: ``"X"`` for time-vs-longitude
-    (``cpt_*_cube`` must already be longitude-resolved, i.e. reduced over
-    latitude), or ``"Y"`` for time-vs-latitude (``cpt_*_cube`` must already
+    (``cubes`` must already be longitude-resolved, i.e. reduced over
+    latitude), or ``"Y"`` for time-vs-latitude (``cubes`` must already
     be latitude-resolved, i.e. reduced over longitude).
     """
-    cpt_p = _as_time_axis(cpt_p_cube, axis)
-    cpt_t = _as_time_axis(cpt_t_cube, axis)
-    cpt_q = _as_time_axis(cpt_q_cube, axis)
-    cpt_rhi = _as_time_axis(cpt_rhi_cube, axis)
+    cpt_p = _as_time_axis(cubes.p, axis)
+    cpt_t = _as_time_axis(cubes.t, axis)
+    cpt_q = _as_time_axis(cubes.q, axis)
+    cpt_rhi = _as_time_axis(cubes.rhi, axis)
 
     coord = cpt_p.coord(axis=axis)
     coord_points = coord.points
@@ -311,7 +323,7 @@ def _plot_hovmoeller_set(
     year = cpt_p.coord("year").points.astype(int)
     month = cpt_p.coord("month_number").points.astype(int)
 
-    y_ticks = np.where((month == 1) | (month == 7))[0]
+    y_ticks = np.where((month == JANUARY) | (month == JULY))[0]
     if y_ticks.size == 0:
         y_ticks = np.arange(0, len(y), 8)
 
@@ -393,7 +405,145 @@ def _dataset_label(group_key: str, group_items: list[dict]) -> str:
     return str(group_items[0].get("dataset", "dataset"))
 
 
+def _process_group(
+    cfg: dict,
+    group_key: str,
+    group_items: list[dict],
+) -> None:
+    """Compute CPT variables for one group of datasets, save data, and plot."""
+    label = _dataset_label(group_key, group_items)
+    logger.info("Processing %s", label)
+    ta_attrs = _get_variable_attrs(group_items, cfg["temperature_var"])
+    hus_attrs = _get_variable_attrs(group_items, cfg["humidity_var"])
+    zg_attrs = None
+    try:
+        zg_attrs = _get_variable_attrs(
+            group_items,
+            cfg["geopotential_height_var"],
+        )
+    except ValueError:
+        logger.info(
+            "Optional geopotential height variable '%s' not found for %s",
+            cfg["geopotential_height_var"],
+            label,
+        )
+
+    ta_cube = iris.load_cube(ta_attrs["filename"])
+    hus_cube = iris.load_cube(hus_attrs["filename"])
+    p_bounds_hpa = tuple(cfg["pressure_bounds_hpa"])
+    lat_bounds = tuple(cfg["tropical_lat_bounds"])
+
+    cpt_t_data, cpt_p_hpa = _select_at_cpt(ta_cube, ta_cube, p_bounds_hpa)
+    cpt_q_data, _ = _select_at_cpt(ta_cube, hus_cube, p_bounds_hpa)
+
+    p_coord_name = _get_pressure_coord(ta_cube).name()
+    cpt_t = _build_3d_cube_from_level_selection(
+        ta_cube,
+        p_coord_name,
+        cpt_t_data,
+        var_name="cpt_ta",
+        long_name="Cold point tropopause temperature",
+        units=str(ta_cube.units),
+    )
+    cpt_p = _build_3d_cube_from_level_selection(
+        ta_cube,
+        p_coord_name,
+        cpt_p_hpa,
+        var_name="cpt_p",
+        long_name="Cold point tropopause pressure",
+        units="hPa",
+    )
+    cpt_q = _build_3d_cube_from_level_selection(
+        hus_cube,
+        _get_pressure_coord(hus_cube).name(),
+        cpt_q_data,
+        var_name="cpt_hus",
+        long_name="Cold point tropopause specific humidity",
+        units=str(hus_cube.units),
+    )
+    cpt_rhi_data = _compute_rhi_percent(cpt_q_data, cpt_t_data, cpt_p_hpa)
+    cpt_rhi = _build_3d_cube_from_level_selection(
+        ta_cube,
+        p_coord_name,
+        cpt_rhi_data,
+        var_name="cpt_rhi",
+        long_name="Cold point tropopause relative humidity over ice",
+        units="%",
+    )
+
+    cpt_z_monthly = None
+    if zg_attrs is not None:
+        zg_cube = iris.load_cube(zg_attrs["filename"])
+        cpt_z_data, _ = _select_at_cpt(ta_cube, zg_cube, p_bounds_hpa)
+        cpt_z = _build_3d_cube_from_level_selection(
+            zg_cube,
+            _get_pressure_coord(zg_cube).name(),
+            cpt_z_data,
+            var_name="cpt_zg",
+            long_name="Cold point tropopause geopotential height",
+            units=str(zg_cube.units),
+        )
+        cpt_z_monthly = _monthly_tropical_mean(cpt_z, lat_bounds)
+
+    cpt_p_monthly_lon = _monthly_tropical_mean(cpt_p, lat_bounds)
+    cpt_t_monthly_lon = _monthly_tropical_mean(cpt_t, lat_bounds)
+    cpt_q_monthly_lon = _monthly_tropical_mean(cpt_q, lat_bounds)
+    cpt_rhi_monthly_lon = _monthly_tropical_mean(cpt_rhi, lat_bounds)
+
+    cpt_p_monthly_lat = _monthly_tropical_mean_lat(cpt_p, lat_bounds)
+    cpt_t_monthly_lat = _monthly_tropical_mean_lat(cpt_t, lat_bounds)
+    cpt_q_monthly_lat = _monthly_tropical_mean_lat(cpt_q, lat_bounds)
+    cpt_rhi_monthly_lat = _monthly_tropical_mean_lat(cpt_rhi, lat_bounds)
+
+    ancestors = [ta_attrs["filename"], hus_attrs["filename"]]
+    if zg_attrs is not None:
+        ancestors.append(zg_attrs["filename"])
+
+    base = f"{cfg['plot_filename']}_{_safe_name(label)}"
+    provenance = _get_provenance(
+        "Monthly tropical CPT diagnostics at longitude-time resolution.",
+        ancestors,
+    )
+    save_data(f"{base}_pressure", provenance, cfg, cpt_p_monthly_lon)
+    save_data(f"{base}_temperature", provenance, cfg, cpt_t_monthly_lon)
+    save_data(
+        f"{base}_specific_humidity",
+        provenance,
+        cfg,
+        cpt_q_monthly_lon,
+    )
+    save_data(f"{base}_rhi", provenance, cfg, cpt_rhi_monthly_lon)
+    if cpt_z_monthly is not None:
+        save_data(f"{base}_height", provenance, cfg, cpt_z_monthly)
+
+    _plot_hovmoeller_set(
+        cfg,
+        label,
+        CptCubes(
+            cpt_p_monthly_lon,
+            cpt_t_monthly_lon,
+            cpt_q_monthly_lon,
+            cpt_rhi_monthly_lon,
+        ),
+        ancestors,
+        axis="X",
+    )
+    _plot_hovmoeller_set(
+        cfg,
+        label,
+        CptCubes(
+            cpt_p_monthly_lat,
+            cpt_t_monthly_lat,
+            cpt_q_monthly_lat,
+            cpt_rhi_monthly_lat,
+        ),
+        ancestors,
+        axis="Y",
+    )
+
+
 def main(cfg: dict) -> None:
+    """Run the tropical CPT Hovmoeller diagnostic."""
     cfg.setdefault("temperature_var", "ta")
     cfg.setdefault("humidity_var", "hus")
     cfg.setdefault("geopotential_height_var", "zg")
@@ -406,134 +556,13 @@ def main(cfg: dict) -> None:
 
     input_data = list(cfg.get("input_data", {}).values())
     if not input_data:
-        raise ValueError(
-            "Provide preprocessed ESMValTool inputs",
-        )
+        msg = "Provide preprocessed ESMValTool inputs"
+        raise ValueError(msg)
 
     grouped = group_metadata(input_data, cfg["group_by"], sort="short_name")
 
     for group_key, group_items in grouped.items():
-        label = _dataset_label(group_key, group_items)
-        logger.info("Processing %s", label)
-        ta_attrs = _get_variable_attrs(group_items, cfg["temperature_var"])
-        hus_attrs = _get_variable_attrs(group_items, cfg["humidity_var"])
-        zg_attrs = None
-        try:
-            zg_attrs = _get_variable_attrs(
-                group_items, cfg["geopotential_height_var"]
-            )
-        except ValueError:
-            logger.info(
-                "Optional geopotential height variable '%s' not found for %s",
-                cfg["geopotential_height_var"],
-                label,
-            )
-
-        ta_cube = iris.load_cube(ta_attrs["filename"])
-        hus_cube = iris.load_cube(hus_attrs["filename"])
-        p_bounds_hpa = tuple(cfg["pressure_bounds_hpa"])
-        lat_bounds = tuple(cfg["tropical_lat_bounds"])
-
-        cpt_t_data, cpt_p_hpa = _select_at_cpt(ta_cube, ta_cube, p_bounds_hpa)
-        cpt_q_data, _ = _select_at_cpt(ta_cube, hus_cube, p_bounds_hpa)
-
-        p_coord_name = _get_pressure_coord(ta_cube).name()
-        cpt_t = _build_3d_cube_from_level_selection(
-            ta_cube,
-            p_coord_name,
-            cpt_t_data,
-            var_name="cpt_ta",
-            long_name="Cold point tropopause temperature",
-            units=str(ta_cube.units),
-        )
-        cpt_p = _build_3d_cube_from_level_selection(
-            ta_cube,
-            p_coord_name,
-            cpt_p_hpa,
-            var_name="cpt_p",
-            long_name="Cold point tropopause pressure",
-            units="hPa",
-        )
-        cpt_q = _build_3d_cube_from_level_selection(
-            hus_cube,
-            _get_pressure_coord(hus_cube).name(),
-            cpt_q_data,
-            var_name="cpt_hus",
-            long_name="Cold point tropopause specific humidity",
-            units=str(hus_cube.units),
-        )
-        cpt_rhi_data = _compute_rhi_percent(cpt_q_data, cpt_t_data, cpt_p_hpa)
-        cpt_rhi = _build_3d_cube_from_level_selection(
-            ta_cube,
-            p_coord_name,
-            cpt_rhi_data,
-            var_name="cpt_rhi",
-            long_name="Cold point tropopause relative humidity over ice",
-            units="%",
-        )
-
-        cpt_z_monthly = None
-        if zg_attrs is not None:
-            zg_cube = iris.load_cube(zg_attrs["filename"])
-            cpt_z_data, _ = _select_at_cpt(ta_cube, zg_cube, p_bounds_hpa)
-            cpt_z = _build_3d_cube_from_level_selection(
-                zg_cube,
-                _get_pressure_coord(zg_cube).name(),
-                cpt_z_data,
-                var_name="cpt_zg",
-                long_name="Cold point tropopause geopotential height",
-                units=str(zg_cube.units),
-            )
-            cpt_z_monthly = _monthly_tropical_mean(cpt_z, lat_bounds)
-
-        cpt_p_monthly_lon = _monthly_tropical_mean(cpt_p, lat_bounds)
-        cpt_t_monthly_lon = _monthly_tropical_mean(cpt_t, lat_bounds)
-        cpt_q_monthly_lon = _monthly_tropical_mean(cpt_q, lat_bounds)
-        cpt_rhi_monthly_lon = _monthly_tropical_mean(cpt_rhi, lat_bounds)
-
-        cpt_p_monthly_lat = _monthly_tropical_mean_lat(cpt_p, lat_bounds)
-        cpt_t_monthly_lat = _monthly_tropical_mean_lat(cpt_t, lat_bounds)
-        cpt_q_monthly_lat = _monthly_tropical_mean_lat(cpt_q, lat_bounds)
-        cpt_rhi_monthly_lat = _monthly_tropical_mean_lat(cpt_rhi, lat_bounds)
-
-        ancestors = [ta_attrs["filename"], hus_attrs["filename"]]
-        if zg_attrs is not None:
-            ancestors.append(zg_attrs["filename"])
-
-        base = f"{cfg['plot_filename']}_{_safe_name(label)}"
-        provenance = _get_provenance(
-            "Monthly tropical CPT diagnostics at longitude-time resolution.",
-            ancestors,
-        )
-        save_data(f"{base}_pressure", provenance, cfg, cpt_p_monthly_lon)
-        save_data(f"{base}_temperature", provenance, cfg, cpt_t_monthly_lon)
-        save_data(
-            f"{base}_specific_humidity", provenance, cfg, cpt_q_monthly_lon
-        )
-        save_data(f"{base}_rhi", provenance, cfg, cpt_rhi_monthly_lon)
-        if cpt_z_monthly is not None:
-            save_data(f"{base}_height", provenance, cfg, cpt_z_monthly)
-
-        _plot_hovmoeller_set(
-            cfg,
-            label,
-            cpt_p_monthly_lon,
-            cpt_t_monthly_lon,
-            cpt_q_monthly_lon,
-            cpt_rhi_monthly_lon,
-            ancestors,
-            axis="X",
-        )
-        _plot_hovmoeller_set(
-            cfg,
-            label,
-            cpt_p_monthly_lat,
-            cpt_t_monthly_lat,
-            cpt_q_monthly_lat,
-            cpt_rhi_monthly_lat,
-            ancestors,
-            axis="Y",
-        )
+        _process_group(cfg, group_key, group_items)
 
 
 if __name__ == "__main__":
