@@ -13,23 +13,14 @@ documentation:
 datasets:
   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
-
 preprocessors:
 
   temperature_preproc:
-    ##In the future extract europe or similar with:
-    #extract_region:
-    #  start_latitude: -30
-    #  end_latitude: 30
-    #  start_longitude: 0
-    #  end_longitude: 360
     convert_units:
       units: degC
     local_solar_time:
     mask_landsea:
       mask_out: sea
-
-
 
   precipitation_preproc:
     custom_order: true
@@ -38,7 +29,6 @@ preprocessors:
       mask_out: sea
     convert_units:
       units: mm day-1
-
 
   snow_preproc:
     custom_order: true
@@ -51,10 +41,6 @@ preprocessors:
     convert_units:
       units: mm
 
-
-
-
-
   radiation_preproc_timeseries: &radiation_preproc_config
     area_statistics:
       operator: mean
@@ -65,7 +51,6 @@ preprocessors:
     <<: *radiation_preproc_config
     area_statistics:
       operator: min
-
 
   radiation_preproc_timeseries_max:
     <<: *radiation_preproc_config
@@ -92,17 +77,11 @@ preprocessors:
     area_statistics:
       operator: min
 
-
   zostoga_preproc_timeseries:
     annual_statistics:
       operator: mean
     convert_units:
       units: mm
-
-
-
-
-
 
 diagnostics:
 
@@ -119,7 +98,6 @@ diagnostics:
       diag_number_of_exceeding_days: &exceeding_day_config
         script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
         options:
           threshold_conversion:
@@ -129,7 +107,6 @@ diagnostics:
             operators: [max, mean, min]
         plots:
           timeseries:
-
 
   plot_days_tmin_0:
     additional_datasets:
@@ -150,7 +127,6 @@ diagnostics:
               threshold: 0
               operators: [max, mean, min]
 
-
   plot_days_prmaxthreshold1:
     additional_datasets:
       - {dataset: ERA5, project: OBS6, short_name: pr, type: reanaly, tier: 3, version: 1,  reference_for_monitor_diags: true}
@@ -167,11 +143,10 @@ diagnostics:
           threshold_conversion:
             inverted: false
             accumulated: false
-            threshold: 1 #1,10
+            threshold: 1
             operators: [max, mean, min]
         plots:
           timeseries:
-
 
   plot_days_prmaxthreshold10:
     additional_datasets:
@@ -191,7 +166,6 @@ diagnostics:
               accumulated: false
               threshold: 10
               operators: [max, mean, min]
-
 
   plot_snwe_10:
     additional_datasets:
@@ -226,13 +200,11 @@ diagnostics:
       thermosteric_sealevel_mean:
         script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: dataset
         options:
           take_derivative:
         plots:
           timeseries:
-
 
   timeseries_sst:
     additional_datasets:
@@ -257,11 +229,9 @@ diagnostics:
       plot: &timeseries_config
         script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{mip}'
         facet_used_for_labels: project
         plots:
           timeseries:
-
 
   timeseries_mld:
     additional_datasets:

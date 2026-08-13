@@ -38,7 +38,11 @@ The most relevant configuration options include:
 
 *Optional settings*
 
-* options: additional pre-processing options that are applied (threshold_conversion: It is required to add the argument 'threshold' with the threshold that should be exceeded with this option, take_derivative)
+* options: additional pre-processing options that are applied. Available are:
+
+   * threshold_conversion: Option to count the number of days on which a variable exceeds a certain threshold value. Requires the argument 'threshold' with the threshold that should be exceeded within this option. Allows additionally the argument 'inverted' to count the number of days where the variable attains a value below the given threshold and the argument 'accumulated' to correctly count the number of days if the given dataset is not daily and the given variable is accumulating over time.
+
+   * take_derivative: Option to replace the given dataset by the current rate of change of the given data at each time step.
 
 
 Variables

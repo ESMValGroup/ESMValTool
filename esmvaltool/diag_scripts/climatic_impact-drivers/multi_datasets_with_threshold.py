@@ -324,7 +324,7 @@ plots: dict
     dictionaries used as options for the corresponding plot.
 plot_filename: str, optional
     Filename pattern for the plots. By default, uses
-    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'``.
+    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'`` or ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_threshold_{threshold}'`` if a threshold exsists.
     All tags (i.e., the entries in curly brackets, e.g., ``'{dataset}'``,
     are replaced with the corresponding tags).
 plot_folder: str, optional
@@ -460,6 +460,14 @@ class MultiDatasetsThreshold(MultiDatasets):
             for key, val in default_settings_opt.items():
                 self.options[options_type].setdefault(key, val)
 
+        if "threshold_conversion" in self.options:
+            threshold = str(self.options["threshold_conversion"]["threshold"])
+            self.plot_filename = config.get(
+                "plot_filename",
+                "{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_threshold_"
+                + threshold,
+            )
+
         # Check given plot types and set default settings for them
         for plot_type, plot_options in self.plots.items():
             if plot_type not in self.plot_settings:
@@ -532,7 +540,9 @@ class MultiDatasetsThreshold(MultiDatasets):
         if not check_timeframe:
             msg = (
                 "Currently, support for not full year periods is not "
-                "implemented cause they could produce missleading results."
+                "implemented cause they could produce missleading results. "
+                f"The timeframe of the given input is {start_month}/{start_day} "
+                f"to {end_month}/{end_day} which is not a full year period."
             )
             raise ValueError(msg)
         return check_timeframe
@@ -623,6 +633,10 @@ class MultiDatasetsThreshold(MultiDatasets):
     ) -> str:
         """Get netCDF path."""
         basename = Path(plot_path).stem
+        if "threshold_conversion" in self.options:
+            basename += "_threshold_" + str(
+                self.options["threshold_conversion"]["threshold"]
+            )
         if option is not None:
             basename += "_spacial" + option
         if suffix is not None:
