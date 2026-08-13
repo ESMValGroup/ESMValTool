@@ -27,7 +27,7 @@ ESMValTool Tutorial
 
 .. toctree::
    :maxdepth: 1
+   :numbered:
    :caption: Basic episodes
 
-   episode_0
-.. <add filename here>
+   episode_1
