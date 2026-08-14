@@ -391,8 +391,7 @@ These are the detailed steps to take to make a release.
 #. ESMValTool release
 
    - Pin ESMValCore to the same version as ESMValTool in the ``pyproject.toml`` e.g. ``"ESMValCore" = ">=2.1.0"``
-      and on `conda-forge
-     <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__ e.g. ``esmvalcore 2.1.*`` in the recipe.
+     and on `conda-forge <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__ e.g. ``esmvalcore 2.1.*`` in the recipe.
      This way, we make sure that ESMValTool uses the ESMValCore version with which it has been tested.
      Make sure to comment again the release candidate channel once ESMValCore has been released.
 
