@@ -109,7 +109,7 @@ An example recipe could look like this:
 
       The keys are explained in the ESMValCore documentation, in **The
       recipe format** section under
-      `Overview <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/overview.html>`_.
+      :ref:`Overview <esmvalcore:recipe_overview>`.
 
 
 A collection of diagnostics for reproducible climate science
