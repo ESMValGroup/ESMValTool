@@ -395,6 +395,7 @@ These are the detailed steps to take to make a release.
      <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__ e.g. ``esmvalcore 2.1.*`` in the recipe.
      This way, we make sure that ESMValTool uses the ESMValCore version with which it has been tested.
      Make sure to comment again the release candidate channel once ESMValCore has been released.
+
    - Make the release by following :ref:`How to make a release`.
 
 
@@ -559,57 +560,68 @@ If possible, try to set the script dates to the date of the release
 you are managing.
 Make a pull request and get it merged into ``main``.
 
-4. Make the release on GitHub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Do a final check that all tests on CircleCI and GitHub Actions completed
-successfully.
-A tag is required on the ``main`` branch to inform
-`setuptools-scm <https://setuptools-scm.readthedocs.io/>`_ about the release,
-so that it increases the version number in ``main``.
-This can be done by creating a *first* release candidate and tag off ``main``:
-click the
-`releases tab <https://github.com/ESMValGroup/ESMValTool/releases>`__
-and create the new release.
-
-The release tag always starts with the letter ``v`` followed by the version
-number, e.g. ``v2.1.0``. Create a tag corresponding to the release candidate or final release, e.g.
-``v2.1.0rc1`` or ``v2.1.0``. You can add a link to the relevant changelog in the
-release notes.
-
-Tick the `This is a pre-release` box if working with a release candidate.
-
-All subsequent release candidates and the final release are created off the release branch.
-If not making an ESMValTool release candidate, you can tag the ``main`` branch and push to GitHub
-with these commands, before making the release branch at that point.
-
-.. code-block:: bash
-
-   git checkout main
-   git pull
-   git tag v2.1.0rc1
-   git push origin tag v2.1.0rc1
-   git checkout -b v2.1.x
-
-5. Create a release branch
+4. Create a release branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create a branch off the first release candidate tag and push it to GitHub.
-This step only needs to be performed once for every minor release. e.g.
-branch ``v2.1.x`` for the releases ``v2.1.0``, ``v2.1.1``, etc.
-For the ``v2.1`` release, the command to create the release branch would be:
-
-.. code-block:: bash
-
-   git checkout -b v2.1.x tags/v2.1.0rc1
-
-where ``v2.1.0rc1`` is the tag of the first release candidate.
+Create a branch off the ``main`` branch and push it to GitHub.
 
 Release branches must be named ``vX.Y.x`` where ``X`` is the major and ``Y`` is
 the minor version number of the release to ensure setuptools-scm_ provides the
 correct version number for the release.
 
-6. Create and upload the PyPI package
+Run any tests using the release branch. If there are any required bug fixes,
+make a PR to the ``main`` branch and get it merged, then cherry-pick the commit
+into the release branch.
+
+5. Make the release on GitHub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Do a final check that all tests on CircleCI and GitHub Actions completed
+successfully.
+
+Click the
+`releases tab <https://github.com/ESMValGroup/ESMValTool/releases>`__
+and create the final release from the release branch.
+
+The release tag always starts with the letter ``v`` followed by the version
+number, e.g. ``v2.1.0``. You can add a link to the relevant changelog in the
+release notes.
+
+6. Merge the release branch back into the main branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A tag is required on the ``main`` branch to inform
+`setuptools-scm <https://setuptools-scm.readthedocs.io/>`_ about the release,
+so that it increases the version number in ``main``.
+Unlike in a normal merge, we do not want to integrate any of the changes from
+the release branch into main. This is because all changes that should be in
+both branches, i.e. bug fixes, originate from main anyway.
+Merge release branch back into main with the
+`ours merge strategy <https://git-scm.com/docs/merge-strategies#Documentation/merge-strategies.txt-ours-1>`_:
+
+.. code-block:: bash
+
+   git checkout main
+   git pull --all
+   git merge -s ours origin/v2.1.x
+   git diff origin/main --name-status  # verify that no changes are pulled in (returns nothing, so fine)
+   git push
+
+This requires someone with admin permissions to temporarily disable the branch protection rules.
+
+.. note::
+
+   There may be some circumstances where you would prefer to make a release candidate
+   which can be shared with a small group of users to test. If this is the case, you
+   can create the release branch after the first release candidate. Create a *first*
+   release candidate and tag off ``main`` instead of the release branch and tick the
+   `This is a pre-release` box. All subsequent release candidates and the final release
+   are created off the release branch. This step 6 would then be skipped.
+
+   This would be the same process as the :ref:`ESMValCore release <esmvalcore:how-to-make-a-release>`.
+
+
+7. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
