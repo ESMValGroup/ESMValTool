@@ -454,10 +454,6 @@ authors:
     given-names: Hannah
   -
     affiliation: "DLR, Germany"
-    family-names: Caspers
-    given-names: Laura
-  -
-    affiliation: "DLR, Germany"
     family-names: Debeire
     given-names: Kevin
     orcid: "https://orcid.org/0000-0001-6006-8750"
@@ -466,6 +462,10 @@ authors:
     family-names: Ghosh
     given-names: Supriyo
     orcid: "https://orcid.org/0000-0003-0581-9907"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Caspers
+    given-names: Laura
 
 cff-version: 1.2.0
 date-released: 2026-07-28
