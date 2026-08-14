@@ -122,7 +122,7 @@ results.
 .. admonition:: Explore the available recipes
    :class: admonition-todo
 
-   Go to the `ESMValTool documentation <https://docs.esmvaltool.org/en/latest/>`_
+   Go to the :doc:`ESMValTool documentation </index>`
    and explore the **Recipes** section in the sidebar. Which recipe(s) would
    you like to try?
 
