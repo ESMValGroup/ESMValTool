@@ -629,7 +629,7 @@ class MultiDatasetsThreshold(MultiDatasets):
         basename = Path(plot_path).stem
         if "threshold_conversion" in self.options:
             basename += "_threshold_" + str(
-                self.options["threshold_conversion"]["threshold"]
+                self.options["threshold_conversion"]["threshold"],
             )
         if option is not None:
             basename += "_spacial" + option
