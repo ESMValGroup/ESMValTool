@@ -82,6 +82,8 @@ preprocessors:
       operator: mean
     convert_units:
       units: mm
+    anomalies:
+      period: full
 
 diagnostics:
 
@@ -190,7 +192,7 @@ diagnostics:
 
   # Data is already a global mean, thus no area statistics needed
   timeseries_zostoga:
-    description: Plot timeseries showing the Global Average Thermosteric Sea Level Change.
+    description: Plot timeseries showing the Global Average Thermosteric Sea Level anomaly compared to the average over the full period.
     variables:
       zostoga:
         timerange: 19950101/20141231
@@ -201,8 +203,6 @@ diagnostics:
         script: climatic_impact-drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         facet_used_for_labels: dataset
-        options:
-          take_derivative:
         plots:
           timeseries:
 

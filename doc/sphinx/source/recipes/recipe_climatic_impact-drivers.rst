@@ -21,7 +21,8 @@ Recipes are stored in `recipes/climatic_impact-drivers`
 
 Diagnostics are stored in `diag_scripts/climatic_impact-drivers`
 
-* multi_datasets_with_threshold.py: Monitoring diagnostic to optionally count days exceeding some threshold and plot multiple datasets on a map or timeseries.
+* multi_datasets_with_threshold.py: Monitoring diagnostic to optionally count
+days exceeding some threshold and plot multiple datasets on a map or timeseries.
 
 
 User settings in recipe
@@ -40,9 +41,13 @@ The most relevant configuration options include:
 
 * options: additional pre-processing options that are applied. Available are:
 
-   * threshold_conversion: Option to count the number of days on which a variable exceeds a certain threshold value. Requires the argument 'threshold' with the threshold that should be exceeded within this option. Allows additionally the argument 'inverted' to count the number of days where the variable attains a value below the given threshold and the argument 'accumulated' to correctly count the number of days if the given dataset is not daily and the given variable is accumulating over time.
-
-   * take_derivative: Option to replace the given dataset by the current rate of change of the given data at each time step.
+   * threshold_conversion: Option to count the number of days on which a
+   variable exceeds a certain threshold value. Requires the argument 'threshold'
+   with the threshold that should be exceeded within this option. Allows
+   additionally the argument 'inverted' to count the number of days where the
+   variable attains a value below the given threshold and the argument
+   'accumulated' to correctly count the number of days if the given dataset is
+   not daily and the given variable is accumulating over time.
 
 
 Variables
@@ -71,7 +76,9 @@ Observations and reformat scripts
 References
 ----------
 
-* Elling, M.T., Ruane, A.C., De Mel, M. et al. An impact-driven framework for climate model evaluation. Climatic Change 179, 65 (2026). https://doi.org/10.1007/s10584-026-04157-w
+* Elling, M.T., Ruane, A.C., De Mel, M. et al. An impact-driven framework for
+climate model evaluation. Climatic Change 179, 65 (2026).
+https://doi.org/10.1007/s10584-026-04157-w
 
 
 Example plots
@@ -89,4 +96,5 @@ Example plots
    :align:   center
    :width:   14cm
 
-   Global map of the average number of days per year on which the precipitation exceeds 10 mm.
+   Global map of the average number of days per year on which the precipitation
+   exceeds 10 mm.
