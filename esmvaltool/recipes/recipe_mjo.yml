@@ -2,7 +2,7 @@
 # recipe_mjo.yml
 ---
 documentation:
-  title: Wheeler-Kiladis wavenumber-frequency spectra 
+  title: Wheeler-Kiladis wavenumber-frequency spectra
 
   description:
      Computes the Wheeler-Kiladis (1999) wavenumber-frequency spectra of variables for the equatorial region.
@@ -14,10 +14,10 @@ documentation:
      {in/de}creasing values.
 
   authors:
-    - sellar_alistair
+    - xavier_prince
 
   maintainer:
-    - sellar_alistair
+    - xavier_prince
 
   projects:
     - ukesm
@@ -60,7 +60,7 @@ diagnostics:
     scripts:
       &main
       main:
-        script: mjo/mjo_diag.py
+        script: diag_scripts/mjo/mjo_diag.py
         reference_datasets: [ "ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3" ]
         regrid_dataset: ERA-Interim
         mip_name: CMIP

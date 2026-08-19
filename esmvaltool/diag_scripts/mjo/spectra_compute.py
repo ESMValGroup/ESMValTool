@@ -783,8 +783,17 @@ class WKSpectra:
             "f_crit": f_crit,
         }
 
-    def _compute_fft_windows(self, x_as, nlat, mlon, n_samp_win, n_samp_skip,
-                             n_day_tot, n_window, tim_taper):
+    def _compute_fft_windows(
+        self,
+        x_as,
+        nlat,
+        mlon,
+        n_samp_win,
+        n_samp_skip,
+        n_day_tot,
+        n_window,
+        tim_taper,
+    ):
         """Compute FFT for temporal windows over all latitudes.
 
         Parameters
@@ -1130,8 +1139,19 @@ class WKSpectra:
             }
             return {"asym": levels_asym, "sym": levels_sym}
 
-    def _plot_and_save_spectrum(self, spectrum_data, freq, wave, apzwn, afreq,
-                                 title, figname, forename, cube, symmetry):
+    def _plot_and_save_spectrum(
+        self,
+        spectrum_data,
+        freq,
+        wave,
+        apzwn,
+        afreq,
+        title,
+        figname,
+        forename,
+        cube,
+        symmetry,
+    ):
         """Plot and save spectrum with provenance record.
 
         Parameters
@@ -1158,7 +1178,11 @@ class WKSpectra:
             "asym" for anti-symmetric or "sym" for symmetric
         """
         levels = self._get_contour_levels_dict("raw")[self.varname]
-        plot_func = self.plot_anti_symmetric if symmetry == "asym" else self.plot_symmetric
+        plot_func = (
+            self.plot_anti_symmetric
+            if symmetry == "asym"
+            else self.plot_symmetric
+        )
         plot_func(
             spectrum_data,
             freq,
@@ -1182,7 +1206,7 @@ class WKSpectra:
                  This means that every planetary wavenumber will be represented.
          Note_2: Tapering in time is done to make the variable periodic.
 
-         The calculations are also only made for the latitudes between 
+         The calculations are also only made for the latitudes between
          '-lat_bound' and 'lat_bound'.
 
         **REFERENCES**
@@ -1218,8 +1242,12 @@ class WKSpectra:
 
         # Remove trend and annual cycle
         varmean = self.cube.collapsed("time", iris.analysis.MEAN)
-        self.cube.data = scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
-        self.cube = self.remove_annual_cycle(self.cube, f_crit, rmv_means=False)
+        self.cube.data = (
+            scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
+        )
+        self.cube = self.remove_annual_cycle(
+            self.cube, f_crit, rmv_means=False
+        )
         logging.info("n_day_tot = %s", n_day_tot)
 
         # Decompose into symmetric and asymmetric parts
@@ -1239,11 +1267,20 @@ class WKSpectra:
         # Compute FFT windows for all latitudes
         tim_taper = 0.1
         pee_as = self._compute_fft_windows(
-            x_as, nlat, mlon, n_samp_win, n_samp_skip, n_day_tot, n_window, tim_taper
+            x_as,
+            nlat,
+            mlon,
+            n_samp_win,
+            n_samp_skip,
+            n_day_tot,
+            n_window,
+            tim_taper,
         )
 
         # Aggregate power spectra over latitudes
-        psumanti, psumsym = self._aggregate_power_spectra(pee_as, nlat, freq, n_samp_win)
+        psumanti, psumsym = self._aggregate_power_spectra(
+            pee_as, nlat, freq, n_samp_win
+        )
 
         # Apply smoothing
         minwav4smth, maxwav4smth = -27, 27
@@ -1282,8 +1319,16 @@ class WKSpectra:
 
         # Plot and save raw spectra
         self._plot_and_save_spectrum_pair(
-            psumanti, psumsym, freq, wave, apzwn, afreq,
-            "Raw_Spec", psumanti_cube, psumsym_cube, levels_raw
+            psumanti,
+            psumsym,
+            freq,
+            wave,
+            apzwn,
+            afreq,
+            "Raw_Spec",
+            psumanti_cube,
+            psumsym_cube,
+            levels_raw,
         )
 
         # Save background spectrum
@@ -1303,12 +1348,31 @@ class WKSpectra:
         psumsym_nolog_cube = self.make_cube(psumsym_nolog, wave, freq)
 
         self._plot_and_save_spectrum_pair(
-            psumanti_nolog, psumsym_nolog, freq, wave, apzwn, afreq,
-            "Ratio_Spec", psumanti_nolog_cube, psumsym_nolog_cube, levels_ratio
+            psumanti_nolog,
+            psumsym_nolog,
+            freq,
+            wave,
+            apzwn,
+            afreq,
+            "Ratio_Spec",
+            psumanti_nolog_cube,
+            psumsym_nolog_cube,
+            levels_ratio,
         )
 
-    def _plot_and_save_spectrum_pair(self, psumanti, psumsym, freq, wave, apzwn,
-                                      afreq, spec_type, cube_asym, cube_sym, levels_dict):
+    def _plot_and_save_spectrum_pair(
+        self,
+        psumanti,
+        psumsym,
+        freq,
+        wave,
+        apzwn,
+        afreq,
+        spec_type,
+        cube_asym,
+        cube_sym,
+        levels_dict,
+    ):
         """Plot and save both anti-symmetric and symmetric spectra.
 
         Parameters
@@ -1335,16 +1399,20 @@ class WKSpectra:
             Contour levels by variable and symmetry
         """
         # Anti-symmetric
-        title_asym = (
-            f"{self.label} {self.varname} \n Anti-symmetric {spec_type} [15S-15N]"
-        )
+        title_asym = f"{self.label} {self.varname} \n Anti-symmetric {spec_type} [15S-15N]"
         forename_asym = f"{self.runid}_{self.varname}_{spec_type}_Asym"
         figname_asym = str(Path(self.plot_dir) / forename_asym)
         levels_asym = levels_dict.get("asym", levels_dict)[self.varname]
 
         self.plot_anti_symmetric(
-            psumanti, freq, wave, apzwn, afreq,
-            levels=levels_asym, title=title_asym, figname=figname_asym,
+            psumanti,
+            freq,
+            wave,
+            apzwn,
+            afreq,
+            levels=levels_asym,
+            title=title_asym,
+            figname=figname_asym,
         )
         caption_asym = f"{self.varname}_{spec_type}_Asym"
         provenance_dict = self.get_provenance_record(caption_asym)
@@ -1359,8 +1427,14 @@ class WKSpectra:
         levels_sym = levels_dict.get("sym", levels_dict)[self.varname]
 
         self.plot_symmetric(
-            psumsym, freq, wave, apzwn, afreq,
-            levels=levels_sym, title=title_sym, figname=figname_sym,
+            psumsym,
+            freq,
+            wave,
+            apzwn,
+            afreq,
+            levels=levels_sym,
+            title=title_sym,
+            figname=figname_sym,
         )
         caption_sym = f"{self.varname}_{spec_type}_Sym"
         provenance_dict = self.get_provenance_record(caption_sym)
