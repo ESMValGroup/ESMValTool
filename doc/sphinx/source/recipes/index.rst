@@ -142,6 +142,7 @@ Other
    :maxdepth: 1
 
    recipe_capacity_factor
+   recipe_climatic_impact-drivers
    recipe_cmorizers
    recipe_ensclus
    recipe_esacci_lst
