@@ -83,6 +83,9 @@ preprocessors:
       mask_out: glaciated
     mask_below_threshold:
       threshold: 0.1
+    climate_statistics:
+      operator: mean
+      period: full
 
   pp_tsl_2m:
     extract_region:
@@ -95,6 +98,9 @@ preprocessors:
     extract_levels:
       levels:  [2., ]
       scheme: linear_extrapolate
+    climate_statistics:
+      operator: mean
+      period: full
 
 
 diagnostics:
@@ -111,8 +117,9 @@ diagnostics:
         exp: historical
         preprocessor: pp_pfr
         additional_datasets:
-          - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v5.0NH, start_year: 1997, end_year: 2023}
+          - {dataset: ESACCI-PERMAFROST, project: OBS6, tier: 2, type: sat, version: v5.0NH, start_year: 1997, end_year: 2023}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MIROC5, ensemble: r1i1p1, project: CMIP5, end_year: 2004}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -122,6 +129,8 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: False
             plot_kwargs:
+              MIROC5:
+                color: red
               MIROC6:
                 color: C0
               ESACCI-PERMAFROST:
@@ -140,16 +149,34 @@ diagnostics:
         project: CMIP6
         exp: historical
         additional_datasets:
-          - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v5.0NH}
+          - {dataset: ESACCI-PERMAFROST, project: OBS6, tier: 2, type: sat, version: v5.0NH}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
     scripts:
       plot:
-        script: clouds/clouds.ncl
-        projection: PolarStereographic
-        timemean: annualclim
-        showdiff: false
-        region: [45, 90, 0, 360]
-        explicit_cn_levels: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+#        script: clouds/clouds.ncl
+#        projection: PolarStereographic
+#        timemean: annualclim
+#        showdiff: false
+#        region: [45, 90, 0, 360]
+#        explicit_cn_levels: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{exp}'
+        facet_used_for_labels: dataset
+        plots:
+          map:
+            common_cbar: true
+            show_stats: false
+            fontsize: 9
+            pyplot_kwargs:
+              suptitle: '{long_name}'
+            plot_kwargs:
+              default:
+                cmap: YlOrRd
+            projection: NorthPolarStereo
+            projection_kwargs:
+              central_longitude: 0
+            lat: [50, 60, 70, 80, 90]
 
   permafrost_tsl2m_model:
     title: maps of NH soil temperature in 2m depth
@@ -166,12 +193,24 @@ diagnostics:
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
     scripts:
       plot:
-        script: clouds/clouds.ncl
-        projection: PolarStereographic
-        timemean: annualclim
-        showdiff: false
-        region: [45, 90, 0, 360]
-        explicit_cn_levels: [240, 250, 260, 262, 264, 266, 268, 270, 271, 272, 273]
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{exp}'
+        facet_used_for_labels: dataset
+        plots:
+          map:
+            common_cbar: true
+            show_stats: false
+            fontsize: 9
+            pyplot_kwargs:
+              suptitle: '{long_name}'
+            plot_kwargs:
+              default:
+                cmap: YlOrRd
+            projection: NorthPolarStereo
+            projection_kwargs:
+              central_longitude: 0
+            lat: [50, 60, 70, 80, 90]
 
   permafrost_tsl2m_cci:
     title: maps of NH soil temperature in 2m depth
@@ -188,9 +227,21 @@ diagnostics:
           - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v5.0NH}
     scripts:
       plot:
-        script: clouds/clouds.ncl
-        projection: PolarStereographic
-        timemean: annualclim
-        showdiff: false
-        region: [45, 90, 0, 360]
-        explicit_cn_levels: [240, 250, 260, 262, 264, 266, 268, 270, 271, 272, 273]
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{exp}'
+        facet_used_for_labels: dataset
+        plots:
+          map:
+            common_cbar: true
+            show_stats: false
+            fontsize: 9
+            pyplot_kwargs:
+              suptitle: '{long_name}'
+            plot_kwargs:
+              default:
+                cmap: YlOrRd
+            projection: NorthPolarStereo
+            projection_kwargs:
+              central_longitude: 0
+            lat: [50, 60, 70, 80, 90]
