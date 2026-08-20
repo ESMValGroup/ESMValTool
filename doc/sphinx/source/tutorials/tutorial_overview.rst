@@ -68,13 +68,12 @@ Main things you need to know before starting this course
     * `Publications <https://esmvaltool.org/references/>`_
     * `ESMValTool Source code <https://github.com/ESMValGroup/ESMValTool>`_
     * `ESMValCore Source code <https://github.com/ESMValGroup/ESMValCore>`_
-    * **?** `ESMValTool Citation info
-      <https://tutorial.esmvaltool.org/about/index.html#citation>`_
+    * `ESMValTool Citation info <https://esmvaltool.org/references/>`_
 
 How to site the tutorial
 ------------------------
 
-**?** Please use citation information available at
+Please use citation information available at
 https://doi.org/10.5281/zenodo.3974591.
 
 Schedule
