@@ -175,7 +175,7 @@ Please skip this section if you are not going to use DKRZ and continue to the
 
 If you do not already have an account at the DKRZ, then `register
 <https://luv.dkrz.de/projects/newuser/>`_ as soon as possible. You could find a
-short introduction on how to get started at DKRZ `here
+short introduction on how to get started at DKRZ `in the documentation
 <https://docs.dkrz.de/doc/getting_started/index.html>`_.
 
 There is also a `user manual <https://docs.dkrz.de/doc/levante/index.html>`_
