@@ -1,7 +1,7 @@
 .. _tutorial_setup:
 
-ESMValTool Tutorial: Preparations for participating in the tutorial
-===================================================================
+Setup: Preparations for participating in the tutorial
+=====================================================
 
 This page includes some information on how to prepare for participating in this
 tutorial.
@@ -70,7 +70,7 @@ For more information see:
 * `CMIP5 <https://pcmdi.llnl.gov/mips/cmip5/index.html>`_ and
   `CMIP6 <https://pcmdi.llnl.gov/CMIP6/Guide/dataUsers.html>`_ data obey the
   `CF conventions <http://cfconventions.org/>`_. Available variables can be
-  found under the `CMIP5 data request
+  found under the `CMIP5 Data Request
   <https://pcmdi.llnl.gov/mips/cmip5/docs/standard_output.pdf?id=28>`_ and the
   `CMIP6 Data Request <http://clipc-services.ceda.ac.uk/dreq/index.html>`_.
 * List of all `CMIP named variables
