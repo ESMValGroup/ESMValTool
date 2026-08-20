@@ -44,7 +44,7 @@ preprocessors:
       period: day
 
     convert_units:
-      units: kg m-2 day-1
+      units: mm day-1
 
 
 diagnostics:
@@ -83,4 +83,9 @@ diagnostics:
         contour_levels: 21
         colormap: RdYlBu
         plot_title: MJO precipitation Hovmöller diagram
-        colorbar_label: Precipitation regression (kg m-2 day-1)
+        colorbar_label: Precipitation regression (mm day-1)
+
+        # Set to a number to fix the colorbar to [-vmax, vmax], e.g. to
+        # compare panels from different recipe runs on the same scale.
+        # Leave as null to estimate vmax from each dataset's own data.
+        vmax: null

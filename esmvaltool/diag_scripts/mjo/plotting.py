@@ -33,9 +33,11 @@ def plot_hovmoeller(
     longitude = longitude[order]
     regression = regression[:, order]
 
-    vmax = np.ma.max(np.ma.abs(regression))
-    if np.ma.is_masked(vmax) or not np.isfinite(vmax) or vmax == 0:
-        vmax = 1.0
+    vmax = cfg.get("vmax")
+    if vmax is None:
+        vmax = np.ma.max(np.ma.abs(regression))
+        if np.ma.is_masked(vmax) or not np.isfinite(vmax) or vmax == 0:
+            vmax = 1.0
 
     nlevels = int(cfg.get("contour_levels", 21))
     if nlevels < 3:

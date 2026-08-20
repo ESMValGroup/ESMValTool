@@ -60,6 +60,10 @@ plot_title: str, optional (default: 'MJO Hovmöller diagram')
 reference_longitudes: list of float
     Longitude sector (`[lon0, lon1]`) used to build the MJO reference
     index that the filtered field is regressed against.
+vmax: float, optional
+    Symmetric colorbar/contour limit (``-vmax`` to ``vmax``) for the
+    Hovmöller plot. If not given, it is estimated from the maximum
+    absolute value of the regression field.
 """
 
 import logging
