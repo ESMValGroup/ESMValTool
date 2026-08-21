@@ -29,9 +29,10 @@ jobs:
         python-version:
           - "3.12"
           - "3.13"
+          - "3.14"
     name: Install esmvaltool-python with Python ${{ matrix.python-version }} on ${{ matrix.os }}
     steps:
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+      - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39  # v3.2.1
         with:
           environment-name: esmvaltool-python
           create-args: >-
@@ -48,7 +49,7 @@ jobs:
     if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
     name: Install esmvaltool on Linux
     steps:
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+      - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39  # v3.2.1
         with:
           environment-name: esmvaltool
           create-args: esmvaltool

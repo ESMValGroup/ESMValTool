@@ -35,6 +35,9 @@ The ConFire model relies on a variety of observational datasets (see references)
 * ESA CCI Biomass
 * ISIMIP3a GSWP3-W5E5 dataset
 
+For the CMIP7 version of the recipe, the time period is chosen to overlap
+with reliable burned area observations, namely GFED5.
+
 Note: If custom ConFire run files are to be used for the diagnostic,
 they need to be present inside the auxiliary directory defined in the
 user configuration file `config_user.yml`.
@@ -60,22 +63,26 @@ User settings in recipe
 
    *Required settings for script*
 
-   * var_order: list of climate drivers in the order corresponding to the one
+   * `var_order`: list of climate drivers in the order corresponding to the one
      specified in the corresponding file from the confire_param directory.
 
    *Optional settings for script*
 
-   * confire_param: path to the directory containing the required files to run
+   * `confire_param`: path to the directory containing the required files to run
      the ConFire model or Zenodo URL to retrieve files from a Zenodo archive.
      If custom files are used, the corresponding directory needs to be present
      inside the auxiliary data directory defined inside the user configuration.
      This defaults to the original Zenodo archive otherwise.
-   * remove_vpd_files: Removing or not the computed vapor pressure deficit files.
+   * `remove_vpd_files`: Removing or not the computed vapor pressure deficit files.
      It will only apply if the vapor pressure deficit is part of var_order.
-     This defaults to False.
-   * remove_confire_files: Removing or not the files produced during the ConFire
+     This defaults to `False`.
+   * `remove_confire_files`: Removing or not the files produced during the ConFire
      model evaluation.
-     This defaults to False.
+     This defaults to `False`.
+   * `keep_original_time`: Keeping or not the time coordinate (origin, calendar)
+     from the input. If not, then it defaults to: unit
+     `"days since 1850-01-01 00:00:00"` and calendar `"proleptic_gregorian"`.
+     This defaults to `False`.
 
    *Required settings for variables*
 

@@ -22,6 +22,7 @@ from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     group_metadata,
     run_diagnostic,
+    save_data,
     save_figure,
     select_metadata,
 )
@@ -135,8 +136,9 @@ def sst_regressed(n34_cube):
 
         # Select the data for the current year and append it to n34_selected
         year_enso = iris.Constraint(
-            time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-            in enso_epoch,
+            time=lambda cell, enso_epoch=enso_epoch: (
+                cell.point.year in enso_epoch
+            ),
         )
         cube_2 = n34_cube.extract(year_enso)
         n34_selected.append(cube_2.data.data)
@@ -234,7 +236,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO lifecycle",
             dt_ls,
         )
-
+        # save - require months
         data_to_save.append(data_to_cube(obs, months, metric))
         data_to_save.append(data_to_cube(model, months, metric))
 
@@ -275,8 +277,6 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO seasonality",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(data_values[0], None, metric))
-        data_to_save.append(data_to_cube(data_values[1], None, metric))
 
     elif metric == "13asymmetry":
         model_skew = skew(input_pair[1][var_group[0]].data, axis=0)
@@ -291,8 +291,6 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO skewness",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(obs_skew, None, metric))
-        data_to_save.append(data_to_cube(model_skew, None, metric))
 
     elif metric == "14duration":
         model = sst_regressed(input_pair[1][var_group[0]])
@@ -313,15 +311,14 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO duration",
             dt_ls,
         )
-        data_to_save.append(data_to_cube(data_values[0], None, metric))
-        data_to_save.append(data_to_cube(data_values[1], None, metric))
+
     elif metric == "15diversity":
         for datas in input_pair:  # obs 0, mod 1
             events = enso_events(datas[var_group[0]])
             results_lon = diversity(datas[var_group[1]], events)
             results_lon["enso"] = results_lon["nino"] + results_lon["nina"]
             data_values.append(iqr(results_lon["enso"]))
-        # compute(obs, mod)
+
         val = compute(data_values[0], data_values[1])
         fig = plot_level1(
             data_values,
@@ -330,6 +327,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO diversity",
             dt_ls,
         )
+
+    if metric not in ["09pattern", "10lifecycle"]:
         data_to_save.append(data_to_cube(data_values[0], None, metric))
         data_to_save.append(data_to_cube(data_values[1], None, metric))
 
@@ -458,8 +457,25 @@ def group_obs_models(obs, models, metric, var_preproc, cfg):
                 figure=output[1],
                 dpi=300,
             )
+
+            # save data_cubes output[2]
+            save_plotdata(output[2], metric, [obs, attributes], cfg)
+
         # clear value,fig
         output = None
+
+
+def save_plotdata(plotdata, metric, pairs, cfg):
+    """Save both obs and model plotted data."""
+    for i, cube in enumerate(plotdata):
+        files = [attr["filename"] for attr in pairs[i]]
+        data_prov = get_provenance_record(metric, files)
+        datafile = [
+            pairs[i][0]["dataset"],
+            pairs[i][0]["short_name"],
+            metric,
+        ]
+        save_data("_".join(datafile), data_prov, cfg, cube)
 
 
 def get_provenance_record(metric, ancestor_files):
@@ -549,10 +565,20 @@ def main(cfg):
                 variable_group=var_prep,
                 project="OBS6",
             )
+            obs += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="obs4MIPs",
+            )
             models += select_metadata(
                 input_data,
                 variable_group=var_prep,
                 project="CMIP6",
+            )
+            models += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="CMIP7",
             )
 
         group_obs_models(obs, models, metric, var_preproc, cfg)

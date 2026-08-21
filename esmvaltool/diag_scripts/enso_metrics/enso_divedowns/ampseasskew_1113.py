@@ -347,10 +347,48 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         return fig2, fig3
 
 
-def get_provenance_record(caption, ancestor_files):
+def get_provenance_record(metric_level, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+    captions = {
+        "11amplitude_2": (
+            "Zonal structure of the standard deviation of SSTA in the "
+            "equatorial Pacific (averaged between 5°S and 5°N)"
+        ),
+        "11amplitude_3": (
+            "Spatial structure of the standard deviation of SSTA in the "
+            "equatorial Pacific"
+        ),
+        "12seasonality_2": (
+            "Seasonality level 2: Mean annual structure of the standard "
+            "deviation of SSTA in the central equatorial Pacific (Niño 3.4 "
+            "region average), illustrating the seasonal variability."
+        ),
+        "12seasonality_3": (
+            "Seasonality level 3: Spatio-mean annual structure of the "
+            "standard deviation of SSTA in the equatorial Pacific "
+            "(averaged between 5°S and 5°N)."
+        ),
+        "12seasonality_4": (
+            "Seasonality level 4: Zonal structure of the standard deviation "
+            "of SSTA in the equatorial Pacific (averaged between 5°S and 5°N)"
+            " during winter (red curves) and spring (blue curves)."
+        ),
+        "12seasonality_5": (
+            "Seasonality level 5: Spatial structure of the standard deviation"
+            " of SSTA in the equatorial Pacific during winter (NDJ) "
+            "and spring (MAM)."
+        ),
+        "13asymmetry_2": (
+            "Zonal structure of the skewness of SSTA in the equatorial "
+            "Pacific (averaged between 5°S and 5°N)."
+        ),
+        "13asymmetry_3": (
+            "Spatial structure of the skewness of SSTA in the equatorial "
+            "Pacific."
+        ),
+    }
     record = {
-        "caption": caption,
+        "caption": captions.get(metric_level),
         "statistics": ["anomaly"],
         "domains": ["eq"],
         "plot_types": ["line"],
@@ -398,10 +436,20 @@ def main(cfg):
                 variable_group=var_prep,
                 project="OBS6",
             )
+            obs += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="obs4MIPs",
+            )
             models += select_metadata(
                 input_data,
                 variable_group=var_prep,
                 project="CMIP6",
+            )
+            models += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="CMIP7",
             )
 
         # log
@@ -448,7 +496,7 @@ def main(cfg):
             dt_files = obs_files + [ds["filename"] for ds in models]
             for i, fig in enumerate(figs):
                 prov_record = get_provenance_record(
-                    f"ENSO metrics {metric} level {i + 2}",
+                    f"{metric}_{i + 2}",
                     dt_files,
                 )
 

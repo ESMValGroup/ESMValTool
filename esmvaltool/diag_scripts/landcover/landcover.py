@@ -76,22 +76,20 @@ def write_plotdata(infos, modnam, values):
         + " compared to reference [%]",
     }
     # Write experiment data
-    for metric in values.keys():
+    for metric in values:
         filepath = os.path.join(
             cfg[diag.names.WORK_DIR],
-            "_".join([metric, var]) + ".txt",
+            f"{metric}_{var}" + ".txt",
         )
         ncol = len(regnam)
         with open(filepath, "w") as fout:
             header = "{:35} " + ncol * " {:>12}" + "\n"
             body = "{:35} " + ncol * " {:12.4f}" + "\n"
-            line = [
-                " ",
-            ] + regnam
+            line = [" ", *regnam]
             fout.write(filehead[metric] + "\n\n")
             fout.write(header.format(*line))
             for irow, row in enumerate(values[metric]):
-                line = [modnam[metric][irow]] + row
+                line = [modnam[metric][irow], *row]
                 fout.write(body.format(*line))
 
     # provenance tracking, only if comparison == variable
@@ -113,7 +111,7 @@ def init_plot(cfg, var):
     if cfg.get("output_file_type", "png") == "pdf":
         filepath = os.path.join(
             cfg[diag.names.PLOT_DIR],
-            "_".join(["metrics", var]) + ".pdf",
+            f"metrics_{var}" + ".pdf",
         )
         pdf = PdfPages(filepath)
     else:
@@ -199,6 +197,12 @@ def finish_plot(fig, labels, pltdir, name, pdf):
         filename for png output without extension
     pdf : obj
         pdf object collection all pages in case of pdf output
+
+    Returns
+    -------
+    str or None
+        Path to plot or None if PDF output is desired.
+
     """
     fig.subplots_adjust(bottom=0.20)
     caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
@@ -210,12 +214,22 @@ def finish_plot(fig, labels, pltdir, name, pdf):
     if pdf is None:
         filepath = os.path.join(pltdir, name + ".png")
         fig.savefig(filepath)
-    else:
-        fig.savefig(pdf, dpi=80, format="pdf")
-        plt.close()
+        return filepath
+
+    fig.savefig(pdf, dpi=80, format="pdf")
+    plt.close()
+    return None
 
 
-def make_landcover_bars(cfg, regnam, modnam, values, var):
+def make_landcover_bars(
+    cfg,
+    regnam,
+    modnam,
+    values,
+    var,
+    *,
+    provenance_record=None,
+):
     """Make bar plots for regional values.
 
     Parameters
@@ -232,6 +246,9 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
         frac --> region average fractions in %
     var : str
         variable short name
+    provenance_record : None or dict
+        Provenance record.
+
     """
     # Get colorscheme from recipe
     plt.style.use(cfg.get("colorscheme", "seaborn"))
@@ -240,11 +257,20 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     pdf, info = init_plot(cfg, var)
 
     # Loop over metrices
-    for metr in values.keys():
+    for metr in values:
         # Plot plot with bars
         fig = plot_bars(info, metr, values[metr], regnam)
         # Add legend and finish plot
-        finish_plot(fig, modnam[metr], info["pd"], "_".join([metr, var]), pdf)
+        plot_path = finish_plot(
+            fig,
+            modnam[metr],
+            info["pd"],
+            f"{metr}_{var}",
+            pdf,
+        )
+        if plot_path is not None and provenance_record is not None:
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
 
     if pdf is not None:
         pdf.close()
@@ -285,7 +311,7 @@ def get_timmeans(attr, cubes, refset, prov_rec):
     # Get dataset information
     var = attr["short_name"]
     # Store name of reference data for given variable
-    if var not in refset.keys():
+    if var not in refset:
         refset[var] = attr.get("reference_dataset", None)
     # Load data into iris cube
     new_cube = iris.load_cube(attr["filename"])
@@ -319,9 +345,17 @@ def get_timmeans(attr, cubes, refset, prov_rec):
         cubes["exp"][var].append(mean_cube)
     # Add information to provenance record
     if prov_rec[var] == {}:
+        if "start_year" in attr and "end_year" in attr:
+            timerange_str = " between {start_year} and {end_year}".format(
+                **attr,
+            )
+        else:
+            timerange_str = ""
         caption = (
-            "Mean land cover fraction for {long_name} between "
-            "{start_year} and {end_year} for different datasets".format(**attr)
+            "Mean land cover fraction for {long_name}{timerange_str} for "
+            "different datasets".format(
+                **{**attr, "timerange_str": timerange_str},
+            )
         )
         prov_rec[var] = {
             "caption": caption,
@@ -360,7 +394,7 @@ def write_data(cfg, cubes, var, prov_rec):
     # Compile output path
     filepath = os.path.join(
         cfg[diag.names.WORK_DIR],
-        "_".join(["postproc", var]) + ".nc",
+        f"postproc_{var}" + ".nc",
     )
 
     # Join cubes in one list with ref being the last entry
@@ -489,7 +523,7 @@ def focus2model(cfg, lcdata, refset):
                 "values": {"area": [], "frac": [], "bias": []},
             }
         for var in sorted(diag.Variables(cfg).short_names()):
-            for metric in shuffle[dset]["groups"].keys():
+            for metric in shuffle[dset]["groups"]:
                 shuffle[dset]["groups"][metric].append(var)
                 shuffle[dset]["values"][metric].append(
                     lcdata[var]["values"][metric][ids],
@@ -545,7 +579,8 @@ def main(cfg):
         focus2model(cfg, lcdata, refset)
         prov_rec = None
     elif cfg.get("comparison", "variable") != "variable":
-        raise ValueError("Only variable or model are valid comparison targets")
+        msg = "Only variable or model are valid comparison targets"
+        raise ValueError(msg)
 
     # Output ascii files and plots
     for target in lcdata:
@@ -558,12 +593,14 @@ def main(cfg):
         )
 
         # Plot area values
+        provenance_record = None if prov_rec is None else prov_rec[target]
         make_landcover_bars(
             cfg,
             regnam,
             lcdata[target]["groups"],
             lcdata[target]["values"],
             target,
+            provenance_record=provenance_record,
         )
 
 

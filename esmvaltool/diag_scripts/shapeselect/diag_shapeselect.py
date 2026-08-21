@@ -196,8 +196,8 @@ def shapeselect(cfg, cube):
             else:
                 ncts[:, ishp] = np.mean(cube.data[:, gpy, gpx], axis=1)
             gxx, gyy = representative([], [], multipoint, multi, cube)
-            nclon[ishp] = cube.coord("longitude").points[gxx]
-            nclat[ishp] = cube.coord("latitude").points[gyy]
+            nclon[ishp] = cube.coord("longitude").points[gxx][0]
+            nclat[ishp] = cube.coord("latitude").points[gyy][0]
     return ncts, nclon, nclat
 
 

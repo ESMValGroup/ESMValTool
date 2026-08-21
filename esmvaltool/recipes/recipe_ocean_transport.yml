@@ -1,0 +1,119 @@
+# ESMValTool
+---
+documentation:
+  title: Ocean transport diagnostics.
+  description: >
+    Example recipe for three ocean-transport diagnostics, evaluated on a single
+    CMIP6 model:
+
+    - Northward ocean heat transport in the Atlantic-Arctic basin (hfbasin),
+      as a latitude profile.
+    - Antarctic Circumpolar Current (ACC) transport through the Drake Passage
+      (mfo), as a time series.
+    - Sea surface height gradient magnitude (zos), a proxy for the Gulf Stream
+      separation bias, as a map.
+
+    The first two use standard preprocessors with the monitor plot script; the
+    SSH gradient uses the dedicated ocean/diagnostic_ssh_gradient.py script.
+  authors:
+    - debeire_kevin
+  maintainer:
+    - debeire_kevin
+  references:
+    - demora2018gmd
+
+
+# Note: the dataset below is just an example (it carries hfbasin, mfo and zos).
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, timerange: 19950101/20141231}
+
+
+preprocessors:
+
+  oht_profile:
+    custom_order: true
+    extract_named_regions:
+      regions: atlantic_arctic_ocean
+    climate_statistics:
+      operator: mean
+      period: full
+    convert_units:
+      units: PW  # udunits: 1 PW = 1e15 W
+
+  drake_transport:
+    custom_order: true
+    extract_named_regions:
+      regions: drake_passage
+    annual_statistics:
+      operator: mean
+    convert_units:
+      units: Tg s-1  # mass transport; Sv (sverdrup) is not a udunits unit
+
+  ssh_regridded:
+    # Regrid only, keeping the time axis: the diagnostic script computes
+    # mean(|grad(SSH)|) per time step, not |grad(mean(SSH))|.
+    regrid:
+      target_grid: 2x2
+      scheme: linear  # curvilinear ocean grids fail ESMFAreaWeighted
+
+
+diagnostics:
+
+  ocean_heat_transport:
+    description: Northward ocean heat transport in the Atlantic-Arctic basin (hfbasin).
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      hfbasin:
+        mip: Omon
+        preprocessor: oht_profile
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          variable_vs_lat: {}
+
+  acc_drake_transport:
+    description: ACC transport through the Drake Passage (mfo).
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      mfo:
+        mip: Omon
+        preprocessor: drake_transport
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          timeseries: {}
+
+  ssh_gradient:
+    description: SSH gradient magnitude, a Gulf Stream separation proxy (zos).
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      zos:
+        mip: Omon
+        preprocessor: ssh_regridded
+        # To also plot the ORAS5 reanalysis reference, add it here. ORAS5 is an
+        # ESMValCore native6 on-the-fly CMORizer and needs the oras5_mesh_T.nc
+        # grid file, passed via the horizontal_grid facet:
+        # additional_datasets:
+        #   - {project: native6, dataset: ORAS5, type: reanaly, version: v0.1, tier: 3, horizontal_grid: /path/to/oras5_mesh_T.nc}
+    scripts:
+      ssh_gradient:
+        script: ocean/diagnostic_ssh_gradient.py
