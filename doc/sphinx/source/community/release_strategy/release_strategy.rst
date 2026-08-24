@@ -352,8 +352,8 @@ These are the detailed steps to take to make a release.
 #. ESMValCore feature freeze, testing, and release candidates
 
    - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
-   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``pyproject.toml`` of ESMValTool to add it to the list of channels used.
-   - Check that the environment creation of ESMValTool works fine and contains the latest release candidate version. Adjust the pin if necessary (e.g. ``esmvalcore==2.8.0rc1``).
+   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``pyproject.toml`` of ESMValTool to add it to the list of channels used and update the pixi lock file by running ``pixi update esmvalcore``.
+   - Check that the environment creation of ESMValTool works fine and contains the latest release candidate version. Adjust the pin if necessary (e.g. ``esmvalcore==2.8.0rc1``). Make a pull request to update ``pyproject.toml`` and ``pixi.lock`` in the ESMValTool ``main`` branch.
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate. See :ref:`Release recipe runs <detailed_release_procedure>`.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
