@@ -291,7 +291,7 @@ def fetch_cube(dataset, variable, time_range, cfg):
 
     # The constraint will only limit data if data outside the period is available
     time_constraint = iris.Constraint(
-        time=lambda cell: int(start_year) <= cell.point.year <= int(end_year)
+        time=lambda cell: int(start_year) <= cell.point.year <= int(end_year),
     )
 
     # Load the cube using iris with the time constraint
