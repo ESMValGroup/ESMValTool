@@ -336,59 +336,64 @@ Detailed timeline steps
 
 These are the detailed steps to take to make a release.
 
-#. Populate the milestone
+#. **Populate the milestone**
 
    - The core development team will make sure it adds issues that it intends to work on as early as possible.
    - Any contributor is welcome to add issues or pull requests that they intend to work on themselves to a milestone.
 
 
-#. Determine dates, update schedule, inform all issues in the milestone.
+#. **Determine dates, update schedule, inform all issues in the milestone.**
 
    - The release manager will determine the dates for the feature freeze and planned release, and update the :ref:`release_schedule`.
    - Add the freeze dates as due date to the milestones for ESMValCore and ESMValTool. e.g. `ESMValTool Milestones <https://github.com/ESMValGroup/ESMValTool/milestones>`__
    - Comment on any issues and PRs in the milestone to inform the assignees of the feature freeze date two weeks in advance.
 
 
-#. ESMValCore feature freeze, testing, and release candidates
+#. **ESMValCore feature freeze, testing, and release candidates**
 
    - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
-   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``pyproject.toml`` of ESMValTool to add it to the list of channels used and update the pixi lock file by running ``pixi update esmvalcore``.
-   - Check that the environment creation of ESMValTool works fine and contains the latest release candidate version. Adjust the pin if necessary (e.g. ``esmvalcore==2.8.0rc1``). Make a pull request to update ``pyproject.toml`` and ``pixi.lock`` in the ESMValTool ``main`` branch.
+   - Uncomment the release candidate channel item (i.e. ``conda-forge/label/esmvalcore_rc``) in the ``pyproject.toml`` of ESMValTool to add it
+     to the list of channels used and update the pixi lock file by running ``pixi update esmvalcore``.
+   - Check that the environment creation of ESMValTool works fine and contains the latest release candidate version. Adjust the pin if necessary (e.g. ``esmvalcore==2.8.0rc1``).
+   - Make a pull request to update ``pyproject.toml`` and ``pixi.lock`` in the ESMValTool ``main`` branch.
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate. See :ref:`Release recipe runs <detailed_release_procedure>`.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
    - Make as many release candidates for ESMValCore as needed in order to fix all the detected bugs.
+   - Create a `GitHub issue on ESMValTool <https://github.com/ESMValGroup/ESMValTool/issues>`__ to communicate the testing results.
 
 
-#. ESMValTool feature freeze
+#. **ESMValTool feature freeze**
 
    - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step).
+   - Create a `GitHub discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__ to communicate about the release status. See :discussion:`4360` for an example.
 
 
-#. Some additional testing of ESMValTool
+#. **Some additional testing of ESMValTool**
 
-   - :ref:`Run all the recipes to check that they still work and generate the overview HTML pages <detailed_release_procedure>`.
+   - :ref:`Run all the recipes<detailed_release_procedure>` to check that they still work and generate the :ref:`overview HTML pages <overview_page>`.
    - Upload the results to the webpage at https://esmvaltool.dkrz.de/shared/esmvaltool/.
    - :ref:`Compare the results to those obtained with the previous release <compare_recipe_runs>`.
-   - Create a `GitHub discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__ to communicate about the results.
+   - Update the `GitHub release testing issue <https://github.com/ESMValGroup/ESMValTool/issues>`__ to communicate about the results.
    - If there are differences with the previous release, ask recipe maintainers
      or authors to review the plots and NetCDF files of their diagnostics, for
      example by
      `mentioning <https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#mentioning-people-and-teams>`__
      them in the discussion.
-   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
+   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug.
+     The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Update the :ref:`list of broken recipes <broken-recipe-list>` with new recipes that could not be run successfully during the testing.
      Open a separate GitHub issue for each failing recipe and assign the next milestone.
      Open an overview issue, see :issue:`3484` for an example, and review past overview issues.
      Take action to ensure that the broken recipe policy is followed.
 
 
-#. ESMValCore release
+#. **ESMValCore release**
 
    - Make the official ESMValCore release with the last release candidate by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
 
 
-#. ESMValTool release
+#. **ESMValTool release**
 
    - Pin ESMValCore to the same version as ESMValTool in the ``pyproject.toml`` e.g. ``"ESMValCore" = ">=2.1.0"``
      and on `conda-forge <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__ e.g. ``esmvalcore 2.1.*`` in the recipe.
@@ -398,12 +403,12 @@ These are the detailed steps to take to make a release.
    - Make the release by following :ref:`How to make a release`.
 
 
-#. Announce the releases
+#. **Announce the releases**
 
    - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on LinkedIn.
 
 
-#. Core development team meets to coordinate the content of next milestone
+#. **Core development team meets to coordinate the content of next milestone**
 
    - Create a doodle for the meeting or even better, have the meeting during an ESMValTool workshop
    - Prepare the meeting by filling the milestone
