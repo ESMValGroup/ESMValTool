@@ -1,0 +1,38 @@
+# ESMValTool
+---
+documentation:
+  title: Tropical cold-point tropopause (CPT) Hovmoeller diagnostic
+  description: >
+    Evaluates tropical (20S-20N) CPT structure using longitude-time Hovmoeller
+    plots. CPT is defined as the minimum temperature level between 500 and
+    10 hPa. Plot colors show CPT pressure and contour lines show, in separate
+    panels, CPT temperature, CPT specific humidity and CPT RH over ice.
+  authors:
+    - weigel_katja
+    - schlund_manuel
+  maintainer:
+    - unmaintained
+
+
+datasets:
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
+  - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: CMIP6}
+
+diagnostics:
+  tropical_cpt_hovmoeller:
+    description: Tropical CPT Hovmoeller with pressure shading and CPT contours.
+    variables:
+      ta:
+        mip: Amon
+        timerange: 2000/2001
+      hus:
+        mip: Amon
+        timerange: 2000/2001
+    scripts:
+      cpt_hovmoeller:
+        script: esmvaltool/diag_scripts/tropopause/cpt_hovmoeller.py
+        plot_filename: tropical_cpt_hovmoeller
+        pressure_bounds_hpa: [10.0, 500.0]
+        tropical_lat_bounds: [-20.0, 20.0]
+        lon_resolution: 2.5
+        dpi: 300
