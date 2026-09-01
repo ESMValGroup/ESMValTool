@@ -709,15 +709,6 @@ class MultiDatasetsThreshold(MultiDatasets):
                     warnings.warn(msg, UserWarning, stacklevel=1)
                     cube.coord(dim).coord_system = None
 
-            # Fix Z-coordinate if present
-            if cube.coords("air_pressure", dim_coords=True):
-                z_coord = cube.coord("air_pressure", dim_coords=True)
-                z_coord.attributes["positive"] = "down"
-                z_coord.convert_units("hPa")
-            elif cube.coords("altitude", dim_coords=True):
-                z_coord = cube.coord("altitude")
-                z_coord.attributes["positive"] = "up"
-
             # Save ancestors
             dataset["ancestors"] = [filename]
 
