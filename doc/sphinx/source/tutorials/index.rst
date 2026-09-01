@@ -5,6 +5,8 @@ Tutorials
 
 A tutorial is available on https://tutorial.esmvaltool.org.
 
+A tutorial is available on :doc:`ESMValTool Tutorial </tutorials/tutorial_overview>`.
+
 Learning resources
 ------------------
 
@@ -22,8 +24,10 @@ While these are tailored for ACCESS users, they are still very informative.
 .. (test by replacing '<add filename here>' with 'template').
 
 .. toctree::
-   :maxdepth: 1
-   :caption: <add topic heading here>
+   :hidden:
+   :maxdepth: 2
+   :caption: ESMValTool Tutorial
 
-   template
-.. <add filename here>
+   Overview <tutorial_overview>
+   Setup <tutorial_setup>
+   Introduction <episode_1>
