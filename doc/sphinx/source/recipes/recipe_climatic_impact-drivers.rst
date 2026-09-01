@@ -6,7 +6,7 @@ Climatic Impact-Drivers
 Overview
 --------
 
-These recipes and the corresponding diagnostic provide plotting routine for a
+These recipes and the corresponding diagnostic provide plotting routines for a
 selection of the Climatic Impact-Drivers defined in Elling et al. (2026). For
 each of these variables the model output is compared to observational datasets.
 
