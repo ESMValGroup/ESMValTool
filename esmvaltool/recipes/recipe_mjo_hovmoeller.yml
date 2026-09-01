@@ -1,0 +1,91 @@
+# ESMValTool
+# recipe_mjo_hovmoeller.yml
+---
+documentation:
+  title: Madden-Julian Oscillation precipitation Hovmöller diagnostic
+
+  description: |
+    Compute lagged regressions of 20-100 day filtered tropical
+    precipitation against a precipitation index averaged over
+    80-100E and 15S-15N.
+
+  authors:
+    - schoenfeld_jurij
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - hannah20james
+
+  projects:
+    - esmval
+
+
+preprocessors:
+  mjo_precip:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -15.
+      end_latitude: 15.
+
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+
+    meridional_statistics:
+      operator: mean
+
+    daily_statistics:
+      operator: mean
+
+    anomalies:
+      period: day
+
+    convert_units:
+      units: mm day-1
+
+
+diagnostics:
+  mjo_hovmoeller:
+
+    themes:
+      - phys
+      - clouds
+
+    realms:
+      - atmos
+
+    variables:
+      pr:
+        mip: day
+        preprocessor: mjo_precip
+        timerange: 1979/1983
+
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, frequency: 1hr, tier: 3, alias: ERA5}
+          - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR}
+
+    scripts:
+      main:
+        script: mjo/mjo_hovmoeller.py
+
+        reference_longitudes: [80., 100.]
+
+        low_period: 20
+        high_period: 100
+        lanczos_weights: 91
+
+        max_lag: 25
+
+        longitude_limits: [0., 360.]
+        contour_levels: 21
+        colormap: RdYlBu
+        plot_title: MJO precipitation Hovmöller diagram
+        colorbar_label: Precipitation regression (mm day-1)
+
+        # Set to a number to fix the colorbar to [-vmax, vmax], e.g. to
+        # compare panels from different recipe runs on the same scale.
+        # Leave as null to estimate vmax from each dataset's own data.
+        vmax: null
