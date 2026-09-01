@@ -697,9 +697,9 @@ class MultiDatasetsThreshold(MultiDatasets):
                     cube.add_aux_coord(lon_coord, ())
 
                 # Remove additional coordinate systems to avoid errors
-                # calculating bias datasets. In particular,  removing the
-                # additional coordinate system of the ESACCI obssevational
-                # Dataset, introducing a neglegible error.
+                # calculating bias datasets. In particular, removing the
+                # additional coordinate system of the ESACCI observational
+                # Dataset, introducing a negligible error.
                 if cube.coord(dim).coord_system:
                     msg = (
                         "Removing the coordinate system "
