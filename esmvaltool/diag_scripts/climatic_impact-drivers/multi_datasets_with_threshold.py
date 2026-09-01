@@ -554,8 +554,10 @@ class MultiDatasetsThreshold(MultiDatasets):
         else:
             var_unit = cube.units
 
-            cat.add_day_of_year(cube, "time")
-            cat.add_year(cube, "time")
+            if not cube.coords("day_of_year"):
+                cat.add_day_of_year(cube, "time")
+            if not cube.coords("year"):
+                cat.add_year(cube, "time")
 
             for options_type in self.options:
                 # Ensuring that the data is daily, by regridding to daily
