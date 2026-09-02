@@ -14,12 +14,12 @@ each of these variables the model output is compared to observational datasets.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in `recipes/climatic_impact-drivers`
+Recipes are stored in `recipes/climatic_impact_drivers`
 
 * recipe_impacts_map.yml
 * recipe_impacts_timeseries.yml
 
-Diagnostics are stored in `diag_scripts/climatic_impact-drivers`
+Diagnostics are stored in `diag_scripts/climatic_impact_drivers`
 
 * multi_datasets_with_threshold.py: Monitoring diagnostic to optionally count days exceeding some threshold and plot multiple datasets on a map or timeseries.
 
