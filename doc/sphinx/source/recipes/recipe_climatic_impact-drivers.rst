@@ -21,14 +21,14 @@ Recipes are stored in `recipes/climatic_impact_drivers`
 
 Diagnostics are stored in `diag_scripts/climatic_impact_drivers`
 
-* multi_datasets_with_threshold.py: Monitoring diagnostic to optionally count days exceeding some threshold and plot multiple datasets on a map or timeseries.
+* :ref:`multi_datasets_with_threshold.py <api.esmvaltool.diag_scripts.climatic_impact_drivers.multi_datasets_with_threshold>`: Monitoring diagnostic to optionally count days exceeding some threshold and plot multiple datasets on a map or timeseries.
 
 
 User settings in recipe
 -----------------------
 
 A full list of all possible configuration options that can be specified in the
-recipe is given at the beginning of the diagnostic script (see previous section).
+recipe is given at the beginning of the diagnostic script :ref:`multi_datasets_with_threshold.py <api.esmvaltool.diag_scripts.climatic_impact_drivers.multi_datasets_with_threshold>`.
 
 The most relevant configuration options include:
 
