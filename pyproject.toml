@@ -33,7 +33,7 @@ dependencies = [
     "numpy>=2",
     "pyyaml",
     "rich",
-    "scitools-iris>=3.11",
+    "scitools-iris>=3.11,!=3.16",
 ]
 description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
 license = "Apache-2.0"
@@ -212,7 +212,7 @@ convention = "numpy"
 "cf-units" = "*"
 "dask" = "!=2024.8.0"  # https://github.com/dask/dask/issues/11296
 "distributed" = "*"
-"iris" = ">=3.11"
+"iris" = ">=3.11,!=3.16"
 "matplotlib-base" = "*"
 "numpy" = ">=2"
 "pyyaml" = "*"
@@ -331,6 +331,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "jinja2" = "*"
 "joblib" = "*"
 "lime" = "*"
+"lxml" = "*"  # Used by the `prov` library to serialize provenance to XML.
 "mapgenerator" = ">=1.0.5"
 "natsort" = "*"
 "nc-time-axis" = "*"
@@ -341,7 +342,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "pandas" = "*"
 "pip" = "!=21.3"
 "progressbar2" = "*"
-"prov" = "*"
+"prov-core" = "*"
 "pyproj" = ">=2.1"
 "python" = ">=3.12"
 "python-cdo" = "*"
