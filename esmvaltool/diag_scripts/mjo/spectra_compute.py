@@ -869,7 +869,7 @@ class WKSpectra:
 
         return pee_as
 
-    def _aggregate_power_spectra(self, pee_as, nlat, freq, n_samp_win):
+    def _aggregate_power_spectra(self, pee_as, nlat, freq):
         """Aggregate power spectra over latitudes and apply normalization.
 
         Parameters
