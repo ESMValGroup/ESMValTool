@@ -168,7 +168,7 @@ class WKSpectra:
         # mean for later
         var_mean = var.collapsed("time", iris.analysis.MEAN)
 
-        ntime, nlat, nlon = var.data.shape
+        ntime = var.data.shape[0]
 
         # compute FFT
         cf = np.fft.fft(var.data, axis=0)
