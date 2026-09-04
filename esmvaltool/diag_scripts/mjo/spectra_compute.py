@@ -880,8 +880,6 @@ class WKSpectra:
             Number of latitudes
         freq : np.ndarray
             Frequency array
-        n_samp_win : int
-            Number of samples per window
 
         Returns
         -------
