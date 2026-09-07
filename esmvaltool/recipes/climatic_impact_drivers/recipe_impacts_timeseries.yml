@@ -98,15 +98,14 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days: &exceeding_day_config
-        script: climatic_impact-drivers/multi_datasets_with_threshold.py
+        script: climatic_impact_drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         facet_used_for_labels: dataset
-        options:
-          threshold_conversion:
-            inverted: false
-            accumulated: false
-            threshold: 40
-            operators: [max, mean, min]
+        threshold_conversion:
+          inverted: false
+          accumulated: false
+          threshold: 40
+          operators: [max, mean, min]
         plots:
           timeseries:
 
@@ -141,12 +140,11 @@ diagnostics:
     scripts:
       diag_number_of_exceeding_days:
         <<: *exceeding_day_config
-        options:
-          threshold_conversion:
-            inverted: false
-            accumulated: false
-            threshold: 1
-            operators: [max, mean, min]
+        threshold_conversion:
+          inverted: false
+          accumulated: false
+          threshold: 1
+          operators: [max, mean, min]
         plots:
           timeseries:
 
@@ -162,12 +160,11 @@ diagnostics:
     scripts:
       diag_number_of_exceeding_days:
         <<: *exceeding_day_config
-        options:
-            threshold_conversion:
-              inverted: false
-              accumulated: false
-              threshold: 10
-              operators: [max, mean, min]
+        threshold_conversion:
+          inverted: false
+          accumulated: false
+          threshold: 10
+          operators: [max, mean, min]
 
   plot_snwe_10:
     additional_datasets:
@@ -181,12 +178,11 @@ diagnostics:
     scripts:
       diag_number_of_exceeding_days:
         <<: *exceeding_day_config
-        options:
-          threshold_conversion:
-            inverted: false
-            accumulated: true
-            threshold: 100
-            operators: [max, mean, min]
+        threshold_conversion:
+          inverted: false
+          accumulated: true
+          threshold: 100
+          operators: [max, mean, min]
         plots:
           timeseries:
 
@@ -200,7 +196,7 @@ diagnostics:
         preprocessor: zostoga_preproc_timeseries
     scripts:
       thermosteric_sealevel_mean:
-        script: climatic_impact-drivers/multi_datasets_with_threshold.py
+        script: climatic_impact_drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         facet_used_for_labels: dataset
         plots:
@@ -227,7 +223,7 @@ diagnostics:
         preprocessor: ocean_preproc_timeseries_min
     scripts:
       plot: &timeseries_config
-        script: climatic_impact-drivers/multi_datasets_with_threshold.py
+        script: climatic_impact_drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         facet_used_for_labels: project
         plots:

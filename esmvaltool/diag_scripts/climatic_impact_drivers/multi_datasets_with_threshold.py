@@ -6,21 +6,16 @@ This diagnostic vizualizes Climatic Impact-Drivers that were defined
 in Elling et al. (2026) for various models.
 
 This diagnostic adapts the monitor/multi_datasets.py diagnostic adding
-pre-processing routines to allow for plots of the number of days in a
+a pre-processing routine to allow for plots of the number of days in a
 year that certain thresholds are exceeded. With this diagnostic,
 multiple datasets can be visualized in a single plot.
 
-Plot types can be specified with the recipe option 'plots' and pre-
-processing options can be accessed with the recipe option 'options'.
+Plot types can be specified with the recipe option 'plots' and the pre-
+processing option can be called directly.
 
-Supported pre-processing options
---------------------------------
--   ``threshold_conversion``: Replace the given dataset by the count of
-                              on how many days the data exceeds a
-                              certian threshold at some point of time.
 
-    Additional options
-    ------------------
+Additional options for the recipe configuration option ``threshold_conversion``
+-----------------------------------------------------------------------------
     threshold: float
         The threshold which should be exceeded for days to add to the
         count.
@@ -312,10 +307,6 @@ matplotlib_rc_params: dict, optional
     :func:`matplotlib.rc_context` and used for all plots produced with
     this diagnostic. Note: fontsizes specified here might be overwritten
     by the plot-type-specific option ``fontsize`` (see below).
-options: dict, optional
-    Additional pre-processing options applied by this diagnostic (see
-    list above). Dictonary values are dictonaries used as options for
-    the corresponding pre-processing option.
 plots: dict
     Plot types plotted by this diagnostic (see list above). Dictionary
     keys must be elements of the list above.  Dictionary values are
@@ -342,6 +333,9 @@ savefig_kwargs: dict, optional
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots). By
     default, uses ``{style: 'ticks'}``.
+threshold_conversion: dict, optional
+    Replace the given dataset by the count of on how many days the data
+    exceeds a certain threshold at some point of time.
 """
 
 from __future__ import annotations
@@ -387,8 +381,8 @@ class MultiDatasetsThreshold(MultiDatasets):
     """Diagnostic to plot multi-dataset plots."""
 
     @property
-    def options_settings(self) -> dict[str, dict[str, Any]]:
-        """pre-plotting settings."""
+    def threshold_conv_settings(self) -> dict[str, Any]:
+        """Threshold conversion settings."""
         default_settings_thres = {
             "threshold": np.nan,
             "inverted": False,
@@ -396,10 +390,8 @@ class MultiDatasetsThreshold(MultiDatasets):
             "operators": [],
         }
         return {
-            "threshold_conversion": {
-                "default_settings": {
-                    **default_settings_thres,
-                },
+            "default_settings": {
+                **default_settings_thres,
             },
         }
 
@@ -431,31 +423,28 @@ class MultiDatasetsThreshold(MultiDatasets):
             self.cfg["facet_used_for_labels"],
         )
 
-        # Check for options/preproc options and initialize them
-        if "options" in self.cfg:
-            self.options = self.cfg["options"]
+        # Check for preproc option and initialize it
+        if "threshold_conversion" in self.cfg:
+            self.options = self.cfg["threshold_conversion"]
         else:
             self.options = {}
 
-        for options_type, option_options in self.options.items():
-            if options_type not in self.options_settings:
+        default_settings_thres = self.threshold_conv_settings[
+            "default_settings"
+        ]
+        for key, val in default_settings_thres.items():
+            self.options.setdefault(key, val)
+
+        for option in self.options:
+            if option not in default_settings_thres:
                 msg = (
-                    f"Got unexpected options type '{options_type}' for option "
-                    f"'options', expected one of {list(self.options_settings)}"
+                    f"Got unexpected option '{option}' for option 'threshold_conversion', "
+                    f"expected only {list(default_settings_thres)}"
                 )
                 raise ValueError(msg)
-            if option_options is None:
-                option_options = {}  # noqa: PLW2901
-                self.options[options_type] = option_options
 
-            default_settings_opt = self.options_settings[options_type][
-                "default_settings"
-            ]
-            for key, val in default_settings_opt.items():
-                self.options[options_type].setdefault(key, val)
-
-        if "threshold_conversion" in self.options:
-            threshold = str(self.options["threshold_conversion"]["threshold"])
+        if "threshold_conversion" in self.cfg:
+            threshold = str(self.options["threshold"])
             self.plot_filename = config.get(
                 "plot_filename",
                 "{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_threshold_"
@@ -547,7 +536,7 @@ class MultiDatasetsThreshold(MultiDatasets):
     ):
         """Count the number of days per year on which the threshold is exceeded."""
         # Preventing that this option is executed several times
-        if cube.coords("day_of_year"):
+        if "Number of days per year" in cube.long_name:
             msg = "Reusing already aggregated cube"
             warnings.warn(msg, UserWarning, stacklevel=2)
 
@@ -559,18 +548,18 @@ class MultiDatasetsThreshold(MultiDatasets):
             if not cube.coords("year"):
                 cat.add_year(cube, "time")
 
-            for options_type in self.options:
+            if "threshold_conversion" in self.cfg:
                 # Ensuring that the data is daily, by regridding to daily
                 # timestep eventually. Note that for absolute values like
                 # temperature one should take the max (accumulated: false),
                 # and for cummulated values like total precipitation one
                 # should accumulate the values (accumulated: true).
-                if self.options[options_type]["accumulated"]:
+                if self.options["accumulated"]:
                     cube = cube.aggregated_by(
                         ["year", "day_of_year"],
                         iris.analysis.SUM,
                     )
-                elif self.options[options_type]["inverted"]:
+                elif self.options["inverted"]:
                     cube = cube.aggregated_by(
                         ["year", "day_of_year"],
                         iris.analysis.MIN,
@@ -582,10 +571,10 @@ class MultiDatasetsThreshold(MultiDatasets):
                         iris.analysis.MAX,
                     )
 
-                threshold = self.options[options_type]["threshold"]
+                threshold = self.options["threshold"]
 
                 # Count the number of days with values above or below threshold
-                if self.options[options_type]["inverted"]:
+                if self.options["inverted"]:
                     cube = cube.aggregated_by(
                         "year",
                         iris.analysis.COUNT,
@@ -606,8 +595,8 @@ class MultiDatasetsThreshold(MultiDatasets):
             cube.standard_name = None
             cube.rename(f"{var_name}geq{threshold}count")
             cube.long_name = (
-                f"Average number of days per year on which the {var_long} "
-                f"exceeds {threshold} {var_unit} at some point"
+                f"Number of days per year on which the {var_long} "
+                f"exceeds {threshold} {var_unit}"
             )
 
             cube.units = "days/year"
@@ -631,7 +620,7 @@ class MultiDatasetsThreshold(MultiDatasets):
         basename = Path(plot_path).stem
         if "threshold_conversion" in self.options:
             basename += "_threshold_" + str(
-                self.options["threshold_conversion"]["threshold"],
+                self.options["threshold"],
             )
         if option is not None:
             basename += "_spacial" + option
@@ -712,7 +701,7 @@ class MultiDatasetsThreshold(MultiDatasets):
             # Save ancestors
             dataset["ancestors"] = [filename]
 
-            if "threshold_conversion" in self.options:
+            if "threshold_conversion" in self.cfg:
                 cube = self.convert_data_thresholded(cube)
 
             if slices:
@@ -795,9 +784,9 @@ class MultiDatasetsThreshold(MultiDatasets):
 
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
 
-        if "threshold_conversion" in self.options:
-            threshold = self.options["threshold_conversion"]["threshold"]
-            operators = self.options["threshold_conversion"]["operators"] or [
+        if "threshold_conversion" in self.cfg:
+            threshold = self.options["threshold"]
+            operators = self.options["operators"] or [
                 "mean",
             ]
             for operator in operators:
@@ -806,9 +795,9 @@ class MultiDatasetsThreshold(MultiDatasets):
                 )
 
             axes.set_title(
-                "Average number of days per year on which the "
+                "Number of days per year on which the "
                 f"{multi_dataset_facets['long_name']} exceeds "
-                f"{threshold} {multi_dataset_facets['units']} at some point",
+                f"{threshold} {multi_dataset_facets['units']}",
             )
             var_label = (
                 f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
@@ -832,11 +821,9 @@ class MultiDatasetsThreshold(MultiDatasets):
                 if "OBS" in str(val):
                     dataset_colors[label_dataset] = "black"
 
-            if "threshold_conversion" in self.options:
+            if "threshold_conversion" in self.cfg:
                 oldcube = cube
-                operators = self.options["threshold_conversion"][
-                    "operators"
-                ] or ["mean"]
+                operators = self.options["operators"] or ["mean"]
 
                 for operator in operators:
                     cube = area_statistics(oldcube, operator=operator)
@@ -964,7 +951,7 @@ class MultiDatasetsThreshold(MultiDatasets):
 
         # Plot data
         cube = dataset["cube"]
-        if "threshold_conversion" in self.options:
+        if "threshold_conversion" in self.cfg:
             cube = cube.collapsed("time", iris.analysis.MEAN)
         plot_kwargs = self._get_plot_kwargs(plot_type, dataset, bias=bias)
         plot_kwargs.update(additional_plot_kwargs)
@@ -1003,8 +990,8 @@ class MultiDatasetsThreshold(MultiDatasets):
         cubes: dict[str, Cube] = {
             self._get_label(d): d["cube"] for d in datasets
         }
-        if "threshold_conversion" in self.options:
-            operators = self.options["threshold_conversion"]["operators"]
+        if "threshold_conversion" in self.cfg:
+            operators = self.options["operators"]
             # for operator in operators:
             cubes_threshold: dict[str, dict[str, Cube]] = {
                 operator: {
@@ -1015,14 +1002,14 @@ class MultiDatasetsThreshold(MultiDatasets):
             }
 
         cube_0 = datasets[0]["cube"]
-        if "threshold_conversion" in self.options:
+        if "threshold_conversion" in self.cfg:
             cube_0 = area_statistics(cube_0, operator="mean")
         coord_name = cube_0.coord(dim_coords=True).name()
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
         }
 
-        if "threshold_conversion" in self.options:
+        if "threshold_conversion" in self.cfg:
             for operator in operators:
                 netcdf_path = self._get_netcdf_path(plot_path, option=operator)
                 io.save_1d_data(

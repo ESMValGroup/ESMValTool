@@ -81,14 +81,13 @@ diagnostics:
         preprocessor: temperature_preproc
     scripts:
       diag_number_of_exceeding_days: &exceeding_day_config
-        script: climatic_impact-drivers/multi_datasets_with_threshold.py
+        script: climatic_impact_drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         facet_used_for_labels: dataset
-        options:
-          threshold_conversion:
-            inverted: false
-            accumulated: false
-            threshold: 40
+        threshold_conversion:
+          inverted: false
+          accumulated: false
+          threshold: 40
         plots:
           map:
             caption: 'Number of days per year with temperatures exceeding 40°C for {dataset}.'
@@ -110,11 +109,10 @@ diagnostics:
     scripts:
       diag_number_of_exceeding_days:
         <<: *exceeding_day_config
-        options:
-          threshold_conversion:
-            inverted: true
-            accumulated: false
-            threshold: 0
+        threshold_conversion:
+          inverted: true
+          accumulated: false
+          threshold: 0
         plots:
           map:
             caption: 'Number of days per year with temperatures drops below 0°C for {dataset}.'
@@ -136,11 +134,10 @@ diagnostics:
     scripts:
       diag_number_of_exceeding_days:
         <<: *exceeding_day_config
-        options:
-          threshold_conversion:
-            inverted: false
-            accumulated: false
-            threshold: 1
+        threshold_conversion:
+          inverted: false
+          accumulated: false
+          threshold: 1
         plots:
           map:
             caption: 'Number of days per year with rain rate exceeding 1 mm for {dataset}.'
@@ -162,11 +159,10 @@ diagnostics:
     scripts:
       diag_number_of_exceeding_days:
         <<: *exceeding_day_config
-        options:
-          threshold_conversion:
-            inverted: false
-            accumulated: false
-            threshold: 10
+        threshold_conversion:
+          inverted: false
+          accumulated: false
+          threshold: 10
         plots:
           map:
             caption: 'Number of days per year with rain rate exceeding 10 mm for {dataset}.'
@@ -188,11 +184,10 @@ diagnostics:
     scripts:
       diag_number_of_exceeding_days:
         <<: *exceeding_day_config
-        options:
-          threshold_conversion:
-            inverted: false
-            accumulated: true
-            threshold: 100
+        threshold_conversion:
+          inverted: false
+          accumulated: true
+          threshold: 100
         plots:
           map:
             caption: 'Number of days per year with more than 10 cm of snow water equivalent surface snow amount for {dataset}.'
@@ -213,7 +208,7 @@ diagnostics:
         preprocessor: ocean_preproc
     scripts:
       plot: &map_config
-        script: climatic_impact-drivers/multi_datasets_with_threshold.py
+        script: climatic_impact_drivers/multi_datasets_with_threshold.py
         plot_folder: '{plot_dir}'
         facet_used_for_labels: dataset
         plots:
