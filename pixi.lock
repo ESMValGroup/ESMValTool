@@ -39383,7 +39383,7 @@ packages:
   - numpy>=2
   - pyyaml
   - rich
-  - scitools-iris>=3.11,!=3.16
+  - scitools-iris>=3.11,<3.16
   - aiohttp ; extra == 'all'
   - cartopy ; extra == 'all'
   - cdo ; extra == 'all'
