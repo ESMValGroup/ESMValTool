@@ -14,6 +14,9 @@ jobs:
       - checkout
       - pixi/pixi_setup
       - run:
+          name: Show pixi cache sizes
+          command: du -sh ~/.pixi ./.pixi ~/.cache/rattler ~/.rattler
+      - run:
           name: Check dependencies are compatible and installed
           command: |
             pixi run --as-is pip check
