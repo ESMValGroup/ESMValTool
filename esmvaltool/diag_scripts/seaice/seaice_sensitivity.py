@@ -809,7 +809,7 @@ def main(cfg):
     write_df_to_csv(filled, filename, cfg)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            f"{cfg['work_dir']}/{filename}",
+            f"{cfg['work_dir']}/{filename}.csv",
             get_provenance_record(cfg, "Annual (not decadal) figures"),
         )
 
