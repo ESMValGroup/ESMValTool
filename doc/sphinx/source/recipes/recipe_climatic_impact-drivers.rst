@@ -38,9 +38,7 @@ The most relevant configuration options include:
 
 *Optional settings*
 
-* options: additional pre-processing options that are applied. Available are:
-
-   * threshold_conversion: Option to count the number of days on which a variable exceeds a certain threshold value. Requires the argument 'threshold' with the threshold that should be exceeded within this option. Allows additionally the argument 'inverted' to count the number of days where the variable attains a value below the given threshold and the argument 'accumulated' to correctly count the number of days if the given dataset is not daily and the given variable is accumulating over time.
+* threshold_conversion: Option to count the number of days on which a variable exceeds a certain threshold value. Requires the argument 'threshold' with the threshold that should be exceeded within this option. Allows additionally the argument 'inverted' to count the number of days where the variable attains a value below the given threshold and the argument 'accumulated' to correctly count the number of days if the given dataset is not daily and the given variable is accumulating over time.
 
 
 Variables

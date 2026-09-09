@@ -36,6 +36,14 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
     local_solar_time:
+    regrid_time:
+    extract_time:
+      start_year: 1995
+      start_month: 1
+      start_day: 1
+      end_year: 2014
+      end_month: 12
+      end_day: 31
     mask_landsea:
       mask_out: sea
     convert_units:

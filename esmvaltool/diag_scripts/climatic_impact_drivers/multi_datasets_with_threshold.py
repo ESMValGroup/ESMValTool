@@ -518,12 +518,8 @@ class MultiDatasetsThreshold(MultiDatasets):
         end_day = endc.day
         end_month = endc.month
 
-        check_timeframe = (
-            (start_day == 1 and start_month == 1)
-            or (start_day == 31 and start_month == 12)
-        ) and (
-            (end_day == 31 and end_month == 12)
-            or (end_day == 1 and end_month == 1)
+        check_timeframe = (start_day == 1 and start_month == 1) and (
+            end_day == 31 and end_month == 12
         )
         if not check_timeframe:
             msg = (
@@ -670,8 +666,9 @@ class MultiDatasetsThreshold(MultiDatasets):
             if cube.coords("time", dim_coords=True):
                 ih.unify_time_coord(cube)
 
-            # Check if the time period are only full years
-            self._check_timeframe(cube)
+            if "threshold_conversion" in self.cfg:
+                # Check if the time period are only full years
+                self._check_timeframe(cube)
 
             dims = {"latitude": "degrees_north", "longitude": "degrees_east"}
             for dim, deg in dims.items():
