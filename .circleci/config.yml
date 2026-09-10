@@ -1,8 +1,36 @@
 ---
 version: 2.1
 
-orbs:
-  pixi: prefix-dev/pixi@0.1.0
+commands:
+  pixi_setup:
+    # Based on https://circleci.com/developer/orbs/orb/prefix-dev/pixi, but without
+    # the issues described in https://github.com/ESMValGroup/ESMValTool/issues/4582.
+    description: "Set up a pixi environment."
+    parameters:
+      env:
+        type: string
+        default: "default"
+    steps:
+      - restore_cache:
+          keys:
+            - pixi-linux-v1-{{ arch }}-{{ checksum "pixi.lock" }}-<<parameters.env>>
+      - run:
+          name: Install pixi
+          command: |
+            set -euo pipefail
+            curl -fsSL https://pixi.sh/install.sh | sh
+            echo 'export PATH="$HOME/.pixi/bin:$PATH"' >> "$BASH_ENV"
+            source "$BASH_ENV"
+            pixi --version
+      - run:
+          name: Install pixi environment
+          command: |
+            set -euo pipefail
+            pixi install --environment "<<parameters.env>>"
+      - save_cache:
+          key: pixi-linux-v1-{{ arch }}-{{ checksum "pixi.lock" }}-<<parameters.env>>
+          paths:
+            - ~/.cache/rattler
 
 jobs:
   tests:
@@ -12,7 +40,7 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - pixi/pixi_setup
+      - pixi_setup
       - run:
           name: Check dependencies are compatible and installed
           command: |
@@ -67,7 +95,7 @@ jobs:
           command: echo $(date '+%Y-%m') | tee cache_key.txt
       - restore_cache:
           key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - pixi/pixi_setup:
+      - pixi_setup:
           env: esmvaltool-base
       - run:
           name: Check dependencies are compatible
@@ -86,11 +114,11 @@ jobs:
             '
             esmvaltool run --max-parallel-tasks=2 testing/recipe_python_for_CI.yml
       - store_artifacts:
-          path: /root/esmvaltool_output
+          path: ~/esmvaltool_output
       - save_cache:
           key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
-            - /root/climate_data
+            - ~/climate_data
 
   test_upstream_development:
     # Test running recipes with the development version of ESMValCore. The
@@ -107,7 +135,7 @@ jobs:
           command: echo $(date '+%Y-%m') | tee cache_key.txt
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - pixi/pixi_setup:
+      - pixi_setup:
           env: esmvalcore-dev
       - run:
           name: Run tests
@@ -131,11 +159,11 @@ jobs:
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
       - store_artifacts:
-          path: /root/esmvaltool_output
+          path: ~/esmvaltool_output
       - save_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
-            - /root/climate_data
+            - ~/climate_data
 
   build_documentation:
     # Test building documentation
@@ -144,10 +172,12 @@ jobs:
     resource_class: medium
     steps:
       - checkout
-      - pixi/pixi_setup
+      - pixi_setup
       - run:
           name: Build documentation
           command: pixi run --as-is doc --fail-on-warning --show-traceback
+      - store_artifacts:
+          path: doc/sphinx/build
 
   test_installation_from_conda:
     # Test conda package installation
