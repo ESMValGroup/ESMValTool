@@ -39,7 +39,6 @@ def calculate_taylor_stats(model_cube, obs_cube):
         & (obs_data <= 1e10)
     )
 
-
     if not np.any(valid_mask):
         return {
             'correlation': np.nan,
@@ -134,10 +133,9 @@ def _get_available_seasons(obs_entries, model_entries):
     return sorted(seasons)
 
 
-def _plot_taylor_panel(ax, obs_entries, model_entries, panel_title, season_number=None):
+def _plot_taylor_panel(ax, obs_entries, model_entries, highlight_datasets, panel_title, season_number=None):
     """Plot one Taylor diagram panel on the provided axis."""
     model_colors = plt.get_cmap('tab20')(np.linspace(0, 1, len(model_entries)))  # type: ignore[attr-defined]
-    obs_markers = ['o', 's', '^', 'D', 'P', 'X', '*']
     obs_names = list(obs_entries.keys())
 
     max_std_ratio = 1.2
@@ -173,9 +171,8 @@ def _plot_taylor_panel(ax, obs_entries, model_entries, panel_title, season_numbe
                 continue
 
             theta = np.arccos(corr)
-            marker = obs_markers[obs_names.index(obs_name) % len(obs_markers)]
             color = model_colors[model_idx % len(model_colors)]
-
+            marker = 'o' if model_name not in highlight_datasets else '*'
             ax.plot(
                 theta,
                 std_ratio,
@@ -190,12 +187,11 @@ def _plot_taylor_panel(ax, obs_entries, model_entries, panel_title, season_numbe
             plotted_points += 1
 
         # Plot obs reference point at (corr=1, std_ratio=1).
-        obs_marker = obs_markers[obs_names.index(obs_name) % len(obs_markers)]
         ax.plot(
             0.0,
             1.0,
             linestyle='None',
-            marker=obs_marker,
+            marker='o',
             markersize=10,
             color='black',
             label=f'{obs_name} reference',
@@ -248,6 +244,7 @@ def plot_taylor(cfg, plot_dict, title, output_basename):
         return
 
     seasons = _get_available_seasons(obs_entries, model_entries)
+    highlight_datasets = cfg.get('highlight_datasets', [])
 
     if seasons:
         n_panels = len(seasons)
@@ -268,6 +265,7 @@ def plot_taylor(cfg, plot_dict, title, output_basename):
                 flat_axes[idx],
                 obs_entries,
                 model_entries,
+                highlight_datasets=highlight_datasets,
                 panel_title=season_label,
                 season_number=int(season_number),
             )
@@ -289,7 +287,7 @@ def plot_taylor(cfg, plot_dict, title, output_basename):
     else:
         fig = plt.figure(figsize=(12, 7))
         ax = fig.add_subplot(111, polar=True)
-        _plot_taylor_panel(ax, obs_entries, model_entries, panel_title=title)
+        _plot_taylor_panel(ax, obs_entries, model_entries, highlight_datasets=highlight_datasets, panel_title=title)
 
         handles, labels = ax.get_legend_handles_labels()
         by_label = dict(zip(labels, handles))
