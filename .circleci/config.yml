@@ -19,6 +19,7 @@ commands:
           command: |
             set -euo pipefail
             curl -fsSL https://pixi.sh/install.sh | sh
+            echo 'export PATH="$HOME/.pixi/bin:$PATH"' >> "$BASH_ENV"
             source "$BASH_ENV"
             pixi --version
       - run:
