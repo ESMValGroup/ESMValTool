@@ -19,8 +19,14 @@ the instructions for
 * :ref:`ESMValTool installation on Linux<install_on_linux>`
 * :ref:`ESMValTool installation on MacOS<install_on_macosx>`.
 
-Further options for installation are:
+.. note::
 
+    A complete installation requires about 6 GB of disk space, while a minimal
+    installation requires about 2 GB of disk space. The ESMValTool package itself
+    is only a few MB in size, but it builds on many other software packages, which
+    are installed as dependencies.
+
+Further options for installation are:
 
 * :ref:`From the source code<install_from_source>` available at https://github.com/ESMValGroup/ESMValTool;
 * :ref:`From pre-installed versions on HPC clusters<install_on_hpc>`;
@@ -192,9 +198,14 @@ Some of the CMORization scripts are written in Python, while others are written
 in NCL. Therefore, both ``esmvaltool-python`` and ``esmvaltool-ncl`` need to be
 installed in order to be able to run all CMORization scripts.
 
-Note that the ESMValTool source code is contained in the ``esmvaltool-python``
+If you need an installation of ESMValTool with a minimal set of dependencies,
+you can install the ``esmvaltool-base`` package, which contains the core
+functionality of ESMValTool and only the dependencies needed to run the
+`example recipe <recipe_examples>`__ ``examples/recipe_python.yml``.
+
+Note that the ESMValTool source code is contained in the ``esmvaltool-base``
 package, so this package will always be installed as a dependency if you install
-one or more of the packages for other languages.
+one or more of the packages listed above.
 
 .. _install_on_macosx:
 
