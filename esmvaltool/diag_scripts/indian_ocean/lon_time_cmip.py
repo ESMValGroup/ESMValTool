@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from pprint import pformat
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import iris # type: ignore
 import numpy as np
 import numpy.ma as ma
@@ -33,13 +34,6 @@ logging.basicConfig(
 OBS_DATASETS = {'NCEP', 'HadISST', 'EN4'}
 
 
-def is_mohc_dataset(dataset):
-    """Return True if dataset likely belongs to MOHC."""
-    dataset_upper = dataset.upper()
-    mohc_markers = ("MOHC", "HADGEM", "HADCM", "UKESM")
-    return any(marker in dataset_upper for marker in mohc_markers)
-
-
 def _replace_fill_values(cube, fill_value=1e20):
     """Replace values >= fill_value with NaN in a cube's data array."""
     data = np.asarray(cube.data, dtype=float)
@@ -48,10 +42,30 @@ def _replace_fill_values(cube, fill_value=1e20):
     return cube
 
 
-def _collapse_latitude(cube):
-    """Collapse latitude by mean while ignoring masked/invalid values."""
+def _collapse_latitude(cube, lat_band=None):
+    """Collapse latitude by mean while ignoring masked/invalid values.
+    
+    Parameters
+    ----------
+    cube : iris.cube.Cube
+        Input cube with latitude coordinate.
+    lat_band : float, optional
+        If specified, only collapse over latitudes within ±lat_band from the equator.
+        E.g., lat_band=2.0 collapses over [-2, 2] latitude.
+    
+    Returns
+    -------
+    collapsed_cube : iris.cube.Cube
+        Cube with latitude collapsed by mean.
+    """
     try:
         cube.coord('latitude')
+        if lat_band is not None:
+            # Extract only the specified latitude band
+            cube = cube.extract(iris.Constraint(latitude=lambda x: -lat_band <= x <= lat_band))
+            if cube is None:
+                logger.warning(f"Could not extract latitude band ±{lat_band}")
+                return None
         masked = ma.masked_invalid(np.asarray(cube.data, dtype=float))
         return cube.copy(data=masked).collapsed('latitude', iris.analysis.MEAN)
     except iris.exceptions.CoordinateNotFoundError:
@@ -163,14 +177,14 @@ def _plot_lontime_panel(ax, fig, lon_edges, month_edges, data, cmap,
 
 def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
                               variable=None, obs_vmin=None, obs_vmax=None,
-                              bias_vlim=None,
-                              std_vmax=None):
+                              bias_vlim=None, std_vmax=None, lat_band=None):
     """Plot lon-time climatology: obs, MM-median bias, and inter-model std dev.
 
     Creates a three-panel figure:
       Panel 1 — Observed climatology (lon x month).
       Panel 2 — Multi-model median bias (model - obs).
       Panel 3 — Inter-model standard deviation.
+      Panel 4-6 - Bias of up to three highlighted datasets (if specified in cfg).
 
     Parameters
     ----------
@@ -192,6 +206,9 @@ def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
         Symmetric colour limit ±bias_vlim for the bias panel.  Auto-derived when omitted.
     std_vmax : float, optional
         Upper colour limit for the std dev panel.  Auto-derived when omitted.
+    lat_band : float, optional
+        Latitude band (symmetric about equator) to average over (e.g., 2.0 for ±2°).
+        If None, collapse over all latitudes.
     """
     logger.info("Plotting lon-time plots: %s", output_basename)
 
@@ -205,10 +222,32 @@ def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
 
     obs_dataset, raw_obs_cube = obs_entry
 
-    obs_cube = _collapse_latitude(_replace_fill_values(raw_obs_cube.copy()))
-    model_cubes = [_collapse_latitude(_replace_fill_values(mc.copy())) for mc in model_cubes]
+    obs_cube = _collapse_latitude(_replace_fill_values(raw_obs_cube.copy()), lat_band=lat_band)
+    if obs_cube is None:
+        logger.warning("Failed to process obs data for %s, skipping.", output_basename)
+        return
+    model_cubes_processed = []
+    for mc in model_cubes:
+        processed = _collapse_latitude(_replace_fill_values(mc.copy()), lat_band=lat_band)
+        if processed is not None:
+            model_cubes_processed.append(processed)
+    if not model_cubes_processed:
+        logger.warning("No valid model data after latitude collapsing for %s, skipping.", output_basename)
+        return
+    model_cubes = model_cubes_processed
     obs_data = np.ma.filled(np.ma.asarray(obs_cube.data, dtype=float), np.nan)  # (month, lon)
     mm_median_bias, mm_std = _compute_multimodel_bias_and_std(model_cubes, obs_data)
+
+    highlight_datasets = cfg.get('highlight_datasets', [])[:3]  # Up to three highlighted datasets
+
+    # Build a dict of highlight model biases
+    highlight_biases = {}
+    for dataset, info in plot_dict.items():
+        if dataset in highlight_datasets and dataset != obs_dataset:
+            cube = info['cube']
+            cube_processed = _collapse_latitude(_replace_fill_values(cube.copy()))
+            model_data = np.ma.filled(np.ma.asarray(cube_processed.data, dtype=float), np.nan)
+            highlight_biases[dataset] = model_data - obs_data
 
     # Coordinate edges for pcolormesh.
     try:
@@ -236,34 +275,70 @@ def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
     obs_vmax = obs_vmax if obs_vmax is not None else _obs_vmax
 
     if bias_vlim is None:
-        # if variable == 'pr':
-        #     bias_vlim = 5
-        # else:
-        bias_vlim = round(np.nanmax(np.abs(mm_median_bias)), 1)
+        # Use maximum across all bias panels (MM-median and highlight datasets)
+        max_bias = np.nanmax(np.abs(mm_median_bias))
+        for highlight_bias in highlight_biases.values():
+            max_bias = max(max_bias, np.nanmax(np.abs(highlight_bias)))
+        bias_vlim = round(max_bias, 1)
 
     if std_vmax is None:
         std_vmax = np.nanmax(mm_std)
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5), constrained_layout=True)
+    # Create figure with second row if highlight datasets exist
+    n_rows = 2 if highlight_biases else 1
+    fig, axes_raw = plt.subplots(n_rows, 3, figsize=(18, 5 * n_rows), constrained_layout=True)
+    # Ensure axes is always 2D
+    if n_rows == 1:
+        axes = axes_raw.reshape(1, -1)
+    else:
+        axes = axes_raw
 
     _plot_lontime_panel(
-        axes[0], fig, lon_edges, month_edges, obs_data,
+        axes[0, 0], fig, lon_edges, month_edges, obs_data,
         cmap=cmap_list[0], vmin=obs_vmin, vmax=obs_vmax,
         colorbar_label=obs_dataset,
         panel_title=f'Obs ({obs_dataset})',
     )
     _plot_lontime_panel(
-        axes[1], fig, lon_edges, month_edges, mm_median_bias,
+        axes[0, 1], fig, lon_edges, month_edges, mm_median_bias,
         cmap=cmap_list[1], vmin=-bias_vlim, vmax=bias_vlim,
         colorbar_label='Bias (model − obs)',
         panel_title='MM-median bias',
     )
     _plot_lontime_panel(
-        axes[2], fig, lon_edges, month_edges, mm_std,
+        axes[0, 2], fig, lon_edges, month_edges, mm_std,
         cmap=cmap_list[2], vmin=0, vmax=std_vmax,
         colorbar_label='Std dev (models)',
         panel_title='Inter-model std dev',
     )
+
+    # Add highlighted dataset biases in second row
+    for i, dataset in enumerate(list(highlight_biases.keys())[:3]):
+        highlight_bias = highlight_biases[dataset]
+        _plot_lontime_panel(
+            axes[1, i], fig, lon_edges, month_edges, highlight_bias,
+            cmap=cmap_list[1], vmin=-bias_vlim, vmax=bias_vlim,
+            colorbar_label=f'Bias {dataset}',
+            panel_title=f'{dataset} bias',
+        )
+    
+    # Handle third panel in second row
+    if highlight_biases:
+        if len(highlight_biases) == 2:
+            # Compute difference between the two models
+            bias_values = list(highlight_biases.values())
+            bias_diff = bias_values[0] - bias_values[1]
+            dataset_names = list(highlight_biases.keys())
+            _plot_lontime_panel(
+                axes[1, 2], fig, lon_edges, month_edges, bias_diff,
+                cmap=cmap_list[1], vmin=-bias_vlim, vmax=bias_vlim,
+                colorbar_label=f'Difference',
+                panel_title=f'{dataset_names[0]} − {dataset_names[1]}',
+            )
+        else:
+            # Hide unused panels if not exactly 2 datasets
+            for i in range(len(highlight_biases), 3):
+                axes[1, i].axis('off')
 
     fig.suptitle(title, fontsize=14)
     provenance_record = get_provenance_record(output_basename, sorted(list(input_filenames)))
@@ -273,7 +348,7 @@ def plot_lon_time_multimodel(cfg, plot_dict, cmap_list, title, output_basename,
 
 
 def plot_monthly_maps(cfg, data, lon_centres, lat_centres, cmap, title,
-                      output_basename, input_filenames, vmin=None, vmax=None):
+                      output_basename, input_filenames, vmin=None, vmax=None, lat_band=2.0):
     """Plot 12 monthly map panels (3 rows × 4 columns) with a shared colorbar.
 
     Parameters
@@ -294,6 +369,8 @@ def plot_monthly_maps(cfg, data, lon_centres, lat_centres, cmap, title,
         Source filenames for provenance tracking.
     vmin, vmax : float, optional
         Colour scale limits.  Derived from data when omitted.
+    lat_band : float, optional
+        Latitude band (symmetric about equator) to highlight with a box (default 2.0 for ±2°).
     """
     data = np.asarray(data)
     if data.ndim != 3:
@@ -325,6 +402,10 @@ def plot_monthly_maps(cfg, data, lon_centres, lat_centres, cmap, title,
             ax.set_title(month_labels[m], fontsize=10)
             ax.set_xlabel('Longitude (°E)')
             ax.set_ylabel('Latitude (°N)')
+            # Add black box highlighting equatorial band
+            rect = Rectangle((lon_edges[0], -lat_band), lon_edges[-1] - lon_edges[0], 2 * lat_band,
+                           linewidth=2, edgecolor='black', facecolor='none')
+            ax.add_patch(rect)
         else:
             ax.axis('off')
 
@@ -340,7 +421,7 @@ def plot_monthly_maps(cfg, data, lon_centres, lat_centres, cmap, title,
     plt.close(fig)
 
 
-def plot_map_multimodel(cfg, plot_dict, cmap_list, title, output_basename):
+def plot_map_multimodel(cfg, plot_dict, cmap_list, title, output_basename, lat_band=2.0):
     """Plot monthly maps for obs, MM-median bias, and inter-model std dev.
 
     Calls plot_monthly_maps three times — once per panel type — saving
@@ -358,6 +439,8 @@ def plot_map_multimodel(cfg, plot_dict, cmap_list, title, output_basename):
         Base title string appended with the panel type for each figure.
     output_basename : str
         Base stem for output filenames; suffixes '_obs', '_bias', '_stddev' are appended.
+    lat_band : float, optional
+        Latitude band (symmetric about equator) to highlight with a box (default 2.0 for ±2°).
     """
     logger.info("Plotting monthly map plots: %s", output_basename)
 
@@ -392,6 +475,7 @@ def plot_map_multimodel(cfg, plot_dict, cmap_list, title, output_basename):
         title=f'Obs ({obs_name}) - {title}',
         output_basename=output_basename + '_clim_obs',
         input_filenames=input_filenames,
+        lat_band=lat_band,
     )
     bias_vlim = np.nanmax(np.abs(mm_median_bias))
     plot_monthly_maps(
@@ -401,6 +485,7 @@ def plot_map_multimodel(cfg, plot_dict, cmap_list, title, output_basename):
         title=f'MM-median bias - {title}',
         output_basename=output_basename + '_model_bias',
         input_filenames=input_filenames,
+        lat_band=lat_band,
     )
     plot_monthly_maps(
         cfg, mm_std, lon_centres, lat_centres,
@@ -409,7 +494,77 @@ def plot_map_multimodel(cfg, plot_dict, cmap_list, title, output_basename):
         title=f'Inter-model std dev - {title}',
         output_basename=output_basename + '_stddev',
         input_filenames=input_filenames,
+        lat_band=lat_band,
     )
+
+def _extract_pressure_level(plot_dict, pressure_level):
+    """Extract a specific pressure level from all cubes in plot_dict.
+    
+    Parameters
+    ----------
+    plot_dict : dict
+        Mapping of dataset name → {'cube': iris.cube.Cube, 'filename': ...}.
+    pressure_level : float
+        Pressure level to extract (e.g., 100000. for surface, 85000., 20000.).
+    
+    Returns
+    -------
+    new_plot_dict : dict
+        New plot_dict with cubes extracted at the specified pressure level.
+    """
+    new_plot_dict = {}
+    for dataset, info in plot_dict.items():
+        cube = info['cube']
+        try:
+            # Extract the specific pressure level
+            extracted_cube = cube.extract(iris.Constraint(air_pressure=pressure_level))
+            if extracted_cube is None:
+                logger.warning(f"Could not extract pressure level {pressure_level} from {dataset}")
+                continue
+            new_plot_dict[dataset] = {'cube': extracted_cube, 'filename': info['filename']}
+        except Exception as e:
+            logger.warning(f"Error extracting pressure level {pressure_level} from {dataset}: {e}")
+            continue
+    return new_plot_dict
+
+
+def _compute_wind_shear(plot_dict, pressure_top, pressure_bottom):
+    """Compute wind shear (top - bottom) between two pressure levels.
+    
+    Parameters
+    ----------
+    plot_dict : dict
+        Mapping of dataset name → {'cube': iris.cube.Cube, 'filename': ...}.
+    pressure_top : float
+        Upper pressure level (e.g., 20000. for 200 hPa).
+    pressure_bottom : float
+        Lower pressure level (e.g., 85000. for 850 hPa).
+    
+    Returns
+    -------
+    shear_plot_dict : dict
+        New plot_dict with wind shear (u_top - u_bottom) cubes.
+    """
+    shear_plot_dict = {}
+    for dataset, info in plot_dict.items():
+        cube = info['cube']
+        try:
+            # Extract both pressure levels
+            cube_top = cube.extract(iris.Constraint(air_pressure=pressure_top))
+            cube_bottom = cube.extract(iris.Constraint(air_pressure=pressure_bottom))
+            
+            if cube_top is None or cube_bottom is None:
+                logger.warning(f"Could not extract both pressure levels from {dataset}")
+                continue
+            
+            # Compute shear
+            shear_cube = cube_top - cube_bottom
+            shear_plot_dict[dataset] = {'cube': shear_cube, 'filename': info['filename']}
+        except Exception as e:
+            logger.warning(f"Error computing wind shear for {dataset}: {e}")
+            continue
+    return shear_plot_dict
+
 
 def _create_iso_depth_dict(
     cfg,
@@ -448,6 +603,7 @@ def _create_iso_depth_dict(
 
 def main(cfg):
     """Plot monthly climatologies for multiple datasets and observations."""
+    LAT_BAND_AVG = cfg.get('lat_band_avg', 2.0)  # Default to ±2° if not specified
     input_data = cfg['input_data'].values()
     grouped_data = group_metadata(input_data, 'dataset')
     eio_wind_monthly, eio_sst_monthly, eio_theta_monthly, eio_pr_monthly = {}, {}, {}, {}
@@ -467,13 +623,47 @@ def main(cfg):
         apply_coastal_mask=True,
     )
 
+    # Extract surface wind (100000 Pa) and compute wind shear (200 hPa - 850 hPa)
+    eio_wind_surface = _extract_pressure_level(eio_wind_monthly, 100000.)
+    eio_wind_850 = _extract_pressure_level(eio_wind_monthly, 85000.)
+    eio_wind_200 = _extract_pressure_level(eio_wind_monthly, 20000.)
+    eio_wind_shear = _compute_wind_shear(eio_wind_monthly, 20000., 85000.)
+
     plot_lon_time_multimodel(
         cfg,
-        eio_wind_monthly,
+        eio_wind_surface,
         cmap_list=['cmo.delta', 'BrBG', 'RdPu'],
-        title='Indian Ocean equatorial zonal wind — monthly climatology',
-        output_basename='lon_time_eio_wind',
+        title='Indian Ocean equatorial zonal wind (surface, 1000 hPa) — monthly climatology',
+        output_basename='lon_time_eio_wind_surface',
         variable='ua',
+        lat_band=LAT_BAND_AVG,
+    )
+    plot_lon_time_multimodel(
+            cfg,
+            eio_wind_850,
+            cmap_list=['cmo.delta', 'BrBG', 'RdPu'],
+            title='Indian Ocean equatorial zonal wind (850 hPa) — monthly climatology',
+            output_basename='lon_time_eio_wind_850',
+            variable='ua',
+            lat_band=LAT_BAND_AVG,
+        )
+    plot_lon_time_multimodel(
+            cfg,
+            eio_wind_200,
+            cmap_list=['cmo.delta', 'BrBG', 'RdPu'],
+            title='Indian Ocean equatorial zonal wind (200 hPa) — monthly climatology',
+            output_basename='lon_time_eio_wind_200',
+            variable='ua',
+            lat_band=LAT_BAND_AVG,
+        )
+    plot_lon_time_multimodel(
+        cfg,
+        eio_wind_shear,
+        cmap_list=['cmo.delta', 'BrBG', 'RdPu'],
+        title='Indian Ocean equatorial zonal wind shear (200 hPa - 850 hPa) — monthly climatology',
+        output_basename='lon_time_eio_wind_shear',
+        variable='ua',
+        lat_band=LAT_BAND_AVG,
     )
     plot_lon_time_multimodel(
         cfg,
@@ -482,6 +672,7 @@ def main(cfg):
         title='Indian Ocean equatorial SST — monthly climatology',
         output_basename='lon_time_eio_sst',
         variable='tos',
+        lat_band=LAT_BAND_AVG,
     )
     plot_lon_time_multimodel(
         cfg,
@@ -490,6 +681,7 @@ def main(cfg):
         title='Indian Ocean equatorial 20°C isotherm depth — monthly climatology',
         output_basename='lon_time_eio_t20d',
         variable='t20d',
+        lat_band=LAT_BAND_AVG,
     )
     plot_lon_time_multimodel(
         cfg,
@@ -498,15 +690,17 @@ def main(cfg):
         title='Indian Ocean equatorial precipitation — monthly climatology',
         output_basename='lon_time_eio_pr',
         variable='pr',
-        bias_vlim=0.00008
+        bias_vlim=0.00008,
+        lat_band=LAT_BAND_AVG,
     )
 
     plot_map_multimodel(
         cfg,
-        eio_wind_monthly,
+        eio_wind_surface,
         cmap_list=['BrBG', 'BrBG', 'RdPu'],
         title='Indian Ocean equatorial zonal wind — monthly climatology',
-        output_basename='map_eio_wind',
+        output_basename='map_eio_wind_surface',
+        lat_band=LAT_BAND_AVG,
     )
     plot_map_multimodel(
         cfg,
@@ -514,6 +708,7 @@ def main(cfg):
         cmap_list=['RdYlBu_r', 'RdBu_r', 'RdPu'],
         title='Indian Ocean equatorial SST — monthly climatology',
         output_basename='map_eio_sst',
+        lat_band=LAT_BAND_AVG,
     )
     plot_map_multimodel(
         cfg,
@@ -521,6 +716,7 @@ def main(cfg):
         cmap_list=['cmo.deep', 'cmo.tarn', 'RdPu'],
         title='Indian Ocean equatorial 20°C isotherm depth — monthly climatology',
         output_basename='map_eio_t20d',
+        lat_band=LAT_BAND_AVG,
     )
     plot_map_multimodel(
         cfg,
@@ -528,6 +724,7 @@ def main(cfg):
         cmap_list=['cmo.rain', 'BrBG', 'RdPu'],
         title='Indian Ocean equatorial precipitation — monthly climatology',
         output_basename='map_eio_pr',
+        lat_band=LAT_BAND_AVG,
     )
 
 

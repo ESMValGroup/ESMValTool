@@ -283,10 +283,11 @@ def scat_mean_vs_std(cfg, xy_dict, x_label, y_label, title, output_basename):
         
         mean_val = cube.collapsed('time', iris.analysis.MEAN).data
         std_val = cube.collapsed('time', iris.analysis.STD_DEV).data
-        
+
+        marker = 'o' if dataset not in cfg.get('highlight_datasets', []) else '*'
         color = 'k' if 'HadISST' in dataset else colors[i]
         label = 'Obs' if 'HadISST' in dataset else dataset
-        plt.scatter(mean_val, std_val, color=color, label=label, alpha=0.7,s=80)
+        plt.scatter(mean_val, std_val, color=color, label=label, alpha=0.7, s=80, marker=marker)
 
         # Append to lists for correlation calculation
         all_means.append(mean_val)
@@ -370,16 +371,13 @@ def scat_plot(cfg, x_dict, y_dict, x_label, y_label, title, output_basename):
         input_filenames.update(x_file if isinstance(x_file, list) else [x_file])
 
         x_prefix = get_prefix(x_file)
-
-
         y_info, label, color = find_matching_y_data(dataset, x_prefix, y_dict, colors, i)
-
+        marker = 'o' if dataset not in cfg.get('highlight_datasets', []) else '*'
         if y_info:
             y_cube = y_info['cube']
             y_file = y_info['filename']
-            print(np.shape(x_cube.data), np.shape(y_cube.data))  # Debug statement
             plt.scatter(x_cube.data, y_cube.data, color=color,
-                        label=label, alpha=0.7,s=80)
+                        label=label, alpha=0.7,s=80, marker=marker)
             
             input_filenames.update(y_file if isinstance(y_file, list) else [y_file])
 
