@@ -118,11 +118,11 @@ jobs:
             '
             esmvaltool run --max-parallel-tasks=2 testing/recipe_python_for_CI.yml
       - store_artifacts:
-          path: /root/esmvaltool_output
+          path: ~/esmvaltool_output
       - save_cache:
           key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
-            - /root/climate_data
+            - ~/climate_data
 
   test_upstream_development:
     # Test running recipes with the development version of ESMValCore. The
@@ -163,11 +163,11 @@ jobs:
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
       - store_artifacts:
-          path: /root/esmvaltool_output
+          path: ~/esmvaltool_output
       - save_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
-            - /root/climate_data
+            - ~/climate_data
 
   build_documentation:
     # Test building documentation
@@ -180,6 +180,8 @@ jobs:
       - run:
           name: Build documentation
           command: pixi run --as-is doc --fail-on-warning --show-traceback
+      - store_artifacts:
+          path: doc/sphinx/build
 
   test_installation_from_conda:
     # Test conda package installation
