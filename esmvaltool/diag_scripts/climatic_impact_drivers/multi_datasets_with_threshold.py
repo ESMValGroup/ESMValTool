@@ -13,9 +13,65 @@ multiple datasets can be visualized in a single plot.
 Plot types can be specified with the recipe option 'plots' and the pre-
 processing option can be called directly.
 
+Recipe configuration options
+----------------------------
 
-Additional options for the recipe configuration option ``threshold_conversion``
--------------------------------------------------------------------------------
+facet_used_for_labels: str, optional (default: 'dataset')
+    Facet used to label different datasets in plot titles and legends.
+    For example, ``facet_used_for_labels: 'dataset'`` will use dataset
+    names in plot titles and legends; ``facet_used_for_labels: 'exp'``
+    will use experiments in plot titles and legends. In addition,
+    ``facet_used_for_labels`` is used to select the correct
+    ``plot_kwargs`` for the different datasets (see configuration
+    options for the different plot types below).
+figure_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
+    default, uses ``{constrained_layout: True}``.
+group_variables_by: str, optional (default: 'short_name')
+    Facet or coordinate which is used to create variable groups. For
+    each variable group, an individual plot is created. Specifying a
+    coordinate allows to create one plot for each point along a
+    dimension. For example, when used in combination with the
+    preprocessor function :func:`esmvalcore.preprocessor.extract_shape`
+    the `shape_id` coordinate can be used to create one plot for each
+    shape.
+matplotlib_rc_params: dict, optional
+    Optional :class:`matplotlib.RcParams` used to customize matplotlib
+    plots. Options given here will be passed to
+    :func:`matplotlib.rc_context` and used for all plots produced with
+    this diagnostic. Note: fontsizes specified here might be overwritten
+    by the plot-type-specific option ``fontsize`` (see below).
+plots: dict
+    Plot types plotted by this diagnostic (see list below). Dictionary
+    keys must be elements of the list below.  Dictionary values are
+    dictionaries used as options for the corresponding plot.
+plot_filename: str, optional
+    Filename pattern for the plots. By default, uses
+    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'`` or
+    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_threshold_{threshold}'``
+    if a threshold exsists.
+    All tags (i.e., the entries in curly brackets, e.g., ``'{dataset}'``,
+    are replaced with the corresponding tags).
+plot_folder: str, optional
+    Path to the folder to store figures. By default, uses
+    ``'{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}'``.
+    All tags (i.e., the entries in curly brackets, e.g., ``'{dataset}'``,
+    are replaced with the corresponding tags). ``'{plot_dir}'`` is
+    replaced with the default ESMValTool plot directory (i.e.,
+    ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:outputdata`).
+savefig_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.savefig`.
+    By default, uses ``{bbox_inches: 'tight', dpi: 300, orientation:
+    'landscape'}``.
+seaborn_settings: dict, optional
+    Options for :func:`seaborn.set_theme` (affects all plots). By
+    default, uses ``{style: 'ticks'}``.
+threshold_conversion: dict, optional
+    Replace the given dataset by the count of on how many days the data
+    exceeds a certain threshold at some point of time. Dictonary keys are
+    the following:
+
     threshold: float
         The threshold which should be exceeded for days to add to the
         count.
@@ -36,25 +92,27 @@ Additional options for the recipe configuration option ``threshold_conversion``
 
 Supported plot types
 --------------------
--   ``timeseries`` (1D plot): Plot time series. Input data needs single
-                              dimension `time`. For each variable
-                              separately, all datasets are plotted in
-                              one single figure. Input data needs to
-                              be 1D.
--   ``map`` (2D plot): Plot map plot. Input data needs dimensions
-                       `(longitude, latitude)`. For each variable and
-                       dataset, an individual figure is plotted. Input
-                       data needs to be 2D. A single reference dataset
-                       can be defined by setting the facet
-                       ``reference_for_monitor_diags: True`` in the
-                       dataset definition in the recipe. In this case,
-                       three panels are plotted, incl. a bias. Note
-                       that if a reference dataset is defined, all
-                       input datasets need to be given on the same
-                       horizontal and vertical grid (you can use the
-                       preprocessors :func:`esmvalcore.preprocessor.regrid`
-                       and :func:`esmvalcore.preprocessor.extract_levels`
-                       for this).
+timeseries (1D plot):
+    Plot time series. Input data needs single
+    dimension `time`. For each variable
+    separately, all datasets are plotted in
+    one single figure. Input data needs to
+    be 1D.
+map (2D plot):
+    Plot map plot. Input data needs dimensions
+    `(longitude, latitude)`. For each variable and
+    dataset, an individual figure is plotted. Input
+    data needs to be 2D. A single reference dataset
+    can be defined by setting the facet
+    ``reference_for_monitor_diags: True`` in the
+    dataset definition in the recipe. In this case,
+    three panels are plotted, incl. a bias. Note
+    that if a reference dataset is defined, all
+    input datasets need to be given on the same
+    horizontal and vertical grid (you can use the
+    preprocessors :func:`esmvalcore.preprocessor.regrid`
+    and :func:`esmvalcore.preprocessor.extract_levels`
+    for this).
 
 Additional options for timeseries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -279,63 +337,7 @@ y_minor_formatter: str, optional (default: None)
     Format string for :class:`matplotlib.ticker.FormatStrFormatter`
     used to format minor tick labels of Y-axis.
 
-Recipe configuration options
-----------------------------
 
-facet_used_for_labels: str, optional (default: 'dataset')
-    Facet used to label different datasets in plot titles and legends.
-    For example, ``facet_used_for_labels: 'dataset'`` will use dataset
-    names in plot titles and legends; ``facet_used_for_labels: 'exp'``
-    will use experiments in plot titles and legends. In addition,
-    ``facet_used_for_labels`` is used to select the correct
-    ``plot_kwargs`` for the different datasets (see configuration
-    options for the different plot types below).
-figure_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
-    default, uses ``{constrained_layout: True}``.
-group_variables_by: str, optional (default: 'short_name')
-    Facet or coordinate which is used to create variable groups. For
-    each variable group, an individual plot is created. Specifying a
-    coordinate allows to create one plot for each point along a
-    dimension. For example, when used in combination with the
-    preprocessor function :func:`esmvalcore.preprocessor.extract_shape`
-    the `shape_id` coordinate can be used to create one plot for each
-    shape.
-matplotlib_rc_params: dict, optional
-    Optional :class:`matplotlib.RcParams` used to customize matplotlib
-    plots. Options given here will be passed to
-    :func:`matplotlib.rc_context` and used for all plots produced with
-    this diagnostic. Note: fontsizes specified here might be overwritten
-    by the plot-type-specific option ``fontsize`` (see below).
-plots: dict
-    Plot types plotted by this diagnostic (see list above). Dictionary
-    keys must be elements of the list above.  Dictionary values are
-    dictionaries used as options for the corresponding plot.
-plot_filename: str, optional
-    Filename pattern for the plots. By default, uses
-    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'`` or
-    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_threshold_{threshold}'``
-    if a threshold exsists.
-    All tags (i.e., the entries in curly brackets, e.g., ``'{dataset}'``,
-    are replaced with the corresponding tags).
-plot_folder: str, optional
-    Path to the folder to store figures. By default, uses
-    ``'{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}'``.
-    All tags (i.e., the entries in curly brackets, e.g., ``'{dataset}'``,
-    are replaced with the corresponding tags). ``'{plot_dir}'`` is
-    replaced with the default ESMValTool plot directory (i.e.,
-    ``output_dir/plots/diagnostic_name/script_name/``, see
-    :ref:`esmvalcore:outputdata`).
-savefig_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.savefig`.
-    By default, uses ``{bbox_inches: 'tight', dpi: 300, orientation:
-    'landscape'}``.
-seaborn_settings: dict, optional
-    Options for :func:`seaborn.set_theme` (affects all plots). By
-    default, uses ``{style: 'ticks'}``.
-threshold_conversion: dict, optional
-    Replace the given dataset by the count of on how many days the data
-    exceeds a certain threshold at some point of time.
 
 .. _rasterization: https://matplotlib.org/stable/gallery/misc/
    rasterization_demo.html
