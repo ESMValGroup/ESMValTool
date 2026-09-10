@@ -6,6 +6,7 @@ library(climdex.pcic)
 library(parallel)
 library(ClimProjDiags) # nolint
 library(ggplot2)
+library(CFtime)
 
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
@@ -37,6 +38,11 @@ experiment <- lapply(input_files_per_var, function(x) {
   x$exp
 })
 experiment <- unlist(unname(experiment))
+
+if ('esm-hist' %in% experiment) {
+    historical <- 'esm-hist'
+} else { 
+    historical <- 'historical' }
 
 reference_files <- which(unname(experiment) == "historical")
 projection_files <- which(unname(experiment) != "historical")
@@ -92,14 +98,21 @@ units <- ncatt_get(hist_nc, var0, "units")$value
 calendar <- ncatt_get(hist_nc, "time", "calendar")$value
 long_names <- ncatt_get(hist_nc, var0, "long_name")$value
 time <- ncvar_get(hist_nc, "time")
-start_date <- as.POSIXct(substr(ncatt_get(
+
+start_date <- ncatt_get(
   hist_nc, "time",
   "units"
-)$value, 11, 29))
+)$value
 nc_close(hist_nc)
-time <- as.Date(time, origin = start_date, calendar = calendar)
 
 
+ttt <- CFtime(start_date, calendar, time)
+if (calendar == "standard" || calendar == "gregorian" || calendar == "proleptic_gregorian") {
+  time <- as_timestamp(ttt, format= "date", asPOSIX = TRUE)
+} else {
+  time <- as_timestamp(ttt, format= "date")
+}
+ 
 historical_data <- as.vector(historical_data)
 dim(historical_data) <- c(
   model = 1,
@@ -109,7 +122,16 @@ dim(historical_data) <- c(
   time = length(time)
 )
 historical_data <- aperm(historical_data, c(1, 2, 5, 4, 3))
-attr(historical_data, "Variables")$dat1$time <- time
+
+
+if (calendar == "360_day" || calendar == "365_day" ) {
+  attr(historical_data, "Variables")$dat1$time <- as.POSIXct(as.PCICt(time, calendar)) 
+  calendar = "gregorian"
+} else if (calendar == "standard" || calendar == "gregorian" || calendar == "proleptic_gregorian") {
+  attr(historical_data, "Variables")$dat1$time <- time
+} else {
+  attr(historical_data, "Variables")$dat1$time <- as.POSIXct(time)
+}
 names(dim(historical_data)) <-
   c("model", "var", "time", "lon", "lat")
 time_dimension <- which(names(dim(historical_data)) == "time")
@@ -134,12 +156,20 @@ for (i in seq_along(projection_filenames)) {
   proj_nc <- nc_open(projection_filenames[i])
   projection_data <- ncvar_get(proj_nc, var0)
   time <- ncvar_get(proj_nc, "time")
-  start_date <- as.POSIXct(substr(ncatt_get(
-    proj_nc, "time",
+
+  start_date <- ncatt_get(
+    hist_nc, "time",
     "units"
-  )$value, 11, 29))
+  )$value
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
-  time <- as.Date(time, origin = start_date, calendar = calendar)
+  ttt <- CFtime(start_date, calendar, time)
+
+  if (calendar == "standard" || calendar == "gregorian" || calendar == "proleptic_gregorian") {
+    time <- as_timestamp(ttt, format= "date", asPOSIX = TRUE)
+  } else {
+    time <- as_timestamp(ttt, format= "date")
+  }
+
   nc_close(proj_nc)
   projection_data <- as.vector(projection_data)
   dim(projection_data) <- c(
@@ -150,10 +180,19 @@ for (i in seq_along(projection_filenames)) {
     time = length(time)
   )
   projection_data <- aperm(projection_data, c(1, 2, 5, 4, 3))
-  attr(projection_data, "Variables")$dat1$time <- time
+
+  if (calendar == "360_day" || calendar == "365_day" ) {
+    attr(projection_data, "Variables")$dat1$time <- as.POSIXct(as.PCICt(time, calendar)) 
+    calendar = "gregorian"
+  } else if (calendar == "standard" || calendar == "gregorian" || calendar == "proleptic_gregorian") {
+    attr(projection_data, "Variables")$dat1$time <- time 
+  } else {
+    attr(projection_data, "Variables")$dat1$time <- as.POSIXct(time) 
+  }
   names(dim(projection_data)) <-
     c("model", "var", "time", "lon", "lat")
   # ------------------------------
+
   heatwave <- WaveDuration(
     projection_data,
     threshold,

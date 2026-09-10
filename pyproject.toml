@@ -384,6 +384,7 @@ platforms = ["linux-64"]
 "r-base" = ">=4.4"
 "r-abind" = "*"
 "r-akima" = "*"
+"r-CFtime" = "*"
 "r-climdex.pcic" = "*"
 "r-climprojdiags" = "*"
 "r-docopt" = "*"
