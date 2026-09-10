@@ -41,7 +41,7 @@ experiment <- unlist(unname(experiment))
 
 if ('esm-hist' %in% experiment) {
     historical <- 'esm-hist'
-} else { 
+} else {
     historical <- 'historical' }
 
 reference_files <- which(unname(experiment) == "historical")
@@ -112,7 +112,7 @@ if (calendar == "standard" || calendar == "gregorian" || calendar == "proleptic_
 } else {
   time <- as_timestamp(ttt, format= "date")
 }
- 
+
 historical_data <- as.vector(historical_data)
 dim(historical_data) <- c(
   model = 1,
@@ -125,7 +125,7 @@ historical_data <- aperm(historical_data, c(1, 2, 5, 4, 3))
 
 
 if (calendar == "360_day" || calendar == "365_day" ) {
-  attr(historical_data, "Variables")$dat1$time <- as.POSIXct(as.PCICt(time, calendar)) 
+  attr(historical_data, "Variables")$dat1$time <- as.POSIXct(as.PCICt(time, calendar))
   calendar = "gregorian"
 } else if (calendar == "standard" || calendar == "gregorian" || calendar == "proleptic_gregorian") {
   attr(historical_data, "Variables")$dat1$time <- time
@@ -182,12 +182,12 @@ for (i in seq_along(projection_filenames)) {
   projection_data <- aperm(projection_data, c(1, 2, 5, 4, 3))
 
   if (calendar == "360_day" || calendar == "365_day" ) {
-    attr(projection_data, "Variables")$dat1$time <- as.POSIXct(as.PCICt(time, calendar)) 
+    attr(projection_data, "Variables")$dat1$time <- as.POSIXct(as.PCICt(time, calendar))
     calendar = "gregorian"
   } else if (calendar == "standard" || calendar == "gregorian" || calendar == "proleptic_gregorian") {
-    attr(projection_data, "Variables")$dat1$time <- time 
+    attr(projection_data, "Variables")$dat1$time <- time
   } else {
-    attr(projection_data, "Variables")$dat1$time <- as.POSIXct(time) 
+    attr(projection_data, "Variables")$dat1$time <- as.POSIXct(time)
   }
   names(dim(projection_data)) <-
     c("model", "var", "time", "lon", "lat")
