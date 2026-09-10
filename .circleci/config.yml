@@ -23,14 +23,10 @@ commands:
             source "$BASH_ENV"
             pixi --version
       - run:
-          name: pixi install
+          name: Install pixi environment
           command: |
             set -euo pipefail
-            if [ -n "<<parameters.env>>" ]; then
-              pixi install --environment "<<parameters.env>>"
-            else
-              pixi install
-            fi
+            pixi install --environment "<<parameters.env>>"
       - save_cache:
           key: pixi-linux-v1-{{ arch }}-{{ checksum "pixi.lock" }}-<<parameters.env>>
           paths:
