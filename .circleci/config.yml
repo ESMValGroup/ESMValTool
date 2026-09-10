@@ -1,8 +1,38 @@
 ---
 version: 2.1
 
-orbs:
-  pixi: prefix-dev/pixi@0.1.0
+commands:
+  pixi_setup:
+    # Based on https://circleci.com/developer/orbs/orb/prefix-dev/pixi, but without
+    # the issues described in https://github.com/ESMValGroup/ESMValTool/issues/4582.
+    description: "Set up a pixi environment."
+    parameters:
+      env:
+        type: string
+        default: ""
+    steps:
+      - restore_cache:
+          keys:
+            - pixi-linux-v1-{{ arch }}-{{ checksum "pixi.lock" }}-<<parameters.env>>
+      - run:
+          name: Install pixi
+          command: |
+            set -euo pipefail
+            curl -fsSL https://pixi.sh/install.sh | sh
+            pixi --version
+      - run:
+          name: pixi install
+          command: |
+            set -euo pipefail
+            if [ -n "<<parameters.env>>" ]; then
+              pixi install --environment "<<parameters.env>>"
+            else
+              pixi install
+            fi
+      - save_cache:
+          key: pixi-linux-v1-{{ arch }}-{{ checksum "pixi.lock" }}-<<parameters.env>>
+          paths:
+            - ~/.cache/rattler
 
 jobs:
   tests:
@@ -12,7 +42,7 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - pixi/pixi_setup
+      - pixi_setup
       - run:
           name: Check dependencies are compatible and installed
           command: |
@@ -67,7 +97,7 @@ jobs:
           command: echo $(date '+%Y-%m') | tee cache_key.txt
       - restore_cache:
           key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - pixi/pixi_setup:
+      - pixi_setup:
           env: esmvaltool-base
       - run:
           name: Check dependencies are compatible
@@ -107,7 +137,7 @@ jobs:
           command: echo $(date '+%Y-%m') | tee cache_key.txt
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - pixi/pixi_setup:
+      - pixi_setup:
           env: esmvalcore-dev
       - run:
           name: Run tests
@@ -144,7 +174,7 @@ jobs:
     resource_class: medium
     steps:
       - checkout
-      - pixi/pixi_setup
+      - pixi_setup
       - run:
           name: Build documentation
           command: pixi run --as-is doc --fail-on-warning --show-traceback
