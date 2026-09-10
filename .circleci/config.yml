@@ -9,7 +9,7 @@ commands:
     parameters:
       env:
         type: string
-        default: ""
+        default: "default"
     steps:
       - restore_cache:
           keys:
