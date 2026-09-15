@@ -69,7 +69,7 @@ Upcoming releases
 Past releases
 ^^^^^^^^^^^^^
 
-For past release dates, see :ref:`Past releases <appendix>`.
+For past release dates, see :ref:`Past releases <past_releases>`.
 
 .. _release_steps:
 
@@ -87,7 +87,7 @@ These are the detailed steps to take to make a release.
 #. **Determine dates, update schedule, inform all issues in the milestone.**
 
    - The release manager will determine the dates for the feature freeze and planned release, and update the :ref:`release_schedule` to include a table
-     with the current release dates. See :ref:`Past releases <appendix>` for an example.
+     with the current release dates. See :ref:`Past releases <past_releases>` for an example.
    - Add the freeze dates as due date to the milestones for ESMValCore and ESMValTool. e.g. `ESMValTool Milestones <https://github.com/ESMValGroup/ESMValTool/milestones>`__
    - Comment on any issues and PRs in the milestone to inform the assignees of the feature freeze date two weeks in advance.
 
@@ -494,8 +494,11 @@ Find the `CONTAINER ID` of the image you would like to save and run
 where ``633696a8b53c`` is the an example of a container ID, replace it by
 by the actual ID.
 
+
+.. _past_releases:
+
 Appendix 1: Past releases
------------------------
+-------------------------
 
 
 - 2.15.0 (Release Manager: `Felicity Chun`_, `Romain Beucher`_)
@@ -757,7 +760,7 @@ Appendix 1: Past releases
 
 
 Appendix 2: Changelog
--------------------
+---------------------
 
 - 2020-09-09 Converted to rst and added to repository (future changes tracked by git)
 - 2020-09-03 Update during video conference (present: Bouwe Andela, Niels Drost, Javier Vegas, Valeriu Predoi, Klaus Zimmermann)
