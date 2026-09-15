@@ -12,6 +12,10 @@ Last access
 Download and processing instructions
     Download the following file:
     https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz
+
+NOTE this formatter is currently not working for Python 3.14 since pys2index is
+not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+from conda-forge.
 """
 
 from esmvaltool.cmorizers.data.formatters.datasets import (

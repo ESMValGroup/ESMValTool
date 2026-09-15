@@ -12,6 +12,10 @@ Last access
 Download and processing instructions
     Download the following file:
     https://aeronet.gsfc.nasa.gov/data_push/V3/AOD/AOD_Level20_Monthly_V3.tar.gz
+
+NOTE this formatter is currently not working for Python 3.14 since pys2index is
+not supported under Python 3.14! You will have to use Python<3.14, and install pys2index
+from conda-forge.
 """
 
 import logging

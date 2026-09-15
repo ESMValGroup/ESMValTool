@@ -2,11 +2,21 @@ import importlib
 import inspect
 import os
 
+import pytest
+
 import esmvaltool.cmorizers.data.downloaders.datasets as ddt
 import esmvaltool.cmorizers.data.formatters.datasets as fdt
 
 
-def test_formatters_have_required_interface():
+@pytest.mark.parametrize(
+    "formatter",
+    [
+        f
+        for f in os.listdir(os.path.dirname(fdt.__file__))
+        if f.endswith(".py") and f != "__init__.py"
+    ],
+)
+def test_formatters_have_required_interface(formatter: str) -> None:
     formatters_folder = os.path.dirname(fdt.__file__)
     arg_names = (
         "in_dir",
@@ -20,26 +30,31 @@ def test_formatters_have_required_interface():
 
     error = False
 
-    for formatter in os.listdir(formatters_folder):
-        if not formatter.endswith(".py") or formatter == "__init__.py":
-            continue
-        module = formatter[:-3]
+    module = formatter[:-3]
+    try:
         member = importlib.import_module(
             f".{module}",
             package="esmvaltool.cmorizers.data.formatters.datasets",
         )
-        spec = inspect.getfullargspec(member.__getattribute__("cmorization"))
-        try:
-            assert len(spec.args) == len(arg_names)
-            for x, arg in enumerate(spec.args):
-                assert arg == arg_names[x] or arg in unused_arg_names
-        except AssertionError:
-            print(
-                f"Bad args in {os.path.join(formatters_folder, formatter)}: "
-                f"{spec.args}",
+    except ModuleNotFoundError as exc:
+        if exc.name == "pys2index":
+            pytest.skip(
+                "py2index is not available, skipping test for "
+                f"{os.path.join(formatters_folder, formatter)}.",
             )
-            print(f"Expected {arg_names}.")
-            error = True
+        raise
+    spec = inspect.getfullargspec(member.__getattribute__("cmorization"))
+    try:
+        assert len(spec.args) == len(arg_names)
+        for x, arg in enumerate(spec.args):
+            assert arg == arg_names[x] or arg in unused_arg_names
+    except AssertionError:
+        print(
+            f"Bad args in {os.path.join(formatters_folder, formatter)}: "
+            f"{spec.args}",
+        )
+        print(f"Expected {arg_names}.")
+        error = True
     assert not error
 
 

@@ -52,8 +52,8 @@ GITHUB_REPO = {
 TIMEZONE = ZoneInfo("CET")
 
 PREVIOUS_RELEASE = {
-    "esmvalcore": datetime.datetime(2025, 10, 16, 0, tzinfo=TIMEZONE),
-    "esmvaltool": datetime.datetime(2025, 10, 20, 0, tzinfo=TIMEZONE),
+    "esmvalcore": datetime.datetime(2026, 3, 10, 0, tzinfo=TIMEZONE),
+    "esmvaltool": datetime.datetime(2026, 3, 13, 0, tzinfo=TIMEZONE),
 }
 
 LABELS = {
@@ -74,6 +74,7 @@ LABELS = {
         "iris",
         "preprocessor",
         "release",
+        "issue introduced since last release",
         "testing",
         "UX",
         "variable derivation",
@@ -92,6 +93,7 @@ LABELS = {
         "release",
         "testing",
         "installation",
+        "REF",
         "enhancement",  # uncategorized, keep at the bottom
     ),
 }
@@ -109,12 +111,16 @@ TITLES = {
     "observations": "Observational and re-analysis dataset support",
     "testing": "Automatic testing",
     "api": "Notebook API (experimental)",
+    "REF": "Rapid Evaluation Framework",
+    "issue introduced since last release": "Issues introduced since last release",
     "enhancement": "Improvements",
 }
 
 IGNORE_USERS = (
     "pre-commit-ci[bot]",
     "dependabot[bot]",
+    "github-actions[bot]",
+    "esmvalbot[bot]",
 )
 """Ignore all PRs from specific users (e.g., bots)."""
 
