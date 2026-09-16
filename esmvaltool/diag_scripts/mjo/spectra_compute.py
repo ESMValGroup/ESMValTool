@@ -168,7 +168,7 @@ class WKSpectra:
         # mean for later
         var_mean = var.collapsed("time", iris.analysis.MEAN)
 
-        ntime, nlat, nlon = var.data.shape
+        ntime = var.data.shape[0]
 
         # compute FFT
         cf = np.fft.fft(var.data, axis=0)
@@ -869,7 +869,7 @@ class WKSpectra:
 
         return pee_as
 
-    def _aggregate_power_spectra(self, pee_as, nlat, freq, n_samp_win):
+    def _aggregate_power_spectra(self, pee_as, nlat, freq):
         """Aggregate power spectra over latitudes and apply normalization.
 
         Parameters
@@ -880,8 +880,6 @@ class WKSpectra:
             Number of latitudes
         freq : np.ndarray
             Frequency array
-        n_samp_win : int
-            Number of samples per window
 
         Returns
         -------
