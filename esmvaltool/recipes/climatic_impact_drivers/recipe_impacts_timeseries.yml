@@ -212,7 +212,7 @@ diagnostics:
 
   timeseries_sst:
     additional_datasets:
-      - {dataset: ORAS5, project: native6, mip: Omon, version: CONS-v0.1, tier: 2, ugrid: false, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: ORAS5/oras5_mesh_T.nc}
+      - {dataset: ORAS5, project: native6, type: reanaly, mip: Omon, version: CONS-v0.1, tier: 2, ugrid: false, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: ORAS5/oras5_mesh_T.nc}
     description: Plot timeseries showing the sea surface temperature.
     variables:
       tos:
@@ -239,7 +239,7 @@ diagnostics:
 
   timeseries_mld:
     additional_datasets:
-      - {dataset: ORAS5, project: native6, mip: Omon, version: CONS-v0.1, tier: 2, ugrid: false, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: ORAS5/oras5_mesh_T.nc}
+      - {dataset: ORAS5, project: native6, type: reanaly, mip: Omon, version: CONS-v0.1, tier: 2, ugrid: false, supplementary_variables: [{short_name: areacello, skip: true},{short_name: sftof, skip: true}], horizontal_grid: ORAS5/oras5_mesh_T.nc}
     description: Plot timeseries showing the mixed layer depth.
     variables:
       mlotst:
