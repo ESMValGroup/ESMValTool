@@ -3,10 +3,10 @@
 ---
 documentation:
   title: |
-    Metrics for the Indian Ocean. 
+    Metrics for the Indian Ocean.
 
   description: |
-    Recipe for calculating the Dipole Mode Index. 
+    Recipe for calculating the Dipole Mode Index.
 
   authors:
     - righi_mattia
@@ -47,7 +47,7 @@ preprocessors:
     extract_season:
       season: SON
     convert_units:
-      units: celsius    
+      units: celsius
   east_pole_abs_son:
     extract_region:
       start_longitude: 90
@@ -62,7 +62,7 @@ preprocessors:
     extract_season:
       season: SON
     convert_units:
-      units: celsius  
+      units: celsius
   east_pole_son_timeseries:
     extract_region:
       start_longitude: 90
@@ -76,7 +76,7 @@ preprocessors:
     seasonal_statistics:
       operator: mean
     convert_units:
-      units: celsius  
+      units: celsius
   west_pole_son_timeseries:
     extract_region:
       start_longitude: 50
@@ -90,7 +90,7 @@ preprocessors:
     seasonal_statistics:
       operator: mean
     convert_units:
-      units: celsius  
+      units: celsius
   west_pole_3d_son:
     extract_region:
       start_longitude: 50
@@ -107,7 +107,7 @@ preprocessors:
     extract_season:
       season: SON
     convert_units:
-      units: celsius 
+      units: celsius
   east_pole_3d_son:
     extract_region:
       start_longitude: 90
@@ -124,7 +124,7 @@ preprocessors:
     extract_season:
       season: SON
     convert_units:
-      units: celsius   
+      units: celsius
   ceio_atm_son:
     extract_region:
       start_longitude: 70
@@ -177,7 +177,7 @@ preprocessors:
         end_year: 2010
         end_month: 12
         end_day: 31
-      standardize: false    
+      standardize: false
     extract_season:
       season: SON
     custom_order: true
@@ -200,7 +200,7 @@ preprocessors:
         end_year: 2010
         end_month: 12
         end_day: 31
-      standardize: false    
+      standardize: false
     extract_season:
       season: SON
     custom_order: true
@@ -209,7 +209,7 @@ preprocessors:
       start_longitude: -170
       end_longitude: -120
       start_latitude: -5
-      end_latitude: 5 
+      end_latitude: 5
     area_statistics:
       operator: mean
     climate_statistics:
@@ -218,13 +218,13 @@ preprocessors:
     extract_season:
       season: DJF
     convert_units:
-      units: celsius  
+      units: celsius
 
 # Taylor plots
   IO_atm_seas:
     extract_region:
       start_longitude: 50
-      end_longitude: 110 
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 10
     extract_levels:     ## Can't use uas as no matching obs for this variable
@@ -239,7 +239,7 @@ preprocessors:
   IO_atm_annual:
     extract_region:
       start_longitude: 50
-      end_longitude: 110 
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 10
     extract_levels:     ## Can't use uas as no matching obs for this variable
@@ -254,7 +254,7 @@ preprocessors:
   IO_atm_surf_seas:
     extract_region:
       start_longitude: 50
-      end_longitude: 110 
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 10
     climate_statistics:
@@ -266,7 +266,7 @@ preprocessors:
   IO_atm_surf_annual:
     extract_region:
       start_longitude: 50
-      end_longitude: 110 
+      end_longitude: 110
       start_latitude: -10
       end_latitude: 10
     climate_statistics:
@@ -285,7 +285,7 @@ preprocessors:
       operator: mean
       period: season
     convert_units:
-      units: celsius  
+      units: celsius
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -299,10 +299,10 @@ preprocessors:
       operator: mean
       period: full
     convert_units:
-      units: celsius 
+      units: celsius
     regrid:
       target_grid: 1x1
-      scheme: linear 
+      scheme: linear
   IO_abs_seas_3d:
     extract_region:
       start_longitude: 50
@@ -317,7 +317,7 @@ preprocessors:
       operator: mean
       period: season
     convert_units:
-      units: celsius  
+      units: celsius
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -335,10 +335,10 @@ preprocessors:
       operator: mean
       period: full
     convert_units:
-      units: celsius 
+      units: celsius
     regrid:
       target_grid: 1x1
-      scheme: linear 
+      scheme: linear
 
 # Lon-time plots
   eio_monthly:
@@ -351,7 +351,7 @@ preprocessors:
       operator: mean
       period: month
     convert_units:
-      units: celsius  
+      units: celsius
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -399,7 +399,7 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
     convert_units:
-      units: celsius 
+      units: celsius
 
 # Monthly plotting
   ceio_atm_monthly:
@@ -428,7 +428,7 @@ preprocessors:
       operator: mean
       period: month
     convert_units:
-      units: celsius  
+      units: celsius
   west_pole_monthly:
     extract_region:
       start_longitude: 50
@@ -441,7 +441,7 @@ preprocessors:
       operator: mean
       period: month
     convert_units:
-      units: celsius  
+      units: celsius
   east_pole_monthly_atm:
     extract_region:
       start_longitude: 90
@@ -475,7 +475,7 @@ preprocessors:
       start_longitude: 0
       end_longitude: 360
       start_latitude: -2
-      end_latitude: 2    
+      end_latitude: 2
     extract_volume:
       z_min: 0.
       z_max: 200.
@@ -614,12 +614,12 @@ diagnostics:
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
 
-    
-    scripts: 
+
+    scripts:
       scatter_script:
         script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/cmip_scatter_portrait.py
         highlight_datasets: *highlight_datasets
-  
+
   taylor_plotting:
     variables:
       IO_wind_seas:
@@ -723,7 +723,7 @@ diagnostics:
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
 
-    scripts: 
+    scripts:
       taylor_script:
         script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/taylor_plots_cmip.py
         highlight_datasets: *highlight_datasets
@@ -784,7 +784,7 @@ diagnostics:
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
 
-    scripts: 
+    scripts:
       lon_time_script:
         script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/lon_time_cmip.py
         highlight_datasets: *highlight_datasets
@@ -844,7 +844,7 @@ diagnostics:
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gr}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gr}
       west_pr_monthly:
-        short_name: pr  
+        short_name: pr
         mip: Amon
         supplementary_variables:
         - short_name: areacella
@@ -857,7 +857,7 @@ diagnostics:
           - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gr}
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gr}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gr}
-    scripts: 
+    scripts:
       monthly_ts_script:
         script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/monthly_plots_cmip.py
         highlight_datasets: *highlight_datasets
@@ -865,7 +865,7 @@ diagnostics:
 
 
   eq_region_analysis:
-    variables: 
+    variables:
       eq_region:
         short_name: thetao
         preprocessor: eq_region_3d_seas
@@ -878,9 +878,8 @@ diagnostics:
           - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
           - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2005, end_year: 2010, grid: gn}
 
-    
-    scripts: 
+
+    scripts:
       eq_scripts:
         script: /data/users/hannah.ellis/ESMValTool/esmvaltool/diag_scripts/indian_ocean/eq_therm_cmip.py
         highlight_datasets: *highlight_datasets
-
