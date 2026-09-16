@@ -22,7 +22,7 @@ the instructions for
 .. note::
 
     A complete installation requires about 6 GB of disk space, while a minimal
-    installation requires about 2 GB of disk space. The ESMValTool package itself
+    installation (Python-only) requires about 2 GB of disk space. The ESMValTool package itself
     is only a few MB in size, but it builds on many other software packages, which
     are installed as dependencies.
 
