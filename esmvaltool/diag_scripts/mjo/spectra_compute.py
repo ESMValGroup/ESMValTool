@@ -258,7 +258,7 @@ class WKSpectra:
 
     def resolve_waves_hayashi(self, varfft):
         """
-        Create array PEE(NL+1,NT+1) which contains the (real) power spectrum.
+        Create array power_spectra(NL+1,NT+1) which contains the (real) power spectrum.
 
         All the following assume indexing starting with 0
         In this array, the negative wavenumbers will be from pn=0 to NL/2-1
@@ -269,7 +269,7 @@ class WKSpectra:
         Information about time mean will be for pt=NT/2  .
         Information about the Nyquist Frequency is at pt=0 and pt=NT
 
-        In PEE, define the
+        In power_spectra, define the
         WESTWARD waves to be either +ve frequency
                  and -ve wavenumber or -ve freq and +ve wavenumber.
         EASTWARD waves are either +ve freq and +ve wavenumber
@@ -286,7 +286,7 @@ class WKSpectra:
 
         For ffts that return the coefficients as described above, here is the algorithm
         coeff array varfft(2,n,t)   dimensioned (2,0:numlon-1,0:numtim-1)
-        new space/time pee(2,pn,pt) dimensioned (2,0:numlon  ,0:numtim  )
+        new space/time power_spectra(2,pn,pt) dimensioned (2,0:numlon  ,0:numtim  )
 
         NOTE: one larger in both freq/space dims
         the initial index of 2 is for the real (indx 0) and imag (indx 1) parts of the array
@@ -306,19 +306,25 @@ class WKSpectra:
 
         """
         n, mlon = varfft.shape
-        pee = np.ones([n + 1, mlon + 1]) * -999.0  # initialize
+        power_spectra = np.ones([n + 1, mlon + 1]) * -999.0  # initialize
         # -999 scaling is for testing purpose
-        # Create the real power spectrum pee equals sqrt(real^2+imag^2)^2
+        # Create the real power spectrum power_spectra equals sqrt(real^2+imag^2)^2
         varfft = np.abs(varfft) ** 2
-        pee[: n // 2, : mlon // 2] = varfft[n // 2 : n, mlon // 2 : 0 : -1]
-        pee[n // 2 :, : mlon // 2] = varfft[: n // 2 + 1, mlon // 2 : 0 : -1]
-        pee[: n // 2 + 1, mlon // 2 :] = varfft[n // 2 :: -1, : mlon // 2 + 1]
-        pee[n // 2 + 1 :, mlon // 2 :] = varfft[
+        power_spectra[: n // 2, : mlon // 2] = varfft[
+            n // 2 : n, mlon // 2 : 0 : -1
+        ]
+        power_spectra[n // 2 :, : mlon // 2] = varfft[
+            : n // 2 + 1, mlon // 2 : 0 : -1
+        ]
+        power_spectra[: n // 2 + 1, mlon // 2 :] = varfft[
+            n // 2 :: -1, : mlon // 2 + 1
+        ]
+        power_spectra[n // 2 + 1 :, mlon // 2 :] = varfft[
             n - 1 : n // 2 - 1 : -1,
             : mlon // 2 + 1,
         ]
 
-        return pee
+        return power_spectra
 
     def wk_smooth121(self, var):
         """
@@ -375,7 +381,9 @@ class WKSpectra:
         """Return the index of the array value closest to the target value."""
         return (np.abs(array - value)).argmin()
 
-    def compute_background(self, pee_as, freq, minwav4smth, maxwav4smth):
+    def compute_background(
+        self, power_spectra_as, freq, minwav4smth, maxwav4smth
+    ):
         """
         Derive the background spectrum (red noise).
 
@@ -383,7 +391,7 @@ class WKSpectra:
         [2] Put fill value in mean
         [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
         """
-        psumb = np.sum(pee_as, axis=0)  # sum over all latitudes
+        psumb = np.sum(power_spectra_as, axis=0)  # sum over all latitudes
         n, _mlon = psumb.shape
 
         for tt in range(n // 2 + 1, n):
@@ -408,7 +416,7 @@ class WKSpectra:
                             psumb[tt, minwav4smth : maxwav4smth + 1],
                         )
                     )
-            if freq[tt] >= 0.3:
+            else:
                 for _i in range(1, 41):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
                         self.wk_smooth121(
@@ -820,7 +828,7 @@ class WKSpectra:
         np.ndarray
             Power spectrum array with shape (nlat, n_samp_win+1, mlon+1)
         """
-        pee_as = np.zeros([nlat, n_samp_win + 1, mlon + 1])
+        power_spectra_as = np.zeros([nlat, n_samp_win + 1, mlon + 1])
 
         for nl in range(nlat):
             logging.info("Latitude: nl = %s", nl)
@@ -858,23 +866,23 @@ class WKSpectra:
                 ft.data = np.fft.fft2(work.data) / mlon / n_samp_win
 
                 # Shift FFTs
-                pee = self.resolve_waves_hayashi(ft.data)
+                power_spectra_window = self.resolve_waves_hayashi(ft.data)
 
                 # Average over windows
-                pee_as[nl, :, :] += pee / n_window
+                power_spectra_as[nl, :, :] += power_spectra_window / n_window
 
                 nw += 1
                 nt_strt = nt_last + n_samp_skip
                 nt_last = nt_strt + n_samp_win
 
-        return pee_as
+        return power_spectra_as
 
-    def _aggregate_power_spectra(self, pee_as, nlat, freq):
+    def _aggregate_power_spectra(self, power_spectra_as, nlat, freq):
         """Aggregate power spectra over latitudes and apply normalization.
 
         Parameters
         ----------
-        pee_as : np.ndarray
+        power_spectra_as : np.ndarray
             Power spectrum array
         nlat : int
             Number of latitudes
@@ -888,11 +896,11 @@ class WKSpectra:
         """
         # Sum over hemispheres
         if nlat % 2 == 0:
-            psumanti = np.sum(pee_as[nlat // 2 : nlat], axis=0)
-            psumsym = np.sum(pee_as[: nlat // 2], axis=0)
+            psumanti = np.sum(power_spectra_as[nlat // 2 : nlat], axis=0)
+            psumsym = np.sum(power_spectra_as[: nlat // 2], axis=0)
         else:
-            psumanti = np.sum(pee_as[nlat // 2 + 1 : nlat], axis=0)
-            psumsym = np.sum(pee_as[: nlat // 2 + 1], axis=0)
+            psumanti = np.sum(power_spectra_as[nlat // 2 + 1 : nlat], axis=0)
+            psumsym = np.sum(power_spectra_as[: nlat // 2 + 1], axis=0)
 
         # Double for total variance
         psumanti = 2.0 * psumanti
@@ -1264,7 +1272,7 @@ class WKSpectra:
 
         # Compute FFT windows for all latitudes
         tim_taper = 0.1
-        pee_as = self._compute_fft_windows(
+        power_spectra_as = self._compute_fft_windows(
             x_as,
             nlat,
             mlon,
@@ -1277,7 +1285,7 @@ class WKSpectra:
 
         # Aggregate power spectra over latitudes
         psumanti, psumsym = self._aggregate_power_spectra(
-            pee_as, nlat, freq, n_samp_win
+            power_spectra_as, nlat, freq, n_samp_win
         )
 
         # Apply smoothing
@@ -1305,7 +1313,9 @@ class WKSpectra:
         psumsym_cube = self.make_cube(psumsym, wave, freq)
 
         # Compute background spectrum
-        psumb = self.compute_background(pee_as, freq, ind_strt, ind_last)
+        psumb = self.compute_background(
+            power_spectra_as, freq, ind_strt, ind_last
+        )
         psumb_nolog = np.ma.masked_array(psumb)
         psumb = np.ma.log10(psumb)
         psumb_cube = self.make_cube(psumb, wave, freq)
