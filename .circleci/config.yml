@@ -1,8 +1,36 @@
 ---
 version: 2.1
 
-orbs:
-  pixi: prefix-dev/pixi@0.1.0
+commands:
+  pixi_setup:
+    # Based on https://circleci.com/developer/orbs/orb/prefix-dev/pixi, but without
+    # the issues described in https://github.com/ESMValGroup/ESMValTool/issues/4582.
+    description: "Set up a pixi environment."
+    parameters:
+      env:
+        type: string
+        default: "default"
+    steps:
+      - restore_cache:
+          keys:
+            - pixi-linux-v1-{{ arch }}-{{ checksum "pixi.lock" }}-<<parameters.env>>
+      - run:
+          name: Install pixi
+          command: |
+            set -euo pipefail
+            curl -fsSL https://pixi.sh/install.sh | sh
+            echo 'export PATH="$HOME/.pixi/bin:$PATH"' >> "$BASH_ENV"
+            source "$BASH_ENV"
+            pixi --version
+      - run:
+          name: Install pixi environment
+          command: |
+            set -euo pipefail
+            pixi install --environment "<<parameters.env>>"
+      - save_cache:
+          key: pixi-linux-v1-{{ arch }}-{{ checksum "pixi.lock" }}-<<parameters.env>>
+          paths:
+            - ~/.cache/rattler
 
 jobs:
   tests:
@@ -12,10 +40,15 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - pixi/pixi_setup
+      - pixi_setup
       - run:
-          name: Check dependencies are compatible
-          command: pixi run --as-is pip check
+          name: Check dependencies are compatible and installed
+          command: |
+            pixi run --as-is pip check
+            # The following command should not install any new dependencies
+            # because they are already in the conda environment, but this is
+            # not checked.
+            pixi run --as-is pip install --dry-run .[all]
       - run:
           name: Check code formatting and mistakes
           command: pixi run --as-is pre-commit run --all
@@ -49,35 +82,71 @@ jobs:
       - store_artifacts:
           path: test-reports.tar.gz
 
+  test_esmvaltool_base_installation:
+    # Test running the example recipe with minimal dependencies.
+    docker:
+      - image: cimg/base:current
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Generate cache key
+          # Refresh the cache every month.
+          command: echo $(date '+%Y-%m') | tee cache_key.txt
+      - restore_cache:
+          key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+      - pixi_setup:
+          env: esmvaltool-base
+      - run:
+          name: Check dependencies are compatible
+          command: pixi run --as-is --environment esmvaltool-base pip check
+      - run:
+          name: Run example recipe
+          command: |
+            source <(pixi shell-hook --as-is --environment esmvaltool-base)
+            esmvaltool version
+            esmvaltool config copy data-intake-esgf.yml
+            python -c '
+            import intake_esgf
+            intake_esgf.conf["solr_indices"]["esgf.ceda.ac.uk"] = True
+            intake_esgf.conf["solr_indices"]["esgf-data.dkrz.de"] = True
+            intake_esgf.conf.save()
+            '
+            esmvaltool run --max-parallel-tasks=2 testing/recipe_python_for_CI.yml
+      - store_artifacts:
+          path: ~/esmvaltool_output
+      - save_cache:
+          key: test-base-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          paths:
+            - ~/climate_data
+
   test_upstream_development:
     # Test running recipes with the development version of ESMValCore. The
     # purpose of this test to discover backward-incompatible changes early on in
     # the development cycle.
     docker:
       - image: cimg/base:current
-    resource_class: large
+    resource_class: medium
     steps:
       - checkout
       - run:
           name: Generate cache key
-          command: echo $(date '+%Y')-$(expr $(date '+%V') / 2) | tee cache_key.txt
+          # Refresh the cache every month.
+          command: echo $(date '+%Y-%m') | tee cache_key.txt
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - pixi/pixi_setup:
+      - pixi_setup:
           env: esmvalcore-dev
       - run:
           name: Run tests
           command: |
-            pixi run --as-is --environment esmvalcore-dev test -n 4 --junitxml=test-reports/report.xml
+            pixi run --as-is --environment esmvalcore-dev test -n 2 --junitxml=test-reports/report.xml
       - store_test_results:
           path: test-reports/report.xml
       - run:
           name: Run recipes
           command: |
             source <(pixi shell-hook --as-is --environment esmvalcore-dev)
-            # Temporarily install intake-esgf here until there is a new release
-            # that includes https://github.com/esgf2-us/intake-esgf/pull/160.
-            pip install git+https://github.com/esgf2-us/intake-esgf@main
             esmvaltool version
             esmvaltool config copy data-intake-esgf.yml
             python -c '
@@ -90,23 +159,25 @@ jobs:
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
       - store_artifacts:
-          path: /root/esmvaltool_output
+          path: ~/esmvaltool_output
       - save_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
-            - /root/climate_data
+            - ~/climate_data
 
   build_documentation:
     # Test building documentation
     docker:
       - image: cimg/base:current
-    resource_class: medium+
+    resource_class: medium
     steps:
       - checkout
-      - pixi/pixi_setup
+      - pixi_setup
       - run:
           name: Build documentation
           command: pixi run --as-is doc --fail-on-warning --show-traceback
+      - store_artifacts:
+          path: doc/sphinx/build
 
   test_installation_from_conda:
     # Test conda package installation
@@ -148,6 +219,7 @@ workflows:
                 - main
     jobs:
       - tests
+      - test_esmvaltool_base_installation
       - test_upstream_development
       - build_documentation
       - test_installation_from_conda

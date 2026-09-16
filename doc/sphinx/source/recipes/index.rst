@@ -52,6 +52,7 @@ Atmosphere
    recipe_iht_toa
    recipe_impact
    recipe_lifetime
+   recipe_mjo_hovmoeller
    recipe_modes_of_variability
    recipe_mpqb_xch4
    recipe_quantilebias
@@ -132,6 +133,7 @@ Ocean
    recipe_esacci_oc
    recipe_enso_ref
    recipe_enso_clivar
+   recipe_ocean_transport
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr

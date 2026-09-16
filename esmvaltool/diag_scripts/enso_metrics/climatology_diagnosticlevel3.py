@@ -48,6 +48,7 @@ def plotmaps_level3(input_data, itcz=False):
         "ts": np.arange(20, 31, 1),
         "tauu": np.arange(-80, 90, 10),
     }
+    cubes = []
     for plt_pos, dataset in enumerate(input_data, start=121):
         logger.info(
             "dataset: %s - %s",
@@ -56,6 +57,8 @@ def plotmaps_level3(input_data, itcz=False):
         )
         cube, cbar_label, x_label = load_seacycle_stat(dataset, itcz)
 
+        # return cubes to save
+        cubes.append(cube)
         ax1 = plt.subplot(plt_pos)
         cf1 = iplt.contourf(
             cube,
@@ -78,7 +81,7 @@ def plotmaps_level3(input_data, itcz=False):
     cbar = fig.colorbar(cf1, cax=cax, orientation="horizontal", extend="both")
     cbar.set_label(cbar_label)
 
-    return fig
+    return fig, cubes
 
 
 def load_seacycle_stat(dataset, itcz=False):
@@ -169,16 +172,11 @@ def provenance_record(var_grp, ancestor_files):
     return record
 
 
-def save_plotdata(plotdata, group, pairs, cfg):
-    """Save both obs and model plotted data."""
-    for i, cube in enumerate(plotdata):
-        data_prov = provenance_record(group, [pairs[i]["filename"]])
-        datafile = [
-            pairs[i]["dataset"],
-            pairs[i]["short_name"],
-            pairs[i]["preprocessor"],
-        ]
-        save_data("_".join(datafile), data_prov, cfg, cube)
+def save_plotdata(plotdata, group, pairs, cfg, i):
+    """Save both obs and model plotted data, i: pairs index."""
+    data_prov = provenance_record(group, [pairs[i]["filename"]])
+    datafile = [pairs[i]["dataset"], pairs[i]["short_name"], group, "level3"]
+    save_data("_".join(datafile), data_prov, cfg, plotdata[i])
 
 
 def main(cfg):
@@ -193,16 +191,17 @@ def main(cfg):
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
-        logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
+        datasets = [attr["dataset"] for attr in var_attr]
+        logger.info("%s : %d, %s", grp, len(var_attr), datasets)
         if grp in ["pr_seacycle", "sst_seacycle", "tauu_seacycle"]:
             for metadata in var_attr:
                 # create pairs, add obs first to list
                 pairs = [var_attr[-1]]
                 logger.info("iterate though datasets\n %s", pformat(metadata))
-                if metadata["project"] == "CMIP6":
+                if metadata["project"].startswith("CMIP"):
                     pairs.append(metadata)
-                    fig = plotmaps_level3(pairs, itcz=False)
-                    # save_plotdata(data_cubes, grp, pairs, cfg)
+                    fig, data_cubes = plotmaps_level3(pairs, itcz=False)
+                    save_plotdata(data_cubes, grp, pairs, cfg, 1)
                     filename = "_".join(
                         [
                             metadata["dataset"],
@@ -224,7 +223,8 @@ def main(cfg):
                     if grp == "pr_seacycle":
                         # replace pr with doubleITCZ
                         grp_itcz = "doubleITCZ_seacycle"
-                        fig = plotmaps_level3(pairs, itcz=True)
+                        fig, itcz_cubes = plotmaps_level3(pairs, itcz=True)
+                        save_plotdata(itcz_cubes, grp_itcz, pairs, cfg, 1)
                         filename = "_".join(
                             [
                                 metadata["dataset"],
@@ -243,6 +243,12 @@ def main(cfg):
                             figure=fig,
                             dpi=300,
                         )
+                        obs_itcz = itcz_cubes[0]
+            # save obs data for each group at end so not repeated for each model
+            save_plotdata(data_cubes, grp, pairs, cfg, 0)
+            if obs_itcz:
+                save_plotdata(itcz_cubes, grp_itcz, pairs, cfg, 0)
+                obs_itcz = None
 
 
 if __name__ == "__main__":

@@ -43,8 +43,9 @@ def sst_regressed_2d(event_years, n34_area, n34_dec):
     for yr in event_years:
         enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
         year_enso = iris.Constraint(
-            time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-            in enso_epoch,
+            time=lambda cell, enso_epoch=enso_epoch: (
+                cell.point.year in enso_epoch
+            ),
         )
 
         n34_area_selected.append(n34_area.extract(year_enso).data)
@@ -150,8 +151,9 @@ def enso_composite_plot(model_n34, line):
         for yr in years:
             enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
             year_enso = iris.Constraint(
-                time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-                in enso_epoch,
+                time=lambda cell, enso_epoch=enso_epoch: (
+                    cell.point.year in enso_epoch
+                ),
             )
             cube_2 = model_n34.extract(year_enso)  # extract rolling 6yr
             cube_data.append(cube_2.data.data)
@@ -167,8 +169,9 @@ def sst_2d(event_years, n34_area):
     for yr in event_years:
         enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
         year_enso = iris.Constraint(
-            time=lambda cell, enso_epoch=enso_epoch: cell.point.year
-            in enso_epoch,
+            time=lambda cell, enso_epoch=enso_epoch: (
+                cell.point.year in enso_epoch
+            ),
         )
         n34_area_selected.append(n34_area.extract(year_enso).data)
 
@@ -348,10 +351,27 @@ def format_longitude(x, _pos):
     return f"{int(x)}°E"
 
 
-def get_provenance_record(caption, ancestor_files):
+def get_provenance_record(metric_level, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+    captions = {
+        "10lifecycle_2": (
+            "Spatial-temporal structure of sea surface temperature anomalies "
+            "(SSTA) associated with ENSO in the equatorial Pacific "
+            "(5°S-5°N average)"
+        ),
+        "10lifecycle_3": (
+            "Temporal lifecycle of sea surface temperature anomalies "
+            "(SSTA) during La Niña and El Niño in the central equatorial "
+            "Pacific (Niño3.4 averaged)"
+        ),
+        "10lifecycle_4": (
+            "Spatial-temporal structure of sea surface temperature anomalies "
+            "(SSTA) during La Niña and El Niño in the equatorial Pacific "
+            "(5°S-5°N average)"
+        ),
+    }
     record = {
-        "caption": caption,
+        "caption": captions.get(metric_level),
         "statistics": ["anomaly"],
         "domains": ["eq"],
         "plot_types": ["line"],
@@ -392,10 +412,20 @@ def main(cfg):
                 variable_group=var_prep,
                 project="OBS6",
             )
+            obs += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="obs4MIPs",
+            )
             models += select_metadata(
                 input_data,
                 variable_group=var_prep,
                 project="CMIP6",
+            )
+            models += select_metadata(
+                input_data,
+                variable_group=var_prep,
+                project="CMIP7",
             )
 
         # log
@@ -443,7 +473,7 @@ def main(cfg):
 
             for i, fig in enumerate(figs):
                 prov_record = get_provenance_record(
-                    f"ENSO metrics {metric} level {i + 2}",
+                    f"{metric}_{i + 2}",
                     dt_files,
                 )
 

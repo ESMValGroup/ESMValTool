@@ -522,12 +522,14 @@ See this `statement <https://www.apache.org/licenses/GPL-compatibility.html>`__
 by the authors of the Apache 2.0 license for more information.
 
 When adding or removing dependencies, please consider applying the changes in
-the following locations in ``pyproject.toml``:
+the following two locations in ``pyproject.toml``:
 
-- ``dependencies``
-  contains dependencies that can be installed from `PyPI <https://pypi.org/>`__
-- ``[tool.pixi.dependencies]``
-  contains dependencies that can be installed from `conda-forge <https://conda-forge.org/>`__
+- ``[project.optional-dependencies]``
+  the ``all`` item contains all dependencies needed to run the diagnostics
+  and CMORizer scripts, with the names used on `PyPI <https://pypi.org/>`__.
+- ``[tool.pixi.feature.all]``
+  the same list of dependencies as under ``[project.optional-dependencies]``,
+  but with the names used on `conda-forge <https://conda-forge.org/>`__.
 
 It is strongly preferred that those two lists are kept in sync, apart from
 differences in how packages are named. Run the command ``pixi lock --no-install``
@@ -535,9 +537,27 @@ after making changes to the dependencies to update the ``pixi.lock`` file, which
 is used to make sure that the same versions of packages are installed for
 all ESMValTool developers.
 
-In addition to these core dependencies, there are also optional dependencies
-for diagnostics that need R or NCL. These are listed in the sections
-``[tool.pixi.feature.r]`` and ``[tool.pixi.feature.ncl]`` in respectively.
+There is also a minimal set of dependencies that are required to run the example
+recipe ``examples/recipe_python.yml``. Please do not add new dependencies to
+this list unless they are really needed to support the core functionality of
+ESMValTool. These can be used by users who want to run ESMValTool with a minimal
+set of dependencies and want to manage which dependencies of diagnostics and/or
+CMORizer scripts get installed themselves. The minimal dependencies are listed
+in the following two locations in ``pyproject.toml``:
+
+- ``dependencies``
+  contains a minimal set of dependencies, those required to run the example
+  recipe, with the names used on `PyPI <https://pypi.org/>`__
+- ``[tool.pixi.dependencies]``
+  the same list of dependencies as under ``dependencies``, but with the names
+  used on `conda-forge <https://conda-forge.org/>`__
+
+It is strongly preferred that those two lists are kept in sync, apart from
+differences in how packages are named.
+
+In addition to the core dependencies mentioned above, there are further optional
+dependencies for diagnostics that need R or NCL. These are listed in the sections
+``[tool.pixi.feature.r]`` and ``[tool.pixi.feature.ncl]`` respectively.
 
 There are also three feature groups for development dependencies:
 
