@@ -1,0 +1,66 @@
+# (C) Crown Copyright 2026, the Met Office.
+---
+documentation:
+  title: Clisccp Anomaly Feedbacks by Cloud Type
+  description: >
+    Calculate cloud-fraction feedbacks by cloud type using regression of
+    deseasonalized lat-lon clisccp anomalies versus deseasonalized
+    global-mean tas anomalies.
+  authors:
+    - bodas-salcedo_alejandro
+  maintainer:
+    - bodas-salcedo_alejandro
+
+datasets:
+  - {
+    project: CMIP6,
+    dataset: HadGEM3-GC31-LL,
+    exp: amip,
+    ensemble: r5i1p1f3,
+    grid: gn,
+    start_year: 2000,
+    end_year: 2002,
+    }
+
+preprocessors:
+  # It is recommended to use a low resolution grid as the
+  # calculations are computationally expensive
+  lowres_anomalies:
+    custom_order: true
+    regrid:
+      target_grid: 10.0x10.0
+      scheme: area_weighted
+    anomalies:
+      period: monthly
+  global_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    anomalies:
+      period: monthly
+
+diagnostics:
+  clisccp_anomaly_feedbacks:
+    description: >
+      Cloud-type feedbacks from anomaly regression on native grid.
+    variables:
+      clisccp:
+        short_name: clisccp
+        mip: CFmon
+        preprocessor: lowres_anomalies
+      tas:
+        short_name: tas
+        mip: Amon
+        preprocessor: global_anomalies
+    scripts:
+      clisccp_anomaly_feedbacks:
+        script: cloud_feedbacks/clisccp_anomaly_feedbacks.py
+        create_plots: true
+        colormap_range: [-4.0, 4.0]  # optional
+        colormap_range_histogram: [-1.0, 1.0]  # optional
+        regions:
+          - {name: tropics, lat_min: -30, lat_max: 30}
+          - {name: northern_midlatitudes, lat_min: 30, lat_max: 60}
+          - {name: southern_midlatitudes, lat_min: -60, lat_max: -30}
+          - {name: high_latitudes_nh, lat_min: 60, lat_max: 90}
+          - {name: high_latitudes_sh, lat_min: -90, lat_max: -60}
