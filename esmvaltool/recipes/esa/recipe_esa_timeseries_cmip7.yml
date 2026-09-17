@@ -11,7 +11,7 @@ documentation:
     - lauer_axel
 
 datasets:
-  - {project: CMIP7, dataset: CanESM6-0-MR, exp: historical, ensemble: r1i1p1f1, grid: g150, mip: atmos, frequency: mon, region: glb, activity: CMIP, institute: CCCma}
+  - {project: CMIP7, dataset: CanESM6-0-MR, exp: historical, ensemble: r1i1p1f1, grid: g150, mip: atmos, frequency: mon, region: glb, activity: CMIP, institute: CCCma, alias: CMIP7-CanESM6-0-MR}
 #  - {project: CMIP6, dataset: IPSL-CM6A-LR, exp: historical, ensemble: r1i1p1f1, grid: gr}
 #  - {project: CMIP6, dataset: MIROC6, exp: historical, ensemble: r1i1p1f1, grid: gn, benchmark_dataset: true}
 #  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
@@ -61,6 +61,9 @@ datasets:
 #  - {dataset: SAM0-UNICON, grid: gn}
 #  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
 
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+
 preprocessors:
 
   pp_snw:
@@ -101,9 +104,6 @@ preprocessors:
       mask_out: sea
     area_statistics:
       operator: mean
-
-supplementary_variables:
-  - {short_name: areacella, skip: true}
 
 
 diagnostics:
@@ -205,6 +205,7 @@ diagnostics:
         project: CMIP6
         short_name: clt
         branding_suffix: tavg-u-hxy-u
+        supplementary_variables: *supplementary_variables
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM,
              alias: AVHRR-AMPM}
@@ -240,6 +241,11 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 2
+              CMIP7-CanESM6-0-MR:
+                color: 'green'
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
               default:
                 color: lightgray
                 label: null
