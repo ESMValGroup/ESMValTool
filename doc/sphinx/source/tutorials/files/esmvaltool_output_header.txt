@@ -1,0 +1,31 @@
+2026-05-11 15:22:20,686 UTC [280110] INFO
+______________________________________________________________________
+          _____ ____  __  ____     __    _ _____           _
+         | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+         |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+         | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+         |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________________________
+
+Earth System Model Evaluation Tool
+
+A community tool for the evaluation of Earth system models.
+
+https://esmvaltool.org
+
+The Earth System Model Evaluation Tool (ESMValTool) is a community
+diagnostics and performance metrics tool for the evaluation of Earth
+System Models (ESMs) that allows for routine comparison of single or
+multiple models, either against predecessor versions or against
+observations.
+
+Tutorial: https://tutorial.esmvaltool.org
+Documentation: https://docs.esmvaltool.org
+Contact: esmvaltool-dev@listserv.dfn.de
+
+If you find this software useful for your research, please cite it using
+https://doi.org/10.5281/zenodo.3387139 for ESMValCore or
+https://doi.org/10.5281/zenodo.3401363 for ESMValTool or
+any of the reference papers listed at https://esmvaltool.org/references/.
+
+Have fun!
