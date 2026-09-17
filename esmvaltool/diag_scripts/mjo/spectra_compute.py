@@ -171,16 +171,16 @@ class WKSpectra:
         ntime = var.data.shape[0]
 
         # compute FFT
-        cf = np.fft.fft(var.data, axis=0)
+        fft_coeffs = np.fft.fft(var.data, axis=0)
 
         freq = np.fft.fftfreq(ntime)
         x = freq.copy()
 
         # cutting frequencies
-        cf[np.abs(x) < f_crit] = 0.0
+        fft_coeffs[np.abs(x) < f_crit] = 0.0
 
         # inverse FFT
-        var_cut.data = np.fft.ifft(cf, axis=0).astype(float)
+        var_cut.data = np.fft.ifft(fft_coeffs, axis=0).astype(float)
         if not rmv_means:
             var_cut.data += var_mean.data
         return var_cut
@@ -201,17 +201,17 @@ class WKSpectra:
         var_sa = var.copy()  # copy to store the output
         nlat = var.shape[axis]  # get the number of latitude points
 
-        n2 = nlat // 2
-
         if axis == 1:
-            for nl in np.arange(0, n2):
-                logging.debug("(nlat - 1 - nl): %s", (nlat - 1 - nl))
-                logging.debug("nl: %s", nl)
-                var_sa.data[:, nl] = 0.5 * (
-                    var.data[:, nlat - 1 - nl] + var.data[:, nl]
+            for lat_index in np.arange(0, nlat // 2):
+                logging.debug(
+                    "(nlat - 1 - lat_index): %s", (nlat - 1 - lat_index)
                 )
-                var_sa.data[:, nlat - 1 - nl] = 0.5 * (
-                    var.data[:, nlat - 1 - nl] - var.data[:, nl]
+                logging.debug("lat_index: %s", lat_index)
+                var_sa.data[:, lat_index] = 0.5 * (
+                    var.data[:, nlat - 1 - lat_index] + var.data[:, lat_index]
+                )
+                var_sa.data[:, nlat - 1 - lat_index] = 0.5 * (
+                    var.data[:, nlat - 1 - lat_index] - var.data[:, lat_index]
                 )
 
             return var_sa
@@ -564,52 +564,40 @@ class WKSpectra:
 
     def get_colors(self, *, reverse=False):
         """Return the diagnostic colormap, optionally reversed."""
-        # Provided RGB values
-        rgb_values_str = (
-            ";R   G   B\n"
-            "130 32  240\n"
-            "0   0   150\n"
-            "0   0   205\n"
-            "65  105 225\n"
-            "30  144 255\n"
-            "0   191 255\n"
-            "160 210 255\n"
-            "210 245 255\n"
-            "255 255 200\n"
-            "255 225 50\n"
-            "255 170 0\n"
-            "255 110 0\n"
-            "255 0   0\n"
-            "200 0   0\n"
-            "160 35  35\n"
-            "255 105 180"
+        rgb_palette = np.array(
+            [
+                (130, 32, 240),
+                (0, 0, 150),
+                (0, 0, 205),
+                (65, 105, 225),
+                (30, 144, 255),
+                (0, 191, 255),
+                (160, 210, 255),
+                (210, 245, 255),
+                (255, 255, 200),
+                (255, 225, 50),
+                (255, 170, 0),
+                (255, 110, 0),
+                (255, 0, 0),
+                (200, 0, 0),
+                (160, 35, 35),
+                (255, 105, 180),
+            ],
+            dtype=int,
         )
 
-        # Split the string into lines
-        lines = rgb_values_str.split("\n")
+        if len(rgb_palette) < 256:
+            rgb_palette = self.spread_colorbar(rgb_palette)
+        else:
+            rgb_palette = self.spread_colorbar(rgb_palette)[:256, :]
 
-        # Remove the header line
-        lines.pop(0)
+        colour_map = mpl.colors.ListedColormap(rgb_palette / 256.0)
 
-        # Initialize an empty list to store RGB values
-        rgb_values = []
-
-        # Parse each line and extract RGB values
-        for line in lines:
-            # Split the line into individual RGB values
-            r, g, b = map(int, line.split())
-            # Append the RGB values to the list
-            rgb_values.append([r, g, b])
-
-        # Convert the list to a NumPy array
-        c = np.array(rgb_values)
-
-        if len(c) < 256:
-            c = self.spread_colorbar(c)
-            cm = mpl.colors.ListedColormap(c / 256.0)
-            if reverse:
-                cm = mpl.colors.ListedColormap(c[::-1, :] / 256.0)
-        return cm
+        if reverse:
+            colour_map = mpl.colors.ListedColormap(
+                rgb_palette[::-1, :] / 256.0
+            )
+        return colour_map
 
     def _setup_spectrum_plot(self, spec, freq, wave, levels, title):
         """Create a standard spectrum contour plot and return its figure and axes."""
@@ -684,7 +672,7 @@ class WKSpectra:
             "domains": ["global"],
             "plot_types": ["zonal"],
             "authors": [
-                "xavier_prince",
+                "sellar_alistair",
             ],
             "ancestors": filenames,
         }
@@ -711,7 +699,7 @@ class WKSpectra:
         ax.text(6.0, 0.4, "n=0 EIG", {"color": "k", "backgroundcolor": "w"})
         ax.text(-3.0, 0.475, "h=12", {"color": "k", "backgroundcolor": "w"})
 
-        caption = f"{figname}, [or other caption for antisymmetric]"
+        caption = f"{figname}"
         provenance_dict = self.get_provenance_record(caption)
         save_figure(figname, provenance_dict, self.cfg, figure=fig, close=True)
         logging.info("Plotted %s", figname)
@@ -1285,7 +1273,7 @@ class WKSpectra:
 
         # Aggregate power spectra over latitudes
         psumanti, psumsym = self._aggregate_power_spectra(
-            power_spectra_as, nlat, freq, n_samp_win
+            power_spectra_as, nlat, freq
         )
 
         # Apply smoothing
