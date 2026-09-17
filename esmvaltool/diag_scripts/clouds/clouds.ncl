@@ -369,6 +369,9 @@ begin
 
   res = True
 
+  pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm4.rgb")
+  res@cnFillColors = pal
+
   do ii = 0, nplots - 1
 
     imod = ind_all_sorted(ii)
@@ -780,6 +783,7 @@ begin
         res@gsnRightString = ""
       end if
 
+      print(res)
       maps(imod, 0) = gsn_csm_contour_map(wks0, data1, res)
     end if
 
