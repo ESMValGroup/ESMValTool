@@ -1213,9 +1213,6 @@ class WKSpectra:
         """
         # Validate longitude taper settings
         lon_taper = 0.0
-        if lon_taper > 0.0 or 360.0 != 360.0:
-            msg = "wkSpaceTime lon_taper>0 or (lon_r-lon_l)<360"
-            raise ValueError(msg)
 
         # Get initial dimensions and setup window parameters
         ntim, nlat, mlon = self.cube.shape
@@ -1234,13 +1231,35 @@ class WKSpectra:
         self.cube = self.cube.extract(constraint)
         ntim, nlat, mlon = self.cube.shape
 
+        # check for full coverage of longitude domain
+        lon = np.asarray(self.cube.coord("longitude").points, dtype=float)
+        lon = np.sort(np.mod(lon, 360.0))
+
+        if lon.size < 2:
+            raise ValueError("Longitude coordinate is empty")
+
+        d_lon = np.median(np.diff(lon))
+        full_coverage = np.isclose(
+            lon[-1] - lon[0] + d_lon, 360.0, atol=1e-4, rtol=1e-6
+        )
+
+        if lon_taper > 0.0 or not full_coverage:
+            msg = (
+                "wkSpaceTime requires a full global longitude domain with no "
+                f"longitude tapering: lon_taper = {lon_taper}, "
+                f"coverage = {lon[-1] - lon[0] + d_lon}"
+            )
+            raise ValueError(msg)
+
         # Remove trend and annual cycle
         varmean = self.cube.collapsed("time", iris.analysis.MEAN)
         self.cube.data = (
             scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
         )
         self.cube = self.remove_annual_cycle(
-            self.cube, f_crit, rmv_means=False
+            self.cube,
+            f_crit,
+            rmv_means=False,
         )
         logging.info("n_day_tot = %s", n_day_tot)
 
@@ -1273,7 +1292,9 @@ class WKSpectra:
 
         # Aggregate power spectra over latitudes
         psumanti, psumsym = self._aggregate_power_spectra(
-            power_spectra_as, nlat, freq
+            power_spectra_as,
+            nlat,
+            freq,
         )
 
         # Apply smoothing
