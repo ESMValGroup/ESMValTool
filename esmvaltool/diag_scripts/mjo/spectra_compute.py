@@ -33,7 +33,7 @@ class WKSpectra:
         self.cfg = cfg  # Store the configuration dictionary
         self.spd = 1  # samples per day (1 for daily data, 4 for 6-hourly data and so on)
         self.n_day_win = (
-            96  # Wheeler-Kiladis [WK] temporal window length (days)
+            96  # Number of days in the window for spectral analysis
         )
         self.n_day_skip = -65  # Negative means overlap
         self.lat_bound = 15  # Latitude bounds for MJO region (15S-15N)
@@ -939,7 +939,7 @@ class WKSpectra:
                         1.3,
                     ],
                 ),
-                "Precipitation": np.array(
+                "precipitation": np.array(
                     [
                         -0.5,
                         -0.4,
@@ -981,7 +981,7 @@ class WKSpectra:
                         1.8,
                     ],
                 ),
-                "Precipitation": np.array(
+                "precipitation": np.array(
                     [
                         0.5,
                         0.6,
@@ -1067,7 +1067,7 @@ class WKSpectra:
                         3.2,
                     ],
                 ),
-                "Precipitation": np.array(
+                "precipitation": np.array(
                     [
                         0.5,
                         0.6,
@@ -1643,7 +1643,7 @@ class WKSpectra:
             # Define contour levels for plots
             levels_dict = {
                 "toa_outgoing_longwave_flux": np.arange(0.0, 2.4, 0.2),
-                "Precipitation": np.arange(0.0, 0.055, 0.005),
+                "precipitation": np.arange(0.0, 0.055, 0.005),
                 "x_wind_850hPa": np.arange(0.007, 0.07, 0.007),
                 "x_wind_200hPa": np.arange(0.05, 0.5, 0.05),
             }
