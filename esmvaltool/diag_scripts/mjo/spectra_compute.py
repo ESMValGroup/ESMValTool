@@ -903,6 +903,18 @@ class WKSpectra:
 
         return psumanti, psumsym
 
+    def _normalize_contour_level_key(self, levels_dict, varname):
+        """Return the best matching key for a variable name."""
+        if varname in levels_dict:
+            return varname
+
+        candidates = [varname.lower(), varname.title(), varname.upper()]
+        for candidate in candidates:
+            if candidate in levels_dict:
+                return candidate
+
+        return varname
+
     def _get_contour_levels_dict(self, spectrum_type="raw"):
         """Get contour levels for different spectrum types.
 
@@ -916,222 +928,101 @@ class WKSpectra:
         dict
             Contour levels for each variable
         """
+        default_varnames = (
+            "toa_outgoing_longwave_flux",
+            "precipitation",
+            "x_wind_850hPa",
+            "x_wind_200hPa",
+        )
+        raw_default = np.arange(-1.3, 1.3 + 0.1, 0.1)
+        ratio_asym_default = np.arange(0.2, 1.9, 0.1)
+        ratio_sym_default = np.arange(0.2, 3.4, 0.2)
+
+        defaults = {
+            "raw": {
+                varname: raw_default.copy() for varname in default_varnames
+            },
+            "ratio": {
+                "asym": {
+                    varname: ratio_asym_default.copy()
+                    for varname in default_varnames
+                },
+                "sym": {
+                    varname: ratio_sym_default.copy()
+                    for varname in default_varnames
+                },
+            },
+        }
+
+        if spectrum_type not in defaults:
+            msg = f"Unsupported spectrum type: {spectrum_type}"
+            raise ValueError(msg)
+
+        levels_dict = defaults[spectrum_type]
+        user_levels = self.cfg.get("contour_levels", {}).get(spectrum_type, {})
+
+        if not user_levels:
+            logging.info(
+                "Using default contour levels for spectrum_type=%s: %s",
+                spectrum_type,
+                levels_dict,
+            )
+            return levels_dict
+
         if spectrum_type == "raw":
-            return {
-                "toa_outgoing_longwave_flux": np.array(
-                    [
-                        -1.3,
-                        -1.2,
-                        -1.1,
-                        -1,
-                        -0.8,
-                        -0.6,
-                        -0.4,
-                        -0.2,
-                        0.0,
-                        0.2,
-                        0.4,
-                        0.6,
-                        0.8,
-                        1.0,
-                        1.1,
-                        1.2,
-                        1.3,
-                    ],
-                ),
-                "precipitation": np.array(
-                    [
-                        -0.5,
-                        -0.4,
-                        -0.3,
-                        -0.2,
-                        -0.1,
-                        0,
-                        0.1,
-                        0.2,
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                    ],
-                ),
-                "x_wind_850hPa": np.arange(-3.25, 0.5, 0.25),
-                "x_wind_200hPa": np.arange(-3.3, 1.2, 0.3),
-            }
-        else:  # ratio
-            levels_asym = {
-                "toa_outgoing_longwave_flux": np.array(
-                    [
-                        0.2,
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1.0,
-                        1.1,
-                        1.2,
-                        1.3,
-                        1.4,
-                        1.5,
-                        1.6,
-                        1.7,
-                        1.8,
-                    ],
-                ),
-                "precipitation": np.array(
-                    [
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1.0,
-                        1.1,
-                        1.15,
-                        1.2,
-                        1.25,
-                        1.3,
-                        1.35,
-                        1.4,
-                        1.45,
-                        1.5,
-                        1.6,
-                        1.7,
-                    ],
-                ),
-                "x_wind_850hPa": np.array(
-                    [
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1.0,
-                        1.1,
-                        1.2,
-                        1.3,
-                        1.4,
-                        1.5,
-                        1.6,
-                        1.7,
-                        1.8,
-                        1.9,
-                    ],
-                ),
-                "x_wind_200hPa": np.array(
-                    [
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1.0,
-                        1.1,
-                        1.2,
-                        1.3,
-                        1.4,
-                        1.5,
-                        1.6,
-                        1.7,
-                        1.8,
-                        2,
-                    ],
-                ),
-            }
-            levels_sym = {
-                "toa_outgoing_longwave_flux": np.array(
-                    [
-                        0.2,
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1.0,
-                        1.1,
-                        1.2,
-                        1.4,
-                        1.7,
-                        2.0,
-                        2.4,
-                        2.8,
-                        3.2,
-                    ],
-                ),
-                "precipitation": np.array(
-                    [
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1.0,
-                        1.1,
-                        1.15,
-                        1.2,
-                        1.25,
-                        1.3,
-                        1.35,
-                        1.4,
-                        1.45,
-                        1.5,
-                        1.6,
-                        1.7,
-                    ],
-                ),
-                "x_wind_850hPa": np.array(
-                    [
-                        0.2,
-                        0.4,
-                        0.6,
-                        0.8,
-                        1.0,
-                        1.2,
-                        1.3,
-                        1.4,
-                        1.5,
-                        1.6,
-                        1.7,
-                        1.8,
-                        2,
-                        2.2,
-                        2.4,
-                        2.6,
-                        2.8,
-                    ],
-                ),
-                "x_wind_200hPa": np.array(
-                    [
-                        0.2,
-                        0.4,
-                        0.6,
-                        0.8,
-                        1.0,
-                        1.2,
-                        1.3,
-                        1.4,
-                        1.5,
-                        1.6,
-                        1.7,
-                        1.8,
-                        2,
-                        2.2,
-                        2.4,
-                        2.6,
-                        2.8,
-                    ],
-                ),
-            }
-            return {"asym": levels_asym, "sym": levels_sym}
+            merged = dict(levels_dict)
+            for varname, levels in user_levels.items():
+                key = self._normalize_contour_level_key(merged, varname)
+                merged[key] = np.asarray(levels)
+            logging.info(
+                "Using recipe contour levels for spectrum_type=%s: %s",
+                spectrum_type,
+                merged,
+            )
+            return merged
+
+        merged = {
+            "asym": dict(levels_dict["asym"]),
+            "sym": dict(levels_dict["sym"]),
+        }
+        for symmetry in ("asym", "sym"):
+            for varname, levels in user_levels.get(symmetry, {}).items():
+                key = self._normalize_contour_level_key(
+                    merged[symmetry], varname
+                )
+                merged[symmetry][key] = np.asarray(levels)
+        logging.info(
+            "Using recipe contour levels for spectrum_type=%s: %s",
+            spectrum_type,
+            merged,
+        )
+        return merged
+
+    def _get_variable_contour_levels(self, levels_dict):
+        """Return contour levels for the current variable name."""
+        key = self._normalize_contour_level_key(levels_dict, self.varname)
+        return levels_dict[key]
+
+    def _get_season_spectra_levels_dict(self):
+        """Get contour levels for seasonal spectra plots."""
+        defaults = {
+            "toa_outgoing_longwave_flux": np.arange(0.0, 2.4, 0.2),
+            "precipitation": np.arange(0.0, 0.055, 0.005),
+            "x_wind_850hPa": np.arange(0.007, 0.07, 0.007),
+            "x_wind_200hPa": np.arange(0.05, 0.5, 0.05),
+        }
+
+        user_levels = self.cfg.get("contour_levels", {}).get(
+            "season_spectra_levels", {}
+        )
+        if not user_levels:
+            return defaults
+
+        merged = dict(defaults)
+        for varname, levels in user_levels.items():
+            key = self._normalize_contour_level_key(merged, varname)
+            merged[key] = np.asarray(levels)
+        return merged
 
     def _plot_and_save_spectrum(
         self,
@@ -1171,7 +1062,9 @@ class WKSpectra:
         symmetry : str
             "asym" for anti-symmetric or "sym" for symmetric
         """
-        levels = self._get_contour_levels_dict("raw")[self.varname]
+        levels = self._get_variable_contour_levels(
+            self._get_contour_levels_dict("raw")
+        )
         plot_func = (
             self.plot_anti_symmetric
             if symmetry == "asym"
@@ -1419,7 +1312,9 @@ class WKSpectra:
         title_asym = f"{self.label} {self.varname} \n Anti-symmetric {spec_type} [15S-15N]"
         forename_asym = f"{self.runid}_{self.varname}_{spec_type}_Asym"
         figname_asym = str(Path(self.plot_dir) / forename_asym)
-        levels_asym = levels_dict.get("asym", levels_dict)[self.varname]
+        levels_asym = self._get_variable_contour_levels(
+            levels_dict.get("asym", levels_dict)
+        )
 
         self.plot_anti_symmetric(
             psumanti,
@@ -1441,7 +1336,9 @@ class WKSpectra:
         )
         forename_sym = f"{self.runid}_{self.varname}_{spec_type}_Sym"
         figname_sym = str(Path(self.plot_dir) / forename_sym)
-        levels_sym = levels_dict.get("sym", levels_dict)[self.varname]
+        levels_sym = self._get_variable_contour_levels(
+            levels_dict.get("sym", levels_dict)
+        )
 
         self.plot_symmetric(
             psumsym,
@@ -1640,19 +1537,13 @@ class WKSpectra:
             # Save the cube
             save_data(forename, provenance_dict, self.cfg, pow_cube)
 
-            # Define contour levels for plots
-            levels_dict = {
-                "toa_outgoing_longwave_flux": np.arange(0.0, 2.4, 0.2),
-                "precipitation": np.arange(0.0, 0.055, 0.005),
-                "x_wind_850hPa": np.arange(0.007, 0.07, 0.007),
-                "x_wind_200hPa": np.arange(0.05, 0.5, 0.05),
-            }
+            levels_dict = self._get_season_spectra_levels_dict()
 
             title = f"{self.label} \n {season}  daily {self.varname} [10S-10N]"
             figname = str(Path(self.plot_dir) / forename)
             self.mjo_wavenum_freq_season_plot(
                 pow_cube,
-                levels=levels_dict[self.varname],
+                levels=self._get_variable_contour_levels(levels_dict),
                 title=title,
                 figname=figname,
             )
