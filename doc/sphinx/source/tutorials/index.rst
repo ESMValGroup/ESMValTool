@@ -3,8 +3,6 @@
 Tutorials
 =========
 
-A tutorial is available on https://tutorial.esmvaltool.org.
-
 A tutorial is available on :doc:`ESMValTool Tutorial </tutorials/tutorial_overview>`.
 
 Learning resources

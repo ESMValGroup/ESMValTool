@@ -70,7 +70,7 @@ Main things you need to know before starting this course
     * `ESMValCore Source code <https://github.com/ESMValGroup/ESMValCore>`_
     * `ESMValTool Citation info <https://esmvaltool.org/references/>`_
 
-How to site the tutorial
+How to cite the tutorial
 ------------------------
 
 Please use citation information available at
@@ -100,4 +100,5 @@ Schedule
 
 
 The actual schedule may vary slightly depending on the topics and exercises
-chosen by the instructor.
+chosen by the instructor and how fast you work your way through the different
+episodes.
