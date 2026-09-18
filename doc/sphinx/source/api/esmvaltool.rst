@@ -34,3 +34,4 @@ Diagnostic Scripts
    esmvaltool.diag_scripts.climate_metrics.tcre
    esmvaltool.diag_scripts.climate_metrics.zec
    esmvaltool.diag_scripts.hydrology.hour_of_max_precipitation
+   esmvaltool.diag_scripts.tropopause.cpt_hovmoeller
