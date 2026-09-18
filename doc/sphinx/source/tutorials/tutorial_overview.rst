@@ -81,25 +81,31 @@ Schedule
 
 .. tabularcolumns:: |p{3cm}|p{5cm}|p{3cm}|
 
-+--------+----------------------------------+------------------------------------------------------+
-|        | :doc:`Setup <tutorial_setup>`    | Download files required for the lesson               |
-+--------+----------------------------------+------------------------------------------------------+
-|| 00:00 || :doc:`episode_1_introduction`   || What is ESMValTool?                                 |
-||       ||                                 || Who are the people behind ESMValTool?               |
-+--------+----------------------------------+------------------------------------------------------+
-|| 00:15 || :doc:`episode_2_quickstart`     || What is the purpose of the quickstart guide?        |
-||       ||                                 || How do I load and check the ESMValTool environment? |
-||       ||                                 || How do I configure ESMValTool?                      |
-||       ||                                 || How do I run a recipe?                              |
-+--------+----------------------------------+------------------------------------------------------+
-|        | Installation                     |                                                      |
-+--------+----------------------------------+------------------------------------------------------+
-|        | Configuration                    |                                                      |
-+--------+----------------------------------+------------------------------------------------------+
-|        | Running your first recipe        |                                                      |
-+--------+----------------------------------+------------------------------------------------------+
-|        | Conclusion of the basic tutorial |                                                      |
-+--------+----------------------------------+------------------------------------------------------+
++--------+-----------------------------------+--------------------------------------------------------------+
+|        | :doc:`Setup <tutorial_setup>`     | Download files required for the lesson                       |
++--------+-----------------------------------+--------------------------------------------------------------+
+|| 00:00 || :doc:`episode_1_introduction`    || What is ESMValTool?                                         |
+||       ||                                  || Who are the people behind ESMValTool?                       |
++--------+-----------------------------------+--------------------------------------------------------------+
+|| 00:15 || :doc:`episode_2_quickstart`      || What is the purpose of the quickstart guide?                |
+||       ||                                  || How do I load and check the ESMValTool environment?         |
+||       ||                                  || How do I configure ESMValTool?                              |
+||       ||                                  || How do I run a recipe?                                      |
++--------+-----------------------------------+--------------------------------------------------------------+
+|| 00:25 || Installation                     || What are the prerequisites for installing ESMValTool?       |
+||       ||                                  || How do I confirm that the installation was successful?      |
++--------+-----------------------------------+--------------------------------------------------------------+
+|  00:45 |  Configuration                    | What is the user configuration file and how should I use it? |
++--------+-----------------------------------+--------------------------------------------------------------+
+|| 01:10 || Running your first recipe        || How to run a recipe?                                        |
+||       ||                                  || What happens when I run a recipe?                           |
++--------+-----------------------------------+--------------------------------------------------------------+
+|| 01:40 || Conclusion of the basic tutorial || What do I do now?                                           |
+||       ||                                  || Where can I get help?                                       |
+||       ||                                  || What if I find a bug?                                       |
+||       ||                                  || Where can I find more information about ESMValtool?         |
+||       ||                                  || How can I cite ESMValtool?                                  |
++--------+-----------------------------------+--------------------------------------------------------------+
 
 
 
