@@ -37,7 +37,7 @@ Quickstart guide
 
 
 What is the purpose of the quickstart guide?
--------------------------------------------
+--------------------------------------------
 
 The purpose of the quickstart guide is to enable a user of ESMValTool to run
 ESMValTool as quickly as possible by making the minimum number of changes.
@@ -54,11 +54,11 @@ How do I load and check the ESMValTool environment?
 
 For this quickstart guide, it is assumed that ESMValTool has already been
 installed at the site where it will be run. If this is not the case, see the
-:doc:`Installation <installation>` episode in this tutorial.
+:doc:`Installation <episode_3_installation>` episode in this tutorial.
 
 Load the ESMValTool environment by following the instructions in the
-`ESMValTool installation and environment activation guide
-<https://esmvaltool.org>`_. This usually involves loading a module such as:
+:ref:`ESMValTool installation and environment activation guide <install_on_hpc>`.
+This will typically involving loading a module like so:
 
 .. code-block:: bash
 
@@ -91,7 +91,7 @@ Edit the ESMValTool user configuration file using your favourite text editor to
 uncomment the lines relating to the site where ESMValTool will be run.
 
 For more details about the ESMValTool user configuration file, see the
-:doc:`Configuration <configuration>` episode in this tutorial.
+:doc:`Configuration <episode_4_configuration>` episode in this tutorial.
 
 .. admonition:: Configure the tool
    :class: admonition-todo
@@ -101,7 +101,7 @@ For more details about the ESMValTool user configuration file, see the
 
 
 How do I run a recipe?
----------------------
+----------------------
 
 Run the example Python recipe:
 
@@ -122,10 +122,10 @@ The location of this file is printed to the screen near the end of the log:
 .. code-block:: bash
 
    YYYY-MM-DD HH:mm:SS, NNN UTC [NNNNN] INFO    Wrote recipe output to:
-   file:///$HOME/esmvaltool_output/recipe_python_<date>_<time>/index.html
+   file:///$HOME/esmvaltool_output/recipe_python_``<date>_<time>``/index.html
 
 For more details about running recipes, see the
-:doc:`Running your first recipe <recipe>` episode in this tutorial.
+:doc:`episode_5_recipe` episode in this tutorial.
 
 .. admonition:: Run an example recipe
    :class: admonition-todo
@@ -146,9 +146,9 @@ advanced workflows.
    :class: important
 
    * The purpose of the quickstart guide is to enable a user to run ESMValTool
-     as quickly as possible with minimal setup.
+     as quickly as possible without having to go through the whole tutorial.
    * Use ``module load`` to load the ESMValTool environment.
    * Use ``esmvaltool --help`` to check that the environment is working.
    * Use ``esmvaltool config copy defaults/config-user.yml`` to create the user
      configuration file.
-   * Use ``esmvaltool run <recipe>.yml`` to run a recipe.
+   * Use ``esmvaltool run ``<recipe>``.yml`` to run a recipe.
