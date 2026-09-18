@@ -223,7 +223,7 @@ class WKSpectra:
         msg = "decompose_sym_asym axis != 1"
         raise ValueError(msg)
 
-    def taper(self, ts, alpha=0.1, iopt=0):
+    def taper(self, time_series, alpha=0.1, iopt=0):
         """
         Apply split-cosine-bell tapering to the series x.
 
@@ -241,19 +241,23 @@ class WKSpectra:
             iopt  iopt=0 taper to series mean
             iopt  iopt=1 means *force* taper to 0.0
         """
-        if all(x == ts[0] for x in ts):
+        if all(x == time_series[0] for x in time_series):
             logging.info("all values equal")
             iopt = 1
-        tsmean = np.mean(ts) if iopt == 0 else 0.0
-        n = len(ts)
-        m = max(1, int(alpha * n + 0.5) // 2)
+        tsmean = np.mean(time_series) if iopt == 0 else 0.0
+        n_time_series = len(time_series)
+        m = max(
+            1, int(alpha * n_time_series + 0.5) // 2
+        )  # Ensure m is at least 1
         pim = np.pi / m
 
-        tst = ts.copy()
+        tst = time_series.copy()
         for i in range(1, m + 1):
             weight = 0.5 - 0.5 * np.cos(pim * (i - 0.5))
-            tst[i - 1] = (ts[i - 1] - tsmean) * weight + tsmean
-            tst[n - i] = (ts[n - i] - tsmean) * weight + tsmean
+            tst[i - 1] = (time_series[i - 1] - tsmean) * weight + tsmean
+            tst[n_time_series - i] = (
+                time_series[n_time_series - i] - tsmean
+            ) * weight + tsmean
         return tst
 
     def resolve_waves_hayashi(self, varfft):
@@ -305,22 +309,22 @@ class WKSpectra:
                  |  numtim/2+1 <= pt <= numtim            | numtim-1 <= t <= numtim/2
 
         """
-        n, mlon = varfft.shape
-        power_spectra = np.ones([n + 1, mlon + 1]) * -999.0  # initialize
+        ntime, mlon = varfft.shape
+        power_spectra = np.ones([ntime + 1, mlon + 1]) * -999.0  # initialize
         # -999 scaling is for testing purpose
         # Create the real power spectrum power_spectra equals sqrt(real^2+imag^2)^2
         varfft = np.abs(varfft) ** 2
-        power_spectra[: n // 2, : mlon // 2] = varfft[
-            n // 2 : n, mlon // 2 : 0 : -1
+        power_spectra[: ntime // 2, : mlon // 2] = varfft[
+            ntime // 2 : ntime, mlon // 2 : 0 : -1
         ]
-        power_spectra[n // 2 :, : mlon // 2] = varfft[
-            : n // 2 + 1, mlon // 2 : 0 : -1
+        power_spectra[ntime // 2 :, : mlon // 2] = varfft[
+            : ntime // 2 + 1, mlon // 2 : 0 : -1
         ]
-        power_spectra[: n // 2 + 1, mlon // 2 :] = varfft[
-            n // 2 :: -1, : mlon // 2 + 1
+        power_spectra[: ntime // 2 + 1, mlon // 2 :] = varfft[
+            ntime // 2 :: -1, : mlon // 2 + 1
         ]
-        power_spectra[n // 2 + 1 :, mlon // 2 :] = varfft[
-            n - 1 : n // 2 - 1 : -1,
+        power_spectra[ntime // 2 + 1 :, mlon // 2 :] = varfft[
+            ntime - 1 : ntime // 2 - 1 : -1,
             : mlon // 2 + 1,
         ]
 
@@ -328,7 +332,7 @@ class WKSpectra:
 
     def wk_smooth121(self, var):
         """
-        Smooth vv by passing it through a special 1-2-1 filter.
+        Smooth var by passing it through a special 1-2-1 filter.
 
         The first and last points are given 3-1 (1st) or 1-3 (last)
         weightings (Note that this conserves the total sum).
@@ -392,9 +396,9 @@ class WKSpectra:
         [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
         """
         psumb = np.sum(power_spectra_as, axis=0)  # sum over all latitudes
-        n, _mlon = psumb.shape
+        ntime, _mlon = psumb.shape
 
-        for tt in range(n // 2 + 1, n):
+        for tt in range(ntime // 2 + 1, ntime):
             if freq[tt] < 0.1:
                 for _i in range(1, 6):
                     psumb[tt, minwav4smth : maxwav4smth + 1] = (
@@ -429,8 +433,8 @@ class WKSpectra:
         # smth frequency up to .8 cycles per day
         for nw in range(minwav4smth, maxwav4smth + 1):
             for _i in range(1, 11):
-                psumb[n // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
-                    psumb[n // 2 + 1 : pt8cpd + 1, nw],
+                psumb[ntime // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
+                    psumb[ntime // 2 + 1 : pt8cpd + 1, nw],
                 )
         return psumb
 
@@ -449,8 +453,12 @@ class WKSpectra:
         re = 6.37122e06  # [m]   average radius of earth
         g = 9.80665  # [m/s] gravity at 45 deg lat used by the WMO
         omega = 7.292e-05  # [1/s] earth's angular vel
-        ll = 2.0 * pi * re * math.cos(abs(rlat))
-        beta = 2.0 * omega * math.cos(abs(rlat)) / re
+        ll = (
+            2.0 * pi * re * math.cos(abs(rlat))
+        )  # [m] length of latitude circle at rlat
+        beta = (
+            2.0 * omega * math.cos(abs(rlat)) / re
+        )  # [1/s/m] beta parameter at rlat
 
         apzwn = np.zeros(
             [n_wave_type, n_equiv_depth, n_planetary_wave],
