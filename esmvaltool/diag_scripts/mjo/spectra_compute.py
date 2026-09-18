@@ -31,7 +31,7 @@ class WKSpectra:
         check_missing: bool = True,
     ):
         self.cfg = cfg  # Store the configuration dictionary
-        self.spd = 1  # samples per day (1 for daily data, 4 for 6-hourly data and so on)
+        self.spd = 1  # Number of samples per day (1 for daily data, 4 for 6-hourly data and so on)
         self.n_day_win = (
             96  # Number of days in the window for spectral analysis
         )
@@ -934,7 +934,7 @@ class WKSpectra:
             "x_wind_850hPa",
             "x_wind_200hPa",
         )
-        raw_default = np.arange(-1.3, 1.3 + 0.1, 0.1)
+        raw_default = np.arange(-1.3, 1.4, 0.1)
         ratio_asym_default = np.arange(0.2, 1.9, 0.1)
         ratio_sym_default = np.arange(0.2, 3.4, 0.2)
 
