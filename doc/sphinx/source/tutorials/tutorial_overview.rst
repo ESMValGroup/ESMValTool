@@ -84,7 +84,7 @@ Schedule
 +--------+----------------------------------+----------------------------------------+
 |        | :doc:`Setup <tutorial_setup>`    | Download files required for the lesson |
 +--------+----------------------------------+----------------------------------------+
-|| 00:00 || :doc:`episode_1`                || What is ESMValTool?                   |
+|| 00:00 || :doc:`episode_1_introduction`   || What is ESMValTool?                   |
 ||       ||                                 || Who are the people behind ESMValTool? |
 +--------+----------------------------------+----------------------------------------+
 |        | Quickstart guide                 |                                        |
