@@ -28,4 +28,5 @@ While these are tailored for ACCESS users, they are still very informative.
 
    Overview <tutorial_overview>
    Setup <tutorial_setup>
-   Introduction <episode_1>
+   Introduction <episode_1_introduction>
+   Quickstart guide <episode_2_quickstart>
