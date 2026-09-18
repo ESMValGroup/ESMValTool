@@ -92,12 +92,12 @@ Schedule
 ||       ||                                  || How do I configure ESMValTool?                              |
 ||       ||                                  || How do I run a recipe?                                      |
 +--------+-----------------------------------+--------------------------------------------------------------+
-|| 00:25 || Installation                     || What are the prerequisites for installing ESMValTool?       |
+|| 00:25 || :doc:`episode_3_installation`    || What are the prerequisites for installing ESMValTool?       |
 ||       ||                                  || How do I confirm that the installation was successful?      |
 +--------+-----------------------------------+--------------------------------------------------------------+
-|  00:45 |  Configuration                    | What is the user configuration file and how should I use it? |
+|  00:45 |  :doc:`episode_4_configuration`   | What is the user configuration file and how should I use it? |
 +--------+-----------------------------------+--------------------------------------------------------------+
-|| 01:10 || Running your first recipe        || How to run a recipe?                                        |
+|| 01:10 || :doc:`episode_5_recipe`          || How to run a recipe?                                        |
 ||       ||                                  || What happens when I run a recipe?                           |
 +--------+-----------------------------------+--------------------------------------------------------------+
 || 01:40 || Conclusion of the basic tutorial || What do I do now?                                           |
