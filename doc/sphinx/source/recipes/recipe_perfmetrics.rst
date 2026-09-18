@@ -33,6 +33,7 @@ Recipes are stored in recipes/
 * recipe_perfmetrics_CMIP5.yml
 * recipe_perfmetrics_CMIP5_4cds.yml
 * recipe_perfmetrics_land_CMIP5.yml
+* recipe_perfmetrics_CORDEX-CMIP5.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
 
@@ -49,6 +50,8 @@ Diagnostics are stored in diag_scripts/perfmetrics/
   different options for normalization.
 * collect.ncl: collects and plots the metrics previously calculated by
   cycle_latlon.ncl.
+* ``portrait_plot.py``: portrait plot of relative RMSE (used by
+  ``recipe_perfmetrics_CORDEX-CMIP5.yml``; see :ref:`recipe_portrait`)
 
 User settings in recipe
 -----------------------
@@ -182,6 +185,16 @@ Variables
     * et (land, monthly mean, longitude latitude time)
     * rlus, rlds, rsus, rdsd (atmos, monthly mean, longitude latitude time)
 
+#. recipe_perfmetrics_CORDEX-CMIP5.yml
+
+    * clivi, clt, prw, rlut, rsus (atmos, daily mean, EUR-11)
+    * lwp (atmos, daily mean, EUR-11; derived from ``clwvi`` and ``clivi`` for CORDEX
+      models, native ``lwp`` for the ESACCI-CLOUD reference)
+    * sic (sea ice, daily mean, EUR-11)
+    * snw (land, daily mean, EUR-11)
+    * lst, sst (CORDEX ``ts`` with land/sea masking; compared to ESACCI-LST / ESACCI-SST,
+      daily mean, EUR-11)
+
 Observations and reformat scripts
 ---------------------------------
 
@@ -221,6 +234,21 @@ for downloading and processing instructions.
     * LandFlux-EVAL (et - esmvaltool/cmorizers/data/formatters/datasets/landflux_eval.py)
     * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/data/formatters/datasets/landschuetzer2016.py)
     * MTE (gpp - esmvaltool/cmorizers/data/formatters/datasets/mte.py)
+
+#. recipe_perfmetrics_CORDEX-CMIP5.yml
+
+    * ESACCI-CLOUD (clivi, clt, lwp, rlut, rsus -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_cloud.py)
+    * ESACCI-WATERVAPOUR (prw -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py)
+    * ESACCI-SEAICE (sic -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_seaice.py)
+    * ESACCI-SNOW (snw -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_snow.py)
+    * ESACCI-LST (ts -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_lst.py)
+    * ESACCI-SST (tos -
+      esmvaltool/cmorizers/data/formatters/datasets/esacci_sst.py)
 
 References
 ----------
@@ -273,3 +301,11 @@ Example plots
    A diagonal split of a grid square shows the relative error with respect to the reference data set
    (lower right triangle) and the alternative data set (upper left triangle).
    White boxes are used when data are not available for a given model and variable.
+
+.. figure:: /recipes/figures/perfmetrics/cordex_cmip5_portrait.png
+   :width: 70%
+   :align: center
+
+   Relative RMSE (centered median normalization) of CORDEX-CMIP5 EUR-11 models
+   against ESA CCI reference data for 2003–2005, produced by
+   ``recipe_perfmetrics_CORDEX-CMIP5.yml`` using ``portrait_plot.py``.

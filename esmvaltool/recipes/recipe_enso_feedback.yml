@@ -23,6 +23,11 @@ preprocessors:
       units: degC
     mask_landsea:
       mask_out: land
+    extract_region: &east
+      start_longitude: 210.
+      end_longitude: 270.
+      start_latitude: -5.
+      end_latitude: 5.
     anomalies:
       period: monthly
     detrend:
@@ -31,11 +36,6 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    extract_region: &east
-      start_longitude: 210.
-      end_longitude: 270.
-      start_latitude: -5.
-      end_latitude: 5.
     area_statistics:
       operator: mean
 
