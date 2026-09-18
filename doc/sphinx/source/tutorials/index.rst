@@ -30,3 +30,6 @@ While these are tailored for ACCESS users, they are still very informative.
    Setup <tutorial_setup>
    Introduction <episode_1_introduction>
    Quickstart guide <episode_2_quickstart>
+   Installation <episode_3_installation>
+   Configuration <episode_4_configuration>
+   Running your first recipe <episode_5_recipe>
