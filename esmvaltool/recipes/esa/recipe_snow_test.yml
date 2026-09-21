@@ -66,8 +66,10 @@ preprocessors:
       scheme: linear
     monthly_statistics:
       operator: mean
-    mask_glaciated:
-      mask_out: glaciated
+#    mask_glaciated:
+#      mask_out: glaciated
+    extract_shape:
+      shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask.shp
     mask_below_threshold:
       threshold: 0.01
 
@@ -78,10 +80,12 @@ preprocessors:
       end_longitude: 360
       start_latitude: 45
       end_latitude: 90
-    mask_glaciated:
-      mask_out: glaciated
+#    mask_glaciated:
+#      mask_out: glaciated
     monthly_statistics:
       operator: mean
+    extract_shape:
+      shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask.shp
     area_statistics:
       operator: sum
 
@@ -94,8 +98,10 @@ preprocessors:
       end_longitude: 360
       start_latitude: 45
       end_latitude: 90
-    mask_glaciated:
-      mask_out: glaciated
+#    mask_glaciated:
+#      mask_out: glaciated
+    extract_shape:
+      shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask.shp
 
   pp_snw_seascyc:
     regrid:
@@ -106,10 +112,12 @@ preprocessors:
       end_longitude: 360
       start_latitude: 45
       end_latitude: 90
-    mask_glaciated:
-      mask_out: glaciated
     climate_statistics:
       period: month
+#    mask_glaciated:
+#      mask_out: glaciated
+    extract_shape:
+      shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask.shp
     area_statistics:
       operator: mean
 
