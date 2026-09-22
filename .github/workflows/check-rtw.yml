@@ -43,7 +43,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Cylc
-        uses: cylc/setup-cylc@813acd1873cef608f14e354cec57e2de5a7eb3bf # v1.0.2
+        uses: cylc/setup-cylc@cd387ca4e79cec97f0945a160cda73e868e2e764 # v1.0.3
         with:
           cylc_rose: true
 
