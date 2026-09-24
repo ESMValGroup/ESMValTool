@@ -61,8 +61,6 @@ documentation:
 preprocessors:
   pp_pfr:
     custom_order: true
-    convert_units:
-      units: "1"
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -72,6 +70,9 @@ preprocessors:
       mask_out: glaciated
     area_statistics:
       operator: sum
+    convert_units:
+#      units: "1"
+      units: 1e6 km2
 
   pp_pfr_map:
     extract_region:
@@ -135,6 +136,8 @@ diagnostics:
                 color: C0
               ESACCI-PERMAFROST:
                 color: black
+            pyplot_kwargs:
+              ylim: [9, 18]
 
   permafrost_map:
     title: maps of NH permafrost extent
