@@ -79,6 +79,7 @@ all = [
     "packaging",
     "pandas",
     "progressbar2",
+    "pyhdf",
     "pyproj>=2.1",
     "python-dateutil",
     "rasterio>=1.3.10",
