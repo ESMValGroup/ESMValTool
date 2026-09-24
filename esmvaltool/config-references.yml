@@ -798,6 +798,11 @@ authors:
     name: Loew, Alexander
     institute: LMU, Germany
     orcid:
+  mcquaid_aoife:
+    name: McQuaid, Aoife
+    institute: DLR, Germany
+    email: aoife.mcquaid@dlr.de
+    orcid: https://orcid.org/0009-0007-8644-5500
   neale_richard:
     name: Neale, Richard
     institute: NCAR, US
