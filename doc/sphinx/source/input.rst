@@ -21,13 +21,10 @@ as used in the various
 
 .. note::
 
-    CORDEX support is still
-    work in progress.
-    Contributions, in the form of
-    :ref:`pull request reviews <reviewing>` or
-    :ref:`pull requests <esmvalcore:contributing>`
-    are most welcome. We are particularly interested in contributions from
-    people with good understanding of the CORDEX project and its standards.
+    CORDEX support is available for selected domains and variables.
+    An example workflow for CORDEX-CMIP5 EUR-11 models is described in the
+    :ref:`perfmetrics documentation <nml_perfmetrics>`.
+    Contributions improving CORDEX data handling and coverage are welcome.
 
 This section provides an introduction to getting (access to) climate data
 for use with ESMValTool.

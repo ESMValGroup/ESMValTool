@@ -467,6 +467,10 @@
       "name": "Lenhardt, Julien",
       "orcid": "0000-0002-9949-3989"
     },
+      "affiliation": "BSC, Spain",
+      "name": "Ghosh, Supriyo",
+      "orcid": "0000-0003-0581-9907"
+    }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
   "license": {
