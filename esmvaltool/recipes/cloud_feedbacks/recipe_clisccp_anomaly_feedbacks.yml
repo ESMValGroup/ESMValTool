@@ -12,14 +12,28 @@ documentation:
     - bodas-salcedo_alejandro
 
 datasets:
+  # GC3.1 for testing purposes
+  # - {
+  #   project: CMIP6,
+  #   dataset: HadGEM3-GC31-LL,
+  #   exp: amip,
+  #   ensemble: r5i1p1f3,
+  #   grid: gn,
+  #   start_year: 2000,
+  #   end_year: 2002,
+  #   }
+  # Standard GC5.0. The
   - {
-    project: CMIP6,
-    dataset: HadGEM3-GC31-LL,
-    exp: amip,
-    ensemble: r5i1p1f3,
-    grid: gn,
-    start_year: 2000,
-    end_year: 2002,
+      project: CMIP6,
+      activity: GCModelDev,
+      institute: MOHCCP,
+      tier: 1,
+      dataset: HadGEM3-GC50-N96ORCA1,
+      exp: amip,
+      ensemble: r1i1p2f1,
+      grid: gn,
+      start_year: 1990,
+      end_year: 2014,
     }
 
 preprocessors:
@@ -28,7 +42,7 @@ preprocessors:
   lowres_anomalies:
     custom_order: true
     regrid:
-      target_grid: 10.0x10.0
+      target_grid: 6.0x6.0
       scheme: area_weighted
     anomalies:
       period: monthly
@@ -45,22 +59,99 @@ diagnostics:
       Cloud-type feedbacks from anomaly regression on native grid.
     variables:
       clisccp:
+        var_name: clisccp
         short_name: clisccp
         mip: CFmon
         preprocessor: lowres_anomalies
-      tas:
+      gmtas:
+        var_name: gmtas
         short_name: tas
         mip: Amon
         preprocessor: global_anomalies
+      tas:
+        var_name: tas
+        short_name: tas
+        mip: Amon
+        preprocessor: lowres_anomalies
     scripts:
       clisccp_anomaly_feedbacks:
         script: cloud_feedbacks/clisccp_anomaly_feedbacks.py
         create_plots: true
-        colormap_range: [-4.0, 4.0]  # optional
-        colormap_range_histogram: [-1.0, 1.0]  # optional
+        use_scipy_regression: false # optional, default is false
+        colormap_range_pattern: # optional, range for the pattern plots (tas regression patterns)
+          [-3.0, 3.0]
+        colormap_range: # optional, allows to set different colormap ranges for each cloud type (ctp, tau).
+          [-1.5, 1.5]
+        nlevels: 31
+          # [
+          #   [
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #   ],
+          #   [
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #   ],
+          #   [
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #   ],
+          #   [
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #   ],
+          #   [
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #   ],
+          #   [
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #   ],
+          #   [
+          #     [-4.0, 4.0],
+          #     [-4.0, 4.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #     [-2.0, 2.0],
+          #   ],
+          # ]
+        colormap_range_histogram: [-1.0, 1.0] # optional
         regions:
-          - {name: tropics, lat_min: -30, lat_max: 30}
-          - {name: northern_midlatitudes, lat_min: 30, lat_max: 60}
-          - {name: southern_midlatitudes, lat_min: -60, lat_max: -30}
-          - {name: high_latitudes_nh, lat_min: 60, lat_max: 90}
-          - {name: high_latitudes_sh, lat_min: -90, lat_max: -60}
+          - { name: tropics, lat_min: -30, lat_max: 30 }
+          - { name: northern_midlatitudes, lat_min: 30, lat_max: 60 }
+          - { name: southern_midlatitudes, lat_min: -60, lat_max: -30 }
+          - { name: high_latitudes_nh, lat_min: 60, lat_max: 90 }
+          - { name: high_latitudes_sh, lat_min: -90, lat_max: -60 }
