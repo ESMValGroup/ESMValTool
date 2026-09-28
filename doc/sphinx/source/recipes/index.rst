@@ -134,6 +134,7 @@ Ocean
    recipe_enso_clivar
    recipe_ocean_transport
    recipe_oceans
+   recipe_cmip_hydrography
    recipe_sea_surface_salinity
    recipe_russell18jgr
 

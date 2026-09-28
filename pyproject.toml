@@ -66,6 +66,7 @@ all = [
     "fire",
     "fsspec",
     "GDAL",
+    "gsw",
     "ipython",
     "jinja2",
     "joblib",
@@ -325,6 +326,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "fire" = "*"
 "fsspec" = "*"
 "gdal" = ">=3.9.0"
+"gsw" = "*"
 "ipython" = "*"
 "imagehash" = "*"
 "iris-esmf-regrid" = ">=0.10.0"  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
