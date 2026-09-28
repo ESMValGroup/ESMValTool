@@ -79,7 +79,7 @@ diagnostics:
     #      - {dataset: GFDL-ESM2M}
     scripts:
       polar-tauu:
-        script: russell18jgr/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr-polar.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -134,7 +134,7 @@ diagnostics:
           - {dataset: GFDL-ESM2M}
     scripts:
       tauu-lineplot:
-        script: russell18jgr/russell18jgr-fig2.ncl
+        script: russell18jgr/russell18jgr-fig2.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -189,7 +189,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       Subantarctic-Front:
-        script: russell18jgr/russell18jgr-fig3b.ncl
+        script: russell18jgr/russell18jgr-fig3b.py
         # Plot style
         styleset: CMIP5
         ncdf: CMIP5
@@ -245,7 +245,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Polar-front:
-        script: russell18jgr/russell18jgr-fig3b-2.ncl
+        script: russell18jgr/russell18jgr-fig3b-2.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -306,7 +306,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       Drake-passage:
-        script: russell18jgr/russell18jgr-fig4.ncl
+        script: russell18jgr/russell18jgr-fig4.py
         styleset: CMIP5
         ncdf: default
         max_vert: 2
@@ -366,7 +366,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       sic-polar:
-        script: russell18jgr/russell18jgr-fig5.ncl
+        script: russell18jgr/russell18jgr-fig5.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -430,7 +430,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       sic-line:
-        script: russell18jgr/russell18jgr-fig5g.ncl
+        script: russell18jgr/russell18jgr-fig5g.py
         # Plot style
         styleset: CMIP5
 
@@ -507,7 +507,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure6a:
-        script: russell18jgr/russell18jgr-fig6a.ncl
+        script: russell18jgr/russell18jgr-fig6a.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -585,7 +585,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure6b:
-        script: russell18jgr/russell18jgr-fig6b.ncl
+        script: russell18jgr/russell18jgr-fig6b.py
         styleset: CMIP5
         ncdf: default
 
@@ -629,7 +629,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
     scripts:
       fgco2-polar:
-        script: russell18jgr/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr-polar.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -685,7 +685,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_line:
-        script: russell18jgr/russell18jgr-fig7h.ncl
+        script: russell18jgr/russell18jgr-fig7h.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -736,7 +736,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_cumulative_line:
-        script: russell18jgr/russell18jgr-fig7i.ncl
+        script: russell18jgr/russell18jgr-fig7i.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -770,7 +770,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       Polar-ph:
-        script: russell18jgr/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr-polar.py
         styleset: CMIP5
         ncdf: default
         grid_min: 8.0
@@ -854,7 +854,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure9a:
-        script: russell18jgr/russell18jgr-fig9a.ncl
+        script: russell18jgr/russell18jgr-fig9a.py
         styleset: CMIP5
         ncdf: default
 
@@ -922,7 +922,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure9b:
-        script: russell18jgr/russell18jgr-fig9b.ncl
+        script: russell18jgr/russell18jgr-fig9b.py
         styleset: CMIP5
         ncdf: default
 
@@ -982,6 +982,6 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure9c:
-        script: russell18jgr/russell18jgr-fig9c.ncl
+        script: russell18jgr/russell18jgr-fig9c.py
         styleset: CMIP5
         ncdf: default
