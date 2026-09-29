@@ -10,6 +10,16 @@ common colour scales. The default example compares ACCESS-CM2 and
 BCC-CSM2-MR for the 2000/01 sea ice year. Both models publish daily
 ``SIday siconc`` for this period; ACCESS-ESM1-5 does not.
 
+.. figure:: /recipes/figures/seaice/seaice_seasonality_ACCESS-CM2_BCC-CSM2-MR_2000-01.png
+   :alt: Advance, retreat, and duration maps for ACCESS-CM2 and BCC-CSM2-MR
+   :width: 100%
+
+   Example output from a complete ESMValTool run on Gadi using daily
+   historical ``siconc`` for the 2000/01 ice year. Colours represent days
+   since 15 February, with the same scale for both models. This single year
+   illustrates the diagnostic; it is not a climatology or an observed skill
+   assessment.
+
 The calculation follows `Massom et al. (2013)
 <https://doi.org/10.1371/journal.pone.0064756>`_. The ice year begins on
 15 February. Advance is the first day in the first run of at least five
