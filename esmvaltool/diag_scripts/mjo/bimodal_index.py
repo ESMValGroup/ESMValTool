@@ -1,8 +1,9 @@
+# Copyright (C) 2026 ESMValTool development team
 """Seasonal MJO/BSISO extended-EOF index from daily OLR anomalies.
 
 This diagnostic ports the ACCESS-NRI MJO/BSISO notebook to the ESMValTool
 recipe interface. The recipe supplies daily, tropical, day-of-year OLR
-anomalies. A 139-tap Hamming-window FIR filter isolates 25–90-day variability.
+anomalies. A 139-tap Hamming-window FIR filter isolates 25-90-day variability.
 Lagged fields are built on the continuous daily series before selecting DJF
 and JJA training dates. The first two area-weighted EEOFs define separate
 MJO and BSISO indices, which are projected onto every available day.
@@ -10,6 +11,8 @@ MJO and BSISO indices, which are projected onto every available day.
 The EOF/PC sign is paired, as in the source notebook. Geographic phase names
 are deliberately omitted pending independent sign-convention validation.
 """
+
+import itertools
 
 import cartopy.crs as ccrs
 import iris
@@ -27,6 +30,11 @@ from esmvaltool.diag_scripts.shared import (
     save_figure,
 )
 
+MIN_DAILY_VALUES = 200
+MIN_FILTER_TAPS = 3
+MIN_TRAINING_DAYS = 3
+DECEMBER = 12
+
 
 def _as_daily_array(cube):
     """Convert a preprocessed Iris cube to a continuous time/lat/lon array."""
@@ -41,29 +49,35 @@ def _as_daily_array(cube):
     }
     data = data.rename(rename).transpose("time", "lat", "lon")
     times = data.time.values
-    if len(times) < 200:
-        raise ValueError("At least 200 daily values are required")
+    if len(times) < MIN_DAILY_VALUES:
+        msg = "At least 200 daily values are required"
+        raise ValueError(msg)
     if any(
         (right - left) != np.timedelta64(1, "D")
-        for left, right in zip(times[:-1], times[1:])
+        for left, right in itertools.pairwise(times)
     ):
-        raise ValueError("Input time coordinate must be continuous and daily")
+        msg = "Input time coordinate must be continuous and daily"
+        raise ValueError(msg)
     values = np.asarray(data.values, dtype=np.float64)
     if not np.isfinite(values).all():
+        msg = "Input OLR anomalies contain missing or nonfinite data"
         raise ValueError(
-            "Input OLR anomalies contain missing or nonfinite data"
+            msg,
         )
     return values, times, data.lat.values, data.lon.values
 
 
 def _bandpass(values, times, low_period, high_period, window):
     """Reproduce the notebook's centered Hamming FIR and trim both edges."""
-    if window < 3 or window % 2 != 1:
-        raise ValueError("filter_window must be an odd integer >= 3")
+    if window < MIN_FILTER_TAPS or window % 2 != 1:
+        msg = "filter_window must be an odd integer >= 3"
+        raise ValueError(msg)
     if not 0 < low_period < high_period:
-        raise ValueError("Expected 0 < low_period < high_period")
+        msg = "Expected 0 < low_period < high_period"
+        raise ValueError(msg)
     if len(times) <= window:
-        raise ValueError("Time series is shorter than the FIR window")
+        msg = "Time series is shorter than the FIR window"
+        raise ValueError(msg)
     weights = firwin(
         window,
         [1.0 / high_period, 1.0 / low_period],
@@ -79,13 +93,16 @@ def _lagged_matrix(values, times, lags, latitudes):
     """Build weighted lag fields on continuous days for later seasonal fits."""
     lags = np.asarray(lags, dtype=int)
     if not len(lags):
-        raise ValueError("lags must contain at least one day offset")
+        msg = "lags must contain at least one day offset"
+        raise ValueError(msg)
     if len(np.unique(lags)) != len(lags):
-        raise ValueError("lags must be distinct")
+        msg = "lags must be distinct"
+        raise ValueError(msg)
     first = max(0, -int(lags.min()))
     stop = len(times) - max(0, int(lags.max()))
     if stop <= first:
-        raise ValueError("Not enough dates for the requested lags")
+        msg = "Not enough dates for the requested lags"
+        raise ValueError(msg)
     centers = np.arange(first, stop)
     fields = np.stack([values[centers + lag] for lag in lags], axis=1)
     latitude_weights = np.sqrt(np.cos(np.deg2rad(latitudes)))
@@ -93,27 +110,31 @@ def _lagged_matrix(values, times, lags, latitudes):
     return fields.reshape(len(centers), -1), times[centers]
 
 
-def _fit_season(matrix, times, months, spatial_shape, flip_pc2=False):
+def _fit_season(matrix, times, months, spatial_shape, *, flip_pc2=False):
     """Fit two normalized seasonal PCs and project all available days."""
     season = np.isin([time.month for time in times], months)
-    if season.sum() < 3:
-        raise ValueError(f"Too few training days for months {months}")
+    if season.sum() < MIN_TRAINING_DAYS:
+        msg = f"Too few training days for months {months}"
+        raise ValueError(msg)
     pca = PCA(n_components=2)
     raw = pca.fit_transform(matrix[season])
     standard_deviation = raw.std(axis=0)
     if np.any(standard_deviation == 0):
-        raise ValueError("A seasonal PC has zero standard deviation")
+        msg = "A seasonal PC has zero standard deviation"
+        raise ValueError(msg)
     training = raw / standard_deviation
     projected = pca.transform(matrix) / standard_deviation
-    eeofs = (
-        pca.components_ * standard_deviation[:, np.newaxis]
-    ).reshape((2, *spatial_shape))
+    scaled_components = pca.components_ * standard_deviation[:, np.newaxis]
+    eeofs = scaled_components.reshape((2, *spatial_shape))
     if flip_pc2:
         training[:, 1] *= -1
         projected[:, 1] *= -1
         eeofs[1] *= -1
     np.testing.assert_allclose(
-        projected[season], training, rtol=1e-5, atol=1e-5
+        projected[season],
+        training,
+        rtol=1e-5,
+        atol=1e-5,
     )
     return {
         "training": training,
@@ -132,7 +153,11 @@ def calculate_indices(cube, cfg):
     window = cfg.get("filter_window", 139)
     lags = cfg.get("lags", [-10, -5, 0])
     filtered, filtered_times = _bandpass(
-        values, times, low_period, high_period, window
+        values,
+        times,
+        low_period,
+        high_period,
+        window,
     )
     del values
     matrix, dates = _lagged_matrix(filtered, filtered_times, lags, latitudes)
@@ -150,14 +175,20 @@ def calculate_indices(cube, cfg):
         amplitude_bsiso >= amplitude_mjo
     )
     days_in_month = np.asarray(
-        [31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        [31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
     )
-    mjo_days = np.asarray(
-        [dominant_mjo[months == month].mean() for month in range(1, 13)]
-    ) * days_in_month
-    bsiso_days = np.asarray(
-        [dominant_bsiso[months == month].mean() for month in range(1, 13)]
-    ) * days_in_month
+    mjo_days = (
+        np.asarray(
+            [dominant_mjo[months == month].mean() for month in range(1, 13)],
+        )
+        * days_in_month
+    )
+    bsiso_days = (
+        np.asarray(
+            [dominant_bsiso[months == month].mean() for month in range(1, 13)],
+        )
+        * days_in_month
+    )
 
     result = xr.Dataset(
         data_vars={
@@ -212,7 +243,7 @@ def calculate_indices(cube, cfg):
 
 
 def _season_year(time):
-    return np.asarray([date.year + (date.month == 12) for date in time])
+    return np.asarray([date.year + (date.month == DECEMBER) for date in time])
 
 
 def _year_position(time):
@@ -221,7 +252,7 @@ def _year_position(time):
         [
             date.year + (date.month - 1) / 12 + (date.day - 1) / 365
             for date in time
-        ]
+        ],
     )
 
 
@@ -267,13 +298,16 @@ def plot_eeofs(result, label):
                 ax.coastlines(color="dimgray", linewidth=0.7)
                 ax.set_extent([30, 240, -25, 30], crs=ccrs.PlateCarree())
                 ax.text(
-                    0.98, 0.82, f"day {lag}",
-                    ha="right", transform=ax.transAxes,
+                    0.98,
+                    0.82,
+                    f"day {lag}",
+                    ha="right",
+                    transform=ax.transAxes,
                 )
                 if lag_index == 0:
                     ax.set_title(
                         f"{prefix.upper()} EEOF{mode_index + 1} "
-                        f"({variance[mode_index]:.1f}%)"
+                        f"({variance[mode_index]:.1f}%)",
                     )
     fig.colorbar(
         contour,
@@ -291,7 +325,10 @@ def plot_pc_timeseries(result, label):
     """Plot seasonal PCs and amplitudes without connecting seasonal gaps."""
     fig, axes = plt.subplots(3, 1, figsize=(14, 12))
     for ax, prefix, color in zip(
-        axes[:2], ("mjo", "bsiso"), ("royalblue", "indianred")
+        axes[:2],
+        ("mjo", "bsiso"),
+        ("royalblue", "indianred"),
+        strict=False,
     ):
         time = result[f"time_{prefix}"].values
         pcs = result[f"pc_{prefix}_training"].values
@@ -304,11 +341,15 @@ def plot_pc_timeseries(result, label):
     for prefix, color in (("mjo", "navy"), ("bsiso", "darkorange")):
         time = result[f"time_{prefix}"].values
         amplitude = np.linalg.norm(
-            result[f"pc_{prefix}_training"].values, axis=1
+            result[f"pc_{prefix}_training"].values,
+            axis=1,
         )
         _plot_segmented(
-            axes[2], time, amplitude,
-            f"{prefix.upper()} amplitude", color=color,
+            axes[2],
+            time,
+            amplitude,
+            f"{prefix.upper()} amplitude",
+            color=color,
         )
     axes[2].axhline(1, color="red", ls=":", label="Amplitude threshold")
     axes[2].set_ylabel("Amplitude")
@@ -324,8 +365,10 @@ def plot_occurrence(result, label):
     fig, ax = plt.subplots(figsize=(11, 6))
     month = result.month.values
     ax.bar(
-        month, result.mjo_days.values,
-        color="royalblue", label="MJO pattern",
+        month,
+        result.mjo_days.values,
+        color="royalblue",
+        label="MJO pattern",
     )
     ax.bar(
         month,
@@ -337,8 +380,18 @@ def plot_occurrence(result, label):
     ax.set_xticks(
         month,
         [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
         ],
     )
     ax.set_ylabel("Days per month; BSISO shown below zero")
@@ -353,8 +406,8 @@ def plot_amplitudes(result, label):
     fig, ax = plt.subplots(figsize=(8, 8))
     months = np.asarray([date.month for date in result.time.values])
     for selected_months, color, season in (
-        ([6, 7, 8, 9, 10], "red", "Jun–Oct"),
-        ([12, 1, 2, 3, 4], "blue", "Dec–Apr"),
+        ([6, 7, 8, 9, 10], "red", "Jun-Oct"),
+        ([12, 1, 2, 3, 4], "blue", "Dec-Apr"),
         ([5, 11], "gray", "May, Nov"),
     ):
         selected = np.isin(months, selected_months)
@@ -381,7 +434,8 @@ def plot_amplitudes(result, label):
 def plot_phase_space(result, label):
     """Plot seasonal PC phase space without joining separate seasons."""
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-    for ax, prefix, cmap in zip(axes, ("mjo", "bsiso"), ("Blues", "Reds")):
+    phase_config = (("mjo", "Blues"), ("bsiso", "Reds"))
+    for ax, (prefix, cmap) in zip(axes, phase_config, strict=False):
         pcs = result[f"pc_{prefix}_training"].values
         times = result[f"time_{prefix}"].values
         years = _season_year(times)
@@ -389,8 +443,11 @@ def plot_phase_space(result, label):
         for year in np.unique(years):
             selected = years == year
             ax.plot(
-                pcs[selected, 0], pcs[selected, 1],
-                color="gray", lw=0.7, alpha=0.3,
+                pcs[selected, 0],
+                pcs[selected, 1],
+                color="gray",
+                lw=0.7,
+                alpha=0.3,
             )
         scatter = ax.scatter(pcs[:, 0], pcs[:, 1], c=amplitude, cmap=cmap, s=7)
         ax.add_artist(plt.Circle((0, 0), 1, fill=False, color="black"))
@@ -399,8 +456,11 @@ def plot_phase_space(result, label):
         ax.axline((0, 0), slope=1, color="black", lw=0.7)
         ax.axline((0, 0), slope=-1, color="black", lw=0.7)
         ax.set(
-            xlabel="PC1", ylabel="PC2", title=prefix.upper(),
-            xlim=(-5, 5), ylim=(-5, 5),
+            xlabel="PC1",
+            ylabel="PC2",
+            title=prefix.upper(),
+            xlim=(-5, 5),
+            ylim=(-5, 5),
         )
         ax.set_aspect("equal")
         fig.colorbar(scatter, ax=ax, label="Amplitude")
@@ -424,12 +484,15 @@ def _provenance(caption, ancestor):
 def main(cfg):
     """Run the index for each preprocessed OLR dataset."""
     groups = group_metadata(
-        cfg["input_data"].values(), "alias", sort="dataset"
+        cfg["input_data"].values(),
+        "alias",
+        sort="dataset",
     )
     for label, entries in groups.items():
         if len(entries) != 1:
+            msg = f"Expected one OLR file for {label}, got {len(entries)}"
             raise ValueError(
-                f"Expected one OLR file for {label}, got {len(entries)}"
+                msg,
             )
         source = entries[0]["filename"]
         result = calculate_indices(iris.load_cube(source), cfg)

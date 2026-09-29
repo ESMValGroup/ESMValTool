@@ -1,7 +1,8 @@
-"""May–October precipitation and 850 hPa wind mean-state comparison.
+# Copyright (C) 2026 ESMValTool development team
+"""May-October precipitation and 850 hPa wind mean-state comparison.
 
 The recipe supplies five already subset and season-selected inputs: daily
-NCEP-NCAR-R1 precipitation and winds for 2000–2020, and daily precipitation
+NCEP-NCAR-R1 precipitation and winds for 2000-2020, and daily precipitation
 from the final 30 years of ACCESS-ESM1-5 historical and ACCESS-CM2 piControl.
 The two model periods and experiments are intentionally labelled separately;
 this is a descriptive comparison rather than a matched-experiment test.
@@ -11,10 +12,10 @@ import cartopy.crs as ccrs
 import iris
 import iris.analysis
 import iris.plot as iplt
-import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 from esmvalcore.preprocessor import regrid
+from matplotlib import patches
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -23,7 +24,6 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
     save_figure,
 )
-
 
 REGIONS = {
     "BOB": (85, 10, 5, 5),
@@ -38,16 +38,18 @@ def _load_inputs(cfg):
     grouped = group_metadata(cfg["input_data"].values(), "variable_group")
     required = ("obs_pr", "obs_ua", "obs_va", "historical_pr", "control_pr")
     if set(grouped) != set(required):
+        msg = f"Expected variable groups {required}, got {tuple(grouped)}"
         raise ValueError(
-            f"Expected variable groups {required}, got {tuple(grouped)}"
+            msg,
         )
     cubes = {}
     ancestors = []
     for name in required:
         entries = grouped[name]
         if len(entries) != 1:
+            msg = f"Expected one input for {name}, got {len(entries)}"
             raise ValueError(
-                f"Expected one input for {name}, got {len(entries)}"
+                msg,
             )
         filename = entries[0]["filename"]
         cubes[name] = iris.load_cube(filename)
@@ -63,10 +65,14 @@ def calculate_biases(cubes):
     }
     mean_obs_pr = means["obs_pr"]
     historical_bias = means["historical_pr"] - regrid(
-        mean_obs_pr, means["historical_pr"], scheme="linear"
+        mean_obs_pr,
+        means["historical_pr"],
+        scheme="linear",
     )
     control_bias = means["control_pr"] - regrid(
-        mean_obs_pr, means["control_pr"], scheme="linear"
+        mean_obs_pr,
+        means["control_pr"],
+        scheme="linear",
     )
     historical_bias.rename("ACCESS-ESM1-5 historical precipitation bias")
     control_bias.rename("ACCESS-CM2 piControl precipitation bias")
@@ -83,13 +89,16 @@ def _period_label(cube):
     time = cube.coord("time")
     first = time.units.num2date(time.points[0]).year
     last = time.units.num2date(time.points[-1]).year
-    return f"{first}–{last}"
+    return f"{first}-{last}"
 
 
 def plot_biases(means, historical_bias, control_bias, periods):
     """Render the notebook's three-panel mean state and bias figure."""
     fig, axes = plt.subplots(
-        3, 1, figsize=(10, 18), subplot_kw={"projection": ccrs.PlateCarree()}
+        3,
+        1,
+        figsize=(10, 18),
+        subplot_kw={"projection": ccrs.PlateCarree()},
     )
     observed_levels = np.linspace(0, 16, 17)
     bias_levels = np.unique(
@@ -99,60 +108,93 @@ def plot_biases(means, historical_bias, control_bias, periods):
                     np.arange(-6, -1, 2),
                     np.arange(-0.4, 0.5, 0.2),
                     np.arange(2, 7, 2),
-                )
+                ),
             ),
             1,
-        )
+        ),
     )
     observed = iplt.contourf(
-        means["obs_pr"], axes=axes[0], levels=observed_levels,
-        cmap="YlGnBu", extend="max",
+        means["obs_pr"],
+        axes=axes[0],
+        levels=observed_levels,
+        cmap="YlGnBu",
+        extend="max",
     )
     coarse_u = regrid(means["obs_ua"], target_grid="10x10", scheme="nearest")
     coarse_v = regrid(means["obs_va"], target_grid="10x10", scheme="nearest")
     arrows = iplt.quiver(
-        coarse_u, coarse_v, axes=axes[0], color="white", scale=150,
+        coarse_u,
+        coarse_v,
+        axes=axes[0],
+        color="white",
+        scale=150,
         width=0.005,
     )
     axes[0].quiverkey(
-        arrows, 0.9, 1.05, 10, "10 m/s", labelpos="E",
-        coordinates="axes", color="black",
+        arrows,
+        0.9,
+        1.05,
+        10,
+        "10 m/s",
+        labelpos="E",
+        coordinates="axes",
+        color="black",
     )
     for name, (left, bottom, width, height) in REGIONS.items():
         rectangle = patches.Rectangle(
-            (left, bottom), width, height, linewidth=2.5,
-            edgecolor="red", facecolor="none", transform=ccrs.PlateCarree(),
+            (left, bottom),
+            width,
+            height,
+            linewidth=2.5,
+            edgecolor="red",
+            facecolor="none",
+            transform=ccrs.PlateCarree(),
             zorder=5,
         )
         axes[0].add_patch(rectangle)
         axes[0].text(
-            left + width / 2, bottom + height / 2, name,
-            color="red", fontweight="bold", fontsize=9,
-            ha="center", va="center",
-            bbox={"facecolor": "white", "alpha": 0.85,
-                  "edgecolor": "none", "pad": 1},
-            transform=ccrs.PlateCarree(), zorder=6,
+            left + width / 2,
+            bottom + height / 2,
+            name,
+            color="red",
+            fontweight="bold",
+            fontsize=9,
+            ha="center",
+            va="center",
+            bbox={
+                "facecolor": "white",
+                "alpha": 0.85,
+                "edgecolor": "none",
+                "pad": 1,
+            },
+            transform=ccrs.PlateCarree(),
+            zorder=6,
         )
     axes[0].set_title(
         f"NCEP-NCAR-R1 ({periods['obs_pr']})\n"
-        "May–October precipitation and 850 hPa winds"
+        "May-October precipitation and 850 hPa winds",
     )
 
     biases = (
         (
             historical_bias,
-            "ACCESS-ESM1-5 historical "
-            f"({periods['historical_pr']}) − NCEP-NCAR-R1",
+            (
+                "ACCESS-ESM1-5 historical "
+                f"({periods['historical_pr']}) - NCEP-NCAR-R1"
+            ),
         ),
         (
             control_bias,
-            f"ACCESS-CM2 piControl ({periods['control_pr']}) − "
-            "NCEP-NCAR-R1",
+            (f"ACCESS-CM2 piControl ({periods['control_pr']}) - NCEP-NCAR-R1"),
         ),
     )
-    for axis, (cube, title) in zip(axes[1:], biases):
+    for axis, (cube, title) in zip(axes[1:], biases, strict=False):
         image = iplt.contourf(
-            cube, axes=axis, levels=bias_levels, cmap="RdBu", extend="both"
+            cube,
+            axes=axis,
+            levels=bias_levels,
+            cmap="RdBu",
+            extend="both",
         )
         axis.set_title(title)
     for axis in axes:
@@ -162,14 +204,18 @@ def plot_biases(means, historical_bias, control_bias, periods):
         grid.top_labels = grid.right_labels = False
     fig.tight_layout(rect=[0, 0, 0.85, 0.96])
     fig.colorbar(
-        observed, cax=fig.add_axes([0.88, 0.70, 0.03, 0.22]), label="mm/day"
+        observed,
+        cax=fig.add_axes([0.88, 0.70, 0.03, 0.22]),
+        label="mm/day",
     )
     fig.colorbar(
-        image, cax=fig.add_axes([0.88, 0.15, 0.03, 0.45]),
+        image,
+        cax=fig.add_axes([0.88, 0.15, 0.03, 0.45]),
         label="Model minus reference (mm/day); blue = wetter",
     )
     fig.suptitle(
-        "May–October mean state and precipitation biases", fontsize=18
+        "May-October mean state and precipitation biases",
+        fontsize=18,
     )
     return fig
 
@@ -186,13 +232,13 @@ def main(cfg):
             means["obs_va"],
             historical_bias,
             control_bias,
-        ]
+        ],
     )
     data_file = get_diagnostic_filename("mjo_bsiso_mean_state_bias", cfg)
     iris.save(output, data_file)
     provenance = {
         "caption": (
-            "May–October NCEP-NCAR-R1 precipitation and 850 hPa winds, "
+            "May-October NCEP-NCAR-R1 precipitation and 850 hPa winds, "
             "with ACCESS-ESM1-5 historical and ACCESS-CM2 piControl "
             "precipitation biases relative to that reference"
         ),
@@ -206,8 +252,12 @@ def main(cfg):
         logger.log(data_file, provenance)
     figure = plot_biases(means, historical_bias, control_bias, periods)
     save_figure(
-        "mjo_bsiso_mean_state_bias", provenance, cfg,
-        figure=figure, dpi=150, bbox_inches="tight",
+        "mjo_bsiso_mean_state_bias",
+        provenance,
+        cfg,
+        figure=figure,
+        dpi=150,
+        bbox_inches="tight",
     )
 
 
