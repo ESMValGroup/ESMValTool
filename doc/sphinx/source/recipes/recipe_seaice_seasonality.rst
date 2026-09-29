@@ -27,7 +27,10 @@ published event definitions and states its day numbering explicitly.
 
 The input must contain one uninterrupted daily sample per day from
 15 February to 14 February. Monthly sea ice concentration cannot be
-used. Nearest-neighbour regridding can shift coastal and marginal ice
+used. The example recipe extracts through 15 February of the next year
+to retain 14 February samples timestamped at midday; any extra next-year
+15 February sample is removed before calculating the ice season.
+Nearest-neighbour regridding can shift coastal and marginal ice
 cells. Model calendars can have different numbers of days; compare
 the ordinal maps with that difference in mind. The example recipe does
 not yet include observational sea ice concentration, so it supports

@@ -47,6 +47,15 @@ def validate_daily_ice_year(cube):
     return len(dates)
 
 
+def trim_next_ice_year_sample(cube):
+    """Drop a next-year 15 February sample if the end day is inclusive."""
+    dates = cube.coord("time").units.num2date(cube.coord("time").points)
+    first, last = dates[0], dates[-1]
+    if (last.year, last.month, last.day) == (first.year + 1, 2, 15):
+        return cube[:-1]
+    return cube
+
+
 def concentration_fraction(cube):
     """Return masked concentration fractions from CMOR percentages."""
     data = np.ma.masked_invalid(np.ma.asarray(cube.data, dtype=float))
@@ -190,6 +199,7 @@ def main(cfg):
     )
     for item in metadata:
         cube = iris.load_cube(item["filename"])
+        cube = trim_next_ice_year_sample(cube)
         validate_daily_ice_year(cube)
         concentration = concentration_fraction(cube)
         fields = seasonality_fields(

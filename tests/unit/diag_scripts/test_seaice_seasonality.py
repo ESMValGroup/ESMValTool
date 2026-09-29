@@ -71,6 +71,13 @@ def test_validate_daily_ice_year_rejects_missing_days():
         seasonality.validate_daily_ice_year(cube)
 
 
+def test_trim_inclusive_next_year_sample():
+    """A second 15 February sample is excluded from the ice year."""
+    cube = make_cube(np.zeros((367, 2, 2)))
+    trimmed = seasonality.trim_next_ice_year_sample(cube)
+    assert seasonality.validate_daily_ice_year(trimmed) == 366
+
+
 def test_main_writes_multimodel_outputs(tmp_path, monkeypatch):
     """Two model inputs yield two NetCDF files and a comparison map."""
     records = []

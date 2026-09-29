@@ -50,7 +50,9 @@ diagnostics:
       siconc:
         mip: SIday
         preprocessor: antarctic_daily
-        timerange: 20000215/20010214
+        # Include 15 February in the extraction window so a 14 February
+        # sample timestamped at midday is not lost at the end boundary.
+        timerange: 20000215/20010215
     scripts:
       seasonality:
         script: seaice/seaice_seasonality.py
