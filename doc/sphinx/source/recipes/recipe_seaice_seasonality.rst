@@ -1,13 +1,14 @@
 .. _recipe_seaice_seasonality:
 
 Antarctic sea ice seasonality
-============================
+=============================
 
 ``recipe_seaice_seasonality.yml`` calculates the day of sea ice advance,
 retreat, and season duration from daily CMIP6 ``SIday siconc``. It produces
 NetCDF fields for each model and a polar map with one row per model and
 common colour scales. The default example compares ACCESS-CM2 and
-ACCESS-ESM1-5 for the 2000/01 sea ice year.
+BCC-CSM2-MR for the 2000/01 sea ice year. Both models publish daily
+``SIday siconc`` for this period; ACCESS-ESM1-5 does not.
 
 The calculation follows `Massom et al. (2013)
 <https://doi.org/10.1371/journal.pone.0064756>`_. The ice year begins on

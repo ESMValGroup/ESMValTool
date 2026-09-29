@@ -27,7 +27,7 @@ documentation:
 datasets:
   - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
      ensemble: r1i1p1f1, grid: gn}
-  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+  - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical,
      ensemble: r1i1p1f1, grid: gn}
 
 preprocessors:
