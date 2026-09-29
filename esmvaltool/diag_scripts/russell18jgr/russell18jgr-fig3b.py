@@ -72,8 +72,9 @@ def front_position(cube):
 
 def main(cfg):
     """Run the diagnostic."""
-    input_data = [m for m in cfg["input_data"].values()
-                  if m["short_name"] == "thetao"]
+    input_data = [
+        m for m in cfg["input_data"].values() if m["short_name"] == "thetao"
+    ]
     years = rc.year_range_str(input_data)
 
     fig, axes = plt.subplots(figsize=(10, 8))
@@ -87,18 +88,28 @@ def main(cfg):
             logger.warning("Skipping %s: %s", meta["dataset"], exc)
             continue
         style = rc.style_for(meta["dataset"], cfg.get("styleset", "CMIP5"))
-        axes.plot(x, y, label=meta["dataset"], color=style["color"],
-                  linestyle=style["dash"], linewidth=style["thick"])
+        axes.plot(
+            x,
+            y,
+            label=meta["dataset"],
+            color=style["color"],
+            linestyle=style["dash"],
+            linewidth=style["thick"],
+        )
 
         out = iris.cube.Cube(
             np.vstack([x, y]),
             var_name="position_of_subantarctic_front",
-            long_name=("row 0: longitude and row 1: latitude of the "
-                       "277.15K isoline"))
+            long_name=(
+                "row 0: longitude and row 1: latitude of the 277.15K isoline"
+            ),
+        )
         nc_name = get_diagnostic_filename(
             f"russell18jgr_fig3b_subantarctic-front-position_"
             f"{meta['dataset']}_{meta['start_year']}-"
-            f"{meta['end_year']}", cfg)
+            f"{meta['end_year']}",
+            cfg,
+        )
         iris.save(out, nc_name)
         nc_files.append(nc_name)
         ancestors.append(meta["filename"])
@@ -108,20 +119,29 @@ def main(cfg):
     axes.set_xticks(np.arange(-60, 301, 30))
     axes.set_yticks(np.arange(-70, -39, 2))
     axes.set_title(" Subantarctic Fronts", fontsize=12)
-    axes.text(0.0, 1.03, "Russell et al -2018 - Figure 3 b",
-              transform=axes.transAxes, fontsize=10)
-    axes.legend(loc="center left", bbox_to_anchor=(1.02, 0.5),
-                fontsize=7, frameon=False)
+    axes.text(
+        0.0,
+        1.03,
+        "Russell et al -2018 - Figure 3 b",
+        transform=axes.transAxes,
+        fontsize=10,
+    )
+    axes.legend(
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),
+        fontsize=7,
+        frameon=False,
+    )
     fig.tight_layout()
 
     plot_file = get_plot_filename(
-        f"Russell18jgr_fig3_Subantarctic-Fronts_{years}", cfg)
+        f"Russell18jgr_fig3_Subantarctic-Fronts_{years}", cfg
+    )
     fig.savefig(plot_file, bbox_inches="tight", dpi=200)
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        "Russell et al 2018 figure 3b", ancestors)
+    record = rc.provenance_record("Russell et al 2018 figure 3b", ancestors)
     with ProvenanceLogger(cfg) as prov:
         for filename in nc_files + [plot_file]:
             prov.log(filename, record)

@@ -54,8 +54,9 @@ def colormap_from_cfg(cfg, nlevels):
     name = cfg.get("colormap", "nrl_sirkes_nowhite")
     ncl_to_mpl = {"BlWhRe": "bwr", "nrl_sirkes_nowhite": "RdYlBu_r"}
     cmap = plt.get_cmap(ncl_to_mpl.get(name, name))
-    return ListedColormap([cmap(i / max(nlevels, 1))
-                           for i in range(nlevels + 1)])
+    return ListedColormap(
+        [cmap(i / max(nlevels, 1)) for i in range(nlevels + 1)]
+    )
 
 
 def circular_boundary():
@@ -66,8 +67,9 @@ def circular_boundary():
     return mpath.Path(verts * radius + center)
 
 
-def plot_dataset(axes, cube, levels, cmap, extend, cfg, title, subtitle,
-                 units_str, var_name):
+def plot_dataset(
+    axes, cube, levels, cmap, extend, cfg, title, subtitle, units_str, var_name
+):
     """Draw one polar contour panel."""
     lat = rc.coord_1d_or_2d(cube, "latitude")
     lon = rc.coord_1d_or_2d(cube, "longitude")
@@ -85,39 +87,65 @@ def plot_dataset(axes, cube, levels, cmap, extend, cfg, title, subtitle,
     data = np.ma.masked_where(lat2d > max_lat, data)
     logger.info(
         "%s: %s range %.4g to %.4g south of %g degrees latitude",
-        title, var_name, data.min(), data.max(), max_lat)
+        title,
+        var_name,
+        data.min(),
+        data.max(),
+        max_lat,
+    )
 
     axes.set_extent([-180, 180, -90, max_lat], ccrs.PlateCarree())
     axes.set_boundary(circular_boundary(), transform=axes.transAxes)
 
     norm = BoundaryNorm(levels, ncolors=cmap.N, extend=extend)
     filled = axes.contourf(
-        lon2d, lat2d, data, levels=levels, cmap=cmap, norm=norm,
-        extend=extend, transform=ccrs.PlateCarree())
+        lon2d,
+        lat2d,
+        data,
+        levels=levels,
+        cmap=cmap,
+        norm=norm,
+        extend=extend,
+        transform=ccrs.PlateCarree(),
+    )
     # A line at every level is unreadable where the field is steep, so
     # draw at most ~8 of them
     stride = max(1, len(levels) // 8)
     axes.contour(
-        lon2d, lat2d, data, levels=levels[::stride], colors="black",
-        linewidths=0.3, transform=ccrs.PlateCarree())
+        lon2d,
+        lat2d,
+        data,
+        levels=levels[::stride],
+        colors="black",
+        linewidths=0.3,
+        transform=ccrs.PlateCarree(),
+    )
     try:
         axes.coastlines(linewidth=0.4)
         axes.add_feature(
             __import__("cartopy.feature", fromlist=["LAND"]).LAND,
-            facecolor=(0.5, 0.5, 0.5), zorder=2)
+            facecolor=(0.5, 0.5, 0.5),
+            zorder=2,
+        )
     except Exception:  # noqa: BLE001 - offline cartopy data
         logger.warning("Could not draw coastlines/land feature")
     grid_color = cfg.get("grid_color", "green")
-    gridlines = axes.gridlines(color=grid_color, linewidth=0.5,
-                               linestyle="-")
+    gridlines = axes.gridlines(color=grid_color, linewidth=0.5, linestyle="-")
     gridlines.ylocator = plt.MultipleLocator(10)
     # title on top, then the right and left strings below it, so that
     # they never overlap (the NCL layout)
     axes.set_title(title, fontsize=11, pad=30)
-    axes.text(1.0, 1.06, subtitle, fontsize=8,
-              transform=axes.transAxes, ha="right")
-    axes.text(0.0, 1.01, f"{var_name}{units_str}", fontsize=8,
-              transform=axes.transAxes, ha="left")
+    axes.text(
+        1.0, 1.06, subtitle, fontsize=8, transform=axes.transAxes, ha="right"
+    )
+    axes.text(
+        0.0,
+        1.01,
+        f"{var_name}{units_str}",
+        fontsize=8,
+        transform=axes.transAxes,
+        ha="left",
+    )
     return filled
 
 
@@ -132,8 +160,11 @@ def main(cfg):
     grid_step = float(cfg.get("grid_step", 0.1))
     nsteps = int(round((grid_max - grid_min) / grid_step)) + 1
     levels = np.linspace(grid_min, grid_max, nsteps)
-    extend = ("neither" if cfg.get("labelBar_end_type")
-              == "ExcludeOuterBoxes" else "both")
+    extend = (
+        "neither"
+        if cfg.get("labelBar_end_type") == "ExcludeOuterBoxes"
+        else "both"
+    )
     cmap = colormap_from_cfg(cfg, nsteps)
 
     nvert = int(cfg.get("max_vert", 1))
@@ -143,8 +174,10 @@ def main(cfg):
     factor = float(cfg.get("unitCorrectionalFactor", 1.0))
     ancestors, nc_files = [], []
 
-    pages = [input_data[i:i + per_page]
-             for i in range(0, len(input_data), per_page)]
+    pages = [
+        input_data[i : i + per_page]
+        for i in range(0, len(input_data), per_page)
+    ]
     plot_files = []
     for ipage, page in enumerate(pages):
         fig = plt.figure(figsize=(5.5 * nhori, 5.5 * nvert))
@@ -158,33 +191,51 @@ def main(cfg):
             if factor != 1.0:
                 cube.data = cube.data * factor
             units_str = f" ({cfg.get('new_units', cube.units)})"
-            axes = fig.add_subplot(nvert, nhori, ipanel + 1,
-                                   projection=ccrs.SouthPolarStereo())
-            subtitle = (f"annual mean {meta['start_year']} - "
-                        f"{meta['end_year']}")
+            axes = fig.add_subplot(
+                nvert, nhori, ipanel + 1, projection=ccrs.SouthPolarStereo()
+            )
+            subtitle = f"annual mean {meta['start_year']} - {meta['end_year']}"
             filled = plot_dataset(
-                axes, cube, levels, cmap, extend, cfg,
-                meta["dataset"], subtitle, units_str, meta["short_name"])
-            cbar = fig.colorbar(filled, ax=axes, orientation="vertical",
-                                shrink=0.85, ticks=levels)
+                axes,
+                cube,
+                levels,
+                cmap,
+                extend,
+                cfg,
+                meta["dataset"],
+                subtitle,
+                units_str,
+                meta["short_name"],
+            )
+            cbar = fig.colorbar(
+                filled,
+                ax=axes,
+                orientation="vertical",
+                shrink=0.85,
+                ticks=levels,
+            )
             cbar.ax.tick_params(labelsize=6)
             nc_name = get_diagnostic_filename(
                 f"russell18jgr_polar_{meta['short_name']}_"
                 f"{meta['dataset']}_{meta['start_year']}-"
-                f"{meta['end_year']}", cfg)
+                f"{meta['end_year']}",
+                cfg,
+            )
             iris.save(cube, nc_name)
             nc_files.append(nc_name)
             ancestors.append(meta["filename"])
         suffix = f"_page{ipage + 1}" if len(pages) > 1 else ""
         plot_file = get_plot_filename(
-            f"Russell_polar-contour_{var0}_{years}{suffix}", cfg)
+            f"Russell_polar-contour_{var0}_{years}{suffix}", cfg
+        )
         fig.savefig(plot_file, bbox_inches="tight", dpi=200)
         plt.close(fig)
         plot_files.append(plot_file)
         logger.info("Wrote %s", plot_file)
 
     record = rc.provenance_record(
-        f"Russell et al 2018 polar plot {var0}", ancestors)
+        f"Russell et al 2018 polar plot {var0}", ancestors
+    )
     with ProvenanceLogger(cfg) as prov:
         for filename in nc_files + plot_files:
             prov.log(filename, record)

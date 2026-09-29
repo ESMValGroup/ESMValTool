@@ -98,11 +98,21 @@ SUB_LAYERS = [
     [("s4", 46.150, None)],
 ]
 
-YAXIS_LABELS = ["Net", "Surface", r"26.10$\sigma_0$", r"26.40$\sigma_0$",
-                r"26.90$\sigma_0$", r"27.10$\sigma_0$",
-                r"27.40$\sigma_0$", r"36.8$\sigma_2$", r"45.8$\sigma_4$",
-                r"45.86$\sigma_4$", r"45.92$\sigma_4$",
-                r"46.0$\sigma_4$", "Bottom"]
+YAXIS_LABELS = [
+    "Net",
+    "Surface",
+    r"26.10$\sigma_0$",
+    r"26.40$\sigma_0$",
+    r"26.90$\sigma_0$",
+    r"27.10$\sigma_0$",
+    r"27.40$\sigma_0$",
+    r"36.8$\sigma_2$",
+    r"45.8$\sigma_4$",
+    r"45.86$\sigma_4$",
+    r"45.92$\sigma_4$",
+    r"46.0$\sigma_4$",
+    "Bottom",
+]
 
 
 def _interp_to_lat(cube, exact_lat):
@@ -127,12 +137,12 @@ def _interp_to_lon(field, src_lon, dst_lon):
         return field  # not monotonic: use as-is (as the NCL script did)
     out = np.ma.masked_all((field.shape[0], len(dst_lon)))
     src_ext = np.concatenate(
-        [src_lon[-1:] - 360.0, src_lon, src_lon[:1] + 360.0])
+        [src_lon[-1:] - 360.0, src_lon, src_lon[:1] + 360.0]
+    )
     for k in range(field.shape[0]):
         row = np.ma.filled(field[k], np.nan)
         row_ext = np.concatenate([row[-1:], row, row[:1]])
-        out[k] = np.ma.masked_invalid(
-            np.interp(dst_lon, src_ext, row_ext))
+        out[k] = np.ma.masked_invalid(np.interp(dst_lon, src_ext, row_ext))
     return out
 
 
@@ -201,23 +211,22 @@ def layer_sums(sigma, transport):
     """Transport summed per main layer (12 incl. net) and sublayer (44)."""
     main = np.zeros(12)
     for i, conditions in enumerate(MAIN_LAYERS):
-        masked = np.ma.masked_where(~layer_mask(sigma, conditions),
-                                    transport)
+        masked = np.ma.masked_where(~layer_mask(sigma, conditions), transport)
         value = masked.sum()
         main[i + 1] = 0.0 if np.ma.is_masked(value) else float(value)
     main[0] = main[1:].sum()
 
     sub = np.zeros(44)
     for i, conditions in enumerate(SUB_LAYERS):
-        masked = np.ma.masked_where(~layer_mask(sigma, conditions),
-                                    transport)
+        masked = np.ma.masked_where(~layer_mask(sigma, conditions), transport)
         value = masked.sum()
         sub[i] = 0.0 if np.ma.is_masked(value) else float(value)
     return main, sub
 
 
-def plot_layer_bars(main, sub, talley, dataset, meta, exact_lat,
-                    xlimit, xstep, unit, net_label):
+def plot_layer_bars(
+    main, sub, talley, dataset, meta, exact_lat, xlimit, xstep, unit, net_label
+):
     """One bar-chart figure (blue main bars, red sublayers, magenta
     Talley reference).
     """
@@ -225,21 +234,45 @@ def plot_layer_bars(main, sub, talley, dataset, meta, exact_lat,
     y_edges = np.arange(-1.0, 12.0)  # bottom edges of the 12 main bars
 
     for i in range(12):
-        axes.barh(y_edges[i] + 0.5, main[i], height=1.0,
-                  color="#00008b", edgecolor="#00008b", zorder=2)
+        axes.barh(
+            y_edges[i] + 0.5,
+            main[i],
+            height=1.0,
+            color="#00008b",
+            edgecolor="#00008b",
+            zorder=2,
+        )
     for i in range(44):
         layer = i // 4
         offset = (i % 4) * 0.25
         ypos = layer + offset + 0.125
-        axes.barh(ypos, sub[i], height=0.25, color="red",
-                  edgecolor="black", linewidth=0.3, zorder=3)
+        axes.barh(
+            ypos,
+            sub[i],
+            height=0.25,
+            color="red",
+            edgecolor="black",
+            linewidth=0.3,
+            zorder=3,
+        )
     for i in range(12):
-        axes.plot([talley[i], talley[i]],
-                  [y_edges[i], y_edges[i] + 1.0],
-                  color="magenta", linewidth=2.0, zorder=4)
+        axes.plot(
+            [talley[i], talley[i]],
+            [y_edges[i], y_edges[i] + 1.0],
+            color="magenta",
+            linewidth=2.0,
+            zorder=4,
+        )
     for i in range(12):
-        axes.text(xlimit * 0.98, y_edges[i] + 0.5, f"{main[i]:4.3f}",
-                  fontsize=7, va="center", ha="right", zorder=5)
+        axes.text(
+            xlimit * 0.98,
+            y_edges[i] + 0.5,
+            f"{main[i]:4.3f}",
+            fontsize=7,
+            va="center",
+            ha="right",
+            zorder=5,
+        )
 
     axes.axvline(0, color="black", linewidth=0.8)
     axes.set_xlim(-xlimit, xlimit)
@@ -249,12 +282,22 @@ def plot_layer_bars(main, sub, talley, dataset, meta, exact_lat,
     axes.set_yticklabels(YAXIS_LABELS, fontsize=8)
     axes.tick_params(axis="x", labelsize=7)
     axes.set_title(dataset, fontsize=12)
-    axes.text(0.0, 1.02,
-              f"({meta['start_year']} - {meta['end_year']}) at "
-              f"({abs(exact_lat):4.2f}S)",
-              transform=axes.transAxes, fontsize=8)
-    axes.text(1.0, 1.02, f"{net_label} = {main[0]:4.2f}{unit}",
-              ha="right", transform=axes.transAxes, fontsize=8)
+    axes.text(
+        0.0,
+        1.02,
+        f"({meta['start_year']} - {meta['end_year']}) at "
+        f"({abs(exact_lat):4.2f}S)",
+        transform=axes.transAxes,
+        fontsize=8,
+    )
+    axes.text(
+        1.0,
+        1.02,
+        f"{net_label} = {main[0]:4.2f}{unit}",
+        ha="right",
+        transform=axes.transAxes,
+        fontsize=8,
+    )
     fig.tight_layout()
     return fig
 
@@ -279,15 +322,39 @@ def run_fig6(cfg, mode):
     vol_data = rc.select_by_short_name(metadata, "volcello")
 
     if mode == "volume":
-        talley = [0.0, -7.34, -1.9, 9.71, 2.37, -5.86, -10.02,
-                  -11.11, -2.84, 9.96, 16.49, 0.51]
+        talley = [
+            0.0,
+            -7.34,
+            -1.9,
+            9.71,
+            2.37,
+            -5.86,
+            -10.02,
+            -11.11,
+            -2.84,
+            9.96,
+            16.49,
+            0.51,
+        ]
         xlimit, xstep, unit = 20.0, 4.0, "Sv"
         net_label = "Net Transport out of Southern ocean"
         var_name = "transport_per_layer"
         tag, caption = "6a", "Russell et al 2018 figure 6 part a"
     else:
-        talley = [-0.91, -0.89, -0.13, 0.43, 0.04, -0.16, -0.14,
-                  -0.12, -0.03, 0.05, 0.05, 0.00]
+        talley = [
+            -0.91,
+            -0.89,
+            -0.13,
+            0.43,
+            0.04,
+            -0.16,
+            -0.14,
+            -0.12,
+            -0.03,
+            0.05,
+            0.05,
+            0.00,
+        ]
         xlimit, xstep, unit = 1.4, 0.2, "PW"
         net_label = "Net energy out of Southern ocean"
         var_name = "energy_transport_per_layer"
@@ -302,49 +369,75 @@ def run_fig6(cfg, mode):
             if None in (thetao_meta, so_meta, vol_meta):
                 raise ValueError(
                     f"thetao/so/volcello for {dataset} not all found; "
-                    "please keep the four variable groups consistent.")
+                    "please keep the four variable groups consistent."
+                )
 
             section = prepare_section(
                 rc.load_cube(thetao_meta["filename"], "thetao"),
                 rc.load_cube(so_meta["filename"], "so"),
                 rc.load_cube(vo_meta["filename"], "vo"),
-                rc.load_cube(vol_meta["filename"], "volcello"))
+                rc.load_cube(vol_meta["filename"], "volcello"),
+            )
 
             if mode == "volume":
                 transport = section["vo"] * section["area"] / 1.0e6
             else:
                 # 4.2 kJ/(kg K) specific heat, 1035 kg/m^3 density,
                 # 1e12 converts to PW
-                transport = (section["vo"] * section["area"]
-                             * section["theta"] * (1035.0 * 4.2)
-                             / 1.0e12)
+                transport = (
+                    section["vo"]
+                    * section["area"]
+                    * section["theta"]
+                    * (1035.0 * 4.2)
+                    / 1.0e12
+                )
 
             main, sub = layer_sums(section["sigma"], transport)
             fig = plot_layer_bars(
-                main, sub, talley, dataset, vo_meta,
-                section["exact_lat"], xlimit, xstep, unit, net_label)
+                main,
+                sub,
+                talley,
+                dataset,
+                vo_meta,
+                section["exact_lat"],
+                xlimit,
+                xstep,
+                unit,
+                net_label,
+            )
             plot_file = get_plot_filename(
                 f"russell18jgr-fig{tag}_{dataset}_"
-                f"{vo_meta['start_year']}-{vo_meta['end_year']}", cfg)
+                f"{vo_meta['start_year']}-{vo_meta['end_year']}",
+                cfg,
+            )
             fig.savefig(plot_file, bbox_inches="tight", dpi=200)
             plt.close(fig)
             logger.info("Wrote %s", plot_file)
 
             out = iris.cube.Cube(
-                np.concatenate([main, sub]), var_name=var_name,
+                np.concatenate([main, sub]),
+                var_name=var_name,
                 long_name=(
                     "transport in main layers (blue bars, i=0-11) and "
                     "sub layers (red bars, i=12-55) at "
-                    f"{abs(section['exact_lat']):.2f}S"))
+                    f"{abs(section['exact_lat']):.2f}S"
+                ),
+            )
             nc_name = get_diagnostic_filename(
                 f"russell18jgr-figure{tag}_{dataset}_"
-                f"{vo_meta['start_year']}-{vo_meta['end_year']}", cfg)
+                f"{vo_meta['start_year']}-{vo_meta['end_year']}",
+                cfg,
+            )
             iris.save(out, nc_name)
 
             record = rc.provenance_record(
                 caption,
-                [vo_meta["filename"], thetao_meta["filename"],
-                 so_meta["filename"]],
-                plot_types=("bar", "vert"))
+                [
+                    vo_meta["filename"],
+                    thetao_meta["filename"],
+                    so_meta["filename"],
+                ],
+                plot_types=("bar", "vert"),
+            )
             prov.log(plot_file, record)
             prov.log(nc_name, record)

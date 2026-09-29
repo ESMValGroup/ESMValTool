@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Constants used throughout the original NCL scripts
 EARTH_RADIUS = 6.37e06  # m (value used in the NCL scripts)
-DEG2RAD = 0.0174533     # value used in the NCL scripts
+DEG2RAD = 0.0174533  # value used in the NCL scripts
 
 
 def load_cube(filename, short_name=None):
@@ -24,7 +24,8 @@ def load_cube(filename, short_name=None):
     if short_name is not None:
         try:
             return iris.load_cube(
-                filename, iris.NameConstraint(var_name=short_name))
+                filename, iris.NameConstraint(var_name=short_name)
+            )
         except Exception:  # noqa: BLE001 - fall through to plain load
             pass
     return iris.load_cube(filename)
@@ -44,8 +45,9 @@ def coord_1d_or_2d(cube, axis):
 
 def has_regular_grid(cube):
     """True if the cube has 1D lat/lon coordinates."""
-    return (cube.coord("latitude").ndim == 1
-            and cube.coord("longitude").ndim == 1)
+    return (
+        cube.coord("latitude").ndim == 1 and cube.coord("longitude").ndim == 1
+    )
 
 
 def lat_1d(cube):
@@ -81,6 +83,7 @@ def time_mean(cube):
 def monthly_climatology(cube):
     """12-month climatology of a monthly time series (like clmMonTLL)."""
     import iris.coord_categorisation
+
     if not any(c.name() == "month_number" for c in cube.coords()):
         iris.coord_categorisation.add_month_number(cube, "time")
     clim = cube.aggregated_by("month_number", iris.analysis.MEAN)
@@ -97,15 +100,17 @@ def surface_field(cube):
     is selected.  2D fields such as tauu and fgco2 are returned
     unchanged.
     """
-    zcoords = [c for c in cube.coords(dim_coords=True)
-               if c.attributes.get("positive") in ("down", "up")
-               or c.name() in ("depth", "lev", "olevel")]
+    zcoords = [
+        c
+        for c in cube.coords(dim_coords=True)
+        if c.attributes.get("positive") in ("down", "up")
+        or c.name() in ("depth", "lev", "olevel")
+    ]
     if not zcoords:
         return cube
     zcoord = zcoords[0]
     index = [slice(None)] * cube.ndim
-    index[cube.coord_dims(zcoord)[0]] = int(
-        np.argmin(np.abs(zcoord.points)))
+    index[cube.coord_dims(zcoord)[0]] = int(np.argmin(np.abs(zcoord.points)))
     return cube[tuple(index)]
 
 
@@ -151,11 +156,18 @@ def style_for(dataset, styleset="CMIP5"):
     """
     try:
         from esmvaltool.diag_scripts.shared.plot import get_dataset_style
+
         return get_dataset_style(dataset, str(styleset).lower())
     except Exception:  # noqa: BLE001 - be permissive about style lookup
         logger.debug("No ESMValTool style for %s, using defaults", dataset)
-        return {"color": None, "dash": "-", "thick": 1.5, "mark": "o",
-                "avgstd": 0, "facecolor": "none"}
+        return {
+            "color": None,
+            "dash": "-",
+            "thick": 1.5,
+            "mark": "o",
+            "avgstd": 0,
+            "facecolor": "none",
+        }
 
 
 def closest_index(value, array):
@@ -188,8 +200,11 @@ def ncl_cell_area(lat, lon, shape):
 def depth_to_dbar(depth):
     """Approximate pressure (decibars) from depth (m), as in NCL/POP."""
     depth = np.asarray(depth, dtype=float)
-    bars = (0.059808 * (np.exp(-0.025 * depth) - 1.0)
-            + 0.100766 * depth + 2.28405e-7 * depth ** 2)
+    bars = (
+        0.059808 * (np.exp(-0.025 * depth) - 1.0)
+        + 0.100766 * depth
+        + 2.28405e-7 * depth**2
+    )
     return 10.0 * bars
 
 
@@ -222,11 +237,11 @@ def rho_mwjf(theta, salt, depth):
     p001 = 0.001  # scales the numerator so that rho is in g/cm^3
 
     # Numerator coefficients
-    mwjfnp0s0t0 = 9.99843699e+2 * p001
-    mwjfnp0s0t1 = 7.35212840e+0 * p001
+    mwjfnp0s0t0 = 9.99843699e2 * p001
+    mwjfnp0s0t1 = 7.35212840e0 * p001
     mwjfnp0s0t2 = -5.45928211e-2 * p001
     mwjfnp0s0t3 = 3.98476704e-4 * p001
-    mwjfnp0s1t0 = 2.96938239e+0 * p001
+    mwjfnp0s1t0 = 2.96938239e0 * p001
     mwjfnp0s1t1 = -7.23268813e-3 * p001
     mwjfnp0s2t0 = 2.12382341e-3 * p001
     mwjfnp1s0t0 = 1.04004591e-2 * p001
@@ -236,7 +251,7 @@ def rho_mwjf(theta, salt, depth):
     mwjfnp2s0t2 = -1.23869360e-11 * p001
 
     # Denominator coefficients
-    mwjfdp0s0t0 = 1.0e+0
+    mwjfdp0s0t0 = 1.0e0
     mwjfdp0s0t1 = 7.28606739e-3
     mwjfdp0s0t2 = -4.60835542e-5
     mwjfdp0s0t3 = 3.68390573e-7
@@ -260,9 +275,9 @@ def rho_mwjf(theta, salt, depth):
     nums2t0 = mwjfnp0s2t0
 
     dens0t0 = mwjfdp0s0t0 + p * mwjfdp1s0t0
-    dens0t1 = mwjfdp0s0t1 + (p ** 3) * mwjfdp3s0t1
+    dens0t1 = mwjfdp0s0t1 + (p**3) * mwjfdp3s0t1
     dens0t2 = mwjfdp0s0t2
-    dens0t3 = mwjfdp0s0t3 + (p ** 2) * mwjfdp2s0t3
+    dens0t3 = mwjfdp0s0t3 + (p**2) * mwjfdp2s0t3
     dens0t4 = mwjfdp0s0t4
     dens1t0 = mwjfdp0s1t0
     dens1t1 = mwjfdp0s1t1
@@ -270,13 +285,17 @@ def rho_mwjf(theta, salt, depth):
     densqt0 = mwjfdp0sqt0
     densqt1 = mwjfdp0sqt1
 
-    numerator = (nums0t0 + t * (nums0t1 + t * (nums0t2 + nums0t3 * t))
-                 + s * (nums1t0 + nums1t1 * t + nums2t0 * s))
-    denominator = (dens0t0
-                   + t * (dens0t1
-                          + t * (dens0t2 + t * (dens0t3 + dens0t4 * t)))
-                   + s * (dens1t0 + dens1t1 * t + dens1t3 * t ** 3)
-                   + s * np.ma.sqrt(s) * (densqt0 + densqt1 * t ** 2))
+    numerator = (
+        nums0t0
+        + t * (nums0t1 + t * (nums0t2 + nums0t3 * t))
+        + s * (nums1t0 + nums1t1 * t + nums2t0 * s)
+    )
+    denominator = (
+        dens0t0
+        + t * (dens0t1 + t * (dens0t2 + t * (dens0t3 + dens0t4 * t)))
+        + s * (dens1t0 + dens1t1 * t + dens1t3 * t**3)
+        + s * np.ma.sqrt(s) * (densqt0 + densqt1 * t**2)
+    )
     return numerator / denominator
 
 
@@ -297,19 +316,22 @@ def westerly_band_width(tauu_zonal, lat):
     for i in range(a1, len(lat) // 2):
         if tauu[i] >= 0 and tauu[i + 1] < 0:
             lat1, lat2 = lat[i], lat[i + 1]
-            final_lat = lat1 - ((lat1 - lat2) * tauu[i]
-                                / (tauu[i] - tauu[i + 1]))
+            final_lat = lat1 - (
+                (lat1 - lat2) * tauu[i] / (tauu[i] - tauu[i + 1])
+            )
             break
     lower_lat = None
     for i in range(a2, a1 + 1):
         if tauu[i] < 0 and tauu[i + 1] >= 0:
             lat1, lat2 = lat[i], lat[i + 1]
-            lower_lat = lat1 - ((lat1 - lat2) * tauu[i]
-                                / (tauu[i] - tauu[i + 1]))
+            lower_lat = lat1 - (
+                (lat1 - lat2) * tauu[i] / (tauu[i] - tauu[i + 1])
+            )
     if final_lat is None or lower_lat is None:
         raise ValueError(
             "Could not find the zero crossings of the zonal wind stress "
-            "around 50S needed to compute the westerly band width.")
+            "around 50S needed to compute the westerly band width."
+        )
     return float(final_lat - lower_lat)
 
 
@@ -345,8 +367,9 @@ def extract_isoline(lon2d, lat2d, field, level):
 
     fig = plt.figure()
     try:
-        contours = plt.contour(lon2d, lat2d,
-                               np.ma.masked_invalid(field), [level])
+        contours = plt.contour(
+            lon2d, lat2d, np.ma.masked_invalid(field), [level]
+        )
         segments = [seg for seg in contours.allsegs[0] if len(seg) > 1]
     finally:
         plt.close(fig)
@@ -387,8 +410,13 @@ def to_kelvin(data):
     return data + 273.0
 
 
-def provenance_record(caption, ancestors, plot_types=("geo",),
-                      statistics=("mean",), domains=("sh",)):
+def provenance_record(
+    caption,
+    ancestors,
+    plot_types=("geo",),
+    statistics=("mean",),
+    domains=("sh",),
+):
     """Standard provenance record for the russell18jgr diagnostics."""
     return {
         "caption": caption,

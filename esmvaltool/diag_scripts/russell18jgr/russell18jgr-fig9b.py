@@ -27,8 +27,7 @@ def main(cfg):
     metadata = list(cfg["input_data"].values())
     fgco2_data = rc.select_by_short_name(metadata, "fgco2")
     area_data = rc.select_by_short_name(metadata, "areacello")
-    tauu_data = [m for m in metadata
-                 if m["short_name"] in ("tauu", "tauuo")]
+    tauu_data = [m for m in metadata if m["short_name"] in ("tauu", "tauuo")]
     years = rc.year_range_str(fgco2_data)
 
     datasets, widths, fluxes, metas, ancestors = [], [], [], [], []
@@ -40,27 +39,42 @@ def main(cfg):
             continue
         widths.append(f9.band_width(tauu_meta))
         fluxes.append(
-            f9.integrated_flux(fgco2_meta, area_data, f9.CARBON_FACTOR))
+            f9.integrated_flux(fgco2_meta, area_data, f9.CARBON_FACTOR)
+        )
         datasets.append(dataset)
         metas.append(fgco2_meta)
-        ancestors.append([tauu_meta["filename"],
-                          fgco2_meta["filename"]])
+        ancestors.append([tauu_meta["filename"], fgco2_meta["filename"]])
 
-    xlim = (np.round(min(widths) * 2) / 2.0 - 0.5,
-            np.round(max(widths) * 2) / 2.0 + 0.5)
+    xlim = (
+        np.round(min(widths) * 2) / 2.0 - 0.5,
+        np.round(max(widths) * 2) / 2.0 + 0.5,
+    )
     plot_file, regline = f9.scatter_with_regression(
-        cfg, widths, fluxes, datasets,
+        cfg,
+        widths,
+        fluxes,
+        datasets,
         "Latitudinal width of Southern Hemisphere Westerly Band",
         "Southern ocean carbon uptake (Pg/yr)",
         "Russell et at 2018 - fig 9b ",
-        xlim, 0.5, f"russell18jgr-fig9b_{years}")
+        xlim,
+        0.5,
+        f"russell18jgr-fig9b_{years}",
+    )
 
     f9.save_pairs(
-        cfg, "russell18jgr_fig9b", "carbon-flux_lat-width",
+        cfg,
+        "russell18jgr_fig9b",
+        "carbon-flux_lat-width",
         "total carbon flux and lat width of southern westerly band",
-        datasets, metas,
+        datasets,
+        metas,
         [(fluxes[i], widths[i]) for i in range(len(datasets))],
-        regline, plot_file, "Russell et al 2018 figure 9b", ancestors)
+        regline,
+        plot_file,
+        "Russell et al 2018 figure 9b",
+        ancestors,
+    )
 
 
 if __name__ == "__main__":

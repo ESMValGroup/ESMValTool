@@ -55,9 +55,9 @@ diagnostics:
     realms:
       - ocean
     variables:
-      tauu:
-        preprocessor: preprocessor_time_land
-        mip: Amon
+      tauuo:
+        preprocessor: preprocessor_time
+        mip: Omon
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -66,17 +66,6 @@ diagnostics:
         additional_datasets:
           - {dataset: CanESM2}
           - {dataset: GFDL-ESM2M}
-    #  tauuo:
-    #    preprocessor: preprocessor_time
-    #    mip: Omon
-    #    project: CMIP5
-    #    exp: historical
-    #    ensemble: r1i1p1
-    #    start_year: 1986
-    #    end_year: 2005
-    #    additional_datasets:
-    #      - {dataset: CanESM2}
-    #      - {dataset: GFDL-ESM2M}
     scripts:
       polar-tauu:
         script: russell18jgr/russell18jgr-polar.py

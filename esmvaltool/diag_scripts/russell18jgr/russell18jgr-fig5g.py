@@ -33,15 +33,26 @@ import russell_common as rc
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+MONTH_LABELS = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+]
 
 
 def main(cfg):
     """Run the diagnostic."""
     metadata = list(cfg["input_data"].values())
-    sic_data = [m for m in metadata
-                if m["short_name"] in ("sic", "siconc")]
+    sic_data = [m for m in metadata if m["short_name"] in ("sic", "siconc")]
     area_data = rc.select_by_short_name(metadata, "areacello")
     var0 = sic_data[0]["short_name"]
     years = rc.year_range_str(sic_data)
@@ -57,8 +68,7 @@ def main(cfg):
 
         lat = rc.coord_1d_or_2d(clim, "latitude")
         if rc.has_regular_grid(clim):
-            area = rc.ncl_cell_area(
-                lat, rc.lon_1d(clim), sic.shape[1:])
+            area = rc.ncl_cell_area(lat, rc.lon_1d(clim), sic.shape[1:])
             sh_rows = lat < 0.0
         else:
             area_meta = rc.match_by_dataset(area_data, meta["dataset"])
@@ -66,30 +76,46 @@ def main(cfg):
                 raise ValueError(
                     f"areacello file for {meta['dataset']} not found; "
                     "please add the dataset to the areacello section "
-                    "of the recipe.")
+                    "of the recipe."
+                )
             area = np.ma.masked_invalid(
-                rc.load_cube(area_meta["filename"], "areacello").data)
+                rc.load_cube(area_meta["filename"], "areacello").data
+            )
             sh_rows = lat[:, 0] < 0.0
 
         ice_area = sic * area[np.newaxis, :, :]
         # 1e14 = 1e12 (unit scale) * 100 (percent -> fraction)
         annual_cycle = (
-            ice_area[:, sh_rows, :].reshape(12, -1).sum(axis=1) / 1.0e14)
+            ice_area[:, sh_rows, :].reshape(12, -1).sum(axis=1) / 1.0e14
+        )
 
         style = rc.style_for(meta["dataset"], cfg.get("styleset", "CMIP5"))
-        axes.plot(months, annual_cycle, label=meta["dataset"],
-                  color=style["color"], linestyle=style["dash"],
-                  linewidth=style["thick"], marker="D", markersize=3,
-                  markerfacecolor="none")
+        axes.plot(
+            months,
+            annual_cycle,
+            label=meta["dataset"],
+            color=style["color"],
+            linestyle=style["dash"],
+            linewidth=style["thick"],
+            marker="D",
+            markersize=3,
+            markerfacecolor="none",
+        )
 
         out_cube = iris.cube.Cube(
-            annual_cycle, var_name=var0, units="1e12 m2",
-            long_name="southern hemisphere area under sea ice")
+            annual_cycle,
+            var_name=var0,
+            units="1e12 m2",
+            long_name="southern hemisphere area under sea ice",
+        )
         out_cube.add_dim_coord(
-            iris.coords.DimCoord(np.arange(1, 13), var_name="month"), 0)
+            iris.coords.DimCoord(np.arange(1, 13), var_name="month"), 0
+        )
         nc_name = get_diagnostic_filename(
             f"russell18jgr-fig5g_{var0}_{meta['dataset']}_"
-            f"{meta['start_year']}-{meta['end_year']}", cfg)
+            f"{meta['start_year']}-{meta['end_year']}",
+            cfg,
+        )
         iris.save(out_cube, nc_name)
         nc_files.append(nc_name)
         ancestors.append(meta["filename"])
@@ -99,21 +125,23 @@ def main(cfg):
     axes.set_xticklabels(MONTH_LABELS)
     axes.set_xlabel("months")
     axes.set_ylabel("Area under sea ice ( 10$^{12}$ m$^2$ )")
-    axes.set_title("Russell et al -2018 - Figure 5 g", loc="left",
-                   fontsize=11)
-    axes.legend(loc="center left", bbox_to_anchor=(1.02, 0.5),
-                fontsize=7, frameon=False)
+    axes.set_title("Russell et al -2018 - Figure 5 g", loc="left", fontsize=11)
+    axes.legend(
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),
+        fontsize=7,
+        frameon=False,
+    )
     fig.tight_layout()
 
-    plot_file = get_plot_filename(
-        f"russell18jgr-fig5g_{var0}_{years}", cfg)
+    plot_file = get_plot_filename(f"russell18jgr-fig5g_{var0}_{years}", cfg)
     fig.savefig(plot_file, bbox_inches="tight", dpi=200)
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
     record = rc.provenance_record(
-        "Russell et al 2018 figure 5g", ancestors,
-        plot_types=("times",))
+        "Russell et al 2018 figure 5g", ancestors, plot_types=("times",)
+    )
     with ProvenanceLogger(cfg) as prov:
         for filename in nc_files + [plot_file]:
             prov.log(filename, record)

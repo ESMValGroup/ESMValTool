@@ -45,20 +45,32 @@ def main(cfg):
         zonal = rc.zonal_mean(cube.data)
         lat = rc.lat_1d(cube)
         style = rc.style_for(meta["dataset"], cfg.get("styleset", "CMIP5"))
-        axes.plot(lat, zonal, label=meta["dataset"],
-                  color=style["color"], linestyle=style["dash"],
-                  linewidth=style["thick"])
+        axes.plot(
+            lat,
+            zonal,
+            label=meta["dataset"],
+            color=style["color"],
+            linestyle=style["dash"],
+            linewidth=style["thick"],
+        )
 
         out_cube = iris.cube.Cube(
-            np.ma.masked_invalid(zonal), var_name=meta["short_name"],
+            np.ma.masked_invalid(zonal),
+            var_name=meta["short_name"],
             units=str(cube.units),
-            long_name="zonal mean surface eastward wind stress")
+            long_name="zonal mean surface eastward wind stress",
+        )
         out_cube.add_dim_coord(
-            iris.coords.DimCoord(lat, standard_name="latitude",
-                                 units="degrees_north"), 0)
+            iris.coords.DimCoord(
+                lat, standard_name="latitude", units="degrees_north"
+            ),
+            0,
+        )
         nc_name = get_diagnostic_filename(
             f"russell18jgr_fig2_{meta['short_name']}_{meta['dataset']}_"
-            f"{meta['start_year']}-{meta['end_year']}", cfg)
+            f"{meta['start_year']}-{meta['end_year']}",
+            cfg,
+        )
         iris.save(out_cube, nc_name)
         nc_files.append(nc_name)
         ancestors.append(meta["filename"])
@@ -70,11 +82,14 @@ def main(cfg):
     axes.axhline(0, color="grey", linestyle="--", linewidth=0.8)
     axes.set_xlabel("Latitude")
     axes.set_ylabel("Surface eastward wind stress")
-    axes.set_title("Russell et al -2018 - Figure 2", loc="left",
-                   fontsize=11)
+    axes.set_title("Russell et al -2018 - Figure 2", loc="left", fontsize=11)
     axes.set_title("Units - (Pa)", loc="right", fontsize=9)
-    axes.legend(loc="center left", bbox_to_anchor=(1.02, 0.5),
-                fontsize=7, frameon=False)
+    axes.legend(
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),
+        fontsize=7,
+        frameon=False,
+    )
     fig.tight_layout()
 
     plot_file = get_plot_filename(f"russell18jgr_fig2_{years}", cfg)
@@ -82,8 +97,7 @@ def main(cfg):
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        "Russell et al 2018 figure 2", ancestors)
+    record = rc.provenance_record("Russell et al 2018 figure 2", ancestors)
     with ProvenanceLogger(cfg) as prov:
         for filename in nc_files + [plot_file]:
             prov.log(filename, record)

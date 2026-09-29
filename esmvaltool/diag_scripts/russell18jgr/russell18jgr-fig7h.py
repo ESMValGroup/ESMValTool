@@ -36,8 +36,9 @@ UNIT_FACTOR = -31536000000.0  # kg m-2 s-1  ->  gC m-2 yr-1 (sea-to-air)
 
 def main(cfg):
     """Run the diagnostic."""
-    input_data = [m for m in cfg["input_data"].values()
-                  if m["short_name"] == "fgco2"]
+    input_data = [
+        m for m in cfg["input_data"].values() if m["short_name"] == "fgco2"
+    ]
     years = rc.year_range_str(input_data)
 
     fig, axes = plt.subplots(figsize=(9, 6.5))
@@ -50,20 +51,32 @@ def main(cfg):
         zonal = rc.zonal_mean(data)
         lat = rc.lat_1d(cube)
         style = rc.style_for(meta["dataset"], cfg.get("styleset", "CMIP5"))
-        axes.plot(lat, zonal, label=meta["dataset"],
-                  color=style["color"], linestyle=style["dash"],
-                  linewidth=style["thick"])
+        axes.plot(
+            lat,
+            zonal,
+            label=meta["dataset"],
+            color=style["color"],
+            linestyle=style["dash"],
+            linewidth=style["thick"],
+        )
 
         out_cube = iris.cube.Cube(
-            zonal, var_name=meta["short_name"],
+            zonal,
+            var_name=meta["short_name"],
             units="g m-2 yr-1",
-            long_name="zonal mean CO2 flux (sea to air)")
+            long_name="zonal mean CO2 flux (sea to air)",
+        )
         out_cube.add_dim_coord(
-            iris.coords.DimCoord(lat, standard_name="latitude",
-                                 units="degrees_north"), 0)
+            iris.coords.DimCoord(
+                lat, standard_name="latitude", units="degrees_north"
+            ),
+            0,
+        )
         nc_name = get_diagnostic_filename(
             f"russell18jgr_fig-7h_fgco2_{meta['dataset']}_"
-            f"{meta['start_year']}-{meta['end_year']}", cfg)
+            f"{meta['start_year']}-{meta['end_year']}",
+            cfg,
+        )
         iris.save(out_cube, nc_name)
         nc_files.append(nc_name)
         ancestors.append(meta["filename"])
@@ -75,23 +88,37 @@ def main(cfg):
     axes.axhline(0, color="grey", linestyle="--", linewidth=0.8)
     axes.set_xlabel("Latitude")
     axes.set_title("Zonal-mean Flux", fontsize=12)
-    axes.text(0.0, 1.05, "Russell et al -2018 - Figure 7 h",
-              transform=axes.transAxes, fontsize=10)
-    axes.text(1.0, 1.05, "Units - gC/ (m$^2$ * yr)", ha="right",
-              transform=axes.transAxes, fontsize=9)
-    axes.legend(loc="center left", bbox_to_anchor=(1.02, 0.5),
-                fontsize=7, frameon=False)
+    axes.text(
+        0.0,
+        1.05,
+        "Russell et al -2018 - Figure 7 h",
+        transform=axes.transAxes,
+        fontsize=10,
+    )
+    axes.text(
+        1.0,
+        1.05,
+        "Units - gC/ (m$^2$ * yr)",
+        ha="right",
+        transform=axes.transAxes,
+        fontsize=9,
+    )
+    axes.legend(
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),
+        fontsize=7,
+        frameon=False,
+    )
     fig.tight_layout()
 
-    plot_file = get_plot_filename(
-        f"Russell_figure7h_fgco2_{years}", cfg)
+    plot_file = get_plot_filename(f"Russell_figure7h_fgco2_{years}", cfg)
     fig.savefig(plot_file, bbox_inches="tight", dpi=200)
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
     record = rc.provenance_record(
-        "Russell et al 2018 figure 7h", ancestors,
-        plot_types=("zonal",))
+        "Russell et al 2018 figure 7h", ancestors, plot_types=("zonal",)
+    )
     with ProvenanceLogger(cfg) as prov:
         for filename in nc_files + [plot_file]:
             prov.log(filename, record)

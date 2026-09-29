@@ -38,12 +38,31 @@ import russell_common as rc
 logger = logging.getLogger(os.path.basename(__file__))
 
 # Colour table of the NCL script (RGB 0-256)
-COLORS = np.array([
-    [15.0, 69, 168], [36, 118, 205], [57, 162, 245], [96, 190, 250],
-    [131, 212, 253], [146, 230, 253], [161, 241, 255], [188, 246, 255],
-    [205, 226, 229], [234, 231, 211], [251, 246, 190], [255, 232, 154],
-    [252, 224, 97], [254, 173, 26], [251, 136, 10], [238, 91, 12],
-    [209, 49, 7], [178, 0, 0]]) / 256.0
+COLORS = (
+    np.array(
+        [
+            [15.0, 69, 168],
+            [36, 118, 205],
+            [57, 162, 245],
+            [96, 190, 250],
+            [131, 212, 253],
+            [146, 230, 253],
+            [161, 241, 255],
+            [188, 246, 255],
+            [205, 226, 229],
+            [234, 231, 211],
+            [251, 246, 190],
+            [255, 232, 154],
+            [252, 224, 97],
+            [254, 173, 26],
+            [251, 136, 10],
+            [238, 91, 12],
+            [209, 49, 7],
+            [178, 0, 0],
+        ]
+    )
+    / 256.0
+)
 
 
 def drake_passage_section(cube):
@@ -75,14 +94,15 @@ def total_transport(section, vol_cube, lat, lon, a, lev):
         filled = area_2d.filled(np.nan)
         for k in range(min(area_2d.shape[0], section.shape[0])):
             interp[k] = np.ma.masked_invalid(
-                np.interp(lat, vol_lat, filled[k]))
+                np.interp(lat, vol_lat, filled[k])
+            )
         area_2d = interp
     transport_per_cell = section * area_2d / 1.0e6  # m3/s -> Sv
     per_lat = transport_per_cell.sum(axis=0)
     per_lat = per_lat / np.cos(lat * rc.DEG2RAD)
     b1 = rc.closest_index(-76.0, lat)
     b2 = rc.closest_index(-48.0, lat)
-    return float(per_lat[b1:b2 + 1].sum())
+    return float(per_lat[b1 : b2 + 1].sum())
 
 
 def main(cfg):
@@ -103,12 +123,13 @@ def main(cfg):
     norm = BoundaryNorm(levels, ncolors=cmap.N, extend="both")
 
     ancestors, nc_files, plot_files = [], [], []
-    pages = [uo_data[i:i + per_page]
-             for i in range(0, len(uo_data), per_page)]
+    pages = [
+        uo_data[i : i + per_page] for i in range(0, len(uo_data), per_page)
+    ]
     for ipage, page in enumerate(pages):
-        fig, axs = plt.subplots(nvert, nhori,
-                                figsize=(8 * nhori, 5 * nvert),
-                                squeeze=False)
+        fig, axs = plt.subplots(
+            nvert, nhori, figsize=(8 * nhori, 5 * nvert), squeeze=False
+        )
         for iax in range(per_page):
             axes = axs.flat[iax]
             if iax >= len(page):
@@ -116,41 +137,56 @@ def main(cfg):
                 continue
             meta = page[iax]
             cube = rc.time_mean(
-                rc.load_cube(meta["filename"], meta["short_name"]))
+                rc.load_cube(meta["filename"], meta["short_name"])
+            )
             section, lat, lev, a, lon = drake_passage_section(cube)
 
             vol_meta = rc.match_by_dataset(vol_data, meta["dataset"])
             transport = None
             if vol_meta is not None:
                 try:
-                    vol_cube = rc.load_cube(vol_meta["filename"],
-                                            "volcello")
+                    vol_cube = rc.load_cube(vol_meta["filename"], "volcello")
                     transport = total_transport(
-                        section, vol_cube, lat, lon, a, lev)
+                        section, vol_cube, lat, lon, a, lev
+                    )
                 except Exception:
                     logger.warning(
                         "Transport calculation failed for %s",
-                        meta["dataset"], exc_info=True)
+                        meta["dataset"],
+                        exc_info=True,
+                    )
             else:
                 logger.warning(
                     "volcello file for %s not found in the recipe; "
                     "skipping the transport calculation.",
-                    meta["dataset"])
+                    meta["dataset"],
+                )
 
             exact_lon = lon[a]
-            exact_lon = (360.0 - exact_lon if exact_lon > 200.0
-                         else -exact_lon)
+            exact_lon = 360.0 - exact_lon if exact_lon > 200.0 else -exact_lon
 
             b1 = rc.closest_index(-76.0, lat)
             b2 = rc.closest_index(-48.0, lat)
-            plot_section = section[:, b1:b2 + 1] * factor
-            plot_lat = lat[b1:b2 + 1]
+            plot_section = section[:, b1 : b2 + 1] * factor
+            plot_lat = lat[b1 : b2 + 1]
 
-            filled = axes.contourf(plot_lat, lev, plot_section,
-                                   levels=levels, cmap=cmap, norm=norm,
-                                   extend="both")
-            axes.contour(plot_lat, lev, plot_section, levels=levels,
-                         colors="black", linewidths=0.3)
+            filled = axes.contourf(
+                plot_lat,
+                lev,
+                plot_section,
+                levels=levels,
+                cmap=cmap,
+                norm=norm,
+                extend="both",
+            )
+            axes.contour(
+                plot_lat,
+                lev,
+                plot_section,
+                levels=levels,
+                colors="black",
+                linewidths=0.3,
+            )
             axes.set_facecolor("dimgrey")
             axes.set_xlim(-74, -50)
             axes.set_xticks(np.arange(-74, -49, 2))
@@ -159,34 +195,43 @@ def main(cfg):
             axes.set_ylabel("Depth (m)")
             axes.set_title(
                 f"Section velocity of {meta['dataset']}{units_str}",
-                fontsize=11)
-            left = (f"Net transport : {transport:4.1f}Sv"
-                    if transport is not None else " no volcello file ")
-            axes.text(0.0, 1.02, left, transform=axes.transAxes,
-                      fontsize=8)
-            axes.text(1.0, 1.02,
-                      f"Drake passage ({exact_lon:4.2f} W)",
-                      ha="right", transform=axes.transAxes, fontsize=8)
-            fig.colorbar(filled, ax=axes, orientation="vertical",
-                         shrink=0.9)
+                fontsize=11,
+            )
+            left = (
+                f"Net transport : {transport:4.1f}Sv"
+                if transport is not None
+                else " no volcello file "
+            )
+            axes.text(0.0, 1.02, left, transform=axes.transAxes, fontsize=8)
+            axes.text(
+                1.0,
+                1.02,
+                f"Drake passage ({exact_lon:4.2f} W)",
+                ha="right",
+                transform=axes.transAxes,
+                fontsize=8,
+            )
+            fig.colorbar(filled, ax=axes, orientation="vertical", shrink=0.9)
 
             nc_name = get_diagnostic_filename(
                 f"russell18jgr_fig4_uo_{meta['dataset']}_"
-                f"{meta['start_year']}-{meta['end_year']}", cfg)
+                f"{meta['start_year']}-{meta['end_year']}",
+                cfg,
+            )
             iris.save(cube, nc_name)
             nc_files.append(nc_name)
             ancestors.append(meta["filename"])
         suffix = f"_page{ipage + 1}" if len(pages) > 1 else ""
         fig.tight_layout()
         plot_file = get_plot_filename(
-            f"Russell18jgr-fig4_{years}{suffix}", cfg)
+            f"Russell18jgr-fig4_{years}{suffix}", cfg
+        )
         fig.savefig(plot_file, bbox_inches="tight", dpi=200)
         plt.close(fig)
         plot_files.append(plot_file)
         logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        "Russell et al 2018 figure 4", ancestors)
+    record = rc.provenance_record("Russell et al 2018 figure 4", ancestors)
     with ProvenanceLogger(cfg) as prov:
         for filename in nc_files + plot_files:
             prov.log(filename, record)
