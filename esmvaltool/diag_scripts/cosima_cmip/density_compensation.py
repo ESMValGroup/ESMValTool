@@ -284,7 +284,7 @@ def main(cfg):
     if set(references) != {"thetao", "so"}:
         raise ValueError("WOA temperature and salinity are both required")
     if any(
-        item.get("version") != cfg.get("reference_version")
+        str(item.get("version")) != str(cfg.get("reference_version"))
         for item in references.values()
     ):
         raise ValueError("WOA version does not match recipe")
@@ -379,7 +379,7 @@ def main(cfg):
                 f"{dataset} density bias attributed to temperature "
                 "and salinity differences against WOA"
             ),
-            "statistics": ["mean", "rms"],
+            "statistics": ["mean", "rmsd"],
             "domains": ["global"],
             "plot_types": ["vert"],
             "authors": ["beucher_romain"],
@@ -401,7 +401,7 @@ def main(cfg):
                 "Multi-model density comparison against WOA; "
                 "model names follow model_index order"
             ),
-            "statistics": ["mean", "rms"],
+            "statistics": ["mean", "rmsd"],
             "domains": ["global"],
             "plot_types": ["vert"],
             "authors": ["beucher_romain"],

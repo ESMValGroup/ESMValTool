@@ -392,27 +392,46 @@ def _reference_comparison(models, variable, results, cfg):
 
 
 def _plot_drift(dataset, variable, depth, years, anomaly, slope, units, cfg):
-    fig, axes = plt.subplots(2, 2, figsize=(11, 7), sharex=True, sharey=True)
+    fig, axes = plt.subplots(
+        2, 2, figsize=(12, 7), sharex=True, constrained_layout=True
+    )
     vmax = np.nanmax(np.abs(anomaly))
     vmax = vmax if np.isfinite(vmax) and vmax > 0 else 1.0
+    display_units = "°C" if units == "degC" else "psu"
+    year_edges = np.r_[
+        years[0] - 0.5,
+        (years[:-1] + years[1:]) / 2,
+        years[-1] + 0.5,
+    ]
+    depth_edges = np.arange(len(depth) + 1) - 0.5
     for region, (label, _, _) in enumerate(REGIONS):
         ax = axes.flat[region]
         image = ax.pcolormesh(
-            years,
-            depth,
+            year_edges,
+            depth_edges,
             anomaly[:, region, :].T,
-            shading="auto",
+            shading="flat",
             cmap="RdBu_r",
             vmin=-vmax,
             vmax=vmax,
         )
         ax.set_title(
-            f"{label}; 10 m drift {slope[region, 0]:+.2f} {units}/century"
+            f"{label}\n10 m slope: {slope[region, 0]:+.2f} "
+            f"{display_units}/century",
+            fontsize=10,
         )
-        ax.set_xlabel("piControl year")
-        ax.set_ylabel("Depth (m)")
-    axes[0, 0].invert_yaxis()
-    fig.colorbar(image, ax=axes.ravel().tolist(), label=f"Anomaly ({units})")
+        if region >= 2:
+            ax.set_xlabel("piControl year")
+        ax.set_ylabel("Sampled depth (m)")
+        ax.set_yticks(np.arange(len(depth)), [f"{level:g}" for level in depth])
+        ax.set_ylim(len(depth) - 0.5, -0.5)
+    fig.colorbar(
+        image,
+        ax=axes.ravel().tolist(),
+        label=f"Anomaly ({display_units})",
+        shrink=0.85,
+        pad=0.03,
+    )
     fig.suptitle(f"{dataset} {variable}: unforced control drift")
     path = get_plot_filename(f"hydrography_{dataset}_{variable}_drift", cfg)
     fig.savefig(path, bbox_inches="tight", dpi=150)
@@ -469,14 +488,14 @@ def main(cfg):
                 continue
             cubes = []
             ancestors = []
+            plot_paths = []
             depth = None
             if historical and reference:
                 model_cube = cc.load_cube(historical["filename"], variable)
                 ref_cube = cc.load_cube(reference["filename"], variable)
                 expected_version = cfg.get("reference_version")
-                if (
+                if expected_version and str(reference.get("version")) != str(
                     expected_version
-                    and reference.get("version") != expected_version
                 ):
                     raise ValueError(
                         "WOA reference version does not match recipe"
@@ -548,14 +567,16 @@ def main(cfg):
                         else str(model_cube.units)
                     )
                     cubes.append(_cube(values, name, units, depth))
-                _plot_bias(
-                    dataset,
-                    variable,
-                    depth,
-                    bias,
-                    rmse,
-                    str(model_cube.units),
-                    cfg,
+                plot_paths.append(
+                    _plot_bias(
+                        dataset,
+                        variable,
+                        depth,
+                        bias,
+                        rmse,
+                        str(model_cube.units),
+                        cfg,
+                    )
                 )
                 ancestors.extend(
                     (historical["filename"], reference["filename"])
@@ -591,8 +612,17 @@ def main(cfg):
                         _cube(coverage, "control_coverage", "1", depth),
                     )
                 )
-                _plot_drift(
-                    dataset, variable, depth, years, anomaly, slope, units, cfg
+                plot_paths.append(
+                    _plot_drift(
+                        dataset,
+                        variable,
+                        depth,
+                        years,
+                        anomaly,
+                        slope,
+                        units,
+                        cfg,
+                    )
                 )
                 ancestors.append(control["filename"])
             if not cubes:
@@ -606,7 +636,7 @@ def main(cfg):
                     f"{dataset} {variable} fixed-depth hydrographic "
                     "reference metrics and piControl drift"
                 ),
-                "statistics": ["mean", "rms", "trend"],
+                "statistics": ["mean", "rmsd", "trend"],
                 "domains": ["global"],
                 "plot_types": ["vert", "times"],
                 "authors": ["beucher_romain"],
@@ -614,6 +644,8 @@ def main(cfg):
             }
             with ProvenanceLogger(cfg) as provenance:
                 provenance.log(path, record)
+                for plot_path in plot_paths:
+                    provenance.log(plot_path, record)
             LOGGER.info("Wrote %s", path)
 
         global_entry = entries.get((dataset, "thetaoga", "piControl"))
@@ -650,7 +682,7 @@ def main(cfg):
                 f"hydrography_{dataset}_global_mean_drift", cfg
             )
             iris.save(global_cubes, global_path)
-            _plot_global_drift(dataset, years, anomaly, slope, cfg)
+            plot_path = _plot_global_drift(dataset, years, anomaly, slope, cfg)
             record = {
                 "caption": (
                     f"{dataset} archived whole-ocean thetaoga "
@@ -664,6 +696,7 @@ def main(cfg):
             }
             with ProvenanceLogger(cfg) as provenance:
                 provenance.log(global_path, record)
+                provenance.log(plot_path, record)
             LOGGER.info("Wrote %s", global_path)
 
     for variable, results in comparisons.items():
@@ -676,7 +709,7 @@ def main(cfg):
                 f"Multi-model {variable} climatological comparison "
                 "against WOA; model names follow model_index order"
             ),
-            "statistics": ["mean", "rms"],
+            "statistics": ["mean", "rmsd"],
             "domains": ["global"],
             "plot_types": ["vert"],
             "authors": ["beucher_romain"],

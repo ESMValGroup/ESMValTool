@@ -38,11 +38,13 @@ datasets: []
 
 preprocessors:
   annual_depth_levels:
-    annual_statistics:
-      operator: mean
+    # Reduce depth and time before the costly horizontal regrid.
+    custom_order: true
     extract_levels:
       levels: [10., 100., 500., 1000., 2000.]
       scheme: linear
+    annual_statistics:
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
