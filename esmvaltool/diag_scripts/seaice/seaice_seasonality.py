@@ -1,3 +1,4 @@
+# Copyright (C) 2026 ESMValTool contributors.
 """Map Antarctic sea ice advance, retreat, and season duration."""
 
 import logging
@@ -19,14 +20,15 @@ logger = logging.getLogger(__name__)
 
 FIELD_NAMES = ("advance", "retreat", "duration")
 TITLES = ("Advance", "Retreat", "Season duration")
+N_DIMENSIONS = 3
+CONCENTRATION_TOLERANCE = 1e-5
 
 
 def validate_daily_ice_year(cube):
     """Require one complete 15 February to 14 February daily time axis."""
-    if cube.ndim != 3 or cube.coord_dims("time") != (0,):
-        raise ValueError(
-            "siconc must have dimensions (time, latitude, longitude)"
-        )
+    if cube.ndim != N_DIMENSIONS or cube.coord_dims("time") != (0,):
+        message = "siconc must have dimensions (time, latitude, longitude)"
+        raise ValueError(message)
     dates = cube.coord("time").units.num2date(cube.coord("time").points)
     first, last = dates[0], dates[-1]
     if (first.month, first.day) != (2, 15) or (
@@ -34,12 +36,14 @@ def validate_daily_ice_year(cube):
         last.month,
         last.day,
     ) != (first.year + 1, 2, 14):
-        raise ValueError("siconc must span 15 February to 14 February")
+        message = "siconc must span 15 February to 14 February"
+        raise ValueError(message)
     if any(
         not np.isclose((right - left).total_seconds(), 86400)
         for left, right in pairwise(dates)
     ):
-        raise ValueError("siconc must have one sample on every day")
+        message = "siconc must have one sample on every day"
+        raise ValueError(message)
     return len(dates)
 
 
@@ -50,11 +54,15 @@ def concentration_fraction(cube):
     if units in ("%", "percent"):
         data = data / 100.0
     elif units != "1":
-        raise ValueError(
-            f"siconc must have units '%' or '1', got {cube.units}"
-        )
-    if np.any(np.abs(data.compressed() - 0.5) > 0.50001):
-        raise ValueError("siconc has values outside the physical range 0–1")
+        message = f"siconc must have units '%' or '1', got {cube.units}"
+        raise ValueError(message)
+    values = data.compressed()
+    if np.any(
+        (values < -CONCENTRATION_TOLERANCE)
+        | (values > 1 + CONCENTRATION_TOLERANCE),
+    ):
+        message = "siconc has values outside the physical range 0-1"
+        raise ValueError(message)
     return data
 
 
@@ -67,17 +75,20 @@ def seasonality_fields(concentration, threshold=0.15, consecutive_days=5):
     to 15 February. Cells without a sustained advance or with missing
     daily samples are masked in all three outputs.
     """
-    if concentration.ndim != 3:
-        raise ValueError("concentration must be (time, latitude, longitude)")
+    if concentration.ndim != N_DIMENSIONS:
+        message = "concentration must be (time, latitude, longitude)"
+        raise ValueError(message)
     if not 0 < threshold < 1 or consecutive_days < 1:
-        raise ValueError("threshold and consecutive_days must be positive")
+        message = "threshold and consecutive_days must be positive"
+        raise ValueError(message)
     n_days = concentration.shape[0]
     if consecutive_days > n_days:
-        raise ValueError("consecutive_days exceeds the length of the ice year")
+        message = "consecutive_days exceeds the length of the ice year"
+        raise ValueError(message)
 
     data = np.ma.masked_invalid(np.ma.asarray(concentration, dtype=float))
     valid = ~np.ma.getmaskarray(data).any(axis=0)
-    above = np.ma.filled(data >= threshold, False)
+    above = np.ma.filled(data >= threshold, fill_value=False)
     run = np.zeros(above.shape[1:], dtype=np.int16)
     advance = np.full(above.shape[1:], np.nan)
     last_ice = np.zeros(above.shape[1:], dtype=np.int16)
@@ -125,7 +136,7 @@ def plot_comparison(results, cfg, ancestors):
             cube.coord("latitude").points,
         )
         for col, (name, title, field) in enumerate(
-            zip(FIELD_NAMES, TITLES, fields, strict=True)
+            zip(FIELD_NAMES, TITLES, fields, strict=True),
         ):
             ax = axes[row, col]
             ax.set_extent([-180, 180, -90, -50], ccrs.PlateCarree())
@@ -142,7 +153,10 @@ def plot_comparison(results, cfg, ancestors):
             )
             ax.set_title(f"{label}: {title}")
             fig.colorbar(
-                mesh, ax=ax, shrink=0.7, label="Days since 15 February"
+                mesh,
+                ax=ax,
+                shrink=0.7,
+                label="Days since 15 February",
             )
     fig.suptitle("Antarctic sea ice seasonality", fontsize=14)
     path = get_plot_filename("seaice_seasonality_comparison", cfg)
