@@ -174,7 +174,7 @@ def _plot(dataset, depth, metrics, cfg):
         )
     axes[0].axvline(0.0, color="black", linewidth=0.7)
     axes[0].set_xlabel("Model minus WOA density (kg m$^{-3}$)")
-    axes[1].set_xlabel("Density cancellation fraction (0–1)")
+    axes[1].set_xlabel("Density cancellation fraction (0-1)")
     axes[1].set_xlim(0, 1)
     axes[0].set_ylabel("Depth (m)")
     axes[0].invert_yaxis()
