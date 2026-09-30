@@ -96,15 +96,24 @@ def main(cfg):
             else:
                 lat2d, lon2d = lat, lon
 
+            # Cartopy infers cell edges from centers. On global grids with
+            # a center at 90N, this can extrapolate edges past 90 degrees
+            # even though the Southern Ocean is the only plotted region.
+            # Keep the data used for NetCDF output intact, but give the map
+            # only rows that intersect its latitude range.
+            in_region = (lat2d >= -90.0) & (lat2d <= max_lat)
+            rows = np.any(in_region, axis=1)
+            plot_field = np.ma.masked_where(~in_region[rows], field[rows])
+
             axes = fig.add_subplot(
                 nvert, nhori, ipanel + 1, projection=ccrs.SouthPolarStereo()
             )
             axes.set_extent([-180, 180, -90, max_lat], ccrs.PlateCarree())
             axes.set_boundary(circular_boundary(), transform=axes.transAxes)
             axes.pcolormesh(
-                lon2d,
-                lat2d,
-                field,
+                lon2d[rows],
+                lat2d[rows],
+                plot_field,
                 cmap=cmap,
                 norm=norm,
                 transform=ccrs.PlateCarree(),
