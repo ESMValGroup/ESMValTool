@@ -343,8 +343,8 @@ def southern_ocean_flux_sum(flux2d, areacello, lat, factor):
     closest to 30S (assumes south-to-north ordering, which ESMValTool
     preprocessed CMIP data has).
     """
-    flux = np.ma.masked_invalid(np.asarray(flux2d, dtype=float))
-    area = np.ma.masked_invalid(np.asarray(areacello, dtype=float))
+    flux = np.ma.masked_invalid(np.ma.asarray(flux2d, dtype=float))
+    area = np.ma.masked_invalid(np.ma.asarray(areacello, dtype=float))
     per_cell = flux * area * factor
     per_lat = per_cell.sum(axis=-1)
     a = closest_index(-30.0, lat)
