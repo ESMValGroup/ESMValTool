@@ -130,6 +130,7 @@ def plot_dataset(
     except Exception:  # noqa: BLE001 - offline cartopy data
         logger.warning("Could not draw coastlines/land feature")
     grid_color = cfg.get("grid_color", "green")
+    grid_color = {"blue4": "#00008b"}.get(grid_color, grid_color)
     gridlines = axes.gridlines(color=grid_color, linewidth=0.5, linestyle="-")
     gridlines.ylocator = plt.MultipleLocator(10)
     # title on top, then the right and left strings below it, so that

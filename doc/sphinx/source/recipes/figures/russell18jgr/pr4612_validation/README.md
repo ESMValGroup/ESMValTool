@@ -8,3 +8,25 @@ These are outputs from the Python diagnostics in PR 4612, run with ESMValTool an
 | 2 | `180167684.gadi-pbs` | CMIP5 CanESM2 and GFDL-ESM2M, `Omon tauuo`, 1986–2005. | The two wind stress curves and peak amplitudes agree visually with the documentation image. Legend placement and rendering differ. |
 
 The `Fig*_Gadi_*.png` files are the unmodified diagnostic plots. The `Fig*_documentation_comparison.jpg` files place each new plot beside the existing documentation image. These visual comparisons do not establish numerical equivalence for every diagnostic.
+
+## Representative all-diagnostic run
+
+PBS job `180167943.gadi-pbs` ran a reduced-model copy of the recipe to exercise all 16 diagnostic groups. Figures 1–7i completed and produced 12 plots before Figure 8 failed on the NCL color name `blue4`, which Matplotlib does not recognize. The Python diagnostic now maps that color to `#00008b`. Figure 8 then completed separately in PBS job `180168287.gadi-pbs`, producing three pages of pH maps. The first broad run was cancelled after it stopped advancing following the Figure 8 failure. A clean all-diagnostic rerun is underway as PBS job `180170034.gadi-pbs` with one parallel task.
+
+The comparison images below pair the existing documentation figures with outputs from these Gadi runs. The reduced-model recipe uses fewer datasets than the documentation examples, so compare the common model patterns and values rather than the number of panels or lines.
+
+| Figure | Comparison | Observation |
+| --- | --- | --- |
+| 3b Subantarctic Front | [side by side](Fig3b_documentation_comparison.jpg) | CanESM2 and GFDL-ESM2M front positions follow the documented patterns. |
+| 3b Polar Front | [side by side](Fig3b-2_documentation_comparison.jpg) | The common model front positions have similar longitude structure. |
+| 4 | [side by side](Fig4_documentation_comparison.jpg) | CanESM2 Drake Passage section and 151.9 Sv net transport match the documentation. |
+| 5 | [side by side](Fig5_documentation_comparison.jpg) | CanESM2 sea-ice maximum and minimum extents have the documented geography. |
+| 5g | [side by side](Fig5g_documentation_comparison.jpg) | The common-model seasonal cycles and peak magnitudes agree. |
+| 6a | [side by side](Fig6a_documentation_comparison.jpg) | CanESM2 transport profile reproduces the documented layer values. |
+| 6b | [side by side](Fig6b_documentation_comparison.jpg) | CanESM2 energy profile reproduces the documented layer values. |
+| 7 | [side by side](Fig7_documentation_comparison.jpg) | CanESM2 air-sea CO₂ flux has the same broad positive and negative bands. |
+| 7h | [side by side](Fig7h_documentation_comparison.jpg) | CanESM2 zonal flux peaks and southern minimum align with the documentation. |
+| 7i | [side by side](Fig7i_documentation_comparison.jpg) | The common-model integrated flux curves show the same direction and scale. |
+| 8 | [side by side](Fig8_documentation_comparison.jpg) | MRI-ESM1 pH contours reproduce the broad pattern in the documentation. |
+
+Figure 9a–c comparisons will be added after the clean all-diagnostic rerun completes. The Gadi validation recipe and PBS scripts are retained under the stage path above; the recipe differs from the PR recipe only in its smaller model selection.
