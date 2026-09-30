@@ -1,0 +1,44 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GLORYS12V1
+  version: "v202311"
+  tier: 2
+  type: reanaly
+  project_id: OBS6
+  source: 'https://data.marine.copernicus.eu/product/GLOBAL_MULTIYEAR_PHY_001_030'
+  reference: 'glorys12v1'
+  comment: |
+    Data is downloaded using the Copernicus Marine Service toolbox API.
+  start_date: 1993
+  end_date: 2026
+
+# Variables to cmorize
+variables:
+  uo:
+    mip: Omon
+  vo:
+    mip: Omon
+  thetao:
+    mip: Omon
+  so:
+    mip: Omon
+  zos:
+    mip: Omon
+  mlotst:
+    mip: Omon
+  tob:
+    mip: Omon
+    raw_name: bottomT
+  siconc:
+    mip: SImon
+  sithick:
+    mip: SImon
+  siu:
+    mip: SImon
+    raw_name: usi
+  siv:
+    mip: SImon
+    raw_name: vsi
+  thkcello:
+    mip: Ofx
