@@ -19,6 +19,7 @@ wheels/
 *.egg
 *.orig
 *.tmp
+esmvaltool/recipes/slurm*
 MANIFEST
 
 # Byte-compiled / optimized / DLL files
