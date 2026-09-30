@@ -37816,7 +37816,7 @@ packages:
   - numpy>=2
   - pyyaml
   - rich
-  - scitools-iris>=3.11,<3.16
+  - scitools-iris>=3.12.2
   - aiohttp ; extra == 'all'
   - cartopy ; extra == 'all'
   - cdo ; extra == 'all'
@@ -37826,7 +37826,7 @@ packages:
   - cmocean ; extra == 'all'
   - ecmwf-api-client ; extra == 'all'
   - eofs ; extra == 'all'
-  - esmf-regrid>=0.10.0 ; extra == 'all'
+  - esmf-regrid>=0.11.0 ; extra == 'all'
   - fiona ; extra == 'all'
   - fire ; extra == 'all'
   - fsspec ; extra == 'all'
