@@ -1,0 +1,89 @@
+# ESMValTool
+# recipe_cmip_density_compensation.yml
+---
+documentation:
+  title: Ocean density compensation from temperature and salinity biases
+  description: |
+    Attribute the fixed-depth, historical-minus-WOA density difference to
+    potential-temperature and practical-salinity differences. Use the
+    1981-2010 historical mean and matching WOA18 normal at 10, 100, 500,
+    1000 and 2000 m. WOA in-situ temperature is converted to potential
+    temperature before evaluating TEOS-10 in-situ density at each depth.
+    Symmetric replacement gives exact thermal and haline contributions;
+    their sum is the total density difference. Report area-weighted
+    regional means, RMSE, paired coverage and the fraction of opposing
+    contributions that cancel. The result is a climatological comparison,
+    not a measure of observational uncertainty or ocean heat content.
+  authors:
+    - beucher_romain
+  maintainer:
+    - beucher_romain
+  references:
+    - demora2018gmd
+  projects: []
+
+# The WOA18 OBS6 files must come from the decav81B0 1981-2010 normal.
+# Existing Gadi files have version 2018 and representative year 2000.
+# Add one historical entry per additional model below, with its ensemble/grid.
+# The diagnostic writes per-model results plus a comparative profile and NetCDF
+# metrics whenever at least two models have a complete thetao/so pair.
+datasets: []
+
+preprocessors:
+  annual_depth_levels:
+    # Reduce depth and time before the costly horizontal regrid.
+    custom_order: true
+    extract_levels:
+      levels: [10., 100., 500., 1000., 2000.]
+      scheme: linear
+    annual_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+  reference_depth_levels:
+    extract_levels:
+      levels: [10., 100., 500., 1000., 2000.]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+  density_compensation:
+    description: Temperature and salinity contributions to density bias.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao_model:
+        short_name: thetao
+        mip: Omon
+        preprocessor: annual_depth_levels
+        additional_datasets: &model_datasets
+          - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+             ensemble: r1i1p1f1, grid: gn, timerange: 1981/2010}
+      so_model:
+        short_name: so
+        mip: Omon
+        preprocessor: annual_depth_levels
+        additional_datasets: *model_datasets
+      thetao_woa:
+        short_name: thetao
+        mip: Omon
+        preprocessor: reference_depth_levels
+        additional_datasets: &woa_datasets
+          - {dataset: WOA, project: OBS6, type: clim,
+             version: 2018, start_year: 2000, end_year: 2000, tier: 2}
+      so_woa:
+        short_name: so
+        mip: Omon
+        preprocessor: reference_depth_levels
+        additional_datasets: *woa_datasets
+    scripts:
+      compensation:
+        script: cosima_cmip/density_compensation.py
+        reference_dataset: WOA
+        reference_version: 2018
+        reference_period: [1981, 2010]
