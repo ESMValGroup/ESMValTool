@@ -1,3 +1,4 @@
+# Copyright 2026 ESMValTool contributors.
 """Explain hydrographic density bias as temperature and salinity effects.
 
 The input fields are potential temperature and practical salinity on a
@@ -5,15 +6,15 @@ common fixed-depth grid. WOA in-situ temperature is converted by the
 hydrographic benchmark helper before these functions are called.
 """
 
-import os
 import sys
+from pathlib import Path
 
 import gsw
 import iris
-import matplotlib
+import matplotlib as mpl
 import numpy as np
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.shared import (
@@ -23,9 +24,11 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cosima_common as cc
 import hydrographic_benchmark as hb
+
+FIELD_NDIM = 3
 
 
 def density_components(
@@ -43,8 +46,12 @@ def density_components(
         np.ma.asarray(field, dtype=float)
         for field in (model_t, model_s, reference_t, reference_s)
     ]
-    if len({field.shape for field in fields}) != 1 or fields[0].ndim != 3:
-        raise ValueError("T and S fields must share (depth, y, x) shape")
+    if (
+        len({field.shape for field in fields}) != 1
+        or fields[0].ndim != FIELD_NDIM
+    ):
+        msg = "T and S fields must share (depth, y, x) shape"
+        raise ValueError(msg)
     depth = np.asarray(depth, dtype=float)
     latitude = np.asarray(latitude, dtype=float)
     longitude = np.asarray(longitude, dtype=float)
@@ -53,9 +60,8 @@ def density_components(
         or latitude.shape != fields[0].shape[1:]
         or longitude.shape != latitude.shape
     ):
-        raise ValueError(
-            "depth and geographic coordinates do not match fields"
-        )
+        msg = "depth and geographic coordinates do not match fields"
+        raise ValueError(msg)
     valid = np.logical_and.reduce(
         [
             ~np.ma.getmaskarray(field)
@@ -191,7 +197,8 @@ def _multimodel_comparison(models, results, cfg):
     depth = results[models[0]]["depth"]
     for model in models[1:]:
         if not np.allclose(results[model]["depth"], depth):
-            raise ValueError("models have different comparison depth levels")
+            msg = "models have different comparison depth levels"
+            raise ValueError(msg)
     common = np.logical_and.reduce(
         [
             ~np.ma.getmaskarray(results[model]["total"])
@@ -272,27 +279,27 @@ def _multimodel_comparison(models, results, cfg):
     return path, plot_path
 
 
-def main(cfg):
-    """Compute density attribution for each complete model/WOA quartet."""
-    metadata = list(cfg["input_data"].values())
-    reference_name = cfg.get("reference_dataset", "WOA")
+def _reference_inputs(metadata, reference_name, cfg):
+    """Load a matched WOA temperature and salinity climatology."""
     references = {
         item["short_name"]: item
         for item in metadata
         if item["dataset"] == reference_name
     }
     if set(references) != {"thetao", "so"}:
-        raise ValueError("WOA temperature and salinity are both required")
+        msg = "WOA temperature and salinity are both required"
+        raise ValueError(msg)
     if any(
         str(item.get("version")) != str(cfg.get("reference_version"))
         for item in references.values()
     ):
-        raise ValueError("WOA version does not match recipe")
+        msg = "WOA version does not match recipe"
+        raise ValueError(msg)
     ref_t_cube = cc.load_cube(references["thetao"]["filename"], "thetao")
     ref_s_cube = cc.load_cube(references["so"]["filename"], "so")
-    ref_t = hb._woa_potential_temperature(ref_t_cube, ref_s_cube)
+    ref_t = hb.woa_potential_temperature(ref_t_cube, ref_s_cube)
     ref_s_cube.convert_units("1e-3")
-    ref_s, _, _ = hb._annual_fields(ref_s_cube)
+    ref_s, _, _ = hb.annual_fields(ref_s_cube)
     ref_t = np.ma.mean(ref_t, axis=0)
     ref_s = np.ma.mean(ref_s, axis=0)
     reference_valid = (
@@ -301,12 +308,23 @@ def main(cfg):
         & np.isfinite(np.ma.filled(ref_t, np.nan))
         & np.isfinite(np.ma.filled(ref_s, np.nan))
     )
+    return references, ref_t_cube, ref_t, ref_s, reference_valid
+
+
+def main(cfg):
+    """Compute density attribution for each complete model/WOA quartet."""
+    metadata = list(cfg["input_data"].values())
+    reference_name = cfg.get("reference_dataset", "WOA")
+    references, ref_t_cube, ref_t, ref_s, reference_valid = _reference_inputs(
+        metadata, reference_name, cfg
+    )
 
     model_inputs = [
         item for item in metadata if item.get("project") == "CMIP6"
     ]
     if any(item.get("exp") != "historical" for item in model_inputs):
-        raise ValueError("density comparison requires historical model inputs")
+        msg = "density comparison requires historical model inputs"
+        raise ValueError(msg)
     models = sorted({item["dataset"] for item in model_inputs})
     comparisons = {}
     for dataset in models:
@@ -318,20 +336,23 @@ def main(cfg):
         if sum(item["dataset"] == dataset for item in model_inputs) != len(
             entries
         ):
-            raise ValueError(f"{dataset} has duplicate model variables")
+            msg = f"{dataset} has duplicate model variables"
+            raise ValueError(msg)
         if set(entries) != {"thetao", "so"}:
-            raise ValueError(f"{dataset} needs historical thetao and so")
+            msg = f"{dataset} needs historical thetao and so"
+            raise ValueError(msg)
         temperature = cc.load_cube(entries["thetao"]["filename"], "thetao")
         salinity = cc.load_cube(entries["so"]["filename"], "so")
         temperature.convert_units("degC")
         salinity.convert_units("1e-3")
-        hb._compatible(temperature, salinity)
-        hb._compatible(temperature, ref_t_cube)
-        model_t, depth, years = hb._annual_fields(temperature)
-        model_s, _, salinity_years = hb._annual_fields(salinity)
-        hb._check_reference_period(years, tuple(cfg["reference_period"]))
+        hb.compatible(temperature, salinity)
+        hb.compatible(temperature, ref_t_cube)
+        model_t, depth, years = hb.annual_fields(temperature)
+        model_s, _, salinity_years = hb.annual_fields(salinity)
+        hb.check_reference_period(years, tuple(cfg["reference_period"]))
         if not np.array_equal(years, salinity_years):
-            raise ValueError("temperature and salinity years differ")
+            msg = "temperature and salinity years differ"
+            raise ValueError(msg)
         thermal, haline, total = density_components(
             np.ma.mean(model_t, axis=0),
             np.ma.mean(model_s, axis=0),
@@ -346,7 +367,7 @@ def main(cfg):
             haline,
             total,
             reference_valid,
-            hb._region_weights(temperature),
+            hb.region_weights(temperature),
         )
         comparisons[dataset] = {
             "depth": depth,
@@ -354,7 +375,7 @@ def main(cfg):
             "haline": haline,
             "total": total,
             "reference_valid": reference_valid,
-            "weights": hb._region_weights(ref_t_cube),
+            "weights": hb.region_weights(ref_t_cube),
             "ancestors": [
                 entries["thetao"]["filename"],
                 entries["so"]["filename"],
@@ -405,14 +426,17 @@ def main(cfg):
             "domains": ["global"],
             "plot_types": ["vert"],
             "authors": ["beucher_romain"],
-            "ancestors": list(
-                dict.fromkeys(
-                    filename
-                    for model in models
-                    for filename in comparisons[model]["ancestors"]
+            "ancestors": [
+                *list(
+                    dict.fromkeys(
+                        filename
+                        for model in models
+                        for filename in comparisons[model]["ancestors"]
+                    )
                 ),
-            )
-            + [references["thetao"]["filename"], references["so"]["filename"]],
+                references["thetao"]["filename"],
+                references["so"]["filename"],
+            ],
         }
         with ProvenanceLogger(cfg) as provenance:
             provenance.log(path, record)

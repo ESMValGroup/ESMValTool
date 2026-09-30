@@ -162,6 +162,7 @@ show-fixes = true
 select = ["ALL"]
 ignore = [
     "ANN",    # Type hints are not required for diagnostic scripts.
+    "COM812", # Conflicts with the Ruff formatter's trailing comma choices.
     "D105",   # Disable missing docstring in magic method as these are well defined.
     'D107',   # __init__ docstring is usually part of the class docstring.
     "E501",   # Disable line-too-long as this is taken care of by the formatter.

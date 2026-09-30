@@ -1,9 +1,12 @@
+# Copyright 2026 ESMValTool contributors.
 """Shared array, geometry, and cube helpers for ocean hydrography.
 
 This module contains only the helpers used by the hydrographic benchmark and
 its density-compensation companion. Its functions are copied from the COSIMA
 CMIP diagnostic collection so both diagnostics use identical area weights.
 """
+
+from contextlib import suppress
 
 import iris
 import iris.analysis.cartography
@@ -14,6 +17,8 @@ import numpy as np
 
 EARTH_RADIUS = 6371000.0
 FILL_VALUE_THRESHOLD = 1.0e19
+CURVILINEAR_NDIM = 2
+MIN_POLYGON_CORNERS = 3
 
 
 def masked_data(cube, dtype=float):
@@ -44,7 +49,7 @@ def load_cube(filename, short_name):
 def lat_2d(cube):
     """2D latitude field, broadcasting a 1D coordinate if needed."""
     coord = cube.coord("latitude")
-    if coord.ndim == 2:
+    if coord.ndim == CURVILINEAR_NDIM:
         return coord.points
     lon = cube.coord("longitude").points
     return np.broadcast_to(coord.points[:, None], (coord.shape[0], lon.size))
@@ -53,7 +58,7 @@ def lat_2d(cube):
 def lon_2d(cube):
     """2D longitude field, broadcasting a 1D coordinate if needed."""
     coord = cube.coord("longitude")
-    if coord.ndim == 2:
+    if coord.ndim == CURVILINEAR_NDIM:
         return coord.points
     lat = cube.coord("latitude").points
     return np.broadcast_to(coord.points[None, :], (lat.size, coord.shape[0]))
@@ -63,10 +68,8 @@ def guess_bounds(cube, coords=("latitude", "longitude")):
     """Add bounds in place where they are missing."""
     for name in coords:
         if cube.coords(name) and not cube.coord(name).has_bounds():
-            try:
+            with suppress(ValueError):  # scalar or single-point coordinate
                 cube.coord(name).guess_bounds()
-            except ValueError:  # scalar or single-point coordinate
-                pass
     return cube
 
 
@@ -185,11 +188,14 @@ def area_from_bounds(cube, radius=EARTH_RADIUS):
     horizontal = horizontal_slice(cube)
     lat_coord = horizontal.coord("latitude")
     lon_coord = horizontal.coord("longitude")
-    if lat_coord.ndim != 2 or lon_coord.ndim != 2:
+    if (
+        lat_coord.ndim != CURVILINEAR_NDIM
+        or lon_coord.ndim != CURVILINEAR_NDIM
+    ):
         return None
     if lat_coord.bounds is None or lon_coord.bounds is None:
         return None
-    if lat_coord.bounds.shape[-1] < 3:
+    if lat_coord.bounds.shape[-1] < MIN_POLYGON_CORNERS:
         return None
     return np.ma.masked_invalid(
         spherical_polygon_area(
@@ -235,7 +241,7 @@ def cell_area(cube):
         return from_bounds
 
     if horizontal.coord("latitude").ndim > 1:
-        raise ValueError(
+        msg = (
             "this cube has 2D (curvilinear) latitude/longitude and no cell "
             "corner bounds, so no cell area can be obtained. Either attach "
             "areacello -- in a recipe with\n"
@@ -248,6 +254,7 @@ def cell_area(cube):
             "-- or keep the coordinate bounds, which CMOR requires and "
             "which are enough to compute the area exactly."
         )
+        raise ValueError(msg)
 
     # iris defaults to an Earth radius of 6367470 m where the cube has
     # no coordinate system, while cell_lengths uses the mean radius of
