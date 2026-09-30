@@ -66,12 +66,7 @@ def main(cfg):
             units="g m-2 yr-1",
             long_name="zonal mean CO2 flux (sea to air)",
         )
-        out_cube.add_dim_coord(
-            iris.coords.DimCoord(
-                lat, standard_name="latitude", units="degrees_north"
-            ),
-            0,
-        )
+        rc.add_latitude_coord(out_cube, lat)
         nc_name = get_diagnostic_filename(
             f"russell18jgr_fig-7h_fgco2_{meta['dataset']}_"
             f"{meta['start_year']}-{meta['end_year']}",

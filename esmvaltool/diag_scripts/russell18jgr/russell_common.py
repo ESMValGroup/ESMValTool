@@ -10,6 +10,7 @@ esmvaltool/diag_scripts/russell18jgr/ using numpy/iris/matplotlib only.
 import logging
 
 import iris
+import iris.coords
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -61,6 +62,16 @@ def lat_1d(cube):
     if lat.ndim == 2:
         return lat[:, 0]
     return lat
+
+
+def add_latitude_coord(cube, lat):
+    """Add row latitude, allowing nonmonotonic curvilinear grid rows."""
+    lat = np.asarray(lat, dtype=float)
+    coord_kwargs = {"standard_name": "latitude", "units": "degrees_north"}
+    if np.all(np.diff(lat) > 0) or np.all(np.diff(lat) < 0):
+        cube.add_dim_coord(iris.coords.DimCoord(lat, **coord_kwargs), 0)
+    else:
+        cube.add_aux_coord(iris.coords.AuxCoord(lat, **coord_kwargs), 0)
 
 
 def lon_1d(cube):

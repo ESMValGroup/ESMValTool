@@ -85,14 +85,7 @@ def main(cfg):
             units="Pg yr-1",
             long_name="cumulative integrated carbon flux from 90S",
         )
-        out_cube.add_dim_coord(
-            iris.coords.DimCoord(
-                np.asarray(lat, dtype=float),
-                standard_name="latitude",
-                units="degrees_north",
-            ),
-            0,
-        )
+        rc.add_latitude_coord(out_cube, lat)
         nc_name = get_diagnostic_filename(
             f"russell_figure-7i_fgco2_{meta['dataset']}_"
             f"{meta['start_year']}-{meta['end_year']}",
