@@ -33,7 +33,7 @@ dependencies = [
     "numpy>=2",
     "pyyaml",
     "rich",
-    "scitools-iris>=3.11,<3.16",
+    "scitools-iris>=3.12.2",
 ]
 description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
 license = "Apache-2.0"
@@ -64,7 +64,7 @@ all = [
     "ecmwf-api-client",
     "eofs",
     # "ESMPy",               # not on PyPI
-    "esmf-regrid>=0.10.0", # iris-esmf-regrid #342
+    "esmf-regrid>=0.11.0", # iris-esmf-regrid #342
     "fiona",
     "fire",
     "fsspec",
@@ -215,7 +215,7 @@ convention = "numpy"
 "cf-units" = "*"
 "dask" = "!=2024.8.0"  # https://github.com/dask/dask/issues/11296
 "distributed" = "*"
-"iris" = ">=3.11,<3.16"
+"iris" = ">=3.12.2"
 "matplotlib-base" = "*"
 "numpy" = ">=2"
 "pyyaml" = "*"
@@ -332,7 +332,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "gdal" = ">=3.9.0"
 "ipython" = "*"
 "imagehash" = "*"
-"iris-esmf-regrid" = ">=0.10.0"  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+"iris-esmf-regrid" = ">=0.11.0"
 "jinja2" = "*"
 "joblib" = "*"
 "lime" = "*"
