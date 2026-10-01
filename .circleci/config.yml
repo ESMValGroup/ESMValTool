@@ -98,9 +98,6 @@ jobs:
       - pixi_setup:
           env: esmvaltool-base
       - run:
-          name: Check dependencies are compatible
-          command: pixi run --as-is --environment esmvaltool-base pip check
-      - run:
           name: Run example recipe
           command: |
             source <(pixi shell-hook --as-is --environment esmvaltool-base)
@@ -113,6 +110,12 @@ jobs:
             intake_esgf.conf.save()
             '
             esmvaltool run --max-parallel-tasks=2 testing/recipe_python_for_CI.yml
+      - run:
+          name: Check dependencies are compatible
+          command: |
+            pixi add --environment esmvaltool-base pip
+            pixi lock
+            pixi run --environment esmvaltool-base pip check
       - store_artifacts:
           path: ~/esmvaltool_output
       - save_cache:
@@ -209,6 +212,7 @@ workflows:
   commit:
     jobs:
       - tests
+      - test_esmvaltool_base_installation
   nightly:
     triggers:
       - schedule:
