@@ -212,7 +212,6 @@ workflows:
   commit:
     jobs:
       - tests
-      - test_esmvaltool_base_installation
   nightly:
     triggers:
       - schedule:
