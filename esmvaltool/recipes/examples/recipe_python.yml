@@ -49,6 +49,7 @@ preprocessors:
       statistics:
         - mean
       span: overlap
+      ignore_scalar_coords: true
     convert_units:
       units: degrees_C
 
