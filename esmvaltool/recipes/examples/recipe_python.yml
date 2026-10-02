@@ -28,8 +28,8 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  - {dataset: bcc-csm1-1, version: v1, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: BCC-ESM1, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: UKCM2-0-LL, project: CMIP7, mip: atmos, branding_suffix: tavg-h2m-hxy-u, region: glb, ensemble: r1i1p1f1, grid: g110}
 
 preprocessors:
   # See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/preprocessor.html
@@ -70,8 +70,9 @@ diagnostics:
       - atmos
     variables:
       tas:
-        mip: Amon
         preprocessor: to_degrees_c
+        exp: historical
+        frequency: mon
         timerange: 2000/P1M
         caption: |
           Global map of {long_name} in January 2000 according to {dataset}.
@@ -91,13 +92,15 @@ diagnostics:
     variables:
       tas_amsterdam:
         short_name: tas
-        mip: Amon
+        exp: historical
+        frequency: mon
         preprocessor: annual_mean_amsterdam
         timerange: 1850/2000
         caption: Annual mean {long_name} in Amsterdam according to {dataset}.
       tas_global:
         short_name: tas
-        mip: Amon
+        exp: historical
+        frequency: mon
         preprocessor: annual_mean_global
         timerange: 1850/2000
         caption: Annual global mean {long_name} according to {dataset}.
