@@ -29,7 +29,7 @@ documentation:
 
 datasets:
   - {dataset: BCC-ESM1, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  - {dataset: UKCM2-0-LL, institute: UKNCSP, project: CMIP7, mip: atmos, branding_suffix: tavg-h2m-hxy-u, region: glb, ensemble: r1i1p1f1, grid: g110}
+  - {dataset: CanESM6-0-MR, institute: CCCma, project: CMIP7, mip: atmos, branding_suffix: tavg-h2m-hxy-u, region: glb, ensemble: r1i1p1f1, grid: g150}
 
 preprocessors:
   # See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/preprocessor.html
@@ -49,7 +49,6 @@ preprocessors:
       statistics:
         - mean
       span: overlap
-      ignore_scalar_coords: true
     convert_units:
       units: degrees_C
 
