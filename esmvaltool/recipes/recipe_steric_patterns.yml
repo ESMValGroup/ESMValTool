@@ -1,0 +1,154 @@
+# ESMValTool
+# recipe_steric_patterns.yml
+---
+documentation:
+  description: Generating sterodynamic sea-level patterns from CMIP6 models.
+  title: Sterodynamic sea-level patterns
+
+  authors:
+    - munday_gregory
+
+  maintainer:
+    - munday_gregory
+
+  references:
+    - palmer2020
+    - perks2023
+
+preprocessors:
+  regular_grid:
+    regrid:
+      target_grid: {start_longitude: -179.5, end_longitude: 179.5, step_longitude: 1,
+                    start_latitude: -89.5, end_latitude: 89.5, step_latitude: 1}
+      scheme: linear
+
+CMIP_settings: &CMIP_settings
+  mip: Omon
+  project: CMIP6
+  activity: CMIP
+
+ScenarioMIP_settings: &ScenarioMIP_settings
+  mip: Omon
+  project: CMIP6
+  activity: ScenarioMIP
+
+ScenarioMIP_settings_zos: &ScenarioMIP_settings_zos
+  mip: Omon
+  project: CMIP6
+  activity: ScenarioMIP
+  preprocessor: regular_grid
+
+CMIP6_zostoga: &cmip6_zostoga
+  - {dataset: ACCESS-CM2,       ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,    ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: BCC-CSM2-MR,     exp: [piControl, ssp245, ssp370, ssp585],  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5,          ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5-CanOE,    ensemble: r1i1p2f1, grid: gn}
+  - {dataset: CanESM5-1,        ensemble: r1i1p1f1, grid: gn, institute: CCCma}
+  - {dataset: CMCC-CM2-SR5,     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CNRM-CM6-1,       ensemble: r1i1p1f2, grid: gn}
+  - {dataset: CNRM-CM6-1-HR,    ensemble: r1i1p1f2, grid: gn}
+  - {dataset: CNRM-ESM2-1,      ensemble: r1i1p1f2, grid: gn}
+  - {dataset: EC-Earth3,        ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: EC-Earth3-CC,     ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: EC-Earth3-Veg,    ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: GFDL-CM4,         ensemble: r1i1p1f1, grid: gr}
+  # - {dataset: GFDL-ESM4,        ensemble: r1i1p1f1, grid: gr}
+  - {dataset: GISS-E2-1-H,      ensemble: r1i1p1f2, grid: gn}
+  - {dataset: GISS-E2-1-G,      ensemble: r1i1p5f1, grid: gn}
+  - {dataset: GISS-E2-2-G,      ensemble: r1i1p3f1, grid: gn}
+  # - {dataset: HadGEM3-GC31-LL,  ensemble: r1i1p1f1, grid: gm}
+  # - {dataset: HadGEM3-GC31-MM,  ensemble: r1i1p1f1, grid: gm}
+  - {dataset: INM-CM4-8,        ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: INM-CM5-0,        ensemble: r1i1p1f1, grid: gr1}
+  # - {dataset: IPSL-CM6A-LR,     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MIROC6,           ensemble: r1i1p1f1, grid: gm}
+  - {dataset: MPI-ESM1-2-HR,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-LR,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0,       ensemble: r1i1p1f1, grid: gm}
+  - {dataset: NorESM2-LM,       ensemble: r1i1p1f1, grid: gm}
+  - {dataset: NorESM2-MM,       ensemble: r1i1p1f1, grid: gm}
+  - {dataset: UKESM1-0-LL,      ensemble: r1i1p1f2, grid: gm}
+
+CMIP6_zos: &cmip6_zos
+  - {dataset: ACCESS-CM2,      ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5-CanOE,   ensemble: r1i1p2f1, grid: gn}
+  - {dataset: CanESM5-1,       ensemble: r1i1p1f1, grid: gn, institute: CCCma}
+  - {dataset: CMCC-CM2-SR5,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CNRM-CM6-1,      ensemble: r1i1p1f2, grid: gn}
+  - {dataset: CNRM-CM6-1-HR,   ensemble: r1i1p1f2, grid: gn}
+  - {dataset: CNRM-ESM2-1,     ensemble: r1i1p1f2, grid: gn}
+  - {dataset: EC-Earth3,       ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: EC-Earth3-CC,    ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: EC-Earth3-Veg,   ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: GFDL-CM4,        ensemble: r1i1p1f1, grid: gr}
+  # - {dataset: GFDL-ESM4,       ensemble: r1i1p1f1, grid: gr}
+  - {dataset: GISS-E2-1-H,     ensemble: r1i1p1f2, grid: gr}
+  - {dataset: GISS-E2-1-G,     ensemble: r1i1p5f1, grid: gn}
+  - {dataset: GISS-E2-2-G,     ensemble: r1i1p3f1, grid: gn}
+  # - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f1, grid: gn} # Missing ssp370
+  # - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f1, grid: gn} # Missing ssp370
+  - {dataset: INM-CM4-8,       ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: INM-CM5-0,       ensemble: r1i1p1f1, grid: gr1}
+  # - {dataset: IPSL-CM6A-LR,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MIROC6,          ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-HR,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gr}
+  - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
+  - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
+  - {dataset: UKESM1-0-LL,     ensemble: r1i1p1f2, grid: gn}
+
+diagnostics:
+  steric_patterns:
+    description: Monthly steric sea-level patterns.
+
+    variables:
+      zostoga_piControl:
+        short_name: zostoga
+        exp: piControl
+        <<: *CMIP_settings
+        additional_datasets: *cmip6_zostoga
+
+      zostoga_245:
+        short_name: zostoga
+        exp: ssp245
+        <<: *ScenarioMIP_settings
+        additional_datasets: *cmip6_zostoga
+
+      zostoga_370:
+        short_name: zostoga
+        exp: ssp370
+        <<: *ScenarioMIP_settings
+        additional_datasets: *cmip6_zostoga
+
+      zostoga_585:
+        short_name: zostoga
+        exp: ssp585
+        <<: *ScenarioMIP_settings
+        additional_datasets: *cmip6_zostoga
+
+      zos_245:
+        short_name: zos
+        exp: ssp245
+        <<: *ScenarioMIP_settings_zos
+        additional_datasets: *cmip6_zos
+
+      zos_370:
+        short_name: zos
+        exp: ssp370
+        <<: *ScenarioMIP_settings_zos
+        additional_datasets: *cmip6_zos
+
+      zos_585:
+        short_name: zos
+        exp: ssp585
+        <<: *ScenarioMIP_settings_zos
+        additional_datasets: *cmip6_zos
+
+    scripts:
+      climate_patterns_script:
+        script: steric_patterns/steric_patterns.py
