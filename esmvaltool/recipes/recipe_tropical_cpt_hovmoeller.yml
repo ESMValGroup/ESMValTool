@@ -8,15 +8,13 @@ documentation:
     10 hPa. Plot colors show CPT pressure and contour lines show, in separate
     panels, CPT temperature, CPT specific humidity and CPT RH over ice.
   authors:
-    - weigel_katja
-    - schlund_manuel
+    - mcquaid_aoife
   maintainer:
-    - unmaintained
-
+    - schlund_manuel
 
 datasets:
   - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
-  - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: CMIP6}
+  - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR}
 
 diagnostics:
   tropical_cpt_hovmoeller:

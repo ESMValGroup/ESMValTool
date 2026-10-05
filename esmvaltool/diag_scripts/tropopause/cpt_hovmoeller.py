@@ -341,12 +341,17 @@ def _plot_hovmoeller_set(
             cpt_q,
             lambda x: f"{x * 1e6:.2f}",
         ),
-        ("rhi", "CPT RH over ice contours [%]", cpt_rhi, "%.0f"),
+        (
+            "rhi",
+            "CPT relative humidity over ice contours [%]",
+            cpt_rhi,
+            "%.0f",
+        ),
     ]
 
     suffix = "lon" if axis == "X" else "lat"
     view_desc = "longitude-time" if axis == "X" else "latitude-time"
-    basename = f"{cfg.get('plot_filename', 'tropical_cpt_hovmoeller')}_{_safe_name(dataset_label)}"
+    basename = f"{cfg['plot_filename']}_{_safe_name(dataset_label)}"
 
     for token, title, contour_cube, clabel_fmt in panels:
         contour_data = np.asarray(contour_cube.core_data())
@@ -382,12 +387,12 @@ def _plot_hovmoeller_set(
 
         cbar = fig.colorbar(cf, ax=ax, orientation="vertical", shrink=0.95)
         cbar.set_label("CPT pressure [hPa]", fontsize=16)
-        cbar.set_ticks([80, 90, 100, 110, 120])
+        # cbar.set_ticks([80, 90, 100, 110, 120])
         cbar.ax.tick_params(labelsize=12)
 
         caption = (
             f"Tropical CPT {view_desc} Hovmoeller for {dataset_label}: "
-            f"colors show CPT pressure; contours show {title.lower()}."
+            f"colors show CPT pressure; contours show {title}."
         )
         provenance = _get_provenance(caption, ancestors)
         save_figure(
