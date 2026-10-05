@@ -153,6 +153,7 @@ Other
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
+   recipe_seaice_seasonality
    recipe_seaice_sensitivity
    recipe_shapeselect
    recipes_testing
