@@ -81,7 +81,7 @@ diagnostics:
         script: examples/diagnostic.py
         quickplot:
           plot_type: pcolormesh
-          cmap: Reds
+          cmap: RdYlBu_r
 
   timeseries:
     description: Annual mean temperature in Amsterdam and global mean since 1850.
