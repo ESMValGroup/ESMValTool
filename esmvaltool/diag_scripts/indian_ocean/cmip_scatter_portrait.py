@@ -33,7 +33,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
 )
 
-OBS_CANDIDATES = {
+OBS_ENTRIES = {
     "sst": ["HadISST"],
     "wind": ["NCEP", "ERA5"],
     "ocean": ["EN4", "SODA", "ORAS5"],
@@ -130,7 +130,7 @@ def build_bias_table(cfg, diagnostics):
         if col_std == 0:
             standardized_matrix[valid, j] = 0.0
         else:
-            standardized_matrix[valid, j] = (col[valid] - col_mean) / col_std
+            standardized_matrix[valid, j] = col[valid] / col_std
 
     # Save a plain-text table for easy downstream use.
     table_path = Path(cfg["work_dir"]) / "iod_bias_portrait_table.csv"
@@ -226,7 +226,7 @@ def plot_bias_heatmap(cfg, matrix, model_names, metric_names, ancestors):
                             ha="right", fontsize=10)
     ax_main.set_yticks(np.arange(len(ordered_models)))
     ax_main.set_yticklabels(ordered_models, fontsize=9)
-    ax_main.set_title("Model-by-diagnostic bias portrait", fontsize=14)
+    ax_main.set_title("Model-by-diagnostic bias for SON", fontsize=14)
     ax_main.set_xlabel("Diagnostics")
     ax_main.set_ylabel("Models")
 
@@ -250,7 +250,6 @@ def plot_bias_heatmap(cfg, matrix, model_names, metric_names, ancestors):
     ax_mean.set_yticks(np.arange(len(ordered_models)))
     ax_mean.set_yticklabels([])
     ax_mean.tick_params(axis="y", length=0)
-    ax_mean.set_title("Model mean", fontsize=14)
 
     for row_idx, value in enumerate(model_mean_z[:, 0]):
         if np.isfinite(value):
@@ -265,7 +264,7 @@ def plot_bias_heatmap(cfg, matrix, model_names, metric_names, ancestors):
             )
 
     cbar_main = fig.colorbar(img_main, ax=ax_main, fraction=0.025, pad=0.02)
-    cbar_main.set_label("Standardized bias (z-score)")
+    cbar_main.set_label("Standardised bias (z-score)")
 
     fig.tight_layout()
     save_name = "iod_bias_portrait_heatmap"
@@ -544,30 +543,23 @@ def scat_plot(cfg, x_dict, y_dict, x_label, y_label, title, output_basename):
     plt.close()
 
 
-def main(cfg):
-    """
-    Main function to compute and plot scatter diagnostics.
-    """
-    logger.info("Starting main diagnostic process.")
-    input_data = cfg["input_data"].values()
-    grouped_data = group_metadata(input_data, "dataset")
-
+def _load_grouped_data(cfg, grouped_data):
+    """Load and organise all diagnostic input data, grouped by dataset."""
     (
         therm_tilt,
         sst_grad,
-        eq_winds,
+        ceio_winds,
         skew_dmi,
         east_sst_son,
         west_sst_son,
         sctr_t20d,
-        nino_ssts,
         dmi,
         east_sst_son_ts,
         west_sst_son_ts,
-    ) = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+    ) = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     for group_name, group_md in grouped_data.items():
         logger.info(f"Processing group: {group_name}")
-        # If checks are necessary as not all 
+        # If checks are necessary as not all
         # models/obs (group names) have all variables.
 
         # Load west and east SST using load_data and calculate gradient
@@ -612,8 +604,7 @@ def main(cfg):
 
         load_and_update_dict(group_md, "east_sst_son_ts", east_sst_son_ts)
         load_and_update_dict(group_md, "west_sst_son_ts", west_sst_son_ts)
-        load_and_update_dict(group_md, "eq_winds", eq_winds)
-        load_and_update_dict(group_md, "nino_ssts", nino_ssts)
+        load_and_update_dict(group_md, "ceio_winds", ceio_winds)
         sctr_t20d_item = get_iso_data(cfg, group_md, "sctr_temps")
         if sctr_t20d_item:
             sctr_t20d.update(sctr_t20d_item)
@@ -629,177 +620,166 @@ def main(cfg):
                 skew_dmi_item = compute_cube_skew(cfg, dmi_item, "skew_dmi")
                 skew_dmi.update(skew_dmi_item)
 
-    # Build scalar diagnostics and biases (model - observation).
-    obs_sst = get_obs_dataset_name(east_sst_son, OBS_CANDIDATES["sst"])
-    obs_wind = get_obs_dataset_name(eq_winds, OBS_CANDIDATES["wind"])
-    obs_ocean = get_obs_dataset_name(therm_tilt, OBS_CANDIDATES["ocean"])
-    obs_dmi = get_obs_dataset_name(dmi, OBS_CANDIDATES["dmi"])
+    return {
+        "therm_tilt": therm_tilt,
+        "sst_grad": sst_grad,
+        "ceio_winds": ceio_winds,
+        "skew_dmi": skew_dmi,
+        "east_sst_son": east_sst_son,
+        "west_sst_son": west_sst_son,
+        "sctr_t20d": sctr_t20d,
+        "dmi": dmi,
+        "east_sst_son_ts": east_sst_son_ts,
+        "west_sst_son_ts": west_sst_son_ts,
+    }
+
+
+def _compute_obs_values(data):
+    """Identify obs dataset names and compute scalar diagnostic values."""
+    obs_sst = get_obs_dataset_name(data["east_sst_son"], OBS_ENTRIES["sst"])
+    obs_wind = get_obs_dataset_name(data["ceio_winds"], OBS_ENTRIES["wind"])
+    obs_ocean = get_obs_dataset_name(data["therm_tilt"], OBS_ENTRIES["ocean"])
+    obs_dmi = get_obs_dataset_name(data["dmi"], OBS_ENTRIES["dmi"])
 
     obs_values = {}
     if (
         obs_sst
-        and obs_sst in east_sst_son
-        and obs_sst in west_sst_son
-        and obs_sst in sst_grad
+        and obs_sst in data["east_sst_son"]
+        and obs_sst in data["west_sst_son"]
+        and obs_sst in data["sst_grad"]
     ):
         obs_values["EEIO mean SST bias"] = as_scalar(
-            east_sst_son[obs_sst]["cube"],
+            data["east_sst_son"][obs_sst]["cube"],
             "mean",
         )
         obs_values["WEIO mean SST bias"] = as_scalar(
-            west_sst_son[obs_sst]["cube"],
+            data["west_sst_son"][obs_sst]["cube"],
             "mean",
         )
         obs_values["WEIO-EEIO SST gradient bias"] = as_scalar(
-            sst_grad[obs_sst]["cube"],
+            data["sst_grad"][obs_sst]["cube"],
             "mean",
         )
-    if obs_wind and obs_wind in eq_winds:
+    if obs_wind and obs_wind in data["ceio_winds"]:
         obs_values["CEIO zonal wind bias"] = as_scalar(
-            eq_winds[obs_wind]["cube"],
+            data["ceio_winds"][obs_wind]["cube"],
             "mean",
         )
-    if obs_ocean and obs_ocean in therm_tilt and obs_ocean in sctr_t20d:
+    if (
+        obs_ocean
+        and obs_ocean in data["therm_tilt"]
+        and obs_ocean in data["sctr_t20d"]
+    ):
         obs_values["equatorial D20 tilt bias"] = as_scalar(
-            therm_tilt[obs_ocean]["cube"],
+            data["therm_tilt"][obs_ocean]["cube"],
             "mean",
         )
         obs_values["SCTR D20 bias"] = as_scalar(
-            sctr_t20d[obs_ocean]["cube"],
+            data["sctr_t20d"][obs_ocean]["cube"],
             "mean",
         )
-    if obs_dmi and obs_dmi in dmi and obs_dmi in skew_dmi:
+    if obs_dmi and obs_dmi in data["dmi"] and obs_dmi in data["skew_dmi"]:
         obs_values["DMI standard deviation bias"] = as_scalar(
-            dmi[obs_dmi]["cube"],
+            data["dmi"][obs_dmi]["cube"],
             "std",
         )
         obs_values["DMI skewness bias"] = as_scalar(
-            skew_dmi[obs_dmi]["cube"],
+            data["skew_dmi"][obs_dmi]["cube"],
             "raw",
         )
 
+    excluded = {obs_sst, obs_wind, obs_ocean, obs_dmi}
+    return obs_values, excluded
+
+
+# Each entry maps a metric name to the data key holding it, the scalar
+# reduction method to use, and the key used when saving the bias cube.
+_MODEL_METRIC_SPECS = (
+    ("EEIO mean SST bias", "east_sst_son", "mean", "eeio_mean_sst"),
+    ("WEIO mean SST bias", "west_sst_son", "mean", "weio_mean_sst"),
+    (
+        "WEIO-EEIO SST gradient bias",
+        "sst_grad",
+        "mean",
+        "weio_minus_eeio_sst_grad",
+    ),
+    ("CEIO zonal wind bias", "ceio_winds", "mean", "ceio_zonal_wind"),
+    (
+        "equatorial D20 tilt bias",
+        "therm_tilt",
+        "mean",
+        "equatorial_d20_tilt",
+    ),
+    ("SCTR D20 bias", "sctr_t20d", "mean", "sctr_d20"),
+    (
+        "DMI standard deviation bias",
+        "dmi",
+        "std",
+        "dmi_std",
+    ),
+    ("DMI skewness bias", "skew_dmi", "raw", "dmi_skewness"),
+)
+
+
+def _compute_model_metrics(cfg, model, data, obs_values):
+    """Compute bias metrics for a single model relative to observations."""
+    model_metrics = {}
+    model_ancestors = set()
+
+    for metric_name, data_key, method, save_key in _MODEL_METRIC_SPECS:
+        source_dict = data[data_key]
+        if model in source_dict and metric_name in obs_values:
+            val = (
+                as_scalar(source_dict[model]["cube"], method)
+                - obs_values[metric_name]
+            )
+            model_metrics[metric_name] = val
+            model_ancestors.update(to_set(source_dict[model]["filename"]))
+            save_scalar_bias(cfg, save_key, model, val, model_ancestors)
+
+    return model_metrics, model_ancestors
+
+
+def _compute_diagnostics_bias(cfg, data, obs_values, excluded):
+    """Compute bias diagnostics for every candidate model."""
     diagnostics_bias = {}
     candidate_models = sorted(
-        set(east_sst_son.keys())
-        | set(west_sst_son.keys())
-        | set(sst_grad.keys())
-        | set(eq_winds.keys())
-        | set(therm_tilt.keys())
-        | set(sctr_t20d.keys())
-        | set(dmi.keys())
-        | set(skew_dmi.keys()),
+        set(data["east_sst_son"].keys())
+        | set(data["west_sst_son"].keys())
+        | set(data["sst_grad"].keys())
+        | set(data["ceio_winds"].keys())
+        | set(data["therm_tilt"].keys())
+        | set(data["sctr_t20d"].keys())
+        | set(data["dmi"].keys())
+        | set(data["skew_dmi"].keys()),
     )
-    excluded = set([obs_sst, obs_wind, obs_ocean, obs_dmi])
 
     for model in candidate_models:
         if model in excluded:
             continue
 
-        model_metrics = {}
-        model_ancestors = set()
-
-        if model in east_sst_son and "EEIO mean SST bias" in obs_values:
-            val = (
-                as_scalar(east_sst_son[model]["cube"], "mean")
-                - obs_values["EEIO mean SST bias"]
-            )
-            model_metrics["EEIO mean SST bias"] = val
-            model_ancestors.update(to_set(east_sst_son[model]["filename"]))
-            save_scalar_bias(cfg, "eeio_mean_sst", model, val, model_ancestors)
-
-        if model in west_sst_son and "WEIO mean SST bias" in obs_values:
-            val = (
-                as_scalar(west_sst_son[model]["cube"], "mean")
-                - obs_values["WEIO mean SST bias"]
-            )
-            model_metrics["WEIO mean SST bias"] = val
-            model_ancestors.update(to_set(west_sst_son[model]["filename"]))
-            save_scalar_bias(cfg, "weio_mean_sst", model, val, model_ancestors)
-
-        if model in sst_grad and "WEIO-EEIO SST gradient bias" in obs_values:
-            val = (
-                as_scalar(sst_grad[model]["cube"], "mean")
-                - obs_values["WEIO-EEIO SST gradient bias"]
-            )
-            model_metrics["WEIO-EEIO SST gradient bias"] = val
-            model_ancestors.update(to_set(sst_grad[model]["filename"]))
-            save_scalar_bias(
-                cfg,
-                "weio_minus_eeio_sst_grad",
-                model,
-                val,
-                model_ancestors,
-            )
-
-        if model in eq_winds and "CEIO zonal wind bias" in obs_values:
-            val = (
-                as_scalar(eq_winds[model]["cube"], "mean")
-                - obs_values["CEIO zonal wind bias"]
-            )
-            model_metrics["CEIO zonal wind bias"] = val
-            model_ancestors.update(to_set(eq_winds[model]["filename"]))
-            save_scalar_bias(
-                cfg,
-                "ceio_zonal_wind",
-                model,
-                val,
-                model_ancestors,
-            )
-
-        if model in therm_tilt and "equatorial D20 tilt bias" in obs_values:
-            val = (
-                as_scalar(therm_tilt[model]["cube"], "mean")
-                - obs_values["equatorial D20 tilt bias"]
-            )
-            model_metrics["equatorial D20 tilt bias"] = val
-            model_ancestors.update(to_set(therm_tilt[model]["filename"]))
-            save_scalar_bias(
-                cfg,
-                "equatorial_d20_tilt",
-                model,
-                val,
-                model_ancestors,
-            )
-
-        if model in sctr_t20d and "SCTR D20 bias" in obs_values:
-            val = (
-                as_scalar(sctr_t20d[model]["cube"], "mean")
-                - obs_values["SCTR D20 bias"]
-            )
-            model_metrics["SCTR D20 bias"] = val
-            model_ancestors.update(to_set(sctr_t20d[model]["filename"]))
-            save_scalar_bias(cfg, "sctr_d20", model, val, model_ancestors)
-
-        if model in dmi and "DMI standard deviation bias" in obs_values:
-            val = (
-                as_scalar(dmi[model]["cube"], "std")
-                - obs_values["DMI standard deviation bias"]
-            )
-            model_metrics["DMI standard deviation bias"] = val
-            model_ancestors.update(to_set(dmi[model]["filename"]))
-            save_scalar_bias(cfg, "dmi_std", model, val, model_ancestors)
-
-        if model in skew_dmi and "DMI skewness bias" in obs_values:
-            val = (
-                as_scalar(skew_dmi[model]["cube"], "raw")
-                - obs_values["DMI skewness bias"]
-            )
-            model_metrics["DMI skewness bias"] = val
-            model_ancestors.update(to_set(skew_dmi[model]["filename"]))
-            save_scalar_bias(cfg, "dmi_skewness", model, val, model_ancestors)
+        model_metrics, model_ancestors = _compute_model_metrics(
+            cfg,
+            model,
+            data,
+            obs_values,
+        )
 
         if model_metrics:
             model_metrics["ancestors"] = model_ancestors
             diagnostics_bias[model] = model_metrics
 
-    build_bias_table(cfg, diagnostics_bias)
+    return diagnostics_bias
 
+
+def _generate_scatter_plots(cfg, data):
+    """Generate all scatter and mean-vs-std diagnostic plots."""
     print("therm_tilt")
-    print(therm_tilt)
+    print(data["therm_tilt"])
     scat_plot(
         cfg,
-        sst_grad,
-        therm_tilt,
+        data["sst_grad"],
+        data["therm_tilt"],
         "SST gradient / $^\\circ$C",
         "Thermocline tilt / m",
         "SON",
@@ -807,8 +787,8 @@ def main(cfg):
     )
     scat_plot(
         cfg,
-        sst_grad,
-        eq_winds,
+        data["sst_grad"],
+        data["ceio_winds"],
         "SST gradient / $^\\circ$C",
         "Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$",
         "SON",
@@ -816,8 +796,8 @@ def main(cfg):
     )
     scat_plot(
         cfg,
-        eq_winds,
-        therm_tilt,
+        data["ceio_winds"],
+        data["therm_tilt"],
         "Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$",
         "Thermocline tilt / m",
         "SON",
@@ -825,8 +805,8 @@ def main(cfg):
     )
     scat_plot(
         cfg,
-        eq_winds,
-        skew_dmi,
+        data["ceio_winds"],
+        data["skew_dmi"],
         "Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$",
         "Skewness of DMI",
         "SON",
@@ -834,8 +814,8 @@ def main(cfg):
     )
     scat_plot(
         cfg,
-        eq_winds,
-        sctr_t20d,
+        data["ceio_winds"],
+        data["sctr_t20d"],
         "Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$",
         "SCTR 20$^\\circ$C isotherm depth / m",
         "SON",
@@ -843,17 +823,8 @@ def main(cfg):
     )
     scat_plot(
         cfg,
-        sst_grad,
-        nino_ssts,
-        "SST gradient / $^\\circ$C",
-        "Nino 3.4 SST / $^\\circ$C",
-        "SST gradient-SON, Nino-DJF",
-        "dmi_vs_nino",
-    )
-    scat_plot(
-        cfg,
-        east_sst_son,
-        west_sst_son,
+        data["east_sst_son"],
+        data["west_sst_son"],
         "EEIO SST / $^\\circ$C",
         "WEIO SST / $^\\circ$C",
         "SON",
@@ -861,8 +832,8 @@ def main(cfg):
     )
     scat_plot(
         cfg,
-        eq_winds,
-        east_sst_son,
+        data["ceio_winds"],
+        data["east_sst_son"],
         "Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$",
         "EEIO SST / $^\\circ$C",
         "SON",
@@ -870,8 +841,8 @@ def main(cfg):
     )
     scat_plot(
         cfg,
-        eq_winds,
-        west_sst_son,
+        data["ceio_winds"],
+        data["west_sst_son"],
         "Zonal wind speed in CEIO / m $\\mathregular{s^{-1}}$",
         "WEIO SST / $^\\circ$C",
         "SON",
@@ -879,7 +850,7 @@ def main(cfg):
     )
     scat_mean_vs_std(
         cfg,
-        east_sst_son_ts,
+        data["east_sst_son_ts"],
         "SST mean in EEIO / $^\\circ$C",
         "STD of EEIO SST / $^\\circ$C",
         "SON",
@@ -887,12 +858,36 @@ def main(cfg):
     )
     scat_mean_vs_std(
         cfg,
-        west_sst_son_ts,
+        data["west_sst_son_ts"],
         "SST mean in WEIO / $^\\circ$C",
         "STD of WEIO SST / $^\\circ$C",
         "SON",
         "west_sst_mean_vs_std",
     )
+
+
+def main(cfg):
+    """
+    Main function to compute and plot scatter diagnostics.
+    """
+    logger.info("Starting main diagnostic process.")
+    input_data = cfg["input_data"].values()
+    grouped_data = group_metadata(input_data, "dataset")
+
+    data = _load_grouped_data(cfg, grouped_data)
+
+    # Build scalar diagnostics and biases (model - observation).
+    obs_values, excluded = _compute_obs_values(data)
+    diagnostics_bias = _compute_diagnostics_bias(
+        cfg,
+        data,
+        obs_values,
+        excluded,
+    )
+
+    build_bias_table(cfg, diagnostics_bias)
+
+    _generate_scatter_plots(cfg, data)
 
 
 if __name__ == "__main__":
