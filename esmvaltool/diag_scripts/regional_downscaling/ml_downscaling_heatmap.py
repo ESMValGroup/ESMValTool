@@ -89,6 +89,20 @@ QMAE_VARIABLE_LABELS = {
 # Shared utilities
 # ---------------------------------------------------------------------------
 
+def _display_names(methods, cfg):
+    """Map dataset names to the labels drawn on the heatmap columns.
+
+    The dataset name is an archival key: it appears in the CMOR filenames, the
+    recipe, the preprocessor tree and the metrics CSVs, so renaming it to suit a
+    figure would invalidate all of those and force a full re-run.  The optional
+    `method_labels` mapping in the recipe lets the printed name differ from it,
+    which is how `ml_downscaling_pareto.py` already works.  Methods absent from
+    the mapping keep their dataset name.
+    """
+    labels = cfg.get("method_labels", {})
+    return [labels.get(m, m) for m in methods]
+
+
 def _get_provenance_record(cfg, plot_file, caption):
     ancestor_files = []
     for dataset in cfg.get("input_data", {}).values():
@@ -645,7 +659,7 @@ def plot_ablation_heatmap(avg_ratio_df, vars_list, methods, metrics_used,
     return _plot_ablation_heatmap_raw(
         data=avg_ratio_df.values.copy(),
         row_labels=row_labels,
-        col_labels=list(methods),
+        col_labels=_display_names(methods, cfg),
         method2=method2,
         metrics_label=f"Mean ratio ({metric_label_list})",
         title_suffix="Ablation Study",
@@ -937,7 +951,7 @@ def main(cfg):
                 _plot_ablation_heatmap_raw(
                     data=qmae_ratio_df.values.copy(),
                     row_labels=row_labels,
-                    col_labels=list(methods1),
+                    col_labels=_display_names(methods1, cfg),
                     method2=method2,
                     metrics_label="Avg. Quantile MAE",
                     title_suffix="Quantile MAE  |  Ablation Study",

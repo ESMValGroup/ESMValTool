@@ -1,0 +1,152 @@
+# ESMValTool
+# recipe_ml_downscaling_pareto.yml
+---
+# Pareto front of conservation error vs. generative fidelity (reviewer M6).
+#
+# This recipe is deliberately cheap: it does NOT re-run the evaluation
+# diagnostics.  It reads the `comprehensive_metrics_summary.csv` files already
+# written by the completed per-region ablation runs and plots the trade-off.
+#
+# Fill in the three paths under `external_metrics_csv` with the work_dir of the
+# `spatial_metrics` diagnostic from each finished ablation run, e.g.
+#   <output>/recipe_ml_downscaling_evaluation_ablation_YYYYMMDD_HHMMSS/work/
+#       downscaling_evaluation_6M/spatial_metrics/comprehensive_metrics_summary.csv
+#
+# To wire this into a full run instead (provenance-tracked, but requires the
+# evaluation diagnostics to run), drop `external_metrics_csv` and use the
+# ancestor form shown in the commented block at the bottom of this file.
+
+documentation:
+  description: |
+    Pareto-front visualisation of the conservation / generative-fidelity
+    trade-off across all trained downscaling variants, for the three
+    evaluation regions.  Addresses reviewer Major Comment 6.
+
+  authors:
+    - debeire_kevin
+
+  title: Pareto front of conservation error vs. generative fidelity
+
+  maintainer:
+    - debeire_kevin
+
+datasets: []
+
+diagnostics:
+
+  pareto_front:
+    description: "Conservation error vs. CRPS / RALSD, all ablation variants"
+    scripts:
+      pareto:
+        script: regional_downscaling/ml_downscaling_pareto.py
+
+        # --- Data sources -------------------------------------------------
+        # Region label -> absolute path to a comprehensive_metrics_summary.csv
+        # These are the *merged* per-region files written by
+        # revision2/archive_metrics.sh.  Do NOT point at a single diagnostic's
+        # comprehensive_metrics_summary.csv: each diagnostic writes its own copy
+        # containing only its own metrics, so the spatial_metrics one has
+        # conservation_mean and crps_mean but no RALSD.
+        external_metrics_csv:
+          "Central Europe": "/work/bd1179/b309165/ML_downscaling/revision2/metrics_archive/Central_Europe/metrics_merged.csv"
+          "Iberic Peninsula": "/work/bd1179/b309165/ML_downscaling/revision2/metrics_archive/Iberic_Peninsula/metrics_merged.csv"
+          "Scandinavia": "/work/bd1179/b309165/ML_downscaling/revision2/metrics_archive/Scandinavia/metrics_merged.csv"
+
+        # --- What to plot -------------------------------------------------
+        # x is always the conservation error; one figure is produced per y.
+        x_metric: "conservation_mean"
+        y_metrics: ["crps_mean", "RALSD"]
+
+        # Conservation error is only defined for the constrained variables.
+        variables: ["pr", "huss"]
+
+        # Column names must match those in the ancestor CSVs.  Keep every
+        # variant at the SAME training scale (2M) -- mixing 2M and 6M would
+        # make the frontier meaningless.
+        # UNet is deliberately excluded: it is deterministic, so its CRPS
+        # degenerates to MAE and is not comparable with the ensemble variants
+        # on this axis.  It is also stored under per-region dataset names
+        # (UNet / UNet-Iberia / UNet-Scandinavia), which the merge cannot
+        # reconcile into a single method column.
+        methods:
+          - "AFM-baseline-2M"
+          - "PCAFM-Standard"
+          - "PCAFM-ConFIG"
+          - "PCAFM-ConFIG-DW"
+          - "PCAFM-2M"
+          # 3-objective ConFIG (base + pr + hus).  Inference has existed for all
+          # three regions since 2026-01-25; only the Central Europe run had been
+          # CMORized, which is why earlier versions of this figure showed the
+          # variant in the CE panel alone.  Iberia and Scandinavia were CMORized
+          # by revision2/cmorize_splitloss_ibe_sca.py, so it now appears in all
+          # three panels and the caption no longer needs its caveat sentence.
+          - "PCAFM-ConFIG-DW-Splitloss"
+          # PCGrad gradient surgery in place of ConFIG, otherwise the identical
+          # PCAFM-2M recipe (down-weighted L_phys, 200k warmup, 2M samples), so
+          # the PCAFM-2M / PCAFM-PCGrad pair isolates the choice of surgery.
+          # Appended last on purpose: marker shapes are assigned by list index,
+          # so adding here leaves every existing variant's marker unchanged.
+          - "PCAFM-PCGrad"
+          # Uncomment as the revision runs land:
+          # - "PCAFM-VarNorm"
+
+        # Short labels drawn next to each point (identity is never colour-only).
+        # These match the names used in the paper.  Note that the models plotted
+        # are the 2M-checkpoint ones (AFM-baseline-2M, PCAFM-2M), not the 6M
+        # models of Table 3 -- the caption must say so, since the labels do not.
+        method_labels:
+          AFM-baseline-2M: "AFM"
+          PCAFM-Standard: "naive sum"
+          PCAFM-ConFIG: "ConFIG"
+          PCAFM-ConFIG-DW: "ConFIG+DW"
+          PCAFM-2M: "PC-AFM"
+          # Short form of PCAFM-3obj, matching the convention of the other point
+          # labels, which name the distinguishing feature rather than repeating
+          # the PCAFM- prefix (ConFIG, ConFIG+DW, PCGrad).  The dataset name on
+          # the left is the archival key and is deliberately unchanged.
+          PCAFM-ConFIG-DW-Splitloss: "3obj"
+          PCAFM-VarNorm: "VarNorm"
+          PCAFM-PCGrad: "PCGrad"
+
+        # Colour family per method.  Only three families exist by design --
+        # three is the maximum number of hues that clears all-pairs colour
+        # separation in a scatter.  Omit to fall back to the name heuristic.
+        # The split is on how L_phys enters training: absent (afm) / present but
+        # added as a plain weighted sum (naive) / present with ConFIG gradient
+        # surgery (pcafm).
+        method_families:
+          AFM-baseline-2M: "afm"
+          PCAFM-Standard: "naive"        # has L_phys, but no conflict resolution
+          PCAFM-ConFIG: "pcafm"
+          PCAFM-ConFIG-DW: "pcafm"
+          PCAFM-2M: "pcafm"
+          PCAFM-ConFIG-DW-Splitloss: "pcafm"
+          PCAFM-VarNorm: "pcafm"
+          PCAFM-PCGrad: "pcafm"
+
+        annotate_points: true
+        figure_title: >-
+          Conservation / fidelity trade-off across trained variants
+          (2M-sample ablation protocol)
+
+
+# ---------------------------------------------------------------------------
+# Ancestor form -- use this instead of `external_metrics_csv` when the Pareto
+# diagnostic runs inside a recipe that also runs the evaluation diagnostics
+# (e.g. appended to recipe_ml_downscaling_evaluation_allregions.yml).
+#
+#   pareto_front:
+#     description: "Conservation error vs. CRPS / RALSD, all ablation variants"
+#     scripts:
+#       pareto:
+#         script: regional_downscaling/ml_downscaling_pareto.py
+#         ancestors:
+#           - 'downscaling_evaluation_CE/spatial_metrics'
+#           - 'downscaling_evaluation_IBE/spatial_metrics'
+#           - 'downscaling_evaluation_SCA/spatial_metrics'
+#         region_labels:
+#           downscaling_evaluation_CE:  "Central Europe"
+#           downscaling_evaluation_IBE: "Iberic Peninsula"
+#           downscaling_evaluation_SCA: "Scandinavia"
+#         # ... remaining keys identical to the block above
+# ---------------------------------------------------------------------------
