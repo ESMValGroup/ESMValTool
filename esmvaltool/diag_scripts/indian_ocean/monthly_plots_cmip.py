@@ -23,12 +23,16 @@ logging.basicConfig(
 
 MIN_VALID_POINTS = 2  # Minimum number of valid points for interpolation
 
-def plot_ts(cfg, plot_dict, title, y_title, output_basename):
-    """
-    Plot monthly values for all datasets in a single figure.
-    """
 
-    logger.info("Plotting monthly timeseries")
+def _plot_monthly_series(
+    cfg,
+    series_items,
+    title,
+    y_title,
+    output_basename,
+    input_filenames,
+):
+    """Render a monthly series figure and save it."""
     month_labels = [
         "Jan",
         "Feb",
@@ -57,31 +61,18 @@ def plot_ts(cfg, plot_dict, title, y_title, output_basename):
         "tab:gray",
     ]
     highlight_idx = 0
-    input_filenames = set()
     max_months = 12
     multimodel_profiles = []
 
-    for dataset, dict_info in plot_dict.items():
-        cube = dict_info["cube"]
-        file = dict_info["filename"]
-        input_filenames.update(file if isinstance(file, list) else [file])
-
-        values = np.asarray(cube.data, dtype=float).squeeze()
-        if values.ndim != 1:
-            logger.warning(
-                "Skipping %s: expected 1D monthly data, got shape %s.",
-                dataset,
-                values.shape,
-            )
-            continue
-
-        n_months = values.shape[0]
-        x = np.arange(n_months)
-        max_months = max(max_months, n_months)
-
+    for item in series_items:
+        dataset = item["dataset"]
+        x = item["x"]
+        values = item["values"]
         valid = np.isfinite(values)
-        if dataset not in obs_datasets \
-            and np.count_nonzero(valid) >= MIN_VALID_POINTS:
+        if (
+            dataset not in obs_datasets 
+            and np.count_nonzero(valid) >= MIN_VALID_POINTS
+        ):
             interp_vals = np.interp(
                 common_x,
                 x[valid],
@@ -90,6 +81,8 @@ def plot_ts(cfg, plot_dict, title, y_title, output_basename):
                 right=np.nan,
             )
             multimodel_profiles.append(interp_vals)
+
+        max_months = max(max_months, values.shape[0])
 
         if dataset in obs_datasets:
             color = "black"
@@ -101,8 +94,6 @@ def plot_ts(cfg, plot_dict, title, y_title, output_basename):
             linewidth = 1.2
             alpha = 0.6
         else:
-            # Skip plotting non-highlight models while 
-            # still using them for multimodel stats.
             continue
 
         plt.plot(
@@ -119,13 +110,10 @@ def plot_ts(cfg, plot_dict, title, y_title, output_basename):
         multimodel_median = np.nanmedian(profiles, axis=0)
         multimodel_std = np.nanstd(profiles, axis=0)
 
-        lower = multimodel_median - multimodel_std
-        upper = multimodel_median + multimodel_std
-
         plt.fill_between(
             common_x,
-            lower,
-            upper,
+            multimodel_median - multimodel_std,
+            multimodel_median + multimodel_std,
             color="tab:blue",
             alpha=0.2,
             linewidth=0,
@@ -141,10 +129,9 @@ def plot_ts(cfg, plot_dict, title, y_title, output_basename):
         )
 
     plt.xlim(-0.5, max_months - 0.5)
-    if max_months == len(month_labels):
-        tick_labels = month_labels
-    else:
-        tick_labels = [str(i + 1) for i in range(max_months)]
+    tick_labels = month_labels if max_months == len(month_labels) else [
+        str(i + 1) for i in range(max_months)
+    ]
     plt.xticks(np.arange(max_months), tick_labels)
     plt.xlabel("Month", fontsize=12)
     plt.ylabel(y_title, fontsize=12)
@@ -157,8 +144,48 @@ def plot_ts(cfg, plot_dict, title, y_title, output_basename):
         output_basename, list(input_filenames)
     )
     save_figure(output_basename, provenance_record, cfg)
-    logger.info(f"Monthly plot saved: {output_basename}")
+    logger.info("Monthly plot saved: %s", output_basename)
     plt.close()
+
+def plot_ts(cfg, plot_dict, title, y_title, output_basename):
+    """
+    Plot monthly values for all datasets in a single figure.
+    """
+
+    logger.info("Plotting monthly timeseries")
+    input_filenames = set()
+    series_items = []
+
+    for dataset, dict_info in plot_dict.items():
+        cube = dict_info["cube"]
+        file = dict_info["filename"]
+        input_filenames.update(file if isinstance(file, list) else [file])
+
+        values = np.asarray(cube.data, dtype=float).squeeze()
+        if values.ndim != 1:
+            logger.warning(
+                "Skipping %s: expected 1D monthly data, got shape %s.",
+                dataset,
+                values.shape,
+            )
+            continue
+
+        series_items.append(
+            {
+                "dataset": dataset,
+                "x": np.arange(values.shape[0]),
+                "values": values,
+            }
+        )
+
+    _plot_monthly_series(
+        cfg,
+        series_items,
+        title,
+        y_title,
+        output_basename,
+        input_filenames,
+    )
 
 
 def plot_ts_gradient(
@@ -169,37 +196,8 @@ def plot_ts_gradient(
     """
 
     logger.info("Plotting monthly gradient timeseries")
-    month_labels = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ]
-    obs_datasets = {"ERA5", "NCEP", "HadISST", "EN4"}
-    common_x = np.arange(12)
-
-    plt.figure(figsize=(10, 5))
-    highlight_colors = [
-        "tab:orange",
-        "tab:red",
-        "tab:green",
-        "tab:brown",
-        "tab:pink",
-        "tab:olive",
-        "tab:gray",
-    ]
-    highlight_idx = 0
     input_filenames = set()
-    max_months = 12
-    multimodel_profiles = []
+    series_items = []
 
     # Compute gradient for each dataset
     for dataset in plot_dict_west:
@@ -238,91 +236,23 @@ def plot_ts_gradient(
         # Ensure same length, use shorter length
         min_len = min(len(values_west), len(values_east))
         values = values_west[:min_len] - values_east[:min_len]
-
-        n_months = values.shape[0]
-        x = np.arange(n_months)
-        max_months = max(max_months, n_months)
-
-        valid = np.isfinite(values)
-        if dataset not in obs_datasets \
-            and np.count_nonzero(valid) >= MIN_VALID_POINTS:
-            interp_vals = np.interp(
-                common_x,
-                x[valid],
-                values[valid],
-                left=np.nan,
-                right=np.nan,
-            )
-            multimodel_profiles.append(interp_vals)
-
-        if dataset in obs_datasets:
-            color = "black"
-            linewidth = 2.5
-            alpha = 1.0
-        elif dataset in cfg.get("highlight_datasets", []):
-            color = highlight_colors[highlight_idx % len(highlight_colors)]
-            highlight_idx += 1
-            linewidth = 1.2
-            alpha = 0.6
-        else:
-            # Skip plotting non-highlight models while 
-            # still using them for multimodel stats.
-            continue
-
-        plt.plot(
-            x,
-            values,
-            label=dataset,
-            color=color,
-            linewidth=linewidth,
-            alpha=alpha,
+        series_items.append(
+            {
+                "dataset": dataset,
+                "x": np.arange(values.shape[0]),
+                "values": values,
+            }
         )
 
-    if multimodel_profiles:
-        profiles = np.asarray(multimodel_profiles, dtype=float)
-        multimodel_median = np.nanmedian(profiles, axis=0)
-        multimodel_std = np.nanstd(profiles, axis=0)
-
-        lower = multimodel_median - multimodel_std
-        upper = multimodel_median + multimodel_std
-
-        plt.fill_between(
-            common_x,
-            lower,
-            upper,
-            color="tab:blue",
-            alpha=0.2,
-            linewidth=0,
-            label="Multimodel median ±1 std",
-        )
-
-        plt.plot(
-            common_x,
-            multimodel_median,
-            label="Multimodel median",
-            color="tab:blue",
-            linewidth=3,
-        )
-
-    plt.xlim(-0.5, max_months - 0.5)
-    if max_months == len(month_labels):
-        tick_labels = month_labels
-    else:
-        tick_labels = [str(i + 1) for i in range(max_months)]
-    plt.xticks(np.arange(max_months), tick_labels)
-    plt.xlabel("Month", fontsize=12)
-    plt.ylabel(y_title, fontsize=12)
-    plt.title(title, fontsize=14)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-    plt.grid(True)
-    plt.tight_layout()
-
-    provenance_record = get_provenance_record(
-        output_basename, list(input_filenames)
+    _plot_monthly_series(
+        cfg,
+        series_items,
+        title,
+        y_title,
+        output_basename,
+        input_filenames,
     )
-    save_figure(output_basename, provenance_record, cfg)
     logger.info("Monthly gradient plot saved: %s", output_basename)
-    plt.close()
 
 
 def main(cfg):

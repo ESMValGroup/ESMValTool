@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 
+import cmocean
 import iris  # type: ignore
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +27,6 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
 )
 
-MIN_CENTRES_FOR_EDGES = 2  # Minimum number of centres to compute edges
 COASTAL_MASK_LAT_MAX = -4
 COASTAL_MASK_LON_MIN = 54
 COASTAL_MASK_LON_MAX = 56
@@ -76,23 +76,6 @@ def _collapse_latitude(cube, lat_band=None):
         return cube
 
 
-def _coord_edges(centres):
-    """
-    Convert coordinate centre points to bin edges for use with pcolormesh.
-    """
-    centres = np.asarray(centres)
-    if centres.size < MIN_CENTRES_FOR_EDGES:
-        return np.array([centres[0] - 0.5, centres[0] + 0.5])
-    d = np.diff(centres)
-    return np.concatenate(
-        [
-            [centres[0] - d[0] / 2],
-            centres[:-1] + d / 2,
-            [centres[-1] + d[-1] / 2],
-        ]
-    )
-
-
 def _compute_multimodel_bias_and_std(model_cubes, obs_data):
     """
     Compute multi-model median bias and inter-model std dev against obs_data.
@@ -108,7 +91,7 @@ def _compute_multimodel_bias_and_std(model_cubes, obs_data):
     Returns
     -------
     mm_median_bias : np.ndarray
-        Multi-model median of (model − obs).
+        Multi-model median of (model - obs).
     mm_std : np.ndarray
         Inter-model standard deviation of model values.
     """
@@ -123,6 +106,46 @@ def _compute_multimodel_bias_and_std(model_cubes, obs_data):
     mm_median_bias = np.nanmedian(bias_stack, axis=0)
     mm_std = np.nanstd(model_stack, axis=0)
     return mm_median_bias, mm_std
+
+
+def _build_lontime_panel_spec(
+    data,
+    cmap,
+    colorbar_label,
+    panel_title,
+    vmin=None,
+    vmax=None,
+):
+    """Bundle panel rendering settings into a single object."""
+    return {
+        "data": data,
+        "cmap": cmap,
+        "colorbar_label": colorbar_label,
+        "panel_title": panel_title,
+        "vmin": vmin,
+        "vmax": vmax,
+    }
+
+
+def _build_monthly_map_spec(
+    cmap,
+    title,
+    output_basename,
+    input_filenames,
+    vmin=None,
+    vmax=None,
+    lat_band=2.0,
+):
+    """Bundle monthly map rendering settings into a single object."""
+    return {
+        "cmap": cmap,
+        "title": title,
+        "output_basename": output_basename,
+        "input_filenames": input_filenames,
+        "vmin": vmin,
+        "vmax": vmax,
+        "lat_band": lat_band,
+    }
 
 
 def _separate_obs_and_models(plot_dict):
@@ -145,18 +168,7 @@ def _separate_obs_and_models(plot_dict):
     return obs_entry, model_cubes, input_filenames
 
 
-def _plot_lontime_panel(
-    ax,
-    fig,
-    lon_edges,
-    month_edges,
-    data,
-    cmap,
-    colorbar_label,
-    panel_title,
-    vmin=None,
-    vmax=None,
-):
+def _plot_lontime_panel(ax, fig, lon_points, month_points, panel_spec):
     """
     Render a single lon-time pcolormesh panel with a horizontal colorbar.
 
@@ -166,19 +178,17 @@ def _plot_lontime_panel(
         Axes to draw onto.
     fig : matplotlib.figure.Figure
         Parent figure (needed for colorbar).
-    lon_edges, month_edges : array-like
-        Bin edges for the x (longitude) and y (month) axes.
-    data : np.ndarray
-        2-D array shaped (month, longitude).
-    cmap : str
-        Matplotlib colormap name.
-    vmin, vmax : float
-        Colour scale limits.
-    colorbar_label : str
-        Label for the horizontal colorbar.
-    panel_title : str
-        Title shown above the panel.
+    lon_points, month_points : array-like
+        Longitude and month coordinate values taken directly from the cube.
+    panel_spec : dict
+        Panel metadata and data to render.
     """
+    data = panel_spec["data"]
+    cmap = panel_spec["cmap"]
+    colorbar_label = panel_spec["colorbar_label"]
+    panel_title = panel_spec["panel_title"]
+    vmin = panel_spec["vmin"]
+    vmax = panel_spec["vmax"]
     month_labels = [
         "Jan",
         "Feb",
@@ -201,13 +211,13 @@ def _plot_lontime_panel(
         vmax = np.nanmax(data)
 
     im = ax.pcolormesh(
-        lon_edges,
-        month_edges,
+        lon_points,
+        month_points,
         data,
         cmap=cmap,
         vmin=vmin,
         vmax=vmax,
-        shading="flat",
+        shading="nearest",
     )
     fig.colorbar(
         im, ax=ax, orientation="horizontal", pad=0.15, label=colorbar_label
@@ -220,18 +230,208 @@ def _plot_lontime_panel(
     return im
 
 
+def _prepare_lontime_inputs(plot_dict, lat_band):
+    """Split obs and model cubes and collapse latitude for lon-time plots."""
+    obs_entry, model_cubes, input_filenames = (
+        _separate_obs_and_models(plot_dict)
+    )
+    if obs_entry is None:
+        return None, None, None, None, None
+
+    obs_dataset, raw_obs_cube = obs_entry
+    obs_cube = _collapse_latitude(
+        _replace_fill_values(raw_obs_cube.copy()), lat_band=lat_band
+    )
+    if obs_cube is None:
+        return None, None, None, None, None
+
+    model_cubes_processed = []
+    for mc in model_cubes:
+        processed = _collapse_latitude(
+            _replace_fill_values(mc.copy()), lat_band=lat_band
+        )
+        if processed is not None:
+            model_cubes_processed.append(processed)
+
+    if not model_cubes_processed:
+        return None, None, None, None, None
+
+    obs_data = np.ma.filled(np.ma.asarray(obs_cube.data, dtype=float), np.nan)
+    return (
+        obs_dataset,
+        obs_cube,
+        model_cubes_processed,
+        obs_data,
+        input_filenames,
+    )
+
+
+def _collect_highlight_biases(
+    plot_dict, highlight_datasets, obs_dataset, obs_data, lat_band=None
+):
+    """Compute bias arrays for highlighted datasets."""
+    highlight_biases = {}
+    for dataset, info in plot_dict.items():
+        if dataset in highlight_datasets and dataset != obs_dataset:
+            cube = info["cube"]
+            cube_processed = _collapse_latitude(
+                _replace_fill_values(cube.copy()), lat_band=lat_band
+            )
+            if cube_processed is None:
+                continue
+            model_data = np.ma.filled(
+                np.ma.asarray(cube_processed.data, dtype=float), np.nan
+            )
+            highlight_biases[dataset] = model_data - obs_data
+    return highlight_biases
+
+
+def _derive_lontime_limits(
+        variable, obs_data, mm_median_bias, highlight_biases):
+    """Derive colour limits for the lon-time panels."""
+    if variable == "tos":
+        obs_limits = (25.0, 30.0)
+    elif variable in ("ua", "va", "wind"):
+        vabs = np.nanmax(np.abs(obs_data))
+        obs_limits = (-vabs, vabs)
+    else:
+        obs_limits = (np.nanmin(obs_data), np.nanmax(obs_data))
+
+    max_bias = np.nanmax(np.abs(mm_median_bias))
+    for highlight_bias in highlight_biases.values():
+        max_bias = max(max_bias, np.nanmax(np.abs(highlight_bias)))
+
+    return (
+        obs_limits[0],
+        obs_limits[1],
+        round(max_bias, 1),
+        np.nanmax(np.abs(mm_median_bias)),
+    )
+
+
+def _render_lontime_panels(
+    panel_context,
+):
+    """Render and save the lon-time panel figure."""
+    cfg = panel_context["cfg"]
+    obs_dataset = panel_context["obs_dataset"]
+    obs_data = panel_context["obs_data"]
+    mm_median_bias = panel_context["mm_median_bias"]
+    mm_std = panel_context["mm_std"]
+    highlight_biases = panel_context["highlight_biases"]
+    lon_points = panel_context["lon_points"]
+    month_points = panel_context["month_points"]
+    cmap_list = panel_context["cmap_list"]
+    title = panel_context["title"]
+    output_basename = panel_context["output_basename"]
+    input_filenames = panel_context["input_filenames"]
+    obs_vmin = panel_context["obs_vmin"]
+    obs_vmax = panel_context["obs_vmax"]
+    bias_vlim = panel_context["bias_vlim"]
+    std_vmax = panel_context["std_vmax"]
+
+    n_rows = 2 if highlight_biases else 1
+    fig, axes_raw = plt.subplots(
+        n_rows, 3, figsize=(18, 5 * n_rows), constrained_layout=True
+    )
+    axes = axes_raw.reshape(1, -1) if n_rows == 1 else axes_raw
+
+    _plot_lontime_panel(
+        axes[0, 0],
+        fig,
+        lon_points,
+        month_points,
+        _build_lontime_panel_spec(
+            obs_data,
+            cmap_list[0],
+            obs_dataset,
+            f"Obs ({obs_dataset})",
+            vmin=obs_vmin,
+            vmax=obs_vmax,
+        ),
+    )
+    _plot_lontime_panel(
+        axes[0, 1],
+        fig,
+        lon_points,
+        month_points,
+        _build_lontime_panel_spec(
+            mm_median_bias,
+            cmap_list[1],
+            "Bias (model - obs)",
+            "MM-median bias",
+            vmin=-bias_vlim,
+            vmax=bias_vlim,
+        ),
+    )
+    _plot_lontime_panel(
+        axes[0, 2],
+        fig,
+        lon_points,
+        month_points,
+        _build_lontime_panel_spec(
+            mm_std,
+            cmap_list[2],
+            "Std dev (models)",
+            "Inter-model std dev",
+            vmin=0,
+            vmax=std_vmax,
+        ),
+    )
+
+    for i, dataset in enumerate(list(highlight_biases.keys())[:3]):
+        highlight_bias = highlight_biases[dataset]
+        _plot_lontime_panel(
+            axes[1, i],
+            fig,
+            lon_points,
+            month_points,
+            _build_lontime_panel_spec(
+                highlight_bias,
+                cmap_list[1],
+                f"Bias {dataset}",
+                f"{dataset} bias",
+                vmin=-bias_vlim,
+                vmax=bias_vlim,
+            ),
+        )
+
+    if highlight_biases:
+        if len(highlight_biases) == 2:
+            bias_values = list(highlight_biases.values())
+            bias_diff = bias_values[0] - bias_values[1]
+            dataset_names = list(highlight_biases.keys())
+            _plot_lontime_panel(
+                axes[1, 2],
+                fig,
+                lon_points,
+                month_points,
+                _build_lontime_panel_spec(
+                    bias_diff,
+                    cmap_list[1],
+                    "Difference",
+                    f"{dataset_names[0]} - {dataset_names[1]}",
+                    vmin=-bias_vlim,
+                    vmax=bias_vlim,
+                ),
+            )
+        else:
+            for i in range(len(highlight_biases), 3):
+                axes[1, i].axis("off")
+
+    fig.suptitle(title, fontsize=14)
+    provenance_record = get_provenance_record(
+        output_basename, sorted(list(input_filenames))
+    )
+    save_figure(output_basename, provenance_record, cfg, bbox_inches="tight")
+    logger.info("Lon-time plot saved: %s", output_basename)
+    plt.close(fig)
+
+
 def plot_lon_time_multimodel(
     cfg,
     plot_dict,
-    cmap_list,
-    title,
-    output_basename,
-    variable=None,
-    obs_vmin=None,
-    obs_vmax=None,
-    bias_vlim=None,
-    std_vmax=None,
-    lat_band=None,
+    plot_spec,
 ):
     """
     Plot lon-time climatology: obs, MM-median bias, and inter-model std dev.
@@ -249,91 +449,43 @@ def plot_lon_time_multimodel(
         ESMValTool configuration dictionary.
     plot_dict : dict
         Mapping of dataset name → {'cube': iris.cube.Cube, 'filename': ...}.
-    cmap_list : list of str
-        Three colourmap names for [obs, bias, std dev] panels.
-    title : str
-        Figure suptitle.
-    output_basename : str
-        Stem used when saving the figure via save_figure().
-    variable : str, optional
-        Variable name ('tos', 'ua', etc.) for default colour limits.
-    obs_vmin, obs_vmax : float, optional
-        Colour scale limits for the obs panel. Auto-derived when omitted.
-    bias_vlim : float, optional
-        Symmetric colour limit ±bias_vlim for the bias panel. Auto-derived
-        when omitted.
-    std_vmax : float, optional
-        Upper colour limit for the std dev panel. Auto-derived when omitted.
-    lat_band : float, optional
-        Latitude band (symmetric about equator) to average over (e.g., 2.0 for
-        ±2°). If None, collapse over all latitudes.
+    plot_spec : dict
+        Plot settings including colormaps, titles, limits, and latitude band.
     """
+    cmap_list = plot_spec["cmap_list"]
+    title = plot_spec["title"]
+    output_basename = plot_spec["output_basename"]
+    variable = plot_spec.get("variable")
+    obs_vmin = plot_spec.get("obs_vmin")
+    obs_vmax = plot_spec.get("obs_vmax")
+    bias_vlim = plot_spec.get("bias_vlim")
+    std_vmax = plot_spec.get("std_vmax")
+    lat_band = plot_spec.get("lat_band")
+
     logger.info("Plotting lon-time plots: %s", output_basename)
 
-    obs_entry, model_cubes, input_filenames = _separate_obs_and_models(
-        plot_dict
-    )
-    if obs_entry is None:
+    prepared = _prepare_lontime_inputs(plot_dict, lat_band)
+    if prepared[0] is None:
         logger.warning(
-            "No obs found for lon-time plot %s, skipping.", output_basename
-        )
-        return
-    if not model_cubes:
-        logger.warning(
-            "No model data found for lon-time plot %s, skipping.",
+            "Unable to prepare lon-time plot data for %s, skipping.",
             output_basename,
         )
         return
 
-    obs_dataset, raw_obs_cube = obs_entry
-
-    obs_cube = _collapse_latitude(
-        _replace_fill_values(raw_obs_cube.copy()), lat_band=lat_band
-    )
-    if obs_cube is None:
-        logger.warning(
-            "Failed to process obs data for %s, skipping.", output_basename
-        )
-        return
-    model_cubes_processed = []
-    for mc in model_cubes:
-        processed = _collapse_latitude(
-            _replace_fill_values(mc.copy()), lat_band=lat_band
-        )
-        if processed is not None:
-            model_cubes_processed.append(processed)
-    if not model_cubes_processed:
-        logger.warning(
-            "No valid model data after latitude collapsing for %s, skipping.",
-            output_basename,
-        )
-        return
-    model_cubes = model_cubes_processed
-    obs_data = np.ma.filled(
-        np.ma.asarray(obs_cube.data, dtype=float), np.nan
-    )  # (month, lon)
+    obs_dataset, obs_cube, model_cubes, obs_data, input_filenames = prepared
     mm_median_bias, mm_std = _compute_multimodel_bias_and_std(
         model_cubes, obs_data
     )
 
-    highlight_datasets = cfg.get("highlight_datasets", [])[
-        :3
-    ]  # Up to three highlighted datasets
+    highlight_datasets = cfg.get("highlight_datasets", [])[:3]
+    highlight_biases = _collect_highlight_biases(
+        plot_dict,
+        highlight_datasets,
+        obs_dataset,
+        obs_data,
+        lat_band=lat_band,
+    )
 
-    # Build a dict of highlight model biases
-    highlight_biases = {}
-    for dataset, info in plot_dict.items():
-        if dataset in highlight_datasets and dataset != obs_dataset:
-            cube = info["cube"]
-            cube_processed = _collapse_latitude(
-                _replace_fill_values(cube.copy())
-            )
-            model_data = np.ma.filled(
-                np.ma.asarray(cube_processed.data, dtype=float), np.nan
-            )
-            highlight_biases[dataset] = model_data - obs_data
-
-    # Coordinate edges for pcolormesh.
     try:
         lon_centres = obs_cube.coord("longitude").points
     except iris.exceptions.CoordinateNotFoundError:
@@ -343,123 +495,33 @@ def plot_lon_time_multimodel(
     except iris.exceptions.CoordinateNotFoundError:
         month_centres = np.arange(1, obs_data.shape[0] + 1)
 
-    lon_edges = _coord_edges(lon_centres)
-    month_edges = _coord_edges(month_centres)
-
-    # Derive colour limits, with optional overrides.
-    if obs_vmin is None or obs_vmax is None:
-        if variable == "tos":
-            _obs_vmin, _obs_vmax = 25.0, 30.0
-        elif variable in ("ua", "va", "wind"):
-            vabs = np.nanmax(np.abs(obs_data))
-            _obs_vmin, _obs_vmax = -vabs, vabs
-        else:
-            _obs_vmin, _obs_vmax = np.nanmin(obs_data), np.nanmax(obs_data)
-    obs_vmin = obs_vmin if obs_vmin is not None else _obs_vmin
-    obs_vmax = obs_vmax if obs_vmax is not None else _obs_vmax
-
-    if bias_vlim is None:
-        # Use maximum across all bias panels (MM-median and highlight datasets)
-        max_bias = np.nanmax(np.abs(mm_median_bias))
-        for highlight_bias in highlight_biases.values():
-            max_bias = max(max_bias, np.nanmax(np.abs(highlight_bias)))
-        bias_vlim = round(max_bias, 1)
-
-    if std_vmax is None:
-        std_vmax = np.nanmax(mm_std)
-
-    # Create figure with second row if highlight datasets exist
-    n_rows = 2 if highlight_biases else 1
-    fig, axes_raw = plt.subplots(
-        n_rows, 3, figsize=(18, 5 * n_rows), constrained_layout=True
+    obs_vmin, obs_vmax, derived_bias_vlim, derived_std_vmax = (
+        _derive_lontime_limits(variable, obs_data, 
+                               mm_median_bias, highlight_biases)
     )
-    # Ensure axes is always 2D
-    axes = axes_raw.reshape(1, -1) if n_rows == 1 else axes_raw
+    bias_vlim = bias_vlim if bias_vlim is not None else derived_bias_vlim*0.8
+    std_vmax = std_vmax if std_vmax is not None else derived_std_vmax*0.8
 
-    _plot_lontime_panel(
-        axes[0, 0],
-        fig,
-        lon_edges,
-        month_edges,
-        obs_data,
-        cmap=cmap_list[0],
-        vmin=obs_vmin,
-        vmax=obs_vmax,
-        colorbar_label=obs_dataset,
-        panel_title=f"Obs ({obs_dataset})",
+    _render_lontime_panels(
+        {
+            "cfg": cfg,
+            "obs_dataset": obs_dataset,
+            "obs_data": obs_data,
+            "mm_median_bias": mm_median_bias,
+            "mm_std": mm_std,
+            "highlight_biases": highlight_biases,
+            "lon_points": lon_centres,
+            "month_points": month_centres,
+            "cmap_list": cmap_list,
+            "title": title,
+            "output_basename": output_basename,
+            "input_filenames": input_filenames,
+            "obs_vmin": obs_vmin,
+            "obs_vmax": obs_vmax,
+            "bias_vlim": bias_vlim,
+            "std_vmax": std_vmax,
+        }
     )
-    _plot_lontime_panel(
-        axes[0, 1],
-        fig,
-        lon_edges,
-        month_edges,
-        mm_median_bias,
-        cmap=cmap_list[1],
-        vmin=-bias_vlim,
-        vmax=bias_vlim,
-        colorbar_label="Bias (model − obs)",
-        panel_title="MM-median bias",
-    )
-    _plot_lontime_panel(
-        axes[0, 2],
-        fig,
-        lon_edges,
-        month_edges,
-        mm_std,
-        cmap=cmap_list[2],
-        vmin=0,
-        vmax=std_vmax,
-        colorbar_label="Std dev (models)",
-        panel_title="Inter-model std dev",
-    )
-
-    # Add highlighted dataset biases in second row
-    for i, dataset in enumerate(list(highlight_biases.keys())[:3]):
-        highlight_bias = highlight_biases[dataset]
-        _plot_lontime_panel(
-            axes[1, i],
-            fig,
-            lon_edges,
-            month_edges,
-            highlight_bias,
-            cmap=cmap_list[1],
-            vmin=-bias_vlim,
-            vmax=bias_vlim,
-            colorbar_label=f"Bias {dataset}",
-            panel_title=f"{dataset} bias",
-        )
-
-    # Handle third panel in second row
-    if highlight_biases:
-        if len(highlight_biases) == 2:
-            # Compute difference between the two models
-            bias_values = list(highlight_biases.values())
-            bias_diff = bias_values[0] - bias_values[1]
-            dataset_names = list(highlight_biases.keys())
-            _plot_lontime_panel(
-                axes[1, 2],
-                fig,
-                lon_edges,
-                month_edges,
-                bias_diff,
-                cmap=cmap_list[1],
-                vmin=-bias_vlim,
-                vmax=bias_vlim,
-                colorbar_label="Difference",
-                panel_title=f"{dataset_names[0]} − {dataset_names[1]}",
-            )
-        else:
-            # Hide unused panels if not exactly 2 datasets
-            for i in range(len(highlight_biases), 3):
-                axes[1, i].axis("off")
-
-    fig.suptitle(title, fontsize=14)
-    provenance_record = get_provenance_record(
-        output_basename, sorted(list(input_filenames))
-    )
-    save_figure(output_basename, provenance_record, cfg, bbox_inches="tight")
-    logger.info("Lon-time plot saved: %s", output_basename)
-    plt.close(fig)
 
 
 def plot_monthly_maps(
@@ -467,16 +529,10 @@ def plot_monthly_maps(
     data,
     lon_centres,
     lat_centres,
-    cmap,
-    title,
-    output_basename,
-    input_filenames,
-    vmin=None,
-    vmax=None,
-    lat_band=2.0,
+    plot_spec,
 ):
     """
-    Plot 12 monthly map panels (3 rows × 4 columns) with a shared colorbar.
+    Plot 12 monthly map panels (3 rows x 4 columns) with a shared colorbar.
 
     Parameters
     ----------
@@ -486,20 +542,18 @@ def plot_monthly_maps(
         3-D array shaped (month, latitude, longitude).
     lon_centres, lat_centres : array-like
         Coordinate centre points.
-    cmap : str
-        Matplotlib colormap name.
-    title : str
-        Figure suptitle and colorbar label.
-    output_basename : str
-        Stem used when saving the figure.
-    input_filenames : set or list
-        Source filenames for provenance tracking.
-    vmin, vmax : float, optional
-        Colour scale limits. Derived from data when omitted.
-    lat_band : float, optional
-        Latitude band (symmetric about equator) to highlight with a box
-        (default 2.0 for ±2°).
+    plot_spec : dict
+        Plot settings including colormap, title, output name, limits, and
+        provenance inputs.
     """
+    cmap = plot_spec["cmap"]
+    title = plot_spec["title"]
+    output_basename = plot_spec["output_basename"]
+    input_filenames = plot_spec["input_filenames"]
+    vmin = plot_spec.get("vmin")
+    vmax = plot_spec.get("vmax")
+    lat_band = plot_spec.get("lat_band", 2.0)
+
     data = np.asarray(data)
     is_3d = data.ndim == 3
     if not is_3d:
@@ -531,9 +585,6 @@ def plot_monthly_maps(
         "Dec",
     ]
 
-    lon_edges = _coord_edges(lon_centres)
-    lat_edges = _coord_edges(lat_centres)
-
     fig, axes = plt.subplots(3, 4, figsize=(16, 10), constrained_layout=True)
     axes = axes.flatten()
 
@@ -542,21 +593,21 @@ def plot_monthly_maps(
         ax = axes[m]
         if m < n_months:
             im = ax.pcolormesh(
-                lon_edges,
-                lat_edges,
+                lon_centres,
+                lat_centres,
                 data[m, :, :],
                 cmap=cmap,
                 vmin=vmin,
                 vmax=vmax,
-                shading="flat",
+                shading="nearest",
             )
             ax.set_title(month_labels[m], fontsize=10)
             ax.set_xlabel("Longitude (°E)")
             ax.set_ylabel("Latitude (°N)")
             # Add black box highlighting equatorial band
             rect = Rectangle(
-                (lon_edges[0], -lat_band),
-                lon_edges[-1] - lon_edges[0],
+                (lon_centres[0], -lat_band),
+                lon_centres[-1] - lon_centres[0],
                 2 * lat_band,
                 linewidth=2,
                 edgecolor="black",
@@ -650,13 +701,15 @@ def plot_map_multimodel(
         obs_data,
         lon_centres,
         lat_centres,
-        vmin=np.nanmin(obs_data),
-        vmax=np.nanmax(obs_data),
-        cmap=cmap_list[0],
-        title=f"Obs ({obs_name}) - {title}",
-        output_basename=output_basename + "_clim_obs",
-        input_filenames=input_filenames,
-        lat_band=lat_band,
+        _build_monthly_map_spec(
+            cmap_list[0],
+            f"Obs ({obs_name}) - {title}",
+            output_basename + "_clim_obs",
+            input_filenames,
+            vmin=np.nanmin(obs_data),
+            vmax=np.nanmax(obs_data),
+            lat_band=lat_band,
+        ),
     )
     bias_vlim = np.nanmax(np.abs(mm_median_bias))
     plot_monthly_maps(
@@ -664,26 +717,30 @@ def plot_map_multimodel(
         mm_median_bias,
         lon_centres,
         lat_centres,
-        vmin=-bias_vlim,
-        vmax=bias_vlim,
-        cmap=cmap_list[1],
-        title=f"MM-median bias - {title}",
-        output_basename=output_basename + "_model_bias",
-        input_filenames=input_filenames,
-        lat_band=lat_band,
+        _build_monthly_map_spec(
+            cmap_list[1],
+            f"MM-median bias - {title}",
+            output_basename + "_model_bias",
+            input_filenames,
+            vmin=-bias_vlim,
+            vmax=bias_vlim,
+            lat_band=lat_band,
+        ),
     )
     plot_monthly_maps(
         cfg,
         mm_std,
         lon_centres,
         lat_centres,
-        vmin=0,
-        vmax=np.nanmax(mm_std),
-        cmap=cmap_list[2],
-        title=f"Inter-model std dev - {title}",
-        output_basename=output_basename + "_stddev",
-        input_filenames=input_filenames,
-        lat_band=lat_band,
+        _build_monthly_map_spec(
+            cmap_list[2],
+            f"Inter-model std dev - {title}",
+            output_basename + "_stddev",
+            input_filenames,
+            vmin=0,
+            vmax=np.nanmax(mm_std),
+            lat_band=lat_band,
+        ),
     )
 
 
@@ -858,87 +915,70 @@ def main(cfg):
     plot_lon_time_multimodel(
         cfg,
         eio_wind_surface,
-        cmap_list=["cmo.delta", "BrBG", "RdPu"],
-        title=(
-            "Indian Ocean equatorial zonal wind (surface, 1000 hPa) "
-            "— monthly climatology"
-        ),
-        output_basename="lon_time_eio_wind_surface",
-        variable="ua",
-        lat_band=LAT_BAND_AVG,
-    )
-    plot_lon_time_multimodel(
-        cfg,
-        eio_wind_850,
-        cmap_list=["cmo.delta", "BrBG", "RdPu"],
-        title=(
-            "Indian Ocean equatorial zonal wind (850 hPa) "
-            "— monthly climatology"
-        ),
-        output_basename="lon_time_eio_wind_850",
-        variable="ua",
-        lat_band=LAT_BAND_AVG,
-    )
-    plot_lon_time_multimodel(
-        cfg,
-        eio_wind_200,
-        cmap_list=["cmo.delta", "BrBG", "RdPu"],
-        title=(
-            "Indian Ocean equatorial zonal wind (200 hPa) "
-            "— monthly climatology"
-        ),
-        output_basename="lon_time_eio_wind_200",
-        variable="ua",
-        lat_band=LAT_BAND_AVG,
+        {
+            "cmap_list": ["cmo.delta", "BrBG", "RdPu"],
+            "title": (
+                "Indian Ocean equatorial zonal wind (surface, 1000 hPa) "
+                "— monthly climatology"
+            ),
+            "output_basename": "lon_time_eio_wind_surface",
+            "variable": "ua",
+            "lat_band": LAT_BAND_AVG,
+        },
     )
     plot_lon_time_multimodel(
         cfg,
         eio_wind_shear,
-        cmap_list=["cmo.delta", "BrBG", "RdPu"],
-        title=(
-            "Indian Ocean equatorial zonal wind shear "
-            "(200 hPa - 850 hPa) — monthly climatology"
-        ),
-        output_basename="lon_time_eio_wind_shear",
-        variable="ua",
-        lat_band=LAT_BAND_AVG,
+        {
+            "cmap_list": ["cmo.delta", "BrBG", "RdPu"],
+            "title": (
+                "Indian Ocean equatorial zonal wind shear "
+                "(200 hPa - 850 hPa) — monthly climatology"
+            ),
+            "output_basename": "lon_time_eio_wind_shear",
+            "variable": "ua",
+            "lat_band": LAT_BAND_AVG,
+        },
     )
     plot_lon_time_multimodel(
         cfg,
         eio_sst_monthly,
-        cmap_list=["RdYlBu_r", "RdBu_r", "RdPu"],
-        title=(
-            "Indian Ocean equatorial SST "
-            "— monthly climatology"
-        ),
-        output_basename="lon_time_eio_sst",
-        variable="tos",
-        lat_band=LAT_BAND_AVG,
+        {
+            "cmap_list": ["RdYlBu_r", "RdBu_r", "RdPu"],
+            "title": ("Indian Ocean equatorial SST " "— monthly climatology"),
+            "output_basename": "lon_time_eio_sst",
+            "variable": "tos",
+            "lat_band": LAT_BAND_AVG,
+        },
     )
     plot_lon_time_multimodel(
         cfg,
         eio_t20d_monthly,
-        cmap_list=["cmo.deep", "cmo.tarn", "RdPu"],
-        title=(
-            "Indian Ocean equatorial 20°C isotherm depth "
-            "— monthly climatology"
-        ),
-        output_basename="lon_time_eio_t20d",
-        variable="t20d",
-        lat_band=LAT_BAND_AVG,
+        {
+            "cmap_list": ["cmo.deep", "cmo.tarn", "RdPu"],
+            "title": (
+                "Indian Ocean equatorial 20°C isotherm depth "
+                "— monthly climatology"
+            ),
+            "output_basename": "lon_time_eio_t20d",
+            "variable": "t20d",
+            "lat_band": LAT_BAND_AVG,
+        },
     )
     plot_lon_time_multimodel(
         cfg,
         eio_pr_monthly,
-        cmap_list=["cmo.rain", "BrBG", "RdPu"],
-        title=(
-            "Indian Ocean equatorial precipitation "
-            "— monthly climatology"
-        ),
-        output_basename="lon_time_eio_pr",
-        variable="pr",
-        bias_vlim=0.00008,
-        lat_band=LAT_BAND_AVG,
+        {
+            "cmap_list": ["cmo.rain", "BrBG", "RdPu"],
+            "title": (
+                "Indian Ocean equatorial precipitation "
+                "— monthly climatology"
+            ),
+            "output_basename": "lon_time_eio_pr",
+            "variable": "pr",
+            "bias_vlim": 0.00008,
+            "lat_band": LAT_BAND_AVG,
+        },
     )
 
     plot_map_multimodel(

@@ -39,7 +39,6 @@ def calculate_taylor_stats(model_cube, obs_cube):
     Returns a dictionary with keys 'correlation', 'stddev', 
     'std_obs', and 'rmse'.
     """
-
     model_data = np.asarray(model_cube.data, dtype=float).flatten()
     obs_data = np.asarray(obs_cube.data, dtype=float).flatten()
     valid_mask = (
@@ -148,84 +147,74 @@ def _get_available_seasons(obs_entries, model_entries):
     return sorted(seasons)
 
 
-def _plot_taylor_panel(
+def _plot_taylor_model_points(
     ax,
-    obs_entries,
+    obs_cube,
+    obs_name,
     model_entries,
+    model_colors,
     highlight_datasets,
-    panel_title,
     season_number=None,
 ):
-    """Plot one Taylor diagram panel on the provided axis."""
-    model_colors = plt.get_cmap("tab20")(
-        np.linspace(0, 1, len(model_entries))
-    )  # type: ignore[attr-defined]
-
+    """Plot model points and the reference observation point."""
     max_std_ratio = 1.2
     plotted_points = 0
 
-    for obs_name, obs_info in obs_entries.items():
-        obs_cube = obs_info["cube"]
+    for model_idx, (model_name, model_info) in enumerate(
+        model_entries.items()
+        ):
+        model_cube = model_info["cube"]
         if season_number is not None:
-            obs_cube = _slice_cube_for_season(obs_cube, season_number)
-        if obs_cube is None:
+            model_cube = _slice_cube_for_season(model_cube, season_number)
+        if model_cube is None:
             continue
 
-        for model_idx, (model_name, model_info) in enumerate(
-            model_entries.items()
-        ):
-            model_cube = model_info["cube"]
-            if season_number is not None:
-                model_cube = _slice_cube_for_season(model_cube, season_number)
-            if model_cube is None:
-                continue
+        stats = calculate_taylor_stats(model_cube, obs_cube)
+        corr = stats["correlation"]
+        obs_std = stats["std_obs"]
 
-            stats = calculate_taylor_stats(model_cube, obs_cube)
-            corr = stats["correlation"]
-            obs_std = stats["std_obs"]
+        if not np.isfinite(obs_std) or obs_std == 0 or not np.isfinite(corr):
+            continue
 
-            if (
-                not np.isfinite(obs_std)
-                or obs_std == 0
-                or not np.isfinite(corr)
-            ):
-                continue
+        corr = np.clip(corr, -1.0, 1.0)
+        if corr < 0.0:
+            continue
 
-            corr = np.clip(corr, -1.0, 1.0)
-            if corr < 0.0:
-                continue
+        std_ratio = stats["stddev"] / obs_std
+        if not np.isfinite(std_ratio):
+            continue
 
-            std_ratio = stats["stddev"] / obs_std
-            if not np.isfinite(std_ratio):
-                continue
-
-            theta = np.arccos(corr)
-            color = model_colors[model_idx % len(model_colors)]
-            marker = "o" if model_name not in highlight_datasets else "*"
-            ax.plot(
-                theta,
-                std_ratio,
-                linestyle="None",
-                marker=marker,
-                markersize=7,
-                color=color,
-                label=model_name,
-                alpha=0.85,
-            )
-            max_std_ratio = max(max_std_ratio, std_ratio)
-            plotted_points += 1
-
-        # Plot obs reference point at (corr=1, std_ratio=1).
+        theta = np.arccos(corr)
+        color = model_colors[model_idx % len(model_colors)]
+        marker = "o" if model_name not in highlight_datasets else "*"
         ax.plot(
-            0.0,
-            1.0,
+            theta,
+            std_ratio,
             linestyle="None",
-            marker="o",
-            markersize=10,
-            color="black",
-            label=f"{obs_name} reference",
+            marker=marker,
+            markersize=7,
+            color=color,
+            label=model_name,
+            alpha=0.85,
         )
+        max_std_ratio = max(max_std_ratio, std_ratio)
+        plotted_points += 1
 
+    # Plot obs reference point at (corr=1, std_ratio=1).
+    ax.plot(
+        0.0,
+        1.0,
+        linestyle="None",
+        marker="o",
+        markersize=10,
+        color="black",
+        label=f"{obs_name} reference",
+    )
+    return max_std_ratio, plotted_points
+
+
+def _decorate_taylor_panel(ax, max_std_ratio, panel_title, plotted_points):
+    """Apply axes, labels, ticks, and contours to a Taylor panel."""
     max_std_ratio *= 1.1
     ax.set_xlim(0, np.pi / 2)
     ax.set_rlim(0, min(max_std_ratio, 2.0))
@@ -273,6 +262,39 @@ def _plot_taylor_panel(
         ax.text(
             np.deg2rad(30), 0.9, "No valid points", ha="center", va="center"
         )
+
+
+def _plot_taylor_panel(
+    ax,
+    obs_entries,
+    model_entries,
+    highlight_datasets,
+    panel_title,
+    season_number=None,
+):
+    """Plot one Taylor diagram panel on the provided axis."""
+    model_colors = plt.get_cmap("tab20")(
+        np.linspace(0, 1, len(model_entries))
+    )  # type: ignore[attr-defined]
+
+    for obs_name, obs_info in obs_entries.items():
+        obs_cube = obs_info["cube"]
+        if season_number is not None:
+            obs_cube = _slice_cube_for_season(obs_cube, season_number)
+        if obs_cube is None:
+            continue
+
+        max_std_ratio, plotted_points = _plot_taylor_model_points(
+            ax,
+            obs_cube,
+            obs_name,
+            model_entries,
+            model_colors,
+            highlight_datasets,
+            season_number=season_number,
+        )
+
+    _decorate_taylor_panel(ax, max_std_ratio, panel_title, plotted_points)
 
     return max_std_ratio
 
@@ -461,7 +483,8 @@ def main(cfg):
         plot_taylor(
             cfg,
             plot_dict,
-            f"Indian Ocean Seasonal {var_key.upper()}",
+            rf"Indian Ocean Seasonal {var_key.upper()} "
+            r"10$^\circ$S-10$^\circ$N, 50$^\circ$E-110$^\circ$E",
             f"taylor_io_{var_key}_seas",
         )
 
@@ -469,7 +492,8 @@ def main(cfg):
         plot_taylor(
             cfg,
             plot_dict,
-            f"Indian Ocean Annual {var_key.upper()}",
+            rf"Indian Ocean Annual {var_key.upper()} "
+            r"10$^\circ$S-10$^\circ$N, 50$^\circ$E-110$^\circ$E",
             f"taylor_io_{var_key}_annual",
         )
 
