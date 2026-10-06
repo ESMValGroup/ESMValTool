@@ -291,7 +291,7 @@ def fetch_cube(dataset, variable, time_range, cfg):
 
     # The constraint will only limit data if data outside the period is available
     time_constraint = iris.Constraint(
-        time=lambda cell: int(start_year) <= cell.point.year <= int(end_year)
+        time=lambda cell: int(start_year) <= cell.point.year <= int(end_year),
     )
 
     # Load the cube using iris with the time constraint
@@ -809,7 +809,7 @@ def main(cfg):
     write_df_to_csv(filled, filename, cfg)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            f"{cfg['work_dir']}/{filename}",
+            f"{cfg['work_dir']}/{filename}.csv",
             get_provenance_record(cfg, "Annual (not decadal) figures"),
         )
 
