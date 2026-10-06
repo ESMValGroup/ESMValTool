@@ -330,7 +330,26 @@ def _plot_hovmoeller_set(
     month_abbrs = [calendar.month_abbr[m].upper() for m in month]
     y_tick_labels = [f"{month_abbrs[i]}{year[i]}" for i in y_ticks]
 
-    p_levels = _finite_levels(p_data, 21)
+    # Get suitable tick intervals for colorbar
+    p_min = float(np.nanmin(p_data))
+    p_max = float(np.nanmax(p_data))
+    target = max((p_max - p_min) / 9.0, 1e-9)
+    base = 10.0 ** np.floor(np.log10(target))
+    candidates = np.array([1, 2, 4, 5, 10]) * base
+    tick_step = int(
+        max(round(candidates[np.searchsorted(candidates, target)]), 1)
+    )
+
+    # colorbar starts and ends exactly on a tick.
+    cbar_min = np.floor(p_min / tick_step) * tick_step
+    cbar_max = np.ceil(p_max / tick_step) * tick_step
+    if cbar_max <= cbar_min:
+        cbar_max = cbar_min + tick_step
+
+    # Subdivide each tick interval to keep roughly 20 shading bands.
+    n_intervals = int(round((cbar_max - cbar_min) / tick_step))
+    subdiv = max(1, round(20 / n_intervals))
+    p_levels = np.linspace(cbar_min, cbar_max, n_intervals * subdiv + 1)
 
     # (filename token, panel title, data cube, clabel format)
     panels = [
@@ -387,7 +406,10 @@ def _plot_hovmoeller_set(
 
         cbar = fig.colorbar(cf, ax=ax, orientation="vertical", shrink=0.95)
         cbar.set_label("CPT pressure [hPa]", fontsize=16)
-        # cbar.set_ticks([80, 90, 100, 110, 120])
+        # cbar.ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_step))
+        cbar.set_ticks(
+            np.arange(cbar_min, cbar_max + tick_step / 2, tick_step)
+        )
         cbar.ax.tick_params(labelsize=12)
 
         caption = (
