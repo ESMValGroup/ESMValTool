@@ -176,17 +176,22 @@ def _compute_rhi_percent(
     temperature_k: np.ndarray,
     pressure_hpa: np.ndarray,
 ) -> np.ndarray:
+    # Molar mass ratio water vapour / dry air (R_d / R_v)
     eps = 0.622
-    pressure_pa = pressure_hpa * 100.0
+    pressure_pa = pressure_hpa * 100.0  # hPa -> Pa
     q = np.asarray(specific_humidity, dtype=float)
     t = np.asarray(temperature_k, dtype=float)
     p = np.asarray(pressure_pa, dtype=float)
 
+    # Vapour pressure [Pa] from specific humidity
     vapor_pressure = q * p / (eps + (1.0 - eps) * q)
+    # Saturation vapour pressure over ice [Pa]; empirical fit constants
+    # from Murphy and Koop (2005, QJRMS, eq. 7), valid for T > 110 K
     log_es_ice = (
         9.550426 - (5723.265 / t) + (3.53068 * np.log(t)) - (0.00728332 * t)
     )
     es_ice = np.exp(log_es_ice)
+    # Relative humidity over ice [%]
     rhi = 100.0 * vapor_pressure / es_ice
     rhi[~np.isfinite(rhi)] = np.nan
     return rhi
@@ -406,7 +411,6 @@ def _plot_hovmoeller_set(
 
         cbar = fig.colorbar(cf, ax=ax, orientation="vertical", shrink=0.95)
         cbar.set_label("CPT pressure [hPa]", fontsize=16)
-        # cbar.ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_step))
         cbar.set_ticks(
             np.arange(cbar_min, cbar_max + tick_step / 2, tick_step)
         )
