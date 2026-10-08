@@ -57,6 +57,17 @@ extensions = [
     "sphinx_llm.txt",
 ]
 
+# The markdown builder used by sphinx_llm does not support these node types,
+# they are left out of the llms.txt files.
+llms_txt_suppress_unknown_node_warnings = [
+    "abbreviation",
+    "admonition",
+    "caption",
+    "centered",
+    "classifier",
+    "legend",
+]
+
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
