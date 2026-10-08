@@ -37,11 +37,21 @@ User settings in recipe
 
    *Required settings for variables*
 
-   * tag: ``'model'`` or ``'observations'``, so the diagnostic script knows which datasets to use for the bias calculation. This must be specified for each dataset.
+   * reference_for_metric: ``true`` for the observational dataset that is used as reference for the bias calculation by the ``distance_metric`` preprocessor function.
 
    *Optional settings for preprocessor*
 
    * Region and time settings (both for the future and reference period) can be changed at will.
+
+   *Optional settings for script*
+
+   * alias_facets: mapping from facets to CSV column names, e.g.
+     ``{project: project, dataset: model, driver: driver, ensemble: member}``.
+     The values of these facets are joined to build a unique identifier for
+     each model run, which is written to the ``dataset`` column of the CSV
+     output file. The facet values are also written to the columns given in
+     the mapping, so ``dataset`` cannot be used as a column name. Default:
+     ``{project: project, dataset: model, ensemble: member}``.
 
 
 Variables

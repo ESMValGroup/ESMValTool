@@ -162,7 +162,7 @@ datasets:
   - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r8i1p1f2, grid: gn}
 
 observations: &observations
-  - {mip: Amon, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, tag: observations}
+  - {mip: Amon, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, reference_for_metric: true}
 
 preprocessors:
 
@@ -203,6 +203,13 @@ preprocessors:
       <<: *region
     extract_time:
       <<: *reference_period
+    regrid_time:
+      frequency: mon
+      calendar: standard
+    distance_metric:
+      metric: weighted_rmse
+      coords: [time, latitude, longitude]
+      keep_reference_dataset: false
 
 diagnostics:
   bias_and_change:
@@ -220,27 +227,23 @@ diagnostics:
       tas_change:
         short_name: tas
         mip: Amon
-        tag: model
-        timerange: '1981/2099'
+        timerange: '1986/2065'
         preprocessor: calculate_anomalies
       pr_change:
         short_name: pr
         mip: Amon
-        tag: model
-        timerange: '1981/2099'
+        timerange: '1986/2065'
         preprocessor: calculate_anomalies
       tas_bias:
         short_name: tas
         mip: Amon
-        tag: model
-        timerange: '1981/2010'
+        timerange: '1986/2015'
         preprocessor: prepare_for_bias_calculation
         additional_datasets: *observations
       pr_bias:
         short_name: pr
         mip: Amon
-        tag: model
-        timerange: '1981/2010'
+        timerange: '1986/2015'
         preprocessor: prepare_for_bias_calculation
         additional_datasets: *observations
 

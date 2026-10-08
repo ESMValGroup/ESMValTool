@@ -1,0 +1,131 @@
+# ESMValTool
+# recipe_impact.yml
+---
+documentation:
+  title: Quick insight for climate impact researchers
+  description: >
+    This recipe provides quick insight into the spread and performance of multiple models.
+
+    Many impact researchers do not have the time and finances to use a large
+    ensemble of climate model runs for their impact analysis. To get an idea of
+    the range of impacts of climate change it also suffices to use a small
+    number of climate model runs. In case a system is only sensitive to annual
+    temperature, one can select a run with a high change and one with a low
+    change of annual temperature, preferably both with a low bias.
+
+    Results of this recipe can be viewed interactively at
+    https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact-cordex-cmip6/.
+
+    Notes:
+
+    - Bias is calcated with respect to the ERA5 reanalysis dataset over the period 1981-2015.
+    - Future change is calculated for 2036-2065 as compared to 1986-2015.
+    - Domain is set to Europe (EUR-12 CORDEX domain).
+    - All data are taken from the SSP 8.5 scenario.
+
+  authors:
+    - kalverla_peter
+    - andela_bouwe
+  maintainer:
+    - andela_bouwe
+  project:
+    - eso4clima
+    - isenes3
+
+datasets:
+  - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: NorESM2-MM, ensemble: r1i1p1f1, institute: CNRM-MF}
+  - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: CNRM-ESM2-1, ensemble: r1i1p1f2, institute: CLMcom-BTU}
+  - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: EC-Earth3-Veg, ensemble: r1i1p1f1, institute: CLMcom-Hereon}
+  - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MIROC6, ensemble: r1i1p1f1, institute: CLMcom-KIT}
+  - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MPI-ESM1-2-HR, ensemble: r1i1p1f1, institute: CLMcom-DWD}
+
+preprocessors:
+
+  calculate_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &reference_period
+        start_year: 1986
+        start_month: 1
+        start_day: 1
+        end_year: 2015
+        end_month: 12
+        end_day: 31
+      standardize: false
+    extract_time:  # Future period
+      start_year: 2035
+      start_month: 1
+      start_day: 1
+      end_year: 2065
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+
+  calculate_bias:
+    regrid:
+      scheme: linear
+      target_grid: EUR-12
+    extract_time:
+      <<: *reference_period
+    regrid_time:
+      frequency: mon
+      calendar: standard
+    distance_metric:
+      metric: weighted_rmse
+      coords: [time, latitude, longitude]
+      keep_reference_dataset: false
+
+diagnostics:
+  bias_and_change:
+    description: >
+      Provide quick insights into the behaviour of each model by plotting the
+      bias with respect to observations and change with respect to the reference
+      period.
+
+    themes:
+      - phys
+    realms:
+      - atmos
+
+    variables:
+      tas_change: &change
+        short_name: tas
+        domain: EUR-12
+        exp: [historical, ssp585]
+        mip: mon
+        project: CORDEX-CMIP6
+        timerange: '1986/2065'
+        preprocessor: calculate_anomalies
+        supplementary_variables:
+          - {short_name: areacella, mip: fx, exp: historical}
+      pr_change:
+        <<: *change
+        short_name: pr
+      tas_bias: &bias
+        short_name: tas
+        domain: EUR-12
+        exp: [historical, ssp585]
+        mip: mon
+        project: CORDEX-CMIP6
+        timerange: '1986/2015'
+        preprocessor: calculate_bias
+        additional_datasets:
+          - {dataset: ERA-5, mip: Amon, project: obs4MIPs, reference_for_metric: true}
+      pr_bias:
+        <<: *bias
+        short_name: pr
+        additional_datasets:
+          - {dataset: ERA5, mip: Amon, project: native6, type: reanaly, version: v1, tier: 3, reference_for_metric: true}
+
+    scripts:
+      visualize:
+        script: impact/bias_and_change.py
+        alias_facets:
+          dataset: model
+          rcm_version: version_realization
+          driver: driver
+          ensemble: member
