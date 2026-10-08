@@ -16,7 +16,6 @@ alias_facets: dict, optional
 from __future__ import annotations
 
 import logging
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +34,16 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 logger = logging.getLogger(Path(__file__).stem)
+
+VARIABLE_LABELS = {
+    "tas": "Temperature (K)",
+    "pr": "Precipitation (kg/m2/s)",
+}
+
+METRIC_LABELS = {
+    "bias": "Bias (RMSD of all gridpoints)",
+    "change": "Mean change (Future - Reference)",
+}
 
 type DiagnosticConfig = dict[str, Any]
 """Diagnostic script configuration."""
@@ -65,23 +74,6 @@ def log_provenance(
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance)
-
-
-def make_standard_calendar(xrda: xr.DataArray) -> None:
-    """Make sure time coordinate uses the default calendar.
-
-    Workaround for incompatible calendars 'standard' and 'no-leap'.
-    Assumes yearly data.
-    """
-    try:
-        years = xrda.time.dt.year.values
-        xrda["time"] = [datetime(year, 7, 1) for year in years]
-    except TypeError:
-        # Time dimension is 0-d array
-        pass
-    except AttributeError:
-        # Time dimension does not exist
-        pass
 
 
 def load_data(
@@ -118,7 +110,6 @@ def load_data(
         xrda = xrds[short_name]
 
         # Make sure datasets can be combined
-        make_standard_calendar(xrda)
         redundant_dims = np.setdiff1d(xrda.coords, xrda.dims)
         xrda = xrda.drop_vars(redundant_dims)
 
@@ -130,7 +121,7 @@ def load_data(
     data_array = xr.concat(data_arrays, dim="dataset")
     if len(set(identifiers)) != len(identifiers):
         duplicates = sorted(
-            {i for i in identifiers if identifiers.count(i) > 1}
+            {i for i in identifiers if identifiers.count(i) > 1},
         )
         msg = (
             f"Datasets {duplicates} are not uniquely identified by facets "
@@ -151,11 +142,11 @@ def plot_scatter(
     """Plot bias on one axis and change on the other."""
     grid = sns.relplot(
         data=tidy_df,
-        x="Bias (RMSD of all gridpoints)",
-        y="Mean change (Future - Reference)",
+        x=METRIC_LABELS["bias"],
+        y=METRIC_LABELS["change"],
         hue="dataset",
         col="variable",
-        facet_kws=dict(sharex=False, sharey=False),
+        facet_kws={"sharex": False, "sharey": False},
         kind="scatter",
     )
 
@@ -190,7 +181,7 @@ def plot_table(
         colLabels=dataframe.columns,
         loc="center",
     )
-    table.auto_set_font_size(False)
+    table.auto_set_font_size(value=False)
     table.set_fontsize(10)
     table.auto_set_column_width(range(len(dataframe.columns)))
     table.scale(1, 1.5)
@@ -218,7 +209,8 @@ def plot_htmltable(
     ]
 
     styled_table = (
-        dataframe.unstack("variable")
+        dataframe.pivot_table(index="dataset", columns="variable")
+        .reindex(columns=VARIABLE_LABELS.values(), level="variable")
         .style.set_table_styles(styles)
         .background_gradient(cmap="RdYlGn", low=0, high=1, axis=0)
         .format("{:.2e}", na_rep="-")
@@ -226,8 +218,7 @@ def plot_htmltable(
     )
 
     filename = get_diagnostic_filename("bias_vs_change", cfg, extension="html")
-    with open(filename, "w") as htmloutput:
-        htmloutput.write(styled_table)
+    Path(filename).write_text(styled_table, encoding="utf-8")
 
     caption = "Bias and change for each variable"
     log_provenance(filename, ancestors, caption, cfg)
@@ -235,14 +226,18 @@ def plot_htmltable(
 
 def make_tidy(dataset: xr.Dataset) -> pd.DataFrame:
     """Convert xarray data to tidy dataframe."""
-    dataframe = dataset.rename(
-        tas="Temperature (K)",
-        pr="Precipitation (kg/m2/s)",
-    ).to_dataframe()
-    dataframe.columns.name = "variable"
-    tidy_df = dataframe.stack("variable").unstack("metric")
-
-    return tidy_df
+    return (
+        dataset.rename(VARIABLE_LABELS)
+        .to_dataframe()
+        .reset_index()
+        .melt(id_vars=["metric", "dataset"], var_name="variable")
+        .pivot_table(
+            index=["dataset", "variable"],
+            columns="metric",
+            values="value",
+        )
+        .reindex(VARIABLE_LABELS.values(), level="variable")
+    )
 
 
 def save_csv(
@@ -252,9 +247,15 @@ def save_csv(
     cfg: DiagnosticConfig,
 ) -> None:
     """Save output for use in Climate4Impact preview page."""
-    # modify dataframe columns
-    dataframe = dataframe.unstack("variable")
-    dataframe.columns = ["tas_bias", "pr_bias", "tas_change", "pr_change"]
+    # one column per variable and metric, e.g. tas_bias
+    dataframe = dataframe.pivot_table(index="dataset", columns="variable")
+    short_names = {label: name for name, label in VARIABLE_LABELS.items()}
+    metric_names = {label: name for name, label in METRIC_LABELS.items()}
+    dataframe.columns = [
+        f"{short_names[variable]}_{metric_names[metric]}"
+        for metric, variable in dataframe.columns
+    ]
+    dataframe = dataframe[["tas_bias", "pr_bias", "tas_change", "pr_change"]]
 
     # metadata in separate columns
     dataframe = dataframe.join(pd.DataFrame.from_dict(facets, orient="index"))
@@ -316,10 +317,7 @@ def main(cfg: DiagnosticConfig) -> None:
     bias = xr.Dataset(biases)
     change = xr.Dataset(changes)
     combined = xr.concat([bias, change], dim="metric")
-    combined["metric"] = [
-        "Bias (RMSD of all gridpoints)",
-        "Mean change (Future - Reference)",
-    ]
+    combined["metric"] = [METRIC_LABELS["bias"], METRIC_LABELS["change"]]
 
     tidy_df = make_tidy(combined)
     plot_scatter(tidy_df, ancestors, cfg)
