@@ -17,6 +17,14 @@ This recipe calculates the bias with respect to observations, and the change
 with respect to a reference period, for a wide range of (CMIP) models. These
 metrics are tabulated and also visualized in a diagram.
 
+For each project in the input data, the diagnostic also writes a
+`Vega-Lite <https://vega.github.io/vega-lite/>`__ specification
+``vegalite_spec_<project>.json`` with the results embedded. These are used by
+the `interactive viewer <https://github.com/ESMValGroup/C4I-Integration>`__
+hosted at https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact/.
+The specifications also record the name of the recipe output directory, so the
+viewer can link to the ``index.html`` of the recipe run that produced the data.
+
 
 Available recipes and diagnostics
 ---------------------------------
@@ -53,6 +61,9 @@ User settings in recipe
      output file. The facet values are also written to the columns given in
      the mapping, so ``dataset`` cannot be used as a column name. Default:
      ``{project: project, dataset: model, ensemble: member}``.
+   * notes: list of notes describing how the results were computed, e.g. the
+     reference dataset and periods. These are stored in the Vega-Lite
+     specifications and shown as bullet points by the interactive viewer.
 
 
 Variables

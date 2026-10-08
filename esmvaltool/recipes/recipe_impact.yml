@@ -18,8 +18,8 @@ documentation:
 
     Notes:
 
-    - Bias is calcated with respect to the ERA5 reanalysis dataset over the period 1981-2015.
-    - Future change is calculated for 2036-2065 as compared to 1986-2015.
+    - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
+    - Future change is calculated for 2035-2065 as compared to 1986-2015.
     - Area is set to Europe (lon 0-39; lat 30-76.25)
     - All data are taken from the RCP/SSP 8.5 scenario
 
@@ -250,3 +250,8 @@ diagnostics:
     scripts:
       visualize:
         script: impact/bias_and_change.py
+        notes:
+          - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
+          - Future change is calculated for 2035-2065 as compared to 1986-2015.
+          - Area is set to Europe (lon 0-39; lat 30-76.25).
+          - All data are taken from the RCP8.5 (CMIP5) or SSP5-8.5 (CMIP6) scenario.

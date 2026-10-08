@@ -14,12 +14,12 @@ documentation:
     change of annual temperature, preferably both with a low bias.
 
     Results of this recipe can be viewed interactively at
-    https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact-cordex-cmip6/.
+    https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact/.
 
     Notes:
 
-    - Bias is calcated with respect to the ERA5 reanalysis dataset over the period 1981-2015.
-    - Future change is calculated for 2036-2065 as compared to 1986-2015.
+    - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
+    - Future change is calculated for 2035-2065 as compared to 1986-2015.
     - Domain is set to Europe (EUR-12 CORDEX domain).
     - All data are taken from the SSP 8.5 scenario.
 
@@ -124,6 +124,11 @@ diagnostics:
     scripts:
       visualize:
         script: impact/bias_and_change.py
+        notes:
+          - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
+          - Future change is calculated for 2035-2065 as compared to 1986-2015.
+          - Domain is set to Europe (EUR-12 CORDEX domain).
+          - All data are taken from the SSP5-8.5 scenario.
         alias_facets:
           dataset: model
           rcm_version: version_realization

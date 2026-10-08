@@ -11,10 +11,25 @@ alias_facets: dict, optional
     Datasets that lack any of these facets (e.g. observations) are identified
     by their ``alias``. By default,
     ``{project: project, dataset: model, ensemble: member}``.
+notes: list[str], optional
+    Notes describing how the results were computed, e.g. the reference
+    dataset and periods. These are stored in the Vega-Lite specification
+    and shown as bullet points by the interactive viewer.
+
+Output
+------
+Besides the figures and tables, the script writes a CSV file with the bias
+and change of each model run and, for each project in the input data, a
+Vega-Lite specification ``vegalite_spec_<project>.json`` with the data
+embedded. These specifications are used by the interactive viewer at
+https://github.com/ESMValGroup/C4I-Integration. They also record the name of
+the recipe output directory, so the viewer can link to the ``index.html`` of
+the recipe run that produced the data.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import Any
@@ -43,6 +58,11 @@ VARIABLE_LABELS = {
 METRIC_LABELS = {
     "bias": "Bias (RMSD of all gridpoints)",
     "change": "Mean change (Future - Reference)",
+}
+
+VEGALITE_TITLES = {
+    "tas": "Temperature (K)",
+    "pr": "Precipitation (mm/day)",
 }
 
 type DiagnosticConfig = dict[str, Any]
@@ -103,6 +123,9 @@ def load_data(
             }
         else:
             alias = infodict["alias"]
+            facets[alias] = {}
+        # The project is always needed to split the output per project
+        facets[alias].setdefault("project", infodict["project"])
         input_file = infodict["filename"]
         short_name = infodict["short_name"]
 
@@ -240,13 +263,11 @@ def make_tidy(dataset: xr.Dataset) -> pd.DataFrame:
     )
 
 
-def save_csv(
+def make_wide(
     dataframe: pd.DataFrame,
     facets: FacetMapping,
-    ancestors: list[str],
-    cfg: DiagnosticConfig,
-) -> None:
-    """Save output for use in Climate4Impact preview page."""
+) -> pd.DataFrame:
+    """Convert tidy dataframe to one row per dataset with facets as columns."""
     # one column per variable and metric, e.g. tas_bias
     dataframe = dataframe.pivot_table(index="dataset", columns="variable")
     short_names = {label: name for name, label in VARIABLE_LABELS.items()}
@@ -263,11 +284,171 @@ def save_csv(
     # kg/m2/s to mm/day
     dataframe[["pr_bias", "pr_change"]] *= 24 * 60 * 60
 
-    # save
+    return dataframe
+
+
+def save_csv(
+    dataframe: pd.DataFrame,
+    ancestors: list[str],
+    cfg: DiagnosticConfig,
+) -> None:
+    """Save output for use in Climate4Impact preview page."""
     filename = get_diagnostic_filename("recipe_output", cfg, extension="csv")
     caption = "Bias and change for each variable"
     dataframe.to_csv(filename)
     log_provenance(filename, ancestors, caption, cfg)
+
+
+def build_vegalite_spec(
+    dataframe: pd.DataFrame,
+    project: str,
+    alias_facets: dict[str, str],
+    notes: list[str],
+    recipe_output: str,
+) -> dict[str, Any]:
+    """Build a Vega-Lite specification for the Climate4Impact viewer.
+
+    ``dataframe`` is the output of :func:`make_wide` for a single project.
+    The data is embedded in the specification, so it can be used without
+    any other files. ``recipe_output`` is the name of the recipe output
+    directory.
+    """
+    color_field = alias_facets.get("dataset", "dataset")
+    facet_columns = list(dict.fromkeys([*alias_facets.values(), "project"]))
+
+    def scatter(variable: str) -> dict[str, Any]:
+        """Plot the bias versus the change for a single variable."""
+        return {
+            "title": VEGALITE_TITLES[variable],
+            "mark": {"type": "circle", "size": 150},
+            "encoding": {
+                "x": {
+                    "field": f"{variable}_bias",
+                    "type": "quantitative",
+                    "title": METRIC_LABELS["bias"],
+                    "scale": {"zero": False},
+                },
+                "y": {
+                    "field": f"{variable}_change",
+                    "type": "quantitative",
+                    "title": METRIC_LABELS["change"],
+                    "scale": {"zero": False},
+                },
+                "fill": {
+                    "condition": {
+                        "param": "brush",
+                        "field": color_field,
+                        "type": "nominal",
+                    },
+                    "value": "lightgray",
+                },
+                "stroke": {
+                    "condition": {
+                        "param": "query",
+                        "value": "black",
+                        "empty": False,
+                    },
+                    "value": "transparent",
+                },
+                "tooltip": [
+                    {"field": column, "type": "nominal"}
+                    for column in ["dataset", *facet_columns]
+                ]
+                + [
+                    {
+                        "field": f"{variable}_{metric}",
+                        "type": "quantitative",
+                        "title": metric,
+                        "format": ".3g",
+                    }
+                    for metric in ("bias", "change")
+                ],
+            },
+        }
+
+    return {
+        "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+        "description": f"{project} data processed with ESMValTool.",
+        "usermeta": {
+            "project": project,
+            "notes": notes,
+            "recipe_output": recipe_output,
+        },
+        "data": {
+            "values": json.loads(
+                dataframe.reset_index().to_json(orient="records"),
+            ),
+        },
+        "config": {
+            "view": {"continuousWidth": 400, "continuousHeight": 300},
+            "legend": {"disable": True},
+        },
+        "params": [
+            {
+                # Hold alt to select a range
+                "name": "brush",
+                "select": {
+                    "type": "interval",
+                    "on": "[pointerdown[event.altKey], pointerup] > pointermove",
+                    "translate": (
+                        "[pointerdown[event.altKey], pointerup] > pointermove"
+                    ),
+                    "zoom": "wheel![event.altKey]",
+                },
+            },
+            {
+                # Hold ctrl to pan and zoom
+                "name": "panzoom",
+                "select": {
+                    "type": "interval",
+                    "on": "[pointerdown[event.ctrlKey], pointerup] > pointermove",
+                    "translate": (
+                        "[pointerdown[event.ctrlKey], pointerup] > pointermove!"
+                    ),
+                    "zoom": "wheel![event.ctrlKey]",
+                },
+                "bind": "scales",
+            },
+            {
+                # Click to select, hold shift to select multiple
+                "name": "query",
+                "select": {
+                    "type": "point",
+                    "fields": ["dataset"],
+                    "clear": "dblclick",
+                },
+            },
+        ],
+        "hconcat": [scatter("tas"), scatter("pr")],
+    }
+
+
+def save_vegalite_specs(
+    dataframe: pd.DataFrame,
+    alias_facets: dict[str, str],
+    notes: list[str],
+    ancestors: list[str],
+    cfg: DiagnosticConfig,
+) -> None:
+    """Save a Vega-Lite specification for each project."""
+    # work_dir is <recipe output directory>/work/<diagnostic>/<script>
+    recipe_output = Path(cfg["work_dir"]).parents[2].name
+    for project, project_df in dataframe.groupby("project"):
+        spec = build_vegalite_spec(
+            project_df,
+            project,
+            alias_facets,
+            notes,
+            recipe_output,
+        )
+        filename = get_diagnostic_filename(
+            f"vegalite_spec_{project}",
+            cfg,
+            extension="json",
+        )
+        Path(filename).write_text(json.dumps(spec, indent=2), encoding="utf-8")
+        caption = f"Interactive plot of bias and change for {project}"
+        log_provenance(filename, ancestors, caption, cfg)
 
 
 def main(cfg: DiagnosticConfig) -> None:
@@ -323,7 +504,15 @@ def main(cfg: DiagnosticConfig) -> None:
     plot_scatter(tidy_df, ancestors, cfg)
     plot_table(tidy_df, ancestors, cfg)
     plot_htmltable(tidy_df, ancestors, cfg)
-    save_csv(tidy_df, facets, ancestors, cfg)
+    wide_df = make_wide(tidy_df, facets)
+    save_csv(wide_df, ancestors, cfg)
+    save_vegalite_specs(
+        wide_df,
+        alias_facets,
+        cfg.get("notes", []),
+        ancestors,
+        cfg,
+    )
 
 
 if __name__ == "__main__":
