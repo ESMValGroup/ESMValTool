@@ -54,6 +54,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "autodocsumm",
     "sphinx_design",
+    "sphinx_llm.txt",
 ]
 
 autodoc_default_options = {
