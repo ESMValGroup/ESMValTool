@@ -90,7 +90,6 @@ datasets:
   - {dataset: IPSL-CM6A-LR, ensemble: r14i1p1f1, grid: gr}
   - {dataset: IPSL-CM6A-LR, ensemble: r33i1p1f1, grid: gr}
   - {dataset: KACE-1-0-G, ensemble: r(1:3)i1p1f1, grid: gr}
-  - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1}
   - {dataset: MCM-UA-1-0, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r(1:10)i1p1f2, grid: gn}
   - {dataset: MIROC6, ensemble: r(1:50)i1p1f1, grid: gn}
