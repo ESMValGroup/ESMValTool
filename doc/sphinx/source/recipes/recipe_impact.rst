@@ -17,13 +17,22 @@ This recipe calculates the bias with respect to observations, and the change
 with respect to a reference period, for a wide range of (CMIP) models. These
 metrics are tabulated and also visualized in a diagram.
 
+For each project in the input data, the diagnostic also writes a
+`Vega-Lite <https://vega.github.io/vega-lite/>`__ specification
+``vegalite_spec_<project>.json`` with the results embedded. These are used by
+the `interactive viewer <https://github.com/ESMValGroup/C4I-Integration>`__
+hosted at https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact/.
+The specifications also record the name of the recipe output directory, so the
+viewer can link to the ``index.html`` of the recipe run that produced the data.
+
 
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_impact.yml
+    * recipe_impact_cmip6.yml
+    * recipe_impact_cordex-cmip6.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
@@ -37,11 +46,28 @@ User settings in recipe
 
    *Required settings for variables*
 
-   * tag: ``'model'`` or ``'observations'``, so the diagnostic script knows which datasets to use for the bias calculation. This must be specified for each dataset.
+   * reference_for_metric: ``true`` for the observational dataset that is used as reference for the bias calculation by the ``distance_metric`` preprocessor function.
 
    *Optional settings for preprocessor*
 
    * Region and time settings (both for the future and reference period) can be changed at will.
+
+   *Optional settings for script*
+
+   * alias_facets: mapping from facets to CSV column names, e.g.
+     ``{project: project, dataset: model, driver: driver, ensemble: member}``.
+     The values of these facets are joined to build a unique identifier for
+     each model run, which is written to the ``dataset`` column of the CSV
+     output file. The facet values are also written to the columns given in
+     the mapping, so ``dataset`` cannot be used as a column name. Default:
+     ``{project: project, dataset: model, ensemble: member}``.
+   * notes: list of notes describing how the results were computed, e.g. the
+     reference dataset and periods. These are stored in the Vega-Lite
+     specifications and shown as bullet points by the interactive viewer.
+   * axis_titles: titles of the ``bias`` and ``change`` axes in the
+     Vega-Lite specifications, e.g.
+     ``{bias: Bias with respect to ERA5 (1986-2015)}``. By default, the same
+     titles as in the other plots are used.
 
 
 Variables
