@@ -67,13 +67,13 @@ Example plots
 .. figure::  /recipes/figures/examples/map.png
    :align:   center
 
-   Air temperature in January 2000 (BCC-ESM1 CMIP6).
+   Air temperature in January 2000 (CanESM6-0-MR).
 
 .. _timeseries:
 .. figure::  /recipes/figures/examples/timeseries.png
    :align:   center
 
-   Amsterdam air temperature (multimodel mean of CMIP5 CanESM2 and CMIP6 BCC-ESM1).
+   Amsterdam air temperature (multimodel mean of CMIP6 BCC-ESM1 and CMIP7 CanESM6-0-MR).
 
 .. _easy_ipcc:
 .. figure:: /recipes/figures/examples/IPCC_AR6_figure_9.3a_1850-2100.png
