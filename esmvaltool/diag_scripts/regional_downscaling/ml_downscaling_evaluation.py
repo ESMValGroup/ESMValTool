@@ -361,7 +361,7 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, extent, cfg,
     show_pct = [False]
     is_coarse = [False]  # Track which metrics are on coarse grid
     
-    # Add relative bias for pr if enabled. R2-Fig7: the original
+    # Add relative bias for pr if enabled. the original
     # [-0.5, +0.5] range saturated for OOD regions where the wet bias
     # reaches ~50% (e.g. AFM-baseline over Northern Europe, 49.9%).
     # Widen to [-1.0, +1.0] so that ±100% biases remain visible without
@@ -721,7 +721,7 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
     # Get variable units
     var_units = UNITS[var_name]
 
-    # R2-SI1: zero-frequency bins are clipped to a fixed floor
+    # zero-frequency bins are clipped to a fixed floor
     # so that the log10 plot does not abruptly truncate. The floor is
     # log10(1 / N_total) — i.e. the smallest non-zero density resolvable
     # with the available sample count. The plotted line therefore drops
@@ -764,7 +764,7 @@ def plot_log_pdf(truth, preds_methods, method_names, var_name, cfg):
             label=method, linestyle='--', lw=3.5, color=color
         )
 
-    # R2-SI1: floor reference line, with explicit caption text in legend.
+    # floor reference line, with explicit caption text in legend.
     ax.axhline(
         floor_log, color="#888888", linestyle=":", linewidth=1.5,
         label=f"Resolution floor (log10[1/(N·Δ)] ≈ {floor_log:.1f})",

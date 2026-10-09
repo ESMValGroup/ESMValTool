@@ -264,7 +264,7 @@ def create_combined_panel(plot_files, var_name, cfg, reference_ar=None):
             bottom_aspects.append(img.shape[1] / img.shape[0])
 
         # Optionally widen the rank-histogram panel (D) so the per-model
-        # histograms are larger and more legible (R2-Fig4-7-10). The aspect
+        # histograms are larger and more legible. The aspect
         # used to size the row height (h_b) is kept at the true image aspect,
         # so panel D itself is not distorted; only its share of the row width
         # grows. Default 1.0 leaves all other recipes unchanged.

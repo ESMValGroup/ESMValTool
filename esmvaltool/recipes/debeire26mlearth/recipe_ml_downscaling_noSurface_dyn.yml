@@ -1,8 +1,8 @@
 # ESMValTool
 # recipe_ml_downscaling_noSurface_dyn.yml
 #
-# Pressure-level-only PC-AFM ablation (revision 1, comment R1-D1 / R1-D2).
-# Middle-ground perfect-prognosis variant (E-T3c / E-T3d): drops only the
+# Partial perfect-prognosis PC-AFM ablation.
+# Middle-ground perfect-prognosis variant: drops only the
 # bias-prone surface inputs (pr, huss, rlds, rlus, rsds, rsus) and KEEPS the
 # well-projected dynamical fields (tas, uas, vas, ps) + 24 pressure-level +
 # 3 static = 31 channels; the conservation loss is unchanged.
@@ -13,10 +13,10 @@
 documentation:
   description: |
     Middle-ground perfect-prognosis PC-AFM: PCAFM-noSURF-dyn vs AFM-baseline /
-    PCAFM / AFM-noSURF-dyn over CE, IBE, SCA. Addresses R1-D1 / R1-D2.
+    PCAFM / AFM-noSURF-dyn over CE, IBE, SCA.
   authors:
     - debeire_kevin
-  title: noSURF-dyn (middle-ground) ablation (revision 1)
+  title: noSURF-dyn (middle-ground) ablation
   maintainer:
     - debeire_kevin
 
@@ -219,8 +219,8 @@ _script_opts:
   # 2x2 ablation cell methods:
   #   AFM-baseline      : surfaces in,  no conservation        (production baseline)
   #   PCAFM             : surfaces in,  with conservation      (production method)
-  #   AFM-noSURF-dyn     : dyn-surfaces only, no conservation   (RCM-emulator baseline, E-T3d)
-  #   PCAFM-noSURF-dyn   : dyn-surfaces only, with conservation (E-T3c)
+  #   AFM-noSURF-dyn     : dyn-surfaces only, no conservation   (RCM-emulator baseline)
+  #   PCAFM-noSURF-dyn   : dyn-surfaces only, with conservation
   ml_methods: &_ml ["AFM-baseline", "PCAFM", "AFM-noSURF-dyn", "PCAFM-noSURF-dyn"]
 
 diagnostics:

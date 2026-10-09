@@ -17,9 +17,9 @@
 #    IBE   | HIGHRES-REF-Iberia       | -Iberia         | lon -15..3, lat 24..42 | false
 #    SCA   | HIGHRES-REF-Scandinavia  | -Scandinavia    | (none)            | true
 #
-# The qmae_cross_region_6M block at the bottom is new: it takes the three
-# per-region quantileMAE_6M_* runs as ancestors and writes the merged
-# cross-region QMAE table (one of the reviewers' requests).
+# The qmae_cross_region_6M block at the bottom takes the three per-region
+# quantileMAE_6M_* runs as ancestors and writes the merged cross-region
+# QMAE table.
 ---
 documentation:
   description: |
@@ -490,7 +490,7 @@ diagnostics:
         region_name: "Northern Europe region (unseen during training)"
 
   # =========================================================================
-  # ===== CROSS-REGION QMAE SUMMARY (reviewer request) ======================
+  # ===== CROSS-REGION QMAE SUMMARY ========================================
   # =========================================================================
   qmae_cross_region_6M:
     description: "Merged QMAE table across CE + IBE + SCA"

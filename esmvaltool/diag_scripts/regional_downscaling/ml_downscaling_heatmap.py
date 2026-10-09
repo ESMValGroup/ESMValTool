@@ -126,8 +126,7 @@ def _build_colormap():
 
     Blue (improvement) → white (neutral) → orange (degradation), inspired by
     ColorBrewer "RdBu" but with the orange chosen to remain distinguishable
-    under deuteranopia/protanopia. This replaces the previous green/red palette
-    in response to reviewer R2-Fig3 (revision 1)."""
+    under deuteranopia/protanopia."""
     colors_below = [
         (0.0, "#053061"), (0.3, "#2166ac"),
         (0.7, "#92c5de"), (1.0, "#f7f7f7"),
@@ -201,7 +200,7 @@ def _draw_cells(ax, aug_data, row_labels, col_labels,
                 fc = rgba
                 lum = 0.299 * rgba[0] + 0.587 * rgba[1] + 0.114 * rgba[2]
                 text_color = "#1a1a1a" if lum > 0.55 else "white"
-                # R2-SI2: annotate cells whose numerical value exceeds the
+                # annotate cells whose numerical value exceeds the
                 # colorbar range so the reader can see e.g. 2.01 explicitly
                 # instead of just the saturated colour.
                 off_scale = (val > vmax + 1e-9) or (val < vmin - 1e-9)

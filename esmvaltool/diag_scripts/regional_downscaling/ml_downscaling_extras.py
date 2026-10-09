@@ -1,7 +1,7 @@
-"""ML-based downscaling — extra diagnostics for the revision 1 response.
+"""ML-based downscaling — extra diagnostics.
 
-This diagnostic implements the additional figures requested by the reviewers
-that are not already covered by ``ml_downscaling_evaluation.py``. It is
+This diagnostic implements the additional figures that are not already
+covered by ``ml_downscaling_evaluation.py``. It is
 dispatched on ``cfg['analysis_type']``; the same script handles all of:
 
   * ``climatology``                — time-mean spatial maps for each variable
@@ -26,7 +26,7 @@ dispatched on ``cfg['analysis_type']``; the same script handles all of:
   * ``quantile_mae_table``         — absolute Quantile-MAE values for the
                                       baseline reference (AFM-baseline-2M),
                                       to accompany the existing relative
-                                      heatmaps (R2-SI4).
+                                      heatmaps.
 
 The diagnostic re-uses the data-loading utilities of
 ``ml_downscaling_evaluation.py`` where possible.
@@ -933,7 +933,7 @@ def plot_case_study(grouped_data, reference_name, ml_methods, cfg):
 
 
 # ---------------------------------------------------------------------------
-# 10. Absolute Quantile-MAE table (R2-SI4)
+# 10. Absolute Quantile-MAE table
 # ---------------------------------------------------------------------------
 
 
@@ -957,7 +957,7 @@ def write_absolute_qmae_table(cfg):
 
 
 # ---------------------------------------------------------------------------
-# 11. Per-pixel Quantile-MAE spatial map (R1-M2(e))
+# 11. Per-pixel Quantile-MAE spatial map
 # ---------------------------------------------------------------------------
 
 

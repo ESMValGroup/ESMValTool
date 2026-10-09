@@ -1,16 +1,14 @@
 # ESMValTool
 # recipe_ml_downscaling_pareto.yml
 ---
-# Pareto front of conservation error vs. generative fidelity (reviewer M6).
+# Pareto front of conservation error vs. generative fidelity.
 #
 # This recipe is deliberately cheap: it does NOT re-run the evaluation
-# diagnostics.  It reads the `comprehensive_metrics_summary.csv` files already
-# written by the completed per-region ablation runs and plots the trade-off.
-#
-# Fill in the three paths under `external_metrics_csv` with the work_dir of the
-# `spatial_metrics` diagnostic from each finished ablation run, e.g.
-#   <output>/recipe_ml_downscaling_evaluation_ablation_YYYYMMDD_HHMMSS/work/
-#       downscaling_evaluation_6M/spatial_metrics/comprehensive_metrics_summary.csv
+# diagnostics.  It reads the merged per-region metrics of the completed
+# ablation runs and plots the trade-off.  The merged metrics used in the paper
+# are archived in the paper repository (debeire26MLEarth_PCAFM), under
+# data/metrics_archive/<Region>/metrics_merged.csv; set the three paths under
+# `external_metrics_csv` to your copy of them.
 #
 # To wire this into a full run instead (provenance-tracked, but requires the
 # evaluation diagnostics to run), drop `external_metrics_csv` and use the
@@ -20,7 +18,7 @@ documentation:
   description: |
     Pareto-front visualisation of the conservation / generative-fidelity
     trade-off across all trained downscaling variants, for the three
-    evaluation regions.  Addresses reviewer Major Comment 6.
+    evaluation regions.
 
   authors:
     - debeire_kevin
@@ -42,15 +40,15 @@ diagnostics:
 
         # --- Data sources -------------------------------------------------
         # Region label -> absolute path to a comprehensive_metrics_summary.csv
-        # These are the *merged* per-region files written by
-        # revision2/archive_metrics.sh.  Do NOT point at a single diagnostic's
+        # These are the *merged* per-region metrics (all diagnostics of an
+        # evaluation run in one table).  Do NOT point at a single diagnostic's
         # comprehensive_metrics_summary.csv: each diagnostic writes its own copy
         # containing only its own metrics, so the spatial_metrics one has
         # conservation_mean and crps_mean but no RALSD.
         external_metrics_csv:
-          "Central Europe": "/work/bd1179/b309165/ML_downscaling/revision2/metrics_archive/Central_Europe/metrics_merged.csv"
-          "Iberic Peninsula": "/work/bd1179/b309165/ML_downscaling/revision2/metrics_archive/Iberic_Peninsula/metrics_merged.csv"
-          "Scandinavia": "/work/bd1179/b309165/ML_downscaling/revision2/metrics_archive/Scandinavia/metrics_merged.csv"
+          "Central Europe": "/path/to/debeire26MLEarth_PCAFM/data/metrics_archive/Central_Europe/metrics_merged.csv"
+          "Iberic Peninsula": "/path/to/debeire26MLEarth_PCAFM/data/metrics_archive/Iberic_Peninsula/metrics_merged.csv"
+          "Scandinavia": "/path/to/debeire26MLEarth_PCAFM/data/metrics_archive/Scandinavia/metrics_merged.csv"
 
         # --- What to plot -------------------------------------------------
         # x is always the conservation error; one figure is produced per y.
@@ -74,12 +72,8 @@ diagnostics:
           - "PCAFM-ConFIG"
           - "PCAFM-ConFIG-DW"
           - "PCAFM-2M"
-          # 3-objective ConFIG (base + pr + hus).  Inference has existed for all
-          # three regions since 2026-01-25; only the Central Europe run had been
-          # CMORized, which is why earlier versions of this figure showed the
-          # variant in the CE panel alone.  Iberia and Scandinavia were CMORized
-          # by revision2/cmorize_splitloss_ibe_sca.py, so it now appears in all
-          # three panels and the caption no longer needs its caveat sentence.
+          # 3-objective ConFIG (base + pr + hus), shown as PCAFM-3obj in the
+          # paper.
           - "PCAFM-ConFIG-DW-Splitloss"
           # PCGrad gradient surgery in place of ConFIG, otherwise the identical
           # PCAFM-2M recipe (down-weighted L_phys, 200k warmup, 2M samples), so

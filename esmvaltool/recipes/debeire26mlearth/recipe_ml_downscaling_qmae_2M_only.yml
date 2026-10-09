@@ -1,7 +1,7 @@
 # ESMValTool
 # recipe_ml_downscaling_qmae_2M_only.yml
 #
-# T1-T4 / E-Tab4 — minimal recipe that produces the absolute Quantile-MAE
+# Minimal recipe that produces the absolute Quantile-MAE
 # values of `AFM-baseline-2M` over the three evaluation regions (CE / IBE / SCA)
 # for the three composites used in the paper:
 #   - WBGT (JJA, from tas + huss + ps)
@@ -12,9 +12,8 @@
 # log_density / calibration), and only on AFM-baseline-2M (no PCAFM variants),
 # so the recipe is fast — a few minutes per region.
 #
-# The output CSV is then post-processed into `qmae_afm_baseline_2M.tex` to
-# satisfy reviewer R2-SI4 (absolute baseline values cross-referenced from
-# Figures S19–S21).
+# The output CSV gives the absolute baseline values that the relative
+# ablation figures (Figures S19 to S21) are normalized by.
 ---
 documentation:
   description: |
@@ -22,7 +21,7 @@ documentation:
     three regions. Produces only the cross-region quantile-MAE table.
   authors:
     - debeire_kevin
-  title: AFM-baseline-2M absolute Quantile-MAE (revision 1, R2-SI4)
+  title: AFM-baseline-2M absolute Quantile-MAE
   maintainer:
     - debeire_kevin
 

@@ -6,9 +6,8 @@ a single long-form CSV ``qmae_cross_region_table.csv`` and renders a
 companion heatmap showing the (method1 / method2) ratio as a
 (region x derived-variable) matrix.
 
-The reviewer asked for a single merged QMAE table across regions; this
-diagnostic produces it directly inside the ESMValTool flow so the result
-is provenance-tracked like the rest of the recipe.
+This merged table is produced inside the ESMValTool flow so the result is
+provenance-tracked like the rest of the recipe.
 """
 
 import logging

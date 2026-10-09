@@ -1,8 +1,8 @@
 # ESMValTool
 # recipe_ml_downscaling_extras.yml
 #
-# Additional diagnostics added for the revision 1 response (R1-M1, R1-M2,
-# R2-M7, R2-M8, R2-SI4). Drives ml_downscaling_extras.py over the
+# Additional diagnostics (climatologies, extremes, return levels, temporal
+# spectra, case study, ...). Drives ml_downscaling_extras.py over the
 # existing AFM-baseline / PCAFM checkpoints across all three evaluation
 # regions (CE, IBE, SCA) via the version facet (`1`, `1-Iberia`,
 # `1-Scandinavia`).
@@ -19,7 +19,7 @@ documentation:
     combined Q-MAE summary table.
   authors:
     - debeire_kevin
-  title: Revision 1 — extra diagnostics
+  title: Extra diagnostics
   maintainer:
     - debeire_kevin
 
@@ -317,7 +317,7 @@ diagnostics:
         region_key: "CE"
 
   extras_spatial_qmae_CE:
-    description: "Spatial Quantile-MAE map (winter pr) — CE (R1-M2e)"
+    description: "Spatial Quantile-MAE map (winter pr) — CE"
     variables:
       pr: {preprocessor: pp_qmae_pr_DJF, additional_datasets: *CE_datasets}
     scripts:
@@ -582,7 +582,7 @@ diagnostics:
   # Uncomment to enable.
   #
   # extras_quantile_mae_summary_table:
-  #   description: "Combined absolute + relative Quantile-MAE table across regions (R2-SI4)"
+  #   description: "Combined absolute + relative Quantile-MAE table across regions"
   #   scripts:
   #     qmae_summary:
   #       script: regional_downscaling/ml_downscaling_extras.py

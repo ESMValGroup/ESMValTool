@@ -1,25 +1,25 @@
 ---
-# ESMValTool CMORizer configuration for PC-SFM model output.
+# ESMValTool CMORizer configuration for PC-AFM model output.
 # Add the raw output file directory to your ESMValTool user config:
 #   rootpath:
-#     RAWOBS: /path/to/Tier1/PCSFM/
+#     RAWOBS: /path/to/Tier1/PCAFM/
 #
 # Then run:
-#   esmvaltool data format --datasets PCSFM
+#   esmvaltool data format --datasets PCAFM
 
-# Glob pattern used to locate the raw PC-SFM generation output file
+# Glob pattern used to locate the raw PC-AFM generation output file
 # under the RAWOBS directory configured in the ESMValTool user config.
-filename: "output_PCSFM_*.nc"
+filename: "output_PCAFM_*.nc"
 
 # Path NetCDF file covering the
 # same spatial domain and time period as the model output. Latitude,
 # longitude, and time coordinates are read from this file because the
-# PC-SFM generation script does not write them correctly.
+# PC-AFM generation script does not write them correctly.
 reference_file: "/path/to/nextgems_highres_reference.nc"
 
 # Dataset label used in output filenames and the Tier directory name.
 # Corresponds to the 'dataset' key in the ESMValTool recipe.
-method_name: "PCSFM"
+method_name: "PCAFM"
 tier: 1
 # Region tag appended to filenames (e.g. 'Scandinavia', 'Iberia', '').
 # Set to null to omit the region tag.
@@ -43,5 +43,5 @@ fix_time: true
 # Global attributes written to all output files.
 attributes:
   institution: "DLR"
-  source: "PC-SFM: physics-informed stochastic flow matching for climate downscaling"
-  references: "https://doi.org/TO-ADD"
+  source: "PC-AFM: Physics-Constrained Adaptive Flow Matching for climate downscaling"
+  references: "https://gitlab.dkrz.de/b309165/debeire26MLEarth_PCAFM"

@@ -6,9 +6,9 @@ variant as a point in (conservation error, generative fidelity) space.  Both
 axes are "lower is better", so the attainable frontier runs toward the
 lower-left and the non-dominated set is drawn as a step line.
 
-This answers reviewer Major Comment 6 directly: the reviewer asks for evidence
-that ConFIG "optimally navigates the Pareto front", and the constituent metrics
-were already reported separately but never plotted against one another.
+It shows how each gradient-surgery and loss-weighting choice trades
+conservation error against generative fidelity, metrics that the evaluation
+diagnostics otherwise report separately.
 
 Two ways to supply data:
 

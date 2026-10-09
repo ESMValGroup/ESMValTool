@@ -1,7 +1,7 @@
 # ESMValTool
 # recipe_ml_downscaling_noSurface.yml
 #
-# Pressure-level-only PC-AFM ablation (revision 1, comment R1-D1 / R1-D2).
+# Pressure-level-only PC-AFM ablation.
 # `PCAFM-noSURF` drops the 10 surface input channels from the network
 # input; the conservation loss is unchanged.
 #
@@ -11,10 +11,10 @@
 documentation:
   description: |
     Pressure-level-only PC-AFM: PCAFM-noSURF vs AFM-baseline / PCAFM
-    over CE, IBE, SCA. Addresses R1-D1 / R1-D2.
+    over CE, IBE, SCA.
   authors:
     - debeire_kevin
-  title: noSurface ablation (revision 1)
+  title: noSurface ablation
   maintainer:
     - debeire_kevin
 
@@ -217,8 +217,8 @@ _script_opts:
   # 2x2 ablation cell methods:
   #   AFM-baseline      : surfaces in,  no conservation        (production baseline)
   #   PCAFM             : surfaces in,  with conservation      (production method)
-  #   AFM-noSURF     : surfaces out, no conservation        (RCM-emulator baseline, E-T3b)
-  #   PCAFM-noSURF   : surfaces out, with coarse-scale aux  (E-T3)
+  #   AFM-noSURF     : surfaces out, no conservation        (RCM-emulator baseline)
+  #   PCAFM-noSURF   : surfaces out, with coarse-scale aux
   ml_methods: &_ml ["AFM-baseline", "PCAFM", "AFM-noSURF", "PCAFM-noSURF"]
 
 diagnostics:
