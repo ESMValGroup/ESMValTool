@@ -64,6 +64,10 @@ User settings in recipe
    * notes: list of notes describing how the results were computed, e.g. the
      reference dataset and periods. These are stored in the Vega-Lite
      specifications and shown as bullet points by the interactive viewer.
+   * axis_titles: titles of the ``bias`` and ``change`` axes in the
+     Vega-Lite specifications, e.g.
+     ``{bias: Bias with respect to ERA5 (1986-2015)}``. By default, the same
+     titles as in the other plots are used.
 
 
 Variables

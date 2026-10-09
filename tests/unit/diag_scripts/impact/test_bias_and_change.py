@@ -154,6 +154,32 @@ def test_build_vegalite_spec_cordex(cordex_df):
     assert "project" in tooltip_fields
 
 
+def test_build_vegalite_spec_axis_titles(cmip_df):
+    project_df = cmip_df[cmip_df["project"] == "CMIP6"]
+    spec = build_vegalite_spec(
+        project_df,
+        "CMIP6",
+        DEFAULT_ALIAS_FACETS,
+        [],
+        "recipe_impact_20260101_120000",
+    )
+    tas = spec["hconcat"][0]
+    assert tas["encoding"]["x"]["title"] == METRIC_LABELS["bias"]
+    assert tas["encoding"]["y"]["title"] == METRIC_LABELS["change"]
+
+    spec = build_vegalite_spec(
+        project_df,
+        "CMIP6",
+        DEFAULT_ALIAS_FACETS,
+        [],
+        "recipe_impact_20260101_120000",
+        axis_titles={"bias": "Bias with respect to ERA5"},
+    )
+    for view in spec["hconcat"]:
+        assert view["encoding"]["x"]["title"] == "Bias with respect to ERA5"
+        assert view["encoding"]["y"]["title"] == METRIC_LABELS["change"]
+
+
 def test_build_vegalite_spec_nan(cmip_df):
     cmip_df.loc["CMIP5_ACCESS1-0_r1i1p1", "pr_change"] = np.nan
     project_df = cmip_df[cmip_df["project"] == "CMIP5"]

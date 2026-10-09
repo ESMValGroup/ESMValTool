@@ -129,6 +129,9 @@ diagnostics:
           - Future change is calculated for 2035-2065 as compared to 1986-2015.
           - Domain is set to Europe (EUR-12 CORDEX domain).
           - All data are taken from the SSP5-8.5 scenario.
+        axis_titles:
+          bias: Bias with respect to ERA5 (1986-2015)
+          change: Projected change (2050 versus 2000)
         alias_facets:
           dataset: model
           rcm_version: version_realization

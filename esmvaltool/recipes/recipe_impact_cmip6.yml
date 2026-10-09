@@ -197,3 +197,6 @@ diagnostics:
           - Future change is calculated for 2035-2065 as compared to 1986-2015.
           - Area is set to Europe (lon 0-39; lat 30-76.25).
           - All data are taken from the SSP5-8.5 scenario.
+        axis_titles:
+          bias: Bias with respect to ERA5 (1986-2015)
+          change: Projected change (2050 versus 2000)

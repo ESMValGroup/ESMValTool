@@ -15,6 +15,10 @@ notes: list[str], optional
     Notes describing how the results were computed, e.g. the reference
     dataset and periods. These are stored in the Vega-Lite specification
     and shown as bullet points by the interactive viewer.
+axis_titles: dict[str, str], optional
+    Titles of the ``bias`` and ``change`` axes in the Vega-Lite
+    specification, e.g. ``{bias: Bias with respect to ERA5 (1986-2015)}``.
+    By default, the same titles as in the other plots are used.
 
 Output
 ------
@@ -305,14 +309,17 @@ def build_vegalite_spec(
     alias_facets: dict[str, str],
     notes: list[str],
     recipe_output: str,
+    axis_titles: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Build a Vega-Lite specification for the Climate4Impact viewer.
 
     ``dataframe`` is the output of :func:`make_wide` for a single project.
     The data is embedded in the specification, so it can be used without
     any other files. ``recipe_output`` is the name of the recipe output
-    directory.
+    directory. ``axis_titles`` overrides the titles of the ``bias`` and
+    ``change`` axes.
     """
+    axis_titles = {**METRIC_LABELS, **(axis_titles or {})}
     color_field = alias_facets.get("dataset", "dataset")
     facet_columns = list(dict.fromkeys([*alias_facets.values(), "project"]))
 
@@ -325,13 +332,13 @@ def build_vegalite_spec(
                 "x": {
                     "field": f"{variable}_bias",
                     "type": "quantitative",
-                    "title": METRIC_LABELS["bias"],
+                    "title": axis_titles["bias"],
                     "scale": {"zero": False},
                 },
                 "y": {
                     "field": f"{variable}_change",
                     "type": "quantitative",
-                    "title": METRIC_LABELS["change"],
+                    "title": axis_titles["change"],
                     "scale": {"zero": False},
                 },
                 "fill": {
@@ -429,6 +436,7 @@ def save_vegalite_specs(
     notes: list[str],
     ancestors: list[str],
     cfg: DiagnosticConfig,
+    axis_titles: dict[str, str] | None = None,
 ) -> None:
     """Save a Vega-Lite specification for each project."""
     # work_dir is <recipe output directory>/work/<diagnostic>/<script>
@@ -440,6 +448,7 @@ def save_vegalite_specs(
             alias_facets,
             notes,
             recipe_output,
+            axis_titles,
         )
         filename = get_diagnostic_filename(
             f"vegalite_spec_{project}",
@@ -457,6 +466,14 @@ def main(cfg: DiagnosticConfig) -> None:
     grouped_metadata = group_metadata(metadata, "variable_group")
 
     alias_facets = cfg.get("alias_facets", DEFAULT_ALIAS_FACETS)
+    axis_titles = cfg.get("axis_titles", {})
+    if unknown := set(axis_titles) - set(METRIC_LABELS):
+        msg = (
+            f"Unknown axis titles {sorted(unknown)} in the 'axis_titles' "
+            f"option of the diagnostic script, valid keys are "
+            f"{list(METRIC_LABELS)}."
+        )
+        raise ValueError(msg)
     if "dataset" in alias_facets.values():
         msg = (
             "The 'dataset' column of the CSV output file is reserved for the "
@@ -512,6 +529,7 @@ def main(cfg: DiagnosticConfig) -> None:
         cfg.get("notes", []),
         ancestors,
         cfg,
+        axis_titles,
     )
 
 
