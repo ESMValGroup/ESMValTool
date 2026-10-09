@@ -155,16 +155,15 @@ ESMValTool package, run
 
 On MacOSX ESMValTool functionalities in NCL and R are not supported. To install
 a Mamba environment on MacOSX, please refer to specific
-`information <https://docs.esmvaltool.org/en/latest/quickstart/installation.html#installation-on-macosx>`_.
+`information <https://docs.esmvaltool.org/en/latest/quickstart/installation.html#esmvaltool-installation-on-macos>`_.
 
 This will create a new
 `Mamba environment <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
 called ``esmvaltool``, with the ESMValTool package and all of its dependencies
 installed in it.
 
-.. note::
-
-   Common issues
+.. admonition:: Common issues
+   :class: warning
 
    You can find a list of common installation problems and their solutions
    `here <https://docs.esmvaltool.org/en/latest/quickstart/installation.html#common-installation-problems-and-their-solutions>`_.
@@ -178,4 +177,50 @@ To test that the installation was successful, run
 
    mamba activate esmvaltool
 
-This should activate the environment called ``esmvaltool``.
+This should activate the environment called ``esmvaltool``. In the shell prompt
+the active conda environment should have been changed from ``(base)`` to
+``(esmvaltool)``.
+
+Next, run
+
+.. code-block:: bash
+
+   esmvaltool --help
+
+to display the command line help.
+
+.. admonition:: Version of ESMValTool
+   :class: admonition-todo
+
+   Can you figure out which version of ESMValTool has been installed?
+
+   .. dropdown:: Solution
+      :color: secondary
+      :icon: eye
+
+      The ``esmvaltool --help`` command lists ``version`` as a command to get
+      the version.
+
+      When you run
+
+      .. code-block:: bash
+
+         esmvaltool version
+
+      The version of ESMValTool installed should be displayed on the screen as:
+
+      .. code-block:: text
+
+         ESMValCore: 2.15.0
+         ESMValTool: 2.15.0
+
+      Note that on HPC servers such as JASMIN, sometimes a more recent
+      development version may be displayed for ESMValTool, for example
+      ``ESMValTool: 2.16.0.dev4+g74d7837f0``.
+
+.. admonition:: Key points
+   :class: important
+
+   * All the required packages can be installed using mamba.
+   * You can find more information about installation in the
+     `documentation <https://docs.esmvaltool.org/en/latest/quickstart/installation.html>`_.
