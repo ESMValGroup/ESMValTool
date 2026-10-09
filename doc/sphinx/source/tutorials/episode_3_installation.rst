@@ -21,7 +21,7 @@ Installation
          * What are the prerequisites for installing ESMValTool?
          * How do I confirm that the installation was successful?
 
-      .. grid-item-card:: Learning outcomes
+      .. grid-item-card:: Objectives
 
          * Install ESMValTool.
          * Demonstrate that the installation was successful.
