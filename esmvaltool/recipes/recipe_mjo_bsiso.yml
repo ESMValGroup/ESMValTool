@@ -1,0 +1,140 @@
+# ESMValTool
+# recipe_mjo_bsiso.yml
+---
+documentation:
+  title: Seasonal MJO and BSISO extended-EOF index and mean-state bias
+
+  description: |
+    Fit separate DJF MJO and JJA BSISO extended EOFs to 25–90-day filtered
+    daily outgoing longwave radiation anomalies. Project their normalized
+    PCs year-round and compare their monthly occurrence. A second diagnostic
+    plots May–October precipitation and 850 hPa winds from NCEP-NCAR-R1,
+    together with two explicitly labelled model precipitation biases.
+    The EEOF index complements, rather than duplicates, Wheeler–Kiladis
+    wavenumber-frequency spectra.
+
+  authors:
+    - sullivan_arnold
+    - chun_felicity
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - kikuchi12climdyn
+
+  projects:
+    - esmval
+
+
+preprocessors:
+  olr_anomalies:
+    extract_region:
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: -30.
+      end_latitude: 30.
+    anomalies:
+      period: day
+
+  bias_precipitation:
+    extract_region:
+      start_longitude: 50.
+      end_longitude: 180.
+      start_latitude: -45.
+      end_latitude: 30.
+    extract_season:
+      season: MJJASO
+    convert_units:
+      units: mm day-1
+
+  bias_winds:
+    extract_region:
+      start_longitude: 50.
+      end_longitude: 180.
+      start_latitude: -45.
+      end_latitude: 30.
+    extract_levels:
+      levels: [85000.]
+      scheme: nearest
+    extract_season:
+      season: MJJASO
+
+
+diagnostics:
+  mjo_bsiso_index:
+    description: Seasonal lagged EEOFs and projected daily MJO/BSISO indices.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rlut:
+        mip: day
+        preprocessor: olr_anomalies
+        timerange: 0296/0325
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, project: CMIP6, activity: CMIP,
+             institute: CSIRO, exp: piControl, ensemble: r1i1p1f1, grid: gn,
+             alias: ACCESS-ESM1-5_piControl}
+    scripts:
+      index:
+        script: mjo/bimodal_index.py
+        low_period: 25
+        high_period: 90
+        filter_window: 139
+        lags: [-10, -5, 0]
+
+  mjo_bsiso_mean_state_bias:
+    description: May–October NCEP-NCAR-R1 mean state and model biases.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      obs_pr:
+        short_name: pr
+        mip: day
+        preprocessor: bias_precipitation
+        timerange: 2000/2020
+        additional_datasets:
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+             version: 1, tier: 2, alias: NCEP-NCAR-R1}
+      obs_ua:
+        short_name: ua
+        mip: day
+        preprocessor: bias_winds
+        timerange: 2000/2020
+        additional_datasets:
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+             version: 1, tier: 2, alias: NCEP-NCAR-R1}
+      obs_va:
+        short_name: va
+        mip: day
+        preprocessor: bias_winds
+        timerange: 2000/2020
+        additional_datasets:
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+             version: 1, tier: 2, alias: NCEP-NCAR-R1}
+      historical_pr:
+        short_name: pr
+        mip: day
+        preprocessor: bias_precipitation
+        timerange: 1985/2014
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, project: CMIP6, activity: CMIP,
+             institute: CSIRO, exp: historical, ensemble: r1i1p1f1, grid: gn,
+             alias: ACCESS-ESM1-5_historical}
+      control_pr:
+        short_name: pr
+        mip: day
+        preprocessor: bias_precipitation
+        timerange: 1420/1449
+        additional_datasets:
+          - {dataset: ACCESS-CM2, project: CMIP6, activity: CMIP,
+             institute: CSIRO-ARCCSS, exp: piControl, ensemble: r1i1p1f1,
+             grid: gn, alias: ACCESS-CM2_piControl}
+    scripts:
+      mean_state_bias:
+        script: mjo/mean_state_bias.py
