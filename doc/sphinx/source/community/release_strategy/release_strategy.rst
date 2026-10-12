@@ -309,7 +309,7 @@ Make a pull request and get it merged into ``main``. If updated after the releas
 branch is created, cherry pick it into the release branch.
 
 4. Make the (pre-)release on GitHub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Do a final check that all tests on CircleCI and GitHub Actions completed
 successfully.
