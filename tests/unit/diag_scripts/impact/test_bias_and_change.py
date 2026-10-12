@@ -112,8 +112,8 @@ def test_build_vegalite_spec_cmip(cmip_df):
         "notes": notes,
         "recipe_output": "recipe_impact_20260101_120000",
     }
-    assert [p["name"] for p in spec["params"]] == ["brush", "panzoom", "query"]
-    query = spec["params"][2]
+    assert [p["name"] for p in spec["params"]] == ["query"]
+    query = spec["params"][0]
     assert query["select"]["fields"] == ["dataset"]
 
     values = spec["data"]["values"]
@@ -127,7 +127,8 @@ def test_build_vegalite_spec_cmip(cmip_df):
     assert tas["encoding"]["x"]["field"] == "tas_bias"
     assert tas["encoding"]["y"]["field"] == "tas_change"
     assert pr["encoding"]["x"]["field"] == "pr_bias"
-    assert tas["encoding"]["fill"]["condition"]["field"] == "model"
+    assert tas["encoding"]["fill"]["field"] == "model"
+    assert tas["encoding"]["stroke"]["condition"]["param"] == "query"
     tooltip_fields = [t["field"] for t in tas["encoding"]["tooltip"]]
     assert tooltip_fields[:4] == ["dataset", "project", "model", "member"]
 

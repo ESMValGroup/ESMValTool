@@ -318,6 +318,10 @@ def build_vegalite_spec(
     any other files. ``recipe_output`` is the name of the recipe output
     directory. ``axis_titles`` overrides the titles of the ``bias`` and
     ``change`` axes.
+
+    The specification only selects runs by clicking them, which the viewer
+    uses to outline the selected runs. Other interactions, such as panning
+    and zooming, are added by the viewer.
     """
     axis_titles = {**METRIC_LABELS, **(axis_titles or {})}
     color_field = alias_facets.get("dataset", "dataset")
@@ -341,14 +345,7 @@ def build_vegalite_spec(
                     "title": axis_titles["change"],
                     "scale": {"zero": False},
                 },
-                "fill": {
-                    "condition": {
-                        "param": "brush",
-                        "field": color_field,
-                        "type": "nominal",
-                    },
-                    "value": "lightgray",
-                },
+                "fill": {"field": color_field, "type": "nominal"},
                 "stroke": {
                     "condition": {
                         "param": "query",
@@ -391,31 +388,6 @@ def build_vegalite_spec(
             "legend": {"disable": True},
         },
         "params": [
-            {
-                # Hold alt to select a range
-                "name": "brush",
-                "select": {
-                    "type": "interval",
-                    "on": "[pointerdown[event.altKey], pointerup] > pointermove",
-                    "translate": (
-                        "[pointerdown[event.altKey], pointerup] > pointermove"
-                    ),
-                    "zoom": "wheel![event.altKey]",
-                },
-            },
-            {
-                # Hold ctrl to pan and zoom
-                "name": "panzoom",
-                "select": {
-                    "type": "interval",
-                    "on": "[pointerdown[event.ctrlKey], pointerup] > pointermove",
-                    "translate": (
-                        "[pointerdown[event.ctrlKey], pointerup] > pointermove!"
-                    ),
-                    "zoom": "wheel![event.ctrlKey]",
-                },
-                "bind": "scales",
-            },
             {
                 # Click to select, hold shift to select multiple
                 "name": "query",
