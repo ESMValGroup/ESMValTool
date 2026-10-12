@@ -122,7 +122,7 @@ The location of this file is printed to the screen near the end of the log:
 .. code-block:: bash
 
    YYYY-MM-DD HH:mm:SS, NNN UTC [NNNNN] INFO    Wrote recipe output to:
-   file:///$HOME/esmvaltool_output/recipe_python_``<date>_<time>``/index.html
+   file:///$HOME/esmvaltool_output/recipe_python_[DATE]_[TIME]/index.html
 
 For more details about running recipes, see the
 :doc:`episode_5_recipe` episode in this tutorial.
@@ -151,4 +151,4 @@ advanced workflows.
    * Use ``esmvaltool --help`` to check that the environment is working.
    * Use ``esmvaltool config copy defaults/config-user.yml`` to create the user
      configuration file.
-   * Use ``esmvaltool run ``<recipe>``.yml`` to run a recipe.
+   * Use ``esmvaltool run [RECIPE].yml`` to run a recipe.

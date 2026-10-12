@@ -1,4 +1,4 @@
-.. _episode-3-configuration:
+.. _episode_4_configuration:
 
 ***************
 Configuration
@@ -158,7 +158,7 @@ Other settings
 ==============
 
 .. admonition:: Auxiliary data directory
-   :class: discussion
+   :class: note
 
    The ``auxiliary_data_dir`` setting is the path where any required additional
    auxiliary data files are stored. This location allows us to tell the diagnostic
@@ -171,11 +171,12 @@ Other settings
 
       auxiliary_data_dir: ~/auxiliary_data
 
-   See more information in `ESMValTool documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html?highlight=auxiliary_data#top-level-configuration-options>`_.
+   See more information in the
+   `ESMValTool documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html?highlight=auxiliary_data#top-level-configuration-options>`_.
 
 
 .. admonition:: Number of parallel tasks
-   :class: discussion
+   :class: note
 
    This option enables you to perform parallel processing. You can choose the
    number of tasks in parallel as 1/2/3/4/... or you can set it to ``null``. That
@@ -324,7 +325,7 @@ configuration file. The updated file should look like this:
    How can we modify the ``rootpath`` to make sure the data path is set correctly
    for both CMIP5 and CMIP6?
 
-   Note: to get the data, check the instructions in :doc:` <tutorial_setup>`.
+   Note: to get the data, check the instructions in :doc:`tutorial_setup`.
 
    .. dropdown:: Solution
       :color: secondary
@@ -334,7 +335,7 @@ configuration file. The updated file should look like this:
 
         You need to copy ``data-local-esmvaltool.yml`` into your configuration directory
         and specify the root path of the folder where the data is available (e.g.,
-        ``<your_climate_data_dir>``) as:
+        [YOUR_CLIMATE_DATA_DIR]) as:
 
         .. code-block:: yaml
 
@@ -344,14 +345,14 @@ configuration file. The updated file should look like this:
                data:
                  local:
                    type: esmvalcore.io.local.LocalDataSource
-                   rootpath: <your_climate_data_dir>
+                   rootpath: [YOUR_CLIMATE_DATA_DIR]
                    dirname_template: "{project}/{activity}/{institute}/{dataset}/{exp}/{ensemble}/{mip}/{short_name}/{grid}/{version}"
                    filename_template: "{short_name}_{mip}_{dataset}_{exp}_{ensemble}_{grid}*.nc"
              CMIP5:
                data:
                  local:
                    type: esmvalcore.io.local.LocalDataSource
-                   rootpath: <your_climate_data_dir>
+                   rootpath: [YOUR_CLIMATE_DATA_DIR]
                    dirname_template: "{project.lower}/{product}/{institute}/{dataset}/{exp}/{frequency}/{modeling_realm}/{mip}/{ensemble}/{version}/{short_name}"
                    filename_template: "{short_name}_{mip}_{dataset}_{exp}_{ensemble}*.nc"
 
@@ -368,24 +369,24 @@ configuration file. The updated file should look like this:
                data:
                  local:
                    type: esmvalcore.io.local.LocalDataSource
-                   rootpath: <your_climate_data_dir>
+                   rootpath: [YOUR_CLIMATE_DATA_DIR]
                    dirname_template: "{project}/{activity}/{institute}/{dataset}/{exp}/{ensemble}/{mip}/{short_name}/{grid}/{version}"
                    filename_template: "{short_name}_{mip}_{dataset}_{exp}_{ensemble}_{grid}*.nc"
                  esgf-cache:
                    type: esmvalcore.io.local.LocalDataSource
-                   rootpath: <your_download_dir>
+                   rootpath: [YOUR_CLIMATE_DATA_DIR]
                    dirname_template: "{project}/{activity}/{institute}/{dataset}/{exp}/{ensemble}/{mip}/{short_name}/{grid}/{version}"
                    filename_template: "{short_name}_{mip}_{dataset}_{exp}_{ensemble}_{grid}*.nc"
              CMIP5:
                data:
                  local:
                    type: esmvalcore.io.local.LocalDataSource
-                   rootpath: <your_climate_data_dir>
+                   rootpath: [YOUR_CLIMATE_DATA_DIR]
                    dirname_template: "{project.lower}/{product}/{institute}/{dataset}/{exp}/{frequency}/{modeling_realm}/{mip}/{ensemble}/{version}/{short_name}"
                    filename_template: "{short_name}_{mip}_{dataset}_{exp}_{ensemble}*.nc"
                  esgf-cache:
                    type: esmvalcore.io.local.LocalDataSource
-                   rootpath: <your_download_dir>
+                   rootpath: [YOUR_CLIMATE_DATA_DIR]
                    dirname_template: "{project.lower}/{product}/{institute}/{dataset}/{exp}/{frequency}/{modeling_realm}/{mip}/{ensemble}/{version}"
                    filename_template: "{short_name}_{mip}_{dataset}_{exp}_{ensemble}*.nc"
 
@@ -405,9 +406,18 @@ configuration file. The updated file should look like this:
 
 
 .. admonition:: Configuration via command line
-   :class: discussion
+   :class: note
 
    In addition, all configuration options can also be specified via the command
    line and those settings will overwrite any setting given by the YAML files. You
    can find more information in the
    `ESMValTool documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#command-line-arguments>`_.
+
+
+.. admonition:: Key points
+   :class: important
+
+   * ESMValTool can be configured through YAML files located in ``~/.config/esmvaltool`` or command line arguments
+   * The final configuration is created by merging the contents of all YAML files and command line arguments
+   * Users can choose to use one big configuration file, or spread its contents among many small configuration files
+   * ESMValTool can be configured to automatically download climate data from ESGF
