@@ -33,3 +33,4 @@ While these are tailored for ACCESS users, they are still very informative.
    Installation <episode_3_installation>
    Configuration <episode_4_configuration>
    Running your first recipe <episode_5_recipe>
+   Conclusion of basic tutorial <episode_6_conclusion>
