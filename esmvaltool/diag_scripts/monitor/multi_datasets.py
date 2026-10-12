@@ -1729,6 +1729,7 @@ class MultiDatasets(MonitorBase):
         axes: Axes,
         *,
         bias: bool = False,
+        siglvl: float = 0.05,
         **additional_plot_kwargs: Any,
     ) -> Any:
         """Plot 2D data."""
@@ -1755,6 +1756,37 @@ class MultiDatasets(MonitorBase):
         (x_coord, y_coord) = self._get_coords_for_2d_plotting(plot_type, cube)
         axes.set_xlabel(f"{x_coord.name()} [{x_coord.units}]")
         axes.set_ylabel(f"{y_coord.name()} [{y_coord.units}]")
+
+        # Customize plot with user-defined settings
+        self._customize_plot(plot_type, axes, dataset)
+
+        # Introduce hatching for non-significant areas
+        print(cube.ancillary_variables("p-value"))
+        if cube.ancillary_variables("p-value"):
+            hatching_cube = cube.copy(
+                da.where(cube.ancillary_variables("p-value")[0].lazy_data() <=
+                         siglvl, 1, 0))
+            # apply hatching to non-significant point (mask = 0)
+            hatching_plot_kwargs = {
+                "axes": axes,
+                "colors": "none",
+                "hatches": ["....."],
+                "levels": [-0.5, 0.5],
+            }
+            #right = x_coord.points.max()
+            #top = y_coord.points.max()
+            x_pos = 1
+            y_pos = 1
+            #axes.text(x_pos, y_pos, r'$\alpha$'f'={siglvl}',
+            axes.text(x_pos, y_pos, f'{(1.-float(siglvl))*100.}% conf. level',
+                      horizontalalignment='right',
+                      verticalalignment='bottom',
+                      transform=axes.transAxes,
+                      fontsize=9)
+
+            _ = self._plot_2d(plot_type,
+                              hatching_cube,
+                              **hatching_plot_kwargs)
 
         # Customize plot with user-defined settings
         self._customize_plot(plot_type, axes, dataset)
