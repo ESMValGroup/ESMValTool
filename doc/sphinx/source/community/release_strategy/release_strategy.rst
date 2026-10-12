@@ -264,13 +264,15 @@ All tests should pass before making a release (branch).
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The version number is automatically generated from the information provided by
-git using `setuptools-scm <https://pypi.org/project/setuptools-scm/>`__, but a
+git using setuptools-scm_, but a
 static version number is stored in ``CITATION.cff``.
 Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
 Make sure that the ESMValCore version that is being used is set to the latest version.
 See the :ref:`dependencies <dependencies>` section in order to find more details on how update the ESMValCore version.
 Make a pull request and get it merged into ``main``.
+
+.. _setuptools-scm: https://pypi.org/project/setuptools-scm
 
 .. _add-release-notes:
 
