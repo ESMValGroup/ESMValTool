@@ -1,0 +1,28 @@
+###############################################################################
+# Malinina&Gillett (2024)
+# Style file for matplotlib plots
+###############################################################################
+
+# Font
+font.size : 10
+
+# Fontsizes
+axes.labelsize : medium
+axes.titlesize : larger
+xtick.labelsize : medium
+ytick.labelsize : medium
+
+# Object sizes
+lines.linewidth : 1
+lines.markersize : 6
+
+# Axis
+axes.spines.top : False
+axes.spines.right : False
+axes.linewidth: 0.5
+xtick.direction : out
+ytick.direction : out
+xtick.major.width : 0.5
+ytick.major.width : 0.5
+xtick.minor.width : 0.4
+ytick.minor.width : 0.4
