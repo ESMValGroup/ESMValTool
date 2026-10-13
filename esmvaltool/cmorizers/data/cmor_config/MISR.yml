@@ -1,0 +1,19 @@
+# Global attributes of NetCDF file
+attributes:
+  project_id: OBS6
+  dataset_id: MISR
+  modeling_realm: atmos
+  type: sat
+  tier: 3
+  version: 'V0032'
+  source: 'https://asdc.larc.nasa.gov/project/MISR/MIL3MAEN_004'
+  reference: 'misr'
+  files: 'MISR_AM1_CGAS_*_F15_0032.nc'
+# Variables to CMORize
+variables:
+  od550aer:
+    raw_name: Aerosol_Optical_Depth
+    mip: AERmon
+  abs550aer:
+    raw_name: Absorbing_Optical_Depth
+    mip: AERmon
