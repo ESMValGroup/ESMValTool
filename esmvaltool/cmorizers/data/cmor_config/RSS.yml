@@ -1,0 +1,29 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: RSS
+  project_id: OBS6
+  tier: 2
+  version: 'v07r01'
+  modeling_realm: reanaly
+  source: ''
+  reference: 'rss'
+  comment: |
+    'Remote Sensing Systems.
+     Monthly Mean Total Precipitable Water Data Set
+     on a 1 degree grid made from Remote Sensing
+     Systems Version-7 Microwave Radiometer Data,
+     Date created: 20201110T185551Z
+     [accessed on 2020-11-19]. Santa Rosa, CA, USA.
+     Available at www.remss.com'
+
+# Variables to CMORize
+variables:
+  # monthly frequency
+  prw:
+    short_name: prw
+    mip: Amon
+    raw: precipitable_water
+    anomaly: precipitable_water_anomaly
+    climatology: precipitable_water_climatology
+    file: 'tpw_v07r01_198801_202010.nc4.nc'
