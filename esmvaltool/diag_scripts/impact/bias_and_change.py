@@ -14,7 +14,9 @@ alias_facets: dict, optional
 notes: list[str], optional
     Notes describing how the results were computed, e.g. the reference
     dataset and periods. These are stored in the Vega-Lite specification
-    and shown as bullet points by the interactive viewer.
+    and shown as bullet points by the interactive viewer. Facets that have
+    the same value for all input datasets that define them can be used as
+    placeholders, e.g. ``Domain is set to the {domain} CORDEX domain.``
 axis_titles: dict[str, str], optional
     Titles of the ``bias`` and ``change`` axes in the Vega-Lite
     specification, e.g. ``{bias: Bias with respect to ERA5 (1986-2015)}``.
@@ -36,7 +38,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -51,6 +53,9 @@ from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -432,6 +437,20 @@ def save_vegalite_specs(
         log_provenance(filename, ancestors, caption, cfg)
 
 
+def format_notes(
+    notes: list[str],
+    metadata: Iterable[dict[str, Any]],
+) -> list[str]:
+    """Fill in facets that have a single value for all datasets in notes."""
+    values: dict[str, set] = {}
+    for infodict in metadata:
+        for facet, value in infodict.items():
+            if isinstance(value, str | int | float):
+                values.setdefault(facet, set()).add(value)
+    facets = {facet: v.pop() for facet, v in values.items() if len(v) == 1}
+    return [note.format(**facets) for note in notes]
+
+
 def main(cfg: DiagnosticConfig) -> None:
     """Calculate, visualize and save the bias and change for each model."""
     metadata = cfg["input_data"].values()
@@ -498,7 +517,7 @@ def main(cfg: DiagnosticConfig) -> None:
     save_vegalite_specs(
         wide_df,
         alias_facets,
-        cfg.get("notes", []),
+        format_notes(cfg.get("notes", []), cfg["input_data"].values()),
         ancestors,
         cfg,
         axis_titles,
