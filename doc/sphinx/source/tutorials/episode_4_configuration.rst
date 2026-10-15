@@ -171,8 +171,8 @@ Other settings
 
       auxiliary_data_dir: ~/auxiliary_data
 
-   See more information in the
-   `ESMValTool documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html?highlight=auxiliary_data#top-level-configuration-options>`_.
+   See more information `here <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html?highlight=auxiliary_data#top-level-configuration-options>`_
+   in the ESMValTool documentation.
 
 
 .. admonition:: Number of parallel tasks
@@ -207,7 +207,8 @@ It is possible to have several configuration files with different purposes, for
 example: ``dask_options.yml``, ``data_sources.yml``.
 In this case, ESMValTool searches for all YAML files within each of the
 configuration directories and merges them together. How this is done is explained
-in the `ESMValTool documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#yaml-files>`_.
+in the `Configuration section <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#yaml-files>`_
+in the ESMValTool documentation.
 
 To show the final configuration that is actually used when running ESMValTool, you can use
 
@@ -402,7 +403,8 @@ configuration file. The updated file should look like this:
            esmvaltool config copy data-hpc-dkrz.yml
 
       - For more information about configuring the data sources, see also the
-        `ESMValTool documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#project-specific-configuration>`_.
+        `relevant section <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#project-specific-configuration>`_
+        in the ESMValTool documentation.
 
 
 .. admonition:: Configuration via command line
