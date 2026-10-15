@@ -108,8 +108,8 @@ output below.
 
       2026-10-15 12:04:36,966 UTC [194240] INFO    Package versions
       2026-10-15 12:04:36,966 UTC [194240] INFO    ----------------
-      2026-10-15 12:04:36,966 UTC [194240] INFO    ESMValCore: 2.15.0
-      2026-10-15 12:04:36,967 UTC [194240] INFO    ESMValTool: 2.16.0.dev75+g6afe583bf.d20261015
+      2026-10-15 12:04:36,966 UTC [194240] INFO    ESMValCore: 2.16.0
+      2026-10-15 12:04:36,967 UTC [194240] INFO    ESMValTool: 2.16.0
       2026-10-15 12:04:36,967 UTC [194240] INFO    ----------------
       2026-10-15 12:04:36,967 UTC [194240] INFO    Reading configuration files from:
       /home/b/USERNAME/ESMValTool/ESMValTool/.pixi/envs/default/lib/python3.14/site-packages/esmvalcore/config/configurations/defaults (defaults)
