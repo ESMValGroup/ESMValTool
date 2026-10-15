@@ -30,7 +30,7 @@ Configuration
       .. grid-item-card:: Compatibility
          :columns: 12
 
-         ESMValTool v2.15.0
+         ESMValTool v2.16.0
 
 
 Configuring ESMValTool via YAML files
