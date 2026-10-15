@@ -84,7 +84,7 @@ This file contains the information for:
 - ...
 
 .. admonition:: Text editor side note
-   :class: discussion
+   :class: note
 
    No matter what editor you use, you will need to know where it searches for
    and saves files. If you start it from the shell, it will (probably) use your

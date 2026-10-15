@@ -43,7 +43,7 @@ The purpose of the quickstart guide is to enable a user of ESMValTool to run
 ESMValTool as quickly as possible by making the minimum number of changes.
 
 .. admonition:: Purpose of the quickstart guide
-   :class: discussion
+   :class: note
 
    The purpose of this quickstart guide is to get you running with ESMValTool
    as quickly as possible without requiring a full tutorial walkthrough.

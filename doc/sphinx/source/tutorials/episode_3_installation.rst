@@ -69,7 +69,7 @@ associated software such as GitHub and Mamba.
    `documentation <https://docs.esmvaltool.org/en/latest/quickstart/installation.html>`_.
 
 .. admonition:: Install ESMValTool on Windows
-   :class: discussion
+   :class: note
 
    ESMValTool does not directly support Windows, but successful usage has been
    reported through the
