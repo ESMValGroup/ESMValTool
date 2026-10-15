@@ -100,7 +100,7 @@ Schedule
 || 01:10 || :doc:`episode_5_recipe`          || How to run a recipe?                                        |
 ||       ||                                  || What happens when I run a recipe?                           |
 +--------+-----------------------------------+--------------------------------------------------------------+
-|| 01:40 || :doc:`epsiode_6_conclusion`      || What do I do now?                                           |
+|| 01:40 || :doc:`episode_6_conclusion`      || What do I do now?                                           |
 ||       ||                                  || Where can I get help?                                       |
 ||       ||                                  || What if I find a bug?                                       |
 ||       ||                                  || Where can I find more information about ESMValtool?         |
