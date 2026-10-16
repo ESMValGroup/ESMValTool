@@ -67,6 +67,7 @@ preprocessors:
   calculate_bias_EUR: &calculate_bias
     regrid: &regrid_bias
       scheme: area_weighted
+      cache_weights: true
       target_grid:
         start_latitude: 20.75
         end_latitude: 74.25
