@@ -322,7 +322,7 @@ and create the new release.
 
 Create a tag corresponding to the release candidate or the final release.
 The release tag always starts with the letter ``v`` followed by the version
-number, e.g. ``v2.1.0rc1``or ``v2.1.0``. You can add a link to the relevant changelog in the
+number, e.g. ``v2.1.0rc1`` or ``v2.1.0``. You can add a link to the relevant changelog in the
 release notes.
 
 Tick the `This is a pre-release` box if working with a release candidate.
