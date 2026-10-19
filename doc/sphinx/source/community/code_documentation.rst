@@ -86,7 +86,6 @@ All pull requests
 - 🛠 :ref:`AI policy <ai_policy>` has been followed and any AI usage has been disclosed
 - 🛠 Code is written according to the :ref:`code quality guidelines <code_quality>`
 - 🛠 Documentation_ is available
-- 🛠 Tests_ run successfully
 - 🛠 The :ref:`list of authors <authors>` is up to date
 - 🛠 Changed dependencies are :ref:`added or removed correctly <dependencies>`
 - 🛠 The :ref:`checks shown below the pull request <pull_request_checks>` are successful
