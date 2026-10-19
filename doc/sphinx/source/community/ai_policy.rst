@@ -55,6 +55,10 @@ translation or grammar editing. If the developers want to chat with a chatbot,
 they can do so themselves. Human-to-human communication is essential for an
 open source community to thrive.
 
+If you suspect that a contributor has used AI in a way that violates this
+policy, please point them to this document and politely ask them to update
+their contribution accordingly.
+
 AI Agents
 ---------
 The use of an AI agent that writes code and then submits a pull request
