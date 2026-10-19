@@ -83,6 +83,7 @@ All pull requests
 ~~~~~~~~~~~~~~~~~
 
 - 🛠 :ref:`The pull request has a descriptive title <descriptive_pr_title>`
+- 🛠 :ref:`AI policy <ai_policy>` has been followed and any AI usage has been disclosed
 - 🛠 Code is written according to the :ref:`code quality guidelines <code_quality>`
 - 🛠 Documentation_ is available
 - 🛠 Tests_ run successfully
