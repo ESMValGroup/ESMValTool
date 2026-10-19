@@ -1,0 +1,102 @@
+# ESMValTool
+# recipe_cosima_cross_slope_section.yml
+---
+documentation:
+  title: Cross-slope hydrographic section (COSIMA)
+
+  description: |
+    Hydrographic section across the Antarctic continental slope,
+    translated from the COSIMA recipe Cross-slope_section.ipynb.
+
+    Two pieces of the notebook are replaced rather than copied:
+
+    - the stored Antarctic_slope_contour_1000m*.nc files are specific to
+      the ACCESS-OM2/OM3 grids, so the contour is extracted from the
+      model's own deptho with the algorithm of Create_contour.ipynb;
+    - metpy is not an ESMValTool dependency, so the section is sampled
+      by bilinear interpolation along the path between the endpoints.
+
+    The endpoints are placed as the notebook places them: from the
+    chosen contour point, shelf_distance degrees inshore along the
+    inward normal to the bathymetry and ocean_distance degrees offshore
+    along the outward normal.
+
+    sigma2 contours are overlaid on the temperature section when so is
+    available.
+
+    Set section_longitude to choose where around Antarctica the section
+    is cut; the diagnostic takes the contour point nearest that
+    longitude.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  southern_ocean_climatology:
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 0.25x0.25
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -80.
+      end_latitude: -55.
+
+  southern_ocean_fx:
+    regrid:
+      target_grid: 0.25x0.25
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -80.
+      end_latitude: -55.
+
+diagnostics:
+
+  cross_slope_section:
+    description: |
+      Potential temperature on a section normal to the 1000 m isobath,
+      with sigma2 contours.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 2000/2009
+      so:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 2000/2009
+      deptho:
+        mip: Ofx
+        preprocessor: southern_ocean_fx
+    scripts:
+      section:
+        script: cosima/cross_slope_section.py
+        contour_depth: 1000.0
+        section_longitude: 300.0
+        shelf_distance: 3.0
+        ocean_distance: 5.0
+        section_points: 60
