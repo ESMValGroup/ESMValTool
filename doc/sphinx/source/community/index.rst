@@ -32,7 +32,6 @@ help, e.g. on our
 		Supporting multiple dataset versions <multiple_dataset_versions>
 		Contributing a review <review>
 		Maintaining a recipe <maintainer>
-		Upgrading a namelist to a recipe <upgrading>
 		GitHub workflow <repository>
 		Moving work from the private to the public repository <private_repository>
 		Release strategy and procedures <release_strategy/index>
