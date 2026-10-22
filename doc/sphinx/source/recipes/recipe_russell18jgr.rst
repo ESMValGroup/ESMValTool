@@ -22,30 +22,35 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/russell18jgr/
 
-* russell18jgr-polar.ncl (figures 1, 7, 8): calculates and plots annual-mean variables (tauu, sic, fgco2, pH) as polar contour map.
-* russell18jgr-fig2.ncl:  calculates and plots The zonal and annual means of the zonal wind stress (N/m\ :sup:`2`\).
-* russell18jgr-fig3b.ncl: calculates and plots the latitudinal position of Subantarctic Front. Using definitions from Orsi et al (1995).
-* russell18jgr-fig3b-2.ncl: calculates and plots the latitudinal position of Polar Front. Using definitions from Orsi et al (1995).
-* russell18jgr-fig4.ncl:  calculates and plots the zonal velocity through Drake Passage (at 69W) and total transport through the passage if the volcello file is available.
-* russell18jgr-fig5.ncl:  calculates and plots the mean extent of sea ice for September(max) in blue and mean extent of sea ice for February(min) in red.
-* russell18jgr-fig5g.ncl: calculates and plots the annual cycle of sea ice area in southern ocean.
-* russell18jgr-fig6a.ncl: calculates and plots the density layer based volume transport(in Sv) across 30S based on the layer definitions in Talley (2008).
-* russell18jgr-fig6b.ncl: calculates and plots the Density layer based heat transport(in PW) across 30S based on the layer definitions in Talley (2008).
-* russell18jgr-fig7h.ncl: calculates and plots the zonal mean flux of fgco2 in gC/(yr * m\ :sup:`2`\).
-* russell18jgr-fig7i.ncl: calculates and plots the cumulative integral of the net CO2 flux from 90S to 30S (in PgC/yr).
-* russell18jgr-fig9a.ncl: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated heat uptake south of 30S (in PW), along with the line of best fit.
-* russell18jgr-fig9b.ncl: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
-* russell18jgr-fig9c.ncl: calculates and plots the scatter plot of the net heat uptake south of 30S (in PW) against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
+* russell18jgr-polar.py (figures 1, 7, 8): calculates and plots annual-mean variables (tauu, sic, fgco2, pH) as polar contour map.
+* russell18jgr-fig2.py:  calculates and plots The zonal and annual means of the zonal wind stress (N/m\ :sup:`2`\).
+* russell18jgr-fig3b.py: calculates and plots the latitudinal position of Subantarctic Front. Using definitions from Orsi et al (1995).
+* russell18jgr-fig3b-2.py: calculates and plots the latitudinal position of Polar Front. Using definitions from Orsi et al (1995).
+* russell18jgr-fig4.py:  calculates and plots the zonal velocity through Drake Passage (at 69W) and total transport through the passage if the volcello file is available.
+* russell18jgr-fig5.py:  calculates and plots the mean extent of sea ice for September(max) in blue and mean extent of sea ice for February(min) in red.
+* russell18jgr-fig5g.py: calculates and plots the annual cycle of sea ice area in southern ocean.
+* russell18jgr-fig6a.py: calculates and plots the density layer based volume transport(in Sv) across 30S based on the layer definitions in Talley (2008).
+* russell18jgr-fig6b.py: calculates and plots the Density layer based heat transport(in PW) across 30S based on the layer definitions in Talley (2008).
+* russell18jgr-fig7h.py: calculates and plots the zonal mean flux of fgco2 in gC/(yr * m\ :sup:`2`\).
+* russell18jgr-fig7i.py: calculates and plots the cumulative integral of the net CO2 flux from 90S to 30S (in PgC/yr).
+* russell18jgr-fig9a.py: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated heat uptake south of 30S (in PW), along with the line of best fit.
+* russell18jgr-fig9b.py: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
+* russell18jgr-fig9c.py: calculates and plots the scatter plot of the net heat uptake south of 30S (in PW) against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
+
+The following modules are not diagnostics themselves; they hold code shared by several of the scripts above:
+
+* russell_common.py: grid handling, the MWJF equation of state, the sea-ice concentration units check, cell-area calculation, isoline extraction and the westerly band width.
+* russell_fig6_shared.py: the Talley (2008) density-layer definitions and the transport calculation shared by figures 6a and 6b.
+* russell_fig9_shared.py: the flux integrals, regression and scatter plotting shared by figures 9a, 9b and 9c.
 
 User settings in recipe
 -----------------------
 
-#. Script russell18jgr-polar.ncl
+#. Script russell18jgr-polar.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
    * max_lat   : -30.0
 
    *Optional settings (scripts)*
@@ -73,48 +78,44 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig2.ncl
+#. Script russell18jgr-fig2.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
-#. Script russell18jgr-fig3b.ncl
+#. Script russell18jgr-fig3b.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
-#. Script russell18jgr-fig3b-2.ncl
+#. Script russell18jgr-fig3b-2.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
-#. Script russell18jgr-fig4.ncl
+#. Script russell18jgr-fig4.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
@@ -124,12 +125,11 @@ User settings in recipe
    * new_units : "cm/s"
 
 
-#. Script russell18jgr-fig5.ncl
+#. Script russell18jgr-fig5.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
    * max_lat  : -45.0
 
    *Optional settings (scripts)*
@@ -138,7 +138,7 @@ User settings in recipe
    * max_hori  :  1 - 4 (user preference)
 
 
-#. Script russell18jgr-fig5g.ncl
+#. Script russell18jgr-fig5g.py
 
    *Required settings (scripts)*
 
@@ -149,89 +149,117 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig6a.ncl
+#. Script russell18jgr-fig6a.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
-#. Script russell18jgr-fig6b.ncl
+#. Script russell18jgr-fig6b.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
-#. Script russell18jgr-fig7h.ncl
+#. Script russell18jgr-fig7h.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
-#. Script russell18jgr-fig7i.ncl
+#. Script russell18jgr-fig7i.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
-#. Script russell18jgr-fig9a.ncl
+#. Script russell18jgr-fig9a.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
-
-   *Optional settings (scripts)*
-
-   * none
-
-
-#. Script russell18jgr-fig9b.ncl
-
-   *Required settings (scripts)*
-
-   * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
-#. Script russell18jgr-fig9c.ncl
+#. Script russell18jgr-fig9b.py
 
    *Required settings (scripts)*
 
    * styleset : CMIP5(recommended), default, etc.
-   * ncdf     : default(recommended), CMIP5, etc.
 
    *Optional settings (scripts)*
 
    * none
 
 
+#. Script russell18jgr-fig9c.py
+
+   *Required settings (scripts)*
+
+   * styleset : CMIP5(recommended), default, etc.
+
+   *Optional settings (scripts)*
+
+   * none
+
+
+
+Notes on the Python implementation
+----------------------------------
+
+The diagnostics were originally written in NCL and were translated to
+Python for ESMValTool. The translation is intended to reproduce the
+figures of Russell et al. (2018), and uses only numpy, iris, matplotlib
+and cartopy. A few differences are deliberate:
+
+* Panelled figures (the polar maps and figure 4) write one file per page
+  when there are more datasets than ``max_vert * max_hori`` panels, and
+  figures 6a and 6b write one file per dataset.
+* The fronts in figure 3b are extracted from matplotlib contours rather
+  than NCL isolines. The main front is taken to be the longest contour
+  segment, and further segments are appended when they start within 20
+  degrees of longitude of the previous one, as in the NCL.
+* ``styleset`` selects the plot style file as before. The ``ncdf``
+  option is no longer used: the diagnostics write their netCDF output
+  through the standard ESMValTool helpers.
+
+The following issues in the original NCL were found and corrected while
+translating:
+
+* Figures 5 and 5g decided whether ``sic`` was a percentage or a
+  fraction using ``max(sic) < 5``. A single unmasked fill value of
+  1e20 defeats that test, so a model reporting a fraction was never
+  rescaled, no grid cell reached the 15% threshold, and the figure came
+  out empty. Fill values are now masked before the units are
+  determined, and the units attribute is used when it is informative.
+* Figure 8 plots surface pH, but ``ph`` is a full-depth field in CMIP5
+  and no level was being selected. The shallowest level is now taken.
+* The polar maps show the Southern Ocean but the input cubes are
+  global. Contours were therefore computed over the whole globe, which
+  allowed northern hemisphere features to place contour labels on the
+  map. The data is now restricted to the plotted region.
 
 Variables
 ---------
