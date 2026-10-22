@@ -1,0 +1,111 @@
+# ESMValTool
+# recipe_cosima_relative_vorticity.yml
+---
+documentation:
+  title: Ocean relative vorticity (COSIMA)
+
+  description: |
+    Vertical component of relative vorticity, zeta = dv/dx - du/dy,
+    translated from the COSIMA recipe Relative_Vorticity.ipynb.
+
+    The notebook compares an xgcm calculation on MOM5's staggered
+    B-grid against a naive one that converts degrees to metres and
+    differentiates with xarray, and shows the naive one to be wrong.
+    Neither applies unchanged here: after the regrid preprocessor uo
+    and vo are colocated at tracer points, so the staggering that the
+    xgcm method exists to handle is already gone. What survives of the
+    notebook's warning is the metric term, and that is kept: the zonal
+    cell length shrinks with cos(lat), which is precisely the
+    correction the naive method dropped.
+
+    Read this before running it: at standard CMIP resolution this
+    diagnostic does not show what the original shows.
+
+    The original runs on ACCESS-OM2-01 at 0.1 degree, where the subject
+    of the figure is the mesoscale eddy field. Eddies need roughly two
+    grid points per first baroclinic Rossby radius to exist at all, and
+    a 1 degree ocean does not reach that ratio anywhere: its maximum is
+    1.88, in the deep tropics, against 0.19 at 40 degrees. Models at
+    that resolution parameterise eddies (Gent-McWilliams) instead.
+
+    The ratio uses the coarser of the two grid directions, since an
+    eddy must be resolved in both, and a uniform lat/lon grid is
+    strongly anisotropic towards the poles. By that measure even 0.1
+    degree - the resolution the original uses - only reaches 2 within
+    about 38 degrees of the equator.
+
+    So on ACCESS-CM2 or ACCESS-ESM1-5 the figure is the shear of the
+    resolved large-scale currents - boundary currents, ACC fronts, the
+    equatorial system - with |Ro| of order 0.01 rather than order 1.
+    That is a real field and worth comparing between models, but it is
+    not an eddy field. The diagnostic computes the ratio for whatever
+    grid it is given, states which case you are in, and puts that
+    verdict on the figure.
+
+    Two configurations where this earns its place:
+
+      1. HighResMIP, ocean grids from 1/4 to 1/12 degree. The datasets
+         below are candidates; check uo/vo availability per model,
+         since HighResMIP output is patchier than CMIP historical.
+      2. A resolution pair from one model family, where the change in
+         zeta/f between members is itself a measure of what resolution
+         buys you.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  # HighResMIP: the resolutions at which this diagnostic is about
+  # eddies. hist-1950 is the HighResMIP historical-equivalent.
+  - {dataset: HadGEM3-GC31-HM, project: CMIP6, activity: HighResMIP,
+     exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: EC-Earth3P-HR, project: CMIP6, activity: HighResMIP,
+     exp: hist-1950, ensemble: r1i1p2f1, grid: gn}
+  # A 1-degree member for contrast: same diagnostic, no eddies. The
+  # difference between these rows is the point.
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  # 0.25 degree, not 0.5: regridding to a grid coarser than the model
+  # would throw away the eddies this diagnostic exists to show. Coarsen
+  # only if memory forces it, and expect the Rossby numbers to fall.
+  climatology_regridded:
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 0.25x0.25
+      scheme: linear
+
+diagnostics:
+
+  relative_vorticity:
+    description: |
+      Relative vorticity and Rossby number at a chosen depth.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      uo:
+        mip: Omon
+        preprocessor: climatology_regridded
+        timerange: 1990/1999
+      vo:
+        mip: Omon
+        preprocessor: climatology_regridded
+        timerange: 1990/1999
+    scripts:
+      vorticity:
+        script: cosima/relative_vorticity.py
+        depth: 30.0

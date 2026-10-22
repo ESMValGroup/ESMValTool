@@ -1,0 +1,84 @@
+# ESMValTool
+# recipe_cosima_neutral_density.yml
+---
+documentation:
+  title: Neutral density (COSIMA)
+
+  description: |
+    Neutral density section, translated from the COSIMA recipe
+    Neutral_density.ipynb.
+
+    The notebook computes gamma_n with pygamma_n, a wrapper around the
+    Jackett & McDougall (1997) algorithm. pygamma_n is not on
+    conda-forge and is not an ESMValTool dependency, so the diagnostic
+    uses it when it happens to be importable and otherwise falls back on
+    a patched potential density: sigma referenced to 0, 1000, 2000, 3000
+    and 4000 dbar, each patch offset so the composite is continuous,
+    after Reid (1994).
+
+    The fallback is an approximation and the diagnostic says so, in the
+    plot title, in the netCDF long_name and in the provenance caption.
+    It follows neutral surfaces well within each pressure patch and has
+    a discontinuous slope at the joins, so use it for water-mass
+    identification and not for quantitative neutral-surface work.
+
+    The notebook's own warning applies whichever method is used:
+    gamma_n is referenced to a 1980s climatology and should not be
+    applied to future projections. The diagnostic logs a warning when it
+    sees an ssp, rcp, abrupt or 1pct experiment.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+    - jackett97jpo
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  southern_ocean_climatology:
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -90.
+      end_latitude: -30.
+
+diagnostics:
+
+  neutral_density:
+    description: |
+      Neutral density (or its patched potential density approximation)
+      on a Southern Ocean section.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 1990/2009
+      so:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 1990/2009
+    scripts:
+      gamma_n:
+        script: cosima/neutral_density.py

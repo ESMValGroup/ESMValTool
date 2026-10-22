@@ -1,0 +1,99 @@
+# ESMValTool
+# recipe_cosima_along_isobath_average.yml
+---
+documentation:
+  title: Along-isobath averaging on the Antarctic shelf (COSIMA)
+
+  description: |
+    Along-isobath averaging of scalar fields, translated from the COSIMA
+    recipe Along_Isobath_Average.ipynb. Antarctic shelf analyses want an
+    average taken along bathymetric contours rather than along latitude
+    circles, because the shelf break does not follow a latitude circle.
+
+    The notebook bins by bottom depth with xhistogram; here the binning
+    is the same operation without the xarray dependency.
+
+    Both of the notebook's caveats are properties of the method and
+    carry over unchanged:
+
+    1. deep troughs cutting into the shelf are averaged together with
+       the open ocean at the same depth, and offshore seamounts with the
+       slope. The region mask has to be chosen with that in mind, which
+       is what mask_depth and extract_region are for.
+    2. MOM's ht/hu bottom depths do not line up with the model's own
+       vertical levels. The notebook therefore masks with the
+       bathymetry but bins by the bottom depth implied by the 3D field,
+       and this diagnostic does the same: the mask comes from deptho,
+       the binning coordinate from the deepest wet cell of the field.
+
+    The default region is the Ross Sea, as in the notebook.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  ross_sea_climatology:
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+    extract_region:
+      start_longitude: 160.
+      end_longitude: 210.
+      start_latitude: -80.
+      end_latitude: -68.
+
+  ross_sea_fx:
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+    extract_region:
+      start_longitude: 160.
+      end_longitude: 210.
+      start_latitude: -80.
+      end_latitude: -68.
+
+diagnostics:
+
+  along_isobath_average:
+    description: |
+      Temperature and salinity averaged along isobaths over the Ross Sea
+      shelf.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        preprocessor: ross_sea_climatology
+        timerange: 2000/2009
+      so:
+        mip: Omon
+        preprocessor: ross_sea_climatology
+        timerange: 2000/2009
+      deptho:
+        mip: Ofx
+        preprocessor: ross_sea_fx
+    scripts:
+      isobath_average:
+        script: cosima/along_isobath_average.py
+        mask_depth: 2000.0
+        variables: [thetao, so]
