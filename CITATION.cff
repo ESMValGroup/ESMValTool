@@ -171,6 +171,11 @@ authors:
     family-names: Geddes
     given-names: Theo
   -
+    affiliation: "Met Office, UK"
+    family-names: Lillis
+    given-names: Jon
+    orcid: "https://orcid.org/0009-0000-0213-6284"
+  -
     affiliation: "University of Bremen, Germany"
     family-names: Gier
     given-names: Bettina
