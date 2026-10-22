@@ -2,8 +2,8 @@ documentation:
   title: UM Model Monitoring
   description: >-
     This recipe monitors running climate model experiments based on Met Office
-    Unified Model configurations. It is based on the general ESMValTool model and
-    multimodel recipes.
+    Unified Model configurations. It is a variation on the general ESMValTool model
+    and multimodel recipes.
 
   authors:
     - vegas-regidor_javier
