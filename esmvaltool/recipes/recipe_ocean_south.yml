@@ -1,0 +1,66 @@
+# ESMValTool
+# recipe_ocean_south.yml
+---
+documentation:
+  description: recreating simple cosima recipes for bulk datasets
+  title: Recreating simple cosima recipes
+  authors:
+    - chun_felicity
+  maintainer:
+    - chun_felicity
+  
+  
+diagnostics:
+
+  barotropic_streamfunction:
+    description:
+     Calculate barotropic streamfunction in the Southern Ocean
+    variables:
+      sst_east:
+        short_name: umo
+        mip: Omon
+        additional_datasets: #additional datasets can be added for each diagnostic
+          - {dataset: ACCESS-OM2, project: CMIP6, exp: omip2, activity: OMIP,
+              ensemble: r1i1p1f1, grid: gn, start_year: 0356, end_year: 0366}
+          - {dataset: ACCESS-OM2-025, project: CMIP6, exp: omip2, activity: OMIP,
+              ensemble: r1i1p1f1, grid: gn, start_year: 0356, end_year: 0366}
+    scripts:
+      plot_script:
+        script: ocean_south/plot_barotropic.py
+
+  hovmoller_diagnostic:
+    description: Hovmoller diagram of temperature and salininty anomalies
+    variables:
+      so:
+        mip: Omon
+      thetao:
+        mip: Omon
+    additional_datasets:
+      - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+          ensemble: r1i1p1f1, grid: gn, start_year: 1950, end_year: 2014,
+          supplementary_variables: [{short_name: areacello, mip: Ofx}]}
+      - {dataset: ACCESS-OM2, project: CMIP6, exp: omip2, activity: OMIP,
+        ensemble: r1i1p1f1, grid: gn, timerange: 0336/0356,
+        supplementary_variables: [{short_name: areacello, mip: Ofx}]}
+    scripts:
+      plot_script:
+        script: ocean_south/plot_hovmoller.py
+
+  kinetic_energy:
+    description: |
+      Decomposing the kinetic energy into time-mean and transient components.
+    variables:
+      uo:
+        mip: Omon
+      vo:
+        mip: Omon
+    additional_datasets:
+      - {dataset: ACCESS-OM2-025, project: CMIP6, exp: omip2, activity: OMIP,
+          ensemble: r1i1p1f1, grid: gn, timerange: 0306/0306,
+          supplementary_variables: [{short_name: thkcello, mip: Ofx}]}
+      - {dataset: ACCESS-OM2, project: CMIP6, exp: omip2, activity: OMIP,
+              ensemble: r1i1p1f1, grid: gn, start_year: 0356, end_year: 0366,
+              supplementary_variables: [{short_name: thkcello, mip: Ofx}]}
+    scripts:
+      plot_script:
+        script: ocean_south/plot_kinetic_energy.py
