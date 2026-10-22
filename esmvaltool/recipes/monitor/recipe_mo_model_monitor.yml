@@ -1,0 +1,602 @@
+documentation:
+  title: UM Model Monitoring
+  description: >-
+    This recipe monitors running climate model experiments based on Met Office
+    Unified Model configurations. It is based on the general ESMValTool model and
+    multimodel recipes.
+
+  authors:
+    - vegas-regidor_javier
+    - schlund_manuel
+    - heuer_helge
+    - kraft_jeremy
+    - kuehbacher_birgit
+    - lindenlaub_lukas
+    - sarauer_ellen
+    - winterstein_franziska
+    - lillis_jon
+  maintainer:
+    - lillis_jon
+
+datasets:
+  - activity: ESMVal
+    alias: u-dr725/UKESM1p3+C7 volc+solar+CH4+GHG
+    benchmark_dataset: true
+    dataset: UKESM1-0-LL
+    end_year: 3159
+    ensemble: r5i1p1f3
+    exp: amip-u-dr725
+    grid: gn
+    institute: MOHC
+    project: ESMVal
+    start_year: 3150
+  - activity: ESMVal
+    alias: u-ds902/CH4-jules scaling
+    dataset: UKESM1-0-LL
+    end_year: 3159
+    ensemble: r1i1p1f1
+    exp: amip-u-ds902
+    grid: gn
+    institute: MOHC
+    project: ESMVal
+    start_year: 3150
+
+diagnostics:
+  global_climatologies:
+    additional_datasets:
+      - alias: MPI-ESM1-2-LR
+        dataset: MPI-ESM1-2-LR
+        ensemble: r1i1p1f1
+        exp: historical
+        grid: gn
+        project: CMIP6
+        reference_for_monitor_diags: true
+    description: Plot map data
+    scripts:
+      plot: &plot_default
+        facet_used_for_labels: alias
+        group_variables_by: variable_group
+        plot_folder: '{plot_dir}'
+        plots:
+          map:
+            caption: 'Map plot of Near-Surface Air Temperature of dataset {dataset}
+              including bias relative to MPI-ESM1-2-LR. The number in the top
+              left corner corresponds to the spatial mean (weighted by grid
+              cell areas).
+              '
+            common_cbar: true
+            fontsize: 10
+            plot_kwargs_bias:
+              levels:
+                - -10.0
+                - -7.5
+                - -5.0
+                - -2.5
+                - 0.0
+                - 2.5
+                - 5.0
+                - 7.5
+                - 10.0
+        script: monitor/multi_datasets.py
+    variables:
+      evspsbl:
+        grid: gr
+        mip: Amon
+        preprocessor: full_climatology
+        timerange: 1850/2014
+      hfls:
+        grid: gr
+        mip: Amon
+        preprocessor: full_climatology
+        timerange: 1850/2014
+      hfss:
+        grid: gr
+        mip: Amon
+        preprocessor: full_climatology
+        timerange: 1850/2014
+      pr:
+        grid: gr
+        mip: Amon
+        preprocessor: full_climatology_pr
+        timerange: 1850/2014
+      ps:
+        grid: gr
+        mip: Amon
+        preprocessor: full_climatology
+        timerange: 1850/2014
+      sos:
+        grid: gn
+        mip: Omon
+        preprocessor: full_climatology_unstructured
+        timerange: 1850/2014
+      tas:
+        grid: gr
+        mip: Amon
+        preprocessor: full_climatology
+        timerange: 1850/2014
+      tos:
+        grid: gn
+        mip: Omon
+        preprocessor: full_climatology_unstructured
+        timerange: 1850/2014
+      zos:
+        grid: gn
+        mip: Omon
+        preprocessor: full_climatology_unstructured
+        timerange: 1850/2014
+      ua200:
+        short_name: ua
+        mip: Amon
+        preprocessor: climatology_200hPa
+        grid: gr
+        long_name: Eastward Wind at 200 hPa
+        plot_name: Eastward Wind at 200 hPa
+        timerange: 1850/2014
+      ua500:
+        short_name: ua
+        mip: Amon
+        preprocessor: climatology_500hPa
+        grid: gr
+        long_name: Eastward Wind at 500 hPa
+        plot_name: Eastward Wind at 500 hPa
+        timerange: 1850/2014
+
+
+  plot_timeseries_annual_cycle:
+    description: Plot annual cycles
+    scripts:
+      plot:
+        facet_used_for_labels: alias
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plot_folder: '{plot_dir}/../../{dataset}/comparison/{real_name}'
+        plots:
+          annual_cycle: {}
+        script: monitor/multi_datasets.py
+    variables:
+      tas:
+        grid: gr
+        mip: Amon
+        preprocessor: annual_cycle_regular
+        short_name: tas
+        timerange: 1850/2014
+
+  plot_nino_timeseries:
+    description: Plot nino time series
+    scripts:
+      plot:
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plots:
+          timeseries: {}
+        script: monitor/multi_datasets.py
+    variables:
+      nino3:
+        grid: gn
+        mip: Omon
+        plot_name: "Ni\xF1o 3 index"
+        preprocessor: nino3
+        short_name: tos
+        timerange: 1850/2014
+      nino34:
+        grid: gn
+        mip: Omon
+        plot_name: "Ni\xF1o 3.4 index"
+        preprocessor: nino34
+        short_name: tos
+        timerange: 1850/2014
+
+  plot_timeseries:
+    description: Plot time series
+    scripts:
+      plot:
+        facet_used_for_labels: alias
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plot_folder: '{plot_dir}/../../{dataset}/comparison/{real_name}'
+        plots:
+          timeseries: {}
+        script: monitor/multi_datasets.py
+    variables:
+      cdnc:
+        grid: gn
+        mip: AERmon
+        preprocessor: timeseries_regular_vertical_mean
+      ch4:
+        grid: gn
+        mip: AERmon
+        preprocessor: timeseries_regular_vertical_mean
+      clt:
+        dataset: UKESM1-0-LL
+        grid: gn
+        mip: Amon
+        preprocessor: timeseries_regular
+      co2:
+        dataset: UKESM1-0-LL
+        grid: gn
+        mip: AERmon
+        preprocessor: timeseries_regular_vertical_mean
+      nbp:
+        dataset: UKESM1-0-LL
+        grid: gn
+        mip: Lmon
+        preprocessor: timeseries_regular
+      od550aer:
+        grid: gn
+        mip: AERmon
+        preprocessor: timeseries_regular
+      rlut:
+        grid: gn
+        mip: Amon
+        preprocessor: timeseries_regular
+      rsut:
+        grid: gn
+        mip: Amon
+        preprocessor: timeseries_regular
+      rtmt:
+        grid: gn
+        mip: Amon
+        preprocessor: timeseries_regular
+      tas:
+        grid: gn
+        mip: Amon
+        preprocessor: timeseries_regular
+
+  polar_climatology_antarctic:
+    additional_datasets:
+      - alias: MPI-ESM1-2-HR
+        dataset: MPI-ESM1-2-HR
+        ensemble: r1i1p1f1
+        exp: historical
+        grid: gn
+        project: CMIP6
+      - alias: MPI-ESM1-2-LR
+        dataset: MPI-ESM1-2-LR
+        ensemble: r1i1p1f1
+        exp: historical
+        grid: gn
+        project: CMIP6
+        reference_for_monitor_diags: true
+    description: Plot Antarctic climatologies with bias against the reference
+    scripts:
+      plot:
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plots:
+          map:
+            caption: 'Antarctic map plot of {long_name} of dataset {dataset} including
+              bias relative to MPI-ESM1-2-LR. The number in the top left corner
+              corresponds to the spatial mean (weighted by grid cell areas).'
+            common_cbar: true
+            fontsize: 10
+            projection: SouthPolarStereo
+            projection_kwargs:
+              central_longitude: 270
+        script: monitor/multi_datasets.py
+    variables:
+      pr:
+        grid: gr
+        mip: Amon
+        preprocessor: polar_climatology_sh_pr
+        timerange: 1850/2014
+      tas:
+        grid: gr
+        mip: Amon
+        preprocessor: polar_climatology_sh
+        timerange: 1850/2014
+
+  polar_climatology_arctic:
+    additional_datasets:
+      - alias: MPI-ESM1-2-HR
+        dataset: MPI-ESM1-2-HR
+        ensemble: r1i1p1f1
+        exp: historical
+        grid: gn
+        project: CMIP6
+      - alias: MPI-ESM1-2-LR
+        dataset: MPI-ESM1-2-LR
+        ensemble: r1i1p1f1
+        exp: historical
+        grid: gn
+        project: CMIP6
+        reference_for_monitor_diags: true
+    description: Plot Arctic climatologies with bias against the reference
+    scripts:
+      plot:
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plots:
+          map:
+            caption: 'Arctic map plot of {long_name} of dataset {dataset} including
+              bias relative to MPI-ESM1-2-LR. The number in the top left corner
+              corresponds to the spatial mean (weighted by grid cell areas).'
+            common_cbar: true
+            fontsize: 10
+            projection: NorthPolarStereo
+            projection_kwargs:
+              central_longitude: 270
+        script: monitor/multi_datasets.py
+    variables:
+      pr:
+        grid: gr
+        mip: Amon
+        preprocessor: polar_climatology_nh_pr
+        timerange: 1850/2014
+      tas:
+        grid: gr
+        mip: Amon
+        preprocessor: polar_climatology_nh
+        timerange: 1850/2014
+
+  plot_annual_cycle:
+    description: "Plot annual cycles"
+    variables:
+      mlotst-north:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: mlotstnorth
+        grid: gn
+        plot_name: Mixed layer depth average above 50ºN
+        timerange: 1850/2014
+      mlotst-south:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: mlotstsouth
+        grid: gn
+        plot_name: Mixed layer depth average below 40ºS
+        timerange: 1850/2014
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          annual_cycle: {}
+
+  nh_clims:
+    description: "Plot climatologies"
+    variables:
+      mltost-fma:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: clim_mam
+        grid: gn
+        timerange: 1850/2014
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          map:
+            projection: NorthPolarStereo
+            projection_kwargs:
+              central_longitude: 270
+
+  sh_clims:
+    description: "Plot climatologies"
+    variables:
+      mltost-aso:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: clim_son
+        grid: gn
+        timerange: 1850/2014
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          map:
+            projection: SouthPolarStereo
+            projection_kwargs:
+              central_longitude: 270
+
+
+  polar_monthly_climatology:
+    description: Plot monthly climatologies on both poles
+    scripts:
+      plot:
+        plot_folder: '{plot_dir}/../../{dataset}/{exp}/{real_name}'
+        plots:
+          monclim:
+            columns: 2
+            maps:
+              - arctic
+              - antarctic
+            months:
+              - 3
+              - 9
+            plot_size:
+              - 5.0
+              - 4.0
+            rows: 1
+        script: monitor/monitor.py
+    variables:
+      siconc:
+        grid: gn
+        mip: SImon
+        preprocessor: climatology
+        timerange: 1850/2014
+
+preprocessors:
+  annual_cycle_regular:
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: month
+  clim_son:
+    climate_statistics:
+      period: full
+    extract_season:
+      season: son
+    extract_region: &south_of_40_region
+      end_latitude: -40.0
+      end_longitude: 360
+      start_latitude: -90.0
+      start_longitude: 0.0
+    regrid:
+      scheme:
+        reference: esmvalcore.preprocessor.regrid_schemes:UnstructuredNearest
+      target_grid: 2x2
+  clim_mam:
+    climate_statistics:
+      period: full
+    extract_season:
+      season: mam
+    extract_region: &north_of_50_region
+      end_latitude: 90.0
+      end_longitude: 360
+      start_latitude: 50.0
+      start_longitude: 0.0
+    regrid:
+      scheme:
+        reference: esmvalcore.preprocessor.regrid_schemes:UnstructuredNearest
+      target_grid: 2x2
+  climatology:
+    climate_statistics:
+      period: month
+  climatology_200hPa:
+    climate_statistics:
+      period: full
+    extract_levels:
+      coordinate: air_pressure
+      levels: 20000
+      scheme: linear
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+  climatology_500hPa:
+    climate_statistics:
+      period: full
+    extract_levels:
+      coordinate: air_pressure
+      levels: 50000
+      scheme: linear
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+  climatology_pr:
+    climate_statistics:
+      period: month
+    convert_units:
+      units: kg m-2 day-1
+  full_climatology:
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+  full_climatology_pr:
+    climate_statistics:
+      period: full
+    convert_units:
+      units: kg m-2 day-1
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+  full_climatology_unstructured:
+    climate_statistics:
+      period: full
+    regrid: &UnstructuredNearest
+      scheme:
+        reference: esmvalcore.preprocessor.regrid_schemes:UnstructuredNearest
+      target_grid: 2x2
+  mlotstnorth:
+    area_statistics: &AreaMean
+      operator: mean
+    climate_statistics:
+      period: month
+    extract_region: *north_of_50_region
+    regrid: *UnstructuredNearest
+  mlotstsouth:
+    area_statistics: *AreaMean
+    climate_statistics:
+      period: month
+    extract_region: *south_of_40_region
+    regrid: *UnstructuredNearest
+  nao_djf:
+    extract_region:
+      end_latitude: 87.5
+      end_longitude: 60.0
+      start_latitude: 20.0
+      start_longitude: -90.0
+    extract_season:
+      season: djf
+    seasonal_statistics:
+      operator: mean
+  nino3:
+    area_statistics: *AreaMean
+    extract_region:
+      end_latitude: 5.0
+      end_longitude: -90
+      start_latitude: -5.0
+      start_longitude: -150.0
+    regrid: *UnstructuredNearest
+  nino34:
+    area_statistics: *AreaMean
+    extract_region:
+      end_latitude: 5.0
+      end_longitude: -120
+      start_latitude: -5.0
+      start_longitude: -170.0
+    regrid: *UnstructuredNearest
+  polar_climatology_nh:
+    climate_statistics:
+      period: full
+    extract_region: *north_of_50_region
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+  polar_climatology_nh_pr:
+    climate_statistics:
+      period: full
+    convert_units:
+      units: kg m-2 day-1
+    extract_region: *north_of_50_region
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+  polar_climatology_sh:
+    climate_statistics:
+      period: full
+    extract_region: &south_of_50_region
+      end_latitude: -50.0
+      end_longitude: 360
+      start_latitude: -90.0
+      start_longitude: 0.0
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+  polar_climatology_sh_pr:
+    climate_statistics:
+      period: full
+    convert_units:
+      units: kg m-2 day-1
+    extract_region: *south_of_50_region
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+  pp_diurn_tropics:
+    area_statistics:
+      operator: mean
+    convert_units:
+      units: mm day-1
+    custom_order: true
+    extract_region:
+      end_latitude: 30
+      end_longitude: 360
+      start_latitude: -30
+      start_longitude: 0
+    local_solar_time: null
+    mask_landsea:
+      mask_out: land
+  sam_jja:
+    extract_region: *south_of_50_region
+    extract_season:
+      season: djf
+    seasonal_statistics:
+      operator: mean
+  timeseries_regular:
+    area_statistics:
+      operator: mean
+  timeseries_regular_vertical_mean:
+    annual_statistics: null
+    area_statistics:
+      operator: mean
+    axis_statistics:
+      axis: Z
+      operator: mean
