@@ -1,8 +1,8 @@
 # ESMValTool
-# recipe_prw_test.yml
+# recipe_snow_test_cmip7.yml
 ---
 documentation:
-  title: Test snow variables
+  title: Test snow variables from CMIP7
 
   description: |
     Recipe test snow
@@ -13,52 +13,10 @@ documentation:
   maintainer:
     - lauer_axel
 
-datasets:
-#  - {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: CAS-ESM2-0, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: FGOALS-f3-L, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: FGOALS-g3, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: CanESM5, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: CMCC-CM2-HR4, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: CMCC-CM2-SR5, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: CMCC-ESM2, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: E3SM-1-0, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: E3SM-1-1-ECA, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: E3SM-1-1, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: EC-Earth3-AerChem, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: EC-Earth3-CC, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: EC-Earth3, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: EC-Earth3-Veg, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: EC-Earth3-Veg-LR, grid: gr, ensemble: r1i1p1f1}
-#    - {dataset: FIO-ESM-2-0, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: MPI-ESM-1-2-HAM, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: IPSL-CM5A2-INCA, grid: gr, ensemble: r1i1p1f1}
-###    - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
-  - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1, alias: CMIP6-MIROC6}
-###    - {dataset: ICON-ESM-LR, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: MPI-ESM1-2-HR, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: MPI-ESM1-2-LR, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: CESM2-FV2, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: CESM2-WACCM-FV2, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: CESM2-WACCM, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: NorCPM1, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: NorESM2-LM, grid: gn, ensemble: r1i1p1f1}
-###    - {dataset: NorESM2-MM, grid: gn, ensemble: r1i1p1f1}
-#    - {dataset: KACE-1-0-G, grid: gr, ensemble: r1i1p1f1}
-###    - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
-###    - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
-#    - {dataset: SAM0-UNICON, grid: '*', ensemble: r1i1p1f1}
-  - {project: CMIP7, dataset: UKCM2-0-LL, exp: historical, ensemble: r1i1p1f1, grid: g110, mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: UKNCSP, branding_suffix: tavg-u-hxy-lnd, alias: CMIP7-UKCM2-0-LL, end_year: 2019}
+###datasets:
+###  - {project: CMIP7, dataset: UKCM2-0-LL, exp: historical, ensemble: r1i1p1f1, grid: g110, mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: UKNCSP, branding_suffix: tavg-u-hxy-lnd, alias: CMIP7-UKCM2-0-LL, end_year: 2019}
 ###  - {project: CMIP7, dataset: UKCM2a-0-HH, exp: historical, ensemble: r1i1p1f1, grid: g137, mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: UKNCSP, branding_suffix: tavg-u-hxy-lnd, alias: CMIP7-UKCM2a-0-HH, end_year: 2019}
+###  - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-lnd, end_year: 2019}
 
 
 supplementary_variables: &supplementary_variables
@@ -78,8 +36,8 @@ preprocessors:
       shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask_05x05.shp
     mask_above_threshold:
       threshold: 500.
-#    mask_below_threshold:
-#      threshold: 0.01
+    mask_below_threshold:
+      threshold: 0.1
 
   pp_snw_sum:
     custom_order: true
@@ -114,6 +72,8 @@ preprocessors:
       shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask_05x05.shp
     mask_above_threshold:
       threshold: 500.
+    mask_below_threshold:
+      threshold: 0.1
 
   pp_snw_seascyc:
     regrid:
@@ -142,15 +102,14 @@ diagnostics:
     description: NH total snow water equivalent
     variables:
       snw:
-#        mip: day
         mip: LImon
         start_year: 1979
-        end_year: 2014
-        project: CMIP6
+        end_year: 2019
         exp: historical
         preprocessor: pp_snw_sum
         additional_datasets:
-          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0, start_year: 1979, end_year 2019}
+          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+          - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-lnd}
         supplementary_variables: *supplementary_variables
     scripts:
       plot:
@@ -161,8 +120,6 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
-                color: C0
               ESACCI-SNOW:
                 color: black
               UKCM2-0-LL:
@@ -175,16 +132,12 @@ diagnostics:
     description: seasonal mean snow water equivalent
     variables:
       snw:
-#        mip: day
-        mip: LImon
         start_year: 2010
-#        start_year: 2014
-        end_year: 2014
-        project: CMIP6
-        exp: historical
+        end_year: 2019
         preprocessor: pp_snw
         additional_datasets:
           - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+          - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-lnd}
     scripts:
       plot:
         script: clouds/clouds.ncl
@@ -195,18 +148,20 @@ diagnostics:
 #        region: [30, 90, 0, 360]
         region: [30, 90, -180, 180]
 
+# **************************************************
+# *** no daily snw data from CMIP7 available yet ***
+# **************************************************
+
 #  snow_pdf:
 #    description: Plot PDF of NH daily snw.
 #    variables:
 #      snw:
 #        preprocessor: pp_snw_daily
-#        mip: day
 #        start_year: 2010
 #        end_year: 2014
-#        project: CMIP6
-#        exp: historical
 #        additional_datasets:
 #          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+#          - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-lnd, mip: landIce, frequency: day}
 #    scripts:
 #      plot:
 #        script: seaborn_diag.py
@@ -231,7 +186,7 @@ diagnostics:
 #          set:
 #            xlabel: 'snw [kg/m2]'
 #            xlim: [10, 250]
-#            ylim: [0, 0.004]
+##            ylim: [0, 0.004]
 #        seaborn_settings:
 #          style: ticks
 #          rc:
@@ -243,16 +198,13 @@ diagnostics:
     description: NH average snow water equivalent (seasonal cycle)
     variables:
       snw:
-#        mip: day
-        mip: LImon
         start_year: 2010
         end_year: 2014
-        project: CMIP6
-        exp: historical
         preprocessor: pp_snw_seascyc
         supplementary_variables: *supplementary_variables
         additional_datasets:
           - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+          - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-lnd}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -266,8 +218,6 @@ diagnostics:
             pyplot_kwargs:
               title: 'NH average snow water equivalent (kg/m2)'
             plot_kwargs:
-              MIROC6:
-                color: C0
               ESACCI-SNOW:
                 color: black
               UKCM2-0-LL:

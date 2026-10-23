@@ -58,8 +58,6 @@ datasets:
 ###    - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
 ###    - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
 #    - {dataset: SAM0-UNICON, grid: '*', ensemble: r1i1p1f1}
-###  - {project: CMIP7, dataset: UKCM2-0-LL, exp: historical, ensemble: r1i1p1f1, grid: g110, mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: UKNCSP, branding_suffix: tavg-u-hxy-lnd, alias: CMIP7-UKCM2-0-LL, end_year: 2019}
-###  - {project: CMIP7, dataset: UKCM2a-0-HH, exp: historical, ensemble: r1i1p1f1, grid: g137, mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: UKNCSP, branding_suffix: tavg-u-hxy-lnd, alias: CMIP7-UKCM2a-0-HH, end_year: 2019}
 
 
 supplementary_variables: &supplementary_variables
@@ -79,6 +77,8 @@ preprocessors:
       shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask_05x05.shp
     mask_above_threshold:
       threshold: 500.
+    mask_below_threshold:
+      threshold: 0.1
 
   # pp_snw_sum - regridding is needed to run extract_region on ICON data
   pp_snw_sum:
@@ -117,6 +117,8 @@ preprocessors:
       shapefile: shapefiles/esacci_snow_mountain_and_glacier_free_mask_05x05.shp
     mask_above_threshold:
       threshold: 500.
+    mask_below_threshold:
+      threshold: 0.1
 
   pp_snw_seascyc:
     regrid:
@@ -180,9 +182,7 @@ diagnostics:
     variables:
       snw:
         mip: LImon
-#        mip: day
         start_year: 2010
-#        start_year: 2014
         end_year: 2014
         project: CMIP6
         exp: historical
@@ -247,7 +247,6 @@ diagnostics:
     description: NH average snow water equivalent (seasonal cycle)
     variables:
       snw:
-#        mip: day
         mip: LImon
         start_year: 2010
         end_year: 2014
@@ -256,6 +255,7 @@ diagnostics:
         preprocessor: pp_snw_seascyc
         additional_datasets:
           - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+        supplementary_variables: *supplementary_variables
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -273,7 +273,3 @@ diagnostics:
                 color: C0
               ESACCI-SNOW:
                 color: black
-              UKCM2-0-LL:
-                color: blue
-              UKCM2a-0-HH:
-                color: green
