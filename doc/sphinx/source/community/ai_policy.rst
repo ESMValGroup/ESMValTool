@@ -51,8 +51,8 @@ Communication
 
 When interacting with developers (forums, discussions,
 issues, pull requests, etc.) do not use AI to speak for you, except for
-translation or grammar editing. If the developers want to chat with a chatbot,
-they can do so themselves. Human-to-human communication is essential for an
+translation or grammar editing.
+Human-to-human communication is essential for an
 open source community to thrive.
 
 If you suspect that a contributor has used AI in a way that violates this
