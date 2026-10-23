@@ -75,9 +75,8 @@ When using AI to assist with research, be aware that some AI tools train on
 your input and may use it to generate content for others.
 This is especially true for free AI services and often the default setting for
 paid services.
-Never use such tools with the
-:ref:`private ESMValTool repositories <private_repository>`
-containing unpublished research, as you may inadvertently leak (other people's)
+Never use such tools with private repositories
+that may contain unpublished research, as you may inadvertently leak (other people's)
 private code, documentation, and results to competing researchers or the
 general public.
 
