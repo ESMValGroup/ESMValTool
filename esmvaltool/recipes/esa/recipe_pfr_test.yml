@@ -58,6 +58,11 @@ documentation:
 ###    - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
 #    - {dataset: SAM0-UNICON, grid: '*', ensemble: r1i1p1f1}
 
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+
+
 preprocessors:
   pp_pfr:
     custom_order: true
@@ -121,6 +126,8 @@ diagnostics:
           - {dataset: ESACCI-PERMAFROST, project: OBS6, tier: 2, type: sat, version: v5.0NH, start_year: 1997, end_year: 2023}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MIROC5, ensemble: r1i1p1, project: CMIP5, end_year: 2004}
+          - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-lnd}
+        supplementary_variables: *supplementary_variables
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -137,7 +144,7 @@ diagnostics:
               ESACCI-PERMAFROST:
                 color: black
             pyplot_kwargs:
-              ylim: [9, 18]
+              ylim: [6, 16]
 
   permafrost_map:
     title: maps of NH permafrost extent
@@ -154,6 +161,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-PERMAFROST, project: OBS6, tier: 2, type: sat, version: v5.0NH}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: landIce, frequency: mon, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-lnd}
     scripts:
       plot:
 #        script: clouds/clouds.ncl
@@ -194,6 +202,7 @@ diagnostics:
         exp: historical
         additional_datasets:
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: land, frequency: mon, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-sl-hxy-lnd}
     scripts:
       plot:
         script: monitor/multi_datasets.py
