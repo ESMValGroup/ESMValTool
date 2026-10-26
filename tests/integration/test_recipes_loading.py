@@ -1,5 +1,6 @@
 """Test recipes are well formed."""
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -11,7 +12,6 @@ import esmvalcore.dataset
 import esmvalcore.typing
 import pytest
 import pytest_mock
-import yaml
 from esmvalcore.config import CFG, Session, _config
 
 try:
@@ -119,6 +119,23 @@ def test_recipe_valid(recipe_file, session, mocker):
         side_effect=lambda *_, **__: [1, 2],
     )
 
+    # Mock data availability check. The mocked data sources above always
+    # provide data, so the check would pass anyway, but it is slow because
+    # the mocked files span a time range with many years and the function is
+    # called many times. A plain function is used instead of a mock object to
+    # avoid the overhead of recording all calls.
+    def data_availability(
+        dataset: esmvalcore.dataset.Dataset,
+        log: bool = True,  # noqa: FBT001, FBT002
+    ) -> None:
+        """Do not check data availability."""
+
+    mocker.patch.object(
+        esmvalcore._recipe.check,
+        "data_availability",
+        new=data_availability,
+    )
+
     # Mock valid NCL version
     mocker.patch.object(
         esmvalcore._recipe.check,
@@ -142,16 +159,15 @@ def test_recipe_valid(recipe_file, session, mocker):
         side_effect=which,
     )
 
-    # Create a shapefile for extract_shape preprocessor if needed
-    recipe = yaml.safe_load(recipe_file.read_text())
-    for preproc in recipe.get("preprocessors", {}).values():
-        extract_shape = preproc.get("extract_shape")
-        if extract_shape and "shapefile" in extract_shape:
-            filename = (
-                Path(session["auxiliary_data_dir"])
-                / extract_shape["shapefile"]
-            )
-            filename.parent.mkdir(parents=True, exist_ok=True)
-            filename.touch()
+    # Mock shapefile existence check for extract_shape preprocessor. Note that
+    # this patches os.path.exists everywhere, so fall back to the real
+    # function for other files.
+    exists = os.path.exists
+    mocker.patch.object(
+        esmvalcore._recipe.check.os.path,
+        "exists",
+        autospec=True,
+        side_effect=lambda path: str(path).endswith(".shp") or exists(path),
+    )
 
     esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
