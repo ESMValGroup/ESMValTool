@@ -19,7 +19,7 @@ documentation:
     - lillis_jon
 
 datasets:
-  - activity: ESMVal
+  - activity: CMIP6
     alias: u-dr725/UKESM1p3+C7 volc+solar+CH4+GHG
     benchmark_dataset: true
     dataset: UKESM1-0-LL
@@ -28,9 +28,9 @@ datasets:
     exp: amip-u-dr725
     grid: gn
     institute: MOHC
-    project: ESMVal
+    project: CMIP6
     start_year: 3150
-  - activity: ESMVal
+  - activity: CMIP6
     alias: u-ds902/CH4-jules scaling
     dataset: UKESM1-0-LL
     end_year: 3159
@@ -38,7 +38,7 @@ datasets:
     exp: amip-u-ds902
     grid: gn
     institute: MOHC
-    project: ESMVal
+    project: CMIP6
     start_year: 3150
 
 diagnostics:
