@@ -6,10 +6,6 @@ documentation:
   description: >
     Calculate weights for CMIP type models based on performance and independence.
     Developed based on the ClimWIP method in the frame of EUCP and CRESCENDO.
-  themes:
-    - phys
-  realms:
-    - atmos
   authors:
     - kalverla_peter
     - smeets_stef
@@ -111,6 +107,10 @@ preprocessors:
 
 diagnostics:
   calculate_weights_climwip:
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       tas_CLIM_reference:
         short_name: tas

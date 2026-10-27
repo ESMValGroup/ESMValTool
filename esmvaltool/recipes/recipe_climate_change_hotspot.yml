@@ -538,10 +538,6 @@ diagnostics:
       - phys
     realms: &realms
       - atmos
-    statistics:
-      - mean
-      - anomaly
-      - diff
     variables:
       tas:
         mip: Amon
@@ -678,9 +674,6 @@ diagnostics:
         <<: *script_input
 
   generate_plots:
-    plot_types:
-      - scatter
-      - geo
     scripts:
       generate_plots:
         ancestors: [tas_cmip6_85/*,

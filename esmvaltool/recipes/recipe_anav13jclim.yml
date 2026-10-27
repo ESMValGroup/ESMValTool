@@ -65,12 +65,6 @@ preprocessors:
     <<: *regridding
     <<: *sea_fraction_weighting
 
-  grading:
-    regrid:
-      target_grid: ref_dataset
-      regrid_scheme: linear
-    mask_fillvalues: true
-
   regrid_to_ref: &regrid_to_ref
     regrid:
       target_grid: reference_dataset
