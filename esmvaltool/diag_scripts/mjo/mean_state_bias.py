@@ -1,11 +1,10 @@
 # Copyright (C) 2026 ESMValTool development team
 """May-October precipitation and 850 hPa wind mean-state comparison.
 
-The recipe supplies five already subset and season-selected inputs: daily
-NCEP-NCAR-R1 precipitation and winds for 2000-2020, and daily precipitation
-from the final 30 years of ACCESS-ESM1-5 historical and ACCESS-CM2 piControl.
-The two model periods and experiments are intentionally labelled separately;
-this is a descriptive comparison rather than a matched-experiment test.
+The recipe supplies preprocessed reference precipitation and winds, plus
+precipitation from historical and control experiments. Dataset names and
+periods are taken from the input metadata so the diagnostic can be reused
+with other datasets.
 """
 
 import cartopy.crs as ccrs
@@ -34,7 +33,7 @@ REGIONS = {
 
 
 def _load_inputs(cfg):
-    """Return exactly one cube for each named recipe variable group."""
+    """Return one cube and its dataset alias for each variable group."""
     grouped = group_metadata(cfg["input_data"].values(), "variable_group")
     required = ("obs_pr", "obs_ua", "obs_va", "historical_pr", "control_pr")
     if set(grouped) != set(required):
@@ -43,6 +42,7 @@ def _load_inputs(cfg):
             msg,
         )
     cubes = {}
+    aliases = {}
     ancestors = []
     for name in required:
         entries = grouped[name]
@@ -51,13 +51,15 @@ def _load_inputs(cfg):
             raise ValueError(
                 msg,
             )
-        filename = entries[0]["filename"]
+        metadata = entries[0]
+        filename = metadata["filename"]
         cubes[name] = iris.load_cube(filename)
+        aliases[name] = metadata.get("alias") or metadata["dataset"]
         ancestors.append(filename)
-    return cubes, ancestors
+    return cubes, aliases, ancestors
 
 
-def calculate_biases(cubes):
+def calculate_biases(cubes, aliases):
     """Compute seasonal means and model-minus-reference precipitation bias."""
     means = {
         name: iris.util.squeeze(cube.collapsed("time", iris.analysis.MEAN))
@@ -74,8 +76,12 @@ def calculate_biases(cubes):
         means["control_pr"],
         scheme="linear",
     )
-    historical_bias.rename("ACCESS-ESM1-5 historical precipitation bias")
-    control_bias.rename("ACCESS-CM2 piControl precipitation bias")
+    historical_bias.rename(
+        f"{aliases['historical_pr']} minus {aliases['obs_pr']} precipitation",
+    )
+    control_bias.rename(
+        f"{aliases['control_pr']} minus {aliases['obs_pr']} precipitation",
+    )
     historical_bias.var_name = "historical_bias"
     control_bias.var_name = "control_bias"
     mean_obs_pr.var_name = "obs_pr"
@@ -92,7 +98,7 @@ def _period_label(cube):
     return f"{first}-{last}"
 
 
-def plot_biases(means, historical_bias, control_bias, periods):
+def plot_biases(means, historical_bias, control_bias, periods, aliases):
     """Render the notebook's three-panel mean state and bias figure."""
     fig, axes = plt.subplots(
         3,
@@ -171,7 +177,7 @@ def plot_biases(means, historical_bias, control_bias, periods):
             zorder=6,
         )
     axes[0].set_title(
-        f"NCEP-NCAR-R1 ({periods['obs_pr']})\n"
+        f"{aliases['obs_pr']} ({periods['obs_pr']})\n"
         "May-October precipitation and 850 hPa winds",
     )
 
@@ -179,13 +185,16 @@ def plot_biases(means, historical_bias, control_bias, periods):
         (
             historical_bias,
             (
-                "ACCESS-ESM1-5 historical "
-                f"({periods['historical_pr']}) - NCEP-NCAR-R1"
+                f"{aliases['historical_pr']} "
+                f"({periods['historical_pr']}) - {aliases['obs_pr']}"
             ),
         ),
         (
             control_bias,
-            (f"ACCESS-CM2 piControl ({periods['control_pr']}) - NCEP-NCAR-R1"),
+            (
+                f"{aliases['control_pr']} "
+                f"({periods['control_pr']}) - {aliases['obs_pr']}"
+            ),
         ),
     )
     for axis, (cube, title) in zip(axes[1:], biases, strict=False):
@@ -222,9 +231,9 @@ def plot_biases(means, historical_bias, control_bias, periods):
 
 def main(cfg):
     """Save the plotted mean fields, biases, and figure with provenance."""
-    cubes, ancestors = _load_inputs(cfg)
+    cubes, aliases, ancestors = _load_inputs(cfg)
     periods = {name: _period_label(cube) for name, cube in cubes.items()}
-    means, historical_bias, control_bias = calculate_biases(cubes)
+    means, historical_bias, control_bias = calculate_biases(cubes, aliases)
     output = iris.cube.CubeList(
         [
             means["obs_pr"],
@@ -238,9 +247,10 @@ def main(cfg):
     iris.save(output, data_file)
     provenance = {
         "caption": (
-            "May-October NCEP-NCAR-R1 precipitation and 850 hPa winds, "
-            "with ACCESS-ESM1-5 historical and ACCESS-CM2 piControl "
-            "precipitation biases relative to that reference"
+            f"May-October {aliases['obs_pr']} precipitation and 850 hPa "
+            f"winds, with {aliases['historical_pr']} and "
+            f"{aliases['control_pr']} precipitation biases relative to "
+            "that reference"
         ),
         "ancestors": ancestors,
         "authors": ["sullivan_arnold", "chun_felicity", "beucher_romain"],
@@ -250,7 +260,13 @@ def main(cfg):
     }
     with ProvenanceLogger(cfg) as logger:
         logger.log(data_file, provenance)
-    figure = plot_biases(means, historical_bias, control_bias, periods)
+    figure = plot_biases(
+        means,
+        historical_bias,
+        control_bias,
+        periods,
+        aliases,
+    )
     save_figure(
         "mjo_bsiso_mean_state_bias",
         provenance,

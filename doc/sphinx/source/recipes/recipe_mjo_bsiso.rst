@@ -14,9 +14,10 @@ days -10, -5, and 0 are assembled on uninterrupted daily data before DJF and
 JJA training dates are selected. The two seasonal patterns are projected
 onto each available day using the training PCA mean and normalization.
 
-The mean-state diagnostic plots May–October precipitation and 850 hPa winds
-from NCEP-NCAR-R1 for 2000–2020. Its two precipitation bias panels use
-ACCESS-ESM1-5 historical 1985–2014 and ACCESS-CM2 piControl 1420–1449.
+In the example recipe, the mean-state diagnostic plots May–October
+precipitation and 850 hPa winds from NCEP-NCAR-R1 for 2000–2020. Its two
+precipitation bias panels use ACCESS-ESM1-5 historical 1985–2014 and
+ACCESS-CM2 piControl 1420–1449.
 These periods and experiments differ, so the panels are descriptive
 model-minus-reference comparisons.
 
@@ -51,6 +52,13 @@ The ``mjo_bsiso_index/index`` script accepts:
 The recipe selects a 30-year ACCESS-ESM1-5 piControl sample to match the
 source notebook. Set ``max_parallel_tasks`` to control memory use when
 running the full example on Gadi.
+
+The mean-state diagnostic can compare other datasets by changing the
+``additional_datasets`` entries for reference precipitation and winds, and
+for the historical and control precipitation inputs. Set aliases for the
+reference and both model precipitation datasets: the diagnostic uses those
+aliases in figure titles, NetCDF variable descriptions, and provenance
+instead of embedding the example dataset names.
 
 Variables
 ---------

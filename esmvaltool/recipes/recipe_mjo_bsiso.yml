@@ -8,8 +8,9 @@ documentation:
     Fit separate DJF MJO and JJA BSISO extended EOFs to 25–90-day filtered
     daily outgoing longwave radiation anomalies. Project their normalized
     PCs year-round and compare their monthly occurrence. A second diagnostic
-    plots May–October precipitation and 850 hPa winds from NCEP-NCAR-R1,
-    together with two explicitly labelled model precipitation biases.
+    plots May–October precipitation and 850 hPa winds from a reference
+    dataset, together with two model precipitation biases labelled using
+    the dataset aliases in this recipe.
     The EEOF index complements, rather than duplicates, Wheeler–Kiladis
     wavenumber-frequency spectra.
 
@@ -87,7 +88,7 @@ diagnostics:
         lags: [-10, -5, 0]
 
   mjo_bsiso_mean_state_bias:
-    description: May–October NCEP-NCAR-R1 mean state and model biases.
+    description: May–October reference mean state and model biases.
     themes:
       - phys
     realms:
