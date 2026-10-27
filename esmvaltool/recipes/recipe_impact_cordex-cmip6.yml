@@ -29,7 +29,7 @@ documentation:
     - andela_bouwe
   maintainer:
     - andela_bouwe
-  project:
+  projects:
     - eso4clima
     - isenes3
 

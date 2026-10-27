@@ -28,7 +28,7 @@ documentation:
     - andela_bouwe
   maintainer:
     - kalverla_peter
-  project:
+  projects:
     - isenes3
 
 datasets:
@@ -137,7 +137,7 @@ preprocessors:
 
   prepare_for_bias_calculation:
     regrid:
-      scheme: linear
+      scheme: area_weighted
       target_grid: 2.5x2.5
     extract_region:
       <<: *region

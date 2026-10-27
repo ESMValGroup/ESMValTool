@@ -1,0 +1,145 @@
+# ESMValTool
+# recipe_impact_cmip7.yml
+---
+documentation:
+  title: Quick insight for climate impact researchers
+  description: >
+    This recipe provides quick insight into the spread and performance of multiple models.
+
+    Many impact researchers do not have the time and finances to use a large
+    ensemble of climate model runs for their impact analysis. To get an idea of
+    the range of impacts of climate change it also suffices to use a small
+    number of climate model runs. In case a system is only sensitive to annual
+    temperature, one can select a run with a high change and one with a low
+    change of annual temperature, preferably both with a low bias.
+
+    Results of this recipe can be viewed interactively at
+    https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact/.
+
+    Notes:
+
+    - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
+    - Future change is calculated for 2035-2065 as compared to 1986-2015.
+    - Area is set to Europe (lon 0-39; lat 30-76.25)
+    - All data are taken from the CMIP7 ScenarioMIP high emissions scenario
+      (scen7-h), the closest CMIP7 equivalent of the CMIP6 SSP5-8.5 scenario.
+
+  authors:
+    - kalverla_peter
+    - andela_bouwe
+  maintainer:
+    - andela_bouwe
+  projects:
+    - eso4clima
+    - isenes3
+
+# Datasets were selected by searching ESGF for runs that provide monthly mean
+# tas and pr for the historical and scen7-h experiments.
+datasets:
+  - {dataset: CanESM6-0-MR, institute: CCCma, ensemble: r(1:25)i1p1f1, grid: g150}
+  - {dataset: UKCM2a-0-HH, institute: UKNCSP, ensemble: r(1:2)i1p1f1, grid: g137}
+
+preprocessors:
+
+  calculate_anomalies:
+    custom_order: true
+    extract_region: &region
+      start_longitude: 0.0
+      end_longitude: 39.0
+      start_latitude: 30.0
+      end_latitude: 76.25
+    area_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &reference_period
+        start_year: 1986
+        start_month: 1
+        start_day: 1
+        end_year: 2015
+        end_month: 12
+        end_day: 31
+      standardize: false
+    extract_time:  # Future period
+      start_year: 2035
+      start_month: 1
+      start_day: 1
+      end_year: 2065
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+
+  prepare_for_bias_calculation:
+    regrid:
+      scheme: area_weighted
+      target_grid: 2.5x2.5
+    extract_region:
+      <<: *region
+    extract_time:
+      <<: *reference_period
+    regrid_time:
+      frequency: mon
+      calendar: standard
+    distance_metric:
+      metric: weighted_rmse
+      coords: [time, latitude, longitude]
+      keep_reference_dataset: false
+
+diagnostics:
+  bias_and_change:
+    description: >
+      Provide quick insights into the behaviour of each model by plotting the
+      bias with respect to observations and change with respect to the reference
+      period.
+
+    themes:
+      - phys
+    realms:
+      - atmos
+
+    variables:
+      tas_change: &change
+        short_name: tas
+        exp: [historical, scen7-h]
+        project: CMIP7
+        mip: atmos
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-h2m-hxy-u
+        timerange: '1986/2065'
+        preprocessor: calculate_anomalies
+      pr_change:
+        <<: *change
+        short_name: pr
+        branding_suffix: tavg-u-hxy-u
+      tas_bias: &bias
+        short_name: tas
+        exp: [historical, scen7-h]
+        project: CMIP7
+        mip: atmos
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-h2m-hxy-u
+        timerange: '1986/2015'
+        preprocessor: prepare_for_bias_calculation
+        additional_datasets:
+          - {dataset: ERA-5, mip: Amon, project: obs4MIPs, reference_for_metric: true}
+      pr_bias:
+        <<: *bias
+        short_name: pr
+        branding_suffix: tavg-u-hxy-u
+        additional_datasets:
+          - {dataset: ERA5, mip: Amon, project: native6, type: reanaly, version: v1, tier: 3, reference_for_metric: true}
+
+    scripts:
+      visualize:
+        script: impact/bias_and_change.py
+        notes:
+          - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
+          - Future change is calculated for 2035-2065 as compared to 1986-2015.
+          - Area is set to Europe (lon 0-39; lat 30-76.25).
+          - All data are taken from the CMIP7 ScenarioMIP high emissions scenario (scen7-h).
+        axis_titles:
+          bias: Bias with respect to ERA5 (1986-2015)
+          change: Projected change (2050 versus 2000)
