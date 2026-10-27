@@ -258,7 +258,7 @@ def main(cfg):
         "and Webb (2009, Clim. Dyn.).",
         "statistics": ["other"],
         "domains": ["global"],
-        "plot_type": "bar",
+        "plot_types": ["bar"],
         "authors": [
             "williams_keith",
             "lauer_axel",

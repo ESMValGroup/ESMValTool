@@ -27,7 +27,7 @@ def get_provenance_record(cfg, caption):
 
     record = {
         "caption": caption,
-        "plot_type": "other",
+        "plot_types": ["other"],
         "authors": [
             "sellar_alistair",
             "parsons_naomi",

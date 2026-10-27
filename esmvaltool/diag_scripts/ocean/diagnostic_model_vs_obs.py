@@ -267,8 +267,8 @@ def make_model_vs_obs_plots(cfg, metadata, model_filename, obs_filename):
             cfg,
             caption=caption,
             statistics=["mean", "clim", "diff"],
-            domain=["global"],
-            plot_type=["map"],
+            domains=["global"],
+            plot_types=["map"],
             ancestors=[model_filename, obs_filename],
         )
 
@@ -499,8 +499,8 @@ def make_scatter(cfg, metadata, model_filename, obs_filename):
             cfg,
             caption=long_name,
             statistics=["mean", "clim", "diff"],
-            domain=["global"],
-            plot_type=["scatter"],
+            domains=["global"],
+            plot_types=["scatter"],
             ancestors=[model_filename, obs_filename],
         )
 

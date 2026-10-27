@@ -16,7 +16,7 @@ def get_provenance_record(caption, run):
         "caption": caption,
         "statistics": ["mean"],
         "domains": ["global"],
-        "plot_type": "metrics",
+        "plot_types": ["metrics"],
         "authors": [
             "edwards_john",
             "sellar_alistair",

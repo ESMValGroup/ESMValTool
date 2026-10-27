@@ -609,7 +609,7 @@ def su(grouped_data, cfg):
                 {"su": attrs},
                 ["su"],
                 caption=f"{cube.long_name} for {dataset_name}.",
-                plot_type="zonal",
+                plot_types=["zonal"],
                 ancestors=ancestors,
             )
             with ProvenanceLogger(cfg) as provenance_logger:
@@ -774,7 +774,7 @@ def zhai(grouped_data, cfg):
                 {"zhai": attrs},
                 ["zhai"],
                 caption=f"Regression plot of 'mblc_fraction' vs 'tos' ({hem})",
-                plot_type="scatter",
+                plot_types=["scatter"],
                 ancestors=[d["filename"] for d in datasets],
             )
             with ProvenanceLogger(cfg) as provenance_logger:

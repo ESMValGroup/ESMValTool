@@ -725,7 +725,7 @@ def get_provenance_record(config):
     filenames = [item["filename"] for item in config["input_data"].values()]
     record = {
         "caption": "Normalised assessment criteria plot",
-        "plot_type": "metrics",
+        "plot_types": ["metrics"],
         "authors": ["williams_keith", "predoi_valeriu", "sellar_alistair"],
         "ancestors": filenames,
     }

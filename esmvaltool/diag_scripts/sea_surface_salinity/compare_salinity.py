@@ -208,7 +208,7 @@ class CompareSalinity:
             "domains": [
                 "global",
             ],
-            "autors": ["vegas-regidor_javier"],
+            "authors": ["vegas-regidor_javier"],
             "references": ["acknow_author"],
             "ancestors": ancestors,
         }
