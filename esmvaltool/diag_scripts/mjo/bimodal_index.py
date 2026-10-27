@@ -15,6 +15,7 @@ are deliberately omitted pending independent sign-convention validation.
 import itertools
 
 import cartopy.crs as ccrs
+from cartopy.util import add_cyclic_point
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
@@ -286,10 +287,14 @@ def plot_eeofs(result, label):
             for mode_index in range(2):
                 ax = axes[section * n_lags + lag_index, mode_index]
                 field = patterns.isel(mode=mode_index, lag=lag_index)
-                contour = ax.contourf(
-                    result.lon.values,
-                    result.lat.values,
+                cyclic_field, cyclic_lon = add_cyclic_point(
                     field.values,
+                    coord=result.lon.values,
+                )
+                contour = ax.contourf(
+                    cyclic_lon,
+                    result.lat.values,
+                    cyclic_field,
                     levels=levels,
                     cmap="RdBu_r",
                     extend="both",
