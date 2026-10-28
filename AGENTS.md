@@ -78,7 +78,9 @@ If the data is only available on an HPC system, the user can run the
 preprocessing there and copy the output directory to their own computer, so
 the diagnostic scripts can be run locally.
 ESMValCore only resumes from a run of an identical recipe, so after changing
-the recipe, the preprocessing must be run again.
+the recipe, the preprocessing must be run again (if the user is sure that the
+preprocessed data has not changed, the check can be commented out in the
+function `parse_resume` in `esmvalcore/_main.py` in ESMValCore).
 
 ## Design
 
