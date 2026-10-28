@@ -2277,10 +2277,10 @@ diagnostics:
       tos:
         mip: Omon
       hfls:
-        mip: Lmon
-      hfls:
         mip: Amon
-      rlut:
+      hfds:
+        mip: Omon
+      rlus:
         mip: Amon
       tauu:
         mip: Amon
