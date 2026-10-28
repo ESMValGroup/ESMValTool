@@ -244,7 +244,10 @@ or that changes scientific results (*science change*) is subject to the
 [backward compatibility policy](doc/sphinx/source/community/backward_compatibility.rst).
 Avoid such changes where possible and flag them clearly to the user rather
 than making them silently. Code in `esmvaltool/diag_scripts/shared/` is used by
-many diagnostics, so check all its users when changing it.
+many diagnostics, so check all its users when changing it. Passing tests do not
+show that results are scientifically correct: if a change may affect results,
+tell the user which output to compare with the previous version or with the
+literature.
 
 ## Dependencies
 
