@@ -36,8 +36,7 @@ preprocessors:
       mask_out: sea
 
   landmask_and_regrid:
-    <<: *regridding
-    <<: *landmask
+    <<: [*landmask, *regridding]
 
   land_fraction_weighting: &land_fraction_weighting
     weighting_landsea_fraction: &weighting_options
@@ -58,12 +57,10 @@ preprocessors:
       area_type: sea
 
   land_fraction_weighting_and_regrid:
-    <<: *regridding
-    <<: *land_fraction_weighting
+    <<: [*land_fraction_weighting, *regridding]
 
   sea_fraction_weighting_and_regrid:
-    <<: *regridding
-    <<: *sea_fraction_weighting
+    <<: [*sea_fraction_weighting, *regridding]
 
   grading:
     regrid:
@@ -79,8 +76,7 @@ preprocessors:
       threshold_fraction: 0.95
 
   land_fraction_weighting_and_regrid_to_ref:
-    <<: *land_fraction_weighting
-    <<: *regrid_to_ref
+    <<: [*regrid_to_ref, *land_fraction_weighting]
 
 
 diagnostics:
