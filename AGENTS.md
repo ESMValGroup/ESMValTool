@@ -136,6 +136,9 @@ function `parse_resume` in `esmvalcore/_main.py` in ESMValCore).
   or dataset. A single integration test for a CMORizer script may be sufficient.
   If a diagnostic script provides options that can be configured in the recipe,
   some tests that the script behaves correctly for different options are useful.
+  If a diagnostic script implements a complex algorithm, tests that verify that
+  the algorithm is implemented correctly are helpful. Keep the tests as
+  light-touch as possible, but make sure the scientific results are reliable.
 - Tests use pytest; prefer plain functions, fixtures, `pytest.mark.parametrize`,
   and `pytest-mock`'s `mocker` fixture over `unittest` style.
 - Do not change existing tests to make new code pass: having to change them
