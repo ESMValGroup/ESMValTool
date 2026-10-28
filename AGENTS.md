@@ -87,8 +87,8 @@ function `parse_resume` in `esmvalcore/_main.py` in ESMValCore).
 - Keep changes small and focused. Changes to CMORizer scripts always go in a
   separate pull request, also when a new recipe uses the dataset.
 - Write new diagnostics and CMORizer scripts in Python. Only use R for
-  new diagnostic scripts if a specific R package is required or the diagnostic
-  author is more comfortable with R. Do not write new NCL code: the NCL
+  new diagnostic scripts if a specific R package is required or the user is
+  more comfortable with R. Do not write new NCL code: the NCL
   interpreter is no longer maintained.
 - Reuse existing code, e.g. from `esmvaltool/diag_scripts/shared/`, instead of
   writing new code. Prefer ESMValCore preprocessor functions in the recipe over
