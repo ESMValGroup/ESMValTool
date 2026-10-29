@@ -279,12 +279,12 @@ def _write_albedochanges_to_disk(alb_lc, template_cube, datadict, cfg):
                 ),
                 "statistics": ["other"],
                 "domains": ["global"],
-                "plot_type": "other",
+                "plot_types": ["other"],
                 "authors": [
                     "lejeune_quentin",
                     "crezee_bas",
                 ],
-                "project": [
+                "projects": [
                     "crescendo",
                 ],
             }

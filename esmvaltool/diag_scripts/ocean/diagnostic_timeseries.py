@@ -324,8 +324,8 @@ def make_time_series_plots(
             cfg,
             caption=caption,
             statistics=["mean"],
-            domain=["global"],
-            plot_type=["times"],
+            domains=["global"],
+            plot_types=["times"],
             ancestors=filename,
         )
 
@@ -466,8 +466,8 @@ def multi_model_time_series(
             cfg,
             caption=f"Time series of {title}",
             statistics=["mean"],
-            domain=["global"],
-            plot_type=["times"],
+            domains=["global"],
+            plot_types=["times"],
             ancestors=list(metadata.keys()),
         )
 

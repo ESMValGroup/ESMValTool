@@ -174,7 +174,7 @@ def plot_zec_timeseries(zec, cfg):
     fig.savefig(plot_path)
     plt.close()
     logger.info("Wrote %s", plot_path)
-    prov_dict = {"caption": "ZEC timeseries", "plot_type": "times"}
+    prov_dict = {"caption": "ZEC timeseries", "plot_types": ["times"]}
     write_provenance(cfg, plot_path, prov_dict)
 
 
@@ -215,7 +215,7 @@ def plot_zec_x_bar(zec_x, x_i, cfg):
     fig.savefig(plot_path)
     plt.close()
     logger.info("Wrote %s", plot_path)
-    prov_dict = {"caption": f"Barplot of ZEC_{x_i}", "plot_type": "bar"}
+    prov_dict = {"caption": f"Barplot of ZEC_{x_i}", "plot_types": ["bar"]}
     write_provenance(cfg, plot_path, prov_dict)
 
 
@@ -229,6 +229,7 @@ def write_provenance(cfg, path, *args):
         "authors": ["gier_bettina"],
         "references": ["macdougall20"],
         "ancestors": [d["filename"] for d in input_data],
+        "domains": ["global"],
     }
     for add_dict in args:
         for key in add_dict:

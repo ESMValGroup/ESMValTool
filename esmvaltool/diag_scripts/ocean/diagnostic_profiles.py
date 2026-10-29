@@ -220,8 +220,8 @@ def make_profiles_plots(
         cfg,
         caption=f"Profiles of {title}",
         statistics=["mean"],
-        domain=["global"],
-        plot_type=["vert"],
+        domains=["global"],
+        plot_types=["vert"],
         ancestors=[filename, obs_filename],
     )
 

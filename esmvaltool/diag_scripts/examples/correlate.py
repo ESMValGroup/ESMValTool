@@ -24,7 +24,7 @@ def get_provenance_record(attributes, ancestor_files, plot_type):
         "caption": caption,
         "statistics": ["corr"],
         "domains": ["global"],
-        "plot_type": plot_type,
+        "plot_types": [plot_type],
         "authors": [
             "andela_bouwe",
         ],

@@ -604,7 +604,7 @@ class SeaIceDrift:
         record = {
             "caption": caption,
             "domains": ["nhpolar"],
-            "autors": ["docquier_david"],
+            "authors": ["docquier_david"],
             "references": ["docquier2017cryo"],
             "ancestors": ancestors,
         }

@@ -282,8 +282,8 @@ def make_ts_plots(
                 cfg,
                 caption=f"Time serie of {title}",
                 statistics=["mean"],
-                domain=["polar"],
-                plot_type=["times"],
+                domains=["polar"],
+                plot_types=["times"],
                 ancestors=[filename],
             )
 
@@ -541,8 +541,8 @@ def make_map_plots(
                 cfg,
                 caption=f"Map of {title}",
                 statistics=["mean"],
-                domain=["polar"],
-                plot_type=["map"],
+                domains=["polar"],
+                plot_types=["map"],
                 ancestors=[filename],
             )
 
@@ -765,8 +765,8 @@ def make_map_extent_plots(
             cfg,
             caption=f"Temporal extent of {title}",
             statistics=["mean"],
-            domain=["polar"],
-            plot_type=["map"],
+            domains=["polar"],
+            plot_types=["map"],
             ancestors=[filename],
         )
 
