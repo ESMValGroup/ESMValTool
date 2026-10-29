@@ -24,6 +24,7 @@ help, e.g. on our
    :maxdepth: 1
 
 		Contributing code and documentation <code_documentation>
+		AI Policy <ai_policy>
 		Contributing a diagnostic or recipe <diagnostic>
 		Contributor license agreement <contributor_license_agreement>
 		Policy on backward compatibility <backward_compatibility>
