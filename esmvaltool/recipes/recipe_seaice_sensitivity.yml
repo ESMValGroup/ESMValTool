@@ -93,16 +93,13 @@ preprocessors:
       month: 9
 
   pp_arctic_sept_sea_ice:
-    <<: *extract_sept
-    <<: *nh_total_area
+    <<: [*nh_total_area, *extract_sept]
 
   pp_antarctic_avg_ann_sea_ice:
-    <<: *annual_mean
-    <<: *sh_total_area
+    <<: [*sh_total_area, *annual_mean]
 
   pp_avg_ann_global_temp:
-    <<: *global_mean
-    <<: *annual_mean
+    <<: [*annual_mean, *global_mean]
 
 diagnostics:
   arctic:

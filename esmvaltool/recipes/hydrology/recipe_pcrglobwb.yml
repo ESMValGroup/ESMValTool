@@ -42,11 +42,9 @@ preprocessors:
   preproc_tas: &preproc_tas
     <<: *crop_basin
   preproc_pr_clim:
-    <<: *preproc_pr
-    <<: *climatology
+    <<: [*climatology, *preproc_pr]
   preproc_tas_clim:
-    <<: *preproc_tas
-    <<: *climatology
+    <<: [*climatology, *preproc_tas]
 
 diagnostics:
   diagnostic_daily:
