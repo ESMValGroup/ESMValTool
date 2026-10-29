@@ -63,7 +63,7 @@ all = [
     "eofs",
     # "ESMPy",               # not on PyPI
     "esmf-regrid>=0.11.0", # iris-esmf-regrid #342
-    # "fiona",  # py315
+    "fiona",
     "fire",
     "fsspec",
     "GDAL",
@@ -82,7 +82,7 @@ all = [
     "progressbar2",
     "pyproj>=2.1",
     "python-dateutil",
-    # "rasterio>=1.3.10",  # py315
+    "rasterio>=1.3.10",
     "requests",
     # "scikit-image",  # py315
     "scikit-learn>=1.4.0", # github.com/ESMValGroup/ESMValTool/issues/3504
@@ -334,7 +334,7 @@ test-py315 = { features = ["py315", "esmvalcore", "all", "test"], solve-group = 
 [tool.pixi.feature.all.dependencies]
 "aiohttp" = "*"
 "cartopy" = "*"
-"cdo" = ">=2.3.0"
+# "cdo" = ">=2.3.0"
 "cdsapi" = "*"
 "cfgrib" = "*"
 "cftime" = "*"
@@ -343,7 +343,7 @@ test-py315 = { features = ["py315", "esmvalcore", "all", "test"], solve-group = 
 "ecmwf-api-client" = "*"
 "eofs" = "*"
 "esmpy" = "*"
-# "fiona" = "*"  # py315
+"fiona" = "*"
 "fire" = "*"
 "fsspec" = "*"
 "gdal" = ">=3.9.0"
@@ -367,9 +367,9 @@ test-py315 = { features = ["py315", "esmvalcore", "all", "test"], solve-group = 
 "prov-core" = "*"
 "pyproj" = ">=2.1"
 "python" = ">=3.12"
-"python-cdo" = "*"
+# "python-cdo" = "*"
 "python-dateutil" = "*"
-# "rasterio" = ">=1.3.10"  # py315
+"rasterio" = ">=1.3.10"
 "requests" = "*"
 "rich" = "*"
 #  "scikit-image" = "*"  # py315
@@ -390,7 +390,7 @@ platforms = ["linux-64"]
 
 [tool.pixi.feature.ncl.dependencies]
 "ncl" = ">=6.6.2"
-"cdo" = "*"
+# "cdo" = "*"
 "nco" = "*"
 "imagemagick" = "*"
 
