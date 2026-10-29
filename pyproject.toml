@@ -17,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Atmospheric Science",
     "Topic :: Scientific/Engineering :: GIS",
@@ -269,7 +270,8 @@ esmvalcore-dev = { features = ["esmvalcore-dev", "all", "dev", "doc", "test"], s
 # Environments for running tests with specific Python versions.
 test-py312 = { features = ["py312", "esmvalcore", "all", "test", "pys2index"], solve-group = "py312" }
 test-py313 = { features = ["py313", "esmvalcore", "all", "test", "pys2index"], solve-group = "py313" }
-test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = "default" }
+test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = "py314" }
+test-py315 = { features = ["py315", "esmvalcore", "all", "test"], solve-group = "default" }
 
 # Default ESMValCore version.
 [tool.pixi.feature.esmvalcore.dependencies]
@@ -322,6 +324,10 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 # Feature for running tests with Python 3.14.
 [tool.pixi.feature.py314.dependencies]
 "python" = "3.14.*"
+
+# Feature for running tests with Python 3.15.
+[tool.pixi.feature.py315.dependencies]
+"python" = "3.15.*"
 
 # Feature for running Python diagnostics and CMORizers.
 # This list should match the `all` extra under [project.optional-dependencies].
