@@ -1,0 +1,60 @@
+# ESMValTool
+# recipe_seaice_seasonality.yml
+---
+documentation:
+  title: Antarctic sea ice advance, retreat, and season duration
+  description: |
+    Calculate the first sustained advance, final retreat, and duration of
+    the Antarctic sea ice season from daily sea ice concentration. The
+    method follows Massom et al. (2013): 15% concentration for at least
+    five consecutive days defines advance. A sea ice year runs from
+    15 February through 14 February. Maps for all listed models use a
+    common grid and colour scale for comparison.
+
+    Daily SIday data are essential; monthly means cannot recover the
+    dates. The nearest-neighbour regrid preserves concentration values
+    but can shift the ice edge near coasts. Model days are numbered from
+    15 February, so dates from different model calendars should be
+    interpreted with care.
+  authors:
+    - beucher_romain
+  maintainer:
+    - beucher_romain
+  references:
+    - massom13plosone
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+  antarctic_daily:
+    regrid:
+      target_grid: 1x1
+      scheme: nearest
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -90.
+      end_latitude: -50.
+
+diagnostics:
+  seaice_seasonality:
+    description: Daily Antarctic sea ice advance, retreat, and duration
+    themes: [seaIce]
+    realms: [seaIce]
+    variables:
+      siconc:
+        mip: SIday
+        preprocessor: antarctic_daily
+        # Include 15 February in the extraction window so a 14 February
+        # sample timestamped at midday is not lost at the end boundary.
+        timerange: 20000215/20010215
+    scripts:
+      seasonality:
+        script: seaice/seaice_seasonality.py
+        concentration_threshold: 0.15
+        consecutive_days: 5
