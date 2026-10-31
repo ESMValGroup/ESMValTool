@@ -11,16 +11,16 @@ import iris.coords
 import iris.cube
 import numpy as np
 
-from esmvaltool.diag_scripts.russell18jgr.russell_fig6_shared import (
-    prepare_section,
-)
 from esmvaltool.diag_scripts.russell18jgr.russell_common import (
     add_latitude_coord,
     southern_ocean_flux_sum,
 )
+from esmvaltool.diag_scripts.russell18jgr.russell_fig6_shared import (
+    prepare_section,
+)
 
 
-def _volume_cube(data, lat, lon, monthly=False):
+def _volume_cube(data, lat, lon, *, monthly=False):
     """Build a fixed or monthly cell-volume cube for transport tests."""
     depth = iris.coords.DimCoord(
         [5.0, 15.0],
@@ -28,8 +28,12 @@ def _volume_cube(data, lat, lon, monthly=False):
         units="m",
         attributes={"positive": "down"},
     )
-    latitude = iris.coords.DimCoord(lat, standard_name="latitude", units="degrees")
-    longitude = iris.coords.DimCoord(lon, standard_name="longitude", units="degrees")
+    latitude = iris.coords.DimCoord(
+        lat, standard_name="latitude", units="degrees"
+    )
+    longitude = iris.coords.DimCoord(
+        lon, standard_name="longitude", units="degrees"
+    )
     coords = [(depth, 0), (latitude, 1), (longitude, 2)]
     if monthly:
         time = iris.coords.DimCoord(
@@ -71,7 +75,9 @@ def test_figure4_monthly_cell_volume_matches_mean_fixed_volume():
         monthly=True,
     )
     section = np.ones((2, 3))
-    expected = module.total_transport(section, static, lat, lon, 1, [5.0, 15.0])
+    expected = module.total_transport(
+        section, static, lat, lon, 1, [5.0, 15.0]
+    )
     result = module.total_transport(section, monthly, lat, lon, 1, [5.0, 15.0])
 
     np.testing.assert_allclose(result, expected)
