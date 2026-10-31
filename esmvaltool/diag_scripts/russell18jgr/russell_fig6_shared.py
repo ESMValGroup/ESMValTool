@@ -4,6 +4,10 @@ Density-layer based volume (6a) and heat (6b) transport across 30S,
 with layers defined as in Talley (2003, J. Phys. Oceanogr. 33,
 530-560).  Port of the common parts of russell18jgr-fig6a.ncl and
 russell18jgr-fig6b.ncl.
+
+As in the NCL scripts, layers and transports are diagnosed from
+climatological mean fields. They are not time means of monthly
+density-classified transports.
 """
 
 import logging
@@ -147,7 +151,7 @@ def _interp_to_lon(field, src_lon, dst_lon):
 
 
 def prepare_section(thetao_cube, so_cube, vo_cube, volcello_cube):
-    """Compute everything needed at the 30S section of the vo grid.
+    """Compute climatological fields at the 30S section of the vo grid.
 
     Returns a dict with theta (degC), sigma0/2/4, vo, cross-section
     area (m^2), all with shape (lev, lon), plus exact_lat.

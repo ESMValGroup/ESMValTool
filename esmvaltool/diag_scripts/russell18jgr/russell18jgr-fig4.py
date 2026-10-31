@@ -79,7 +79,7 @@ def drake_passage_section(cube):
 
 
 def total_transport(section, vol_cube, lat, lon, a, lev):
-    """Net transport (Sv) through the passage from volcello."""
+    """Net transport estimate (Sv) from climatological velocity and volume."""
     vol_cube = rc.time_mean(vol_cube)
     volcello = np.ma.masked_invalid(vol_cube.data)
     vol_lev = vol_cube.coord(axis="Z").points
