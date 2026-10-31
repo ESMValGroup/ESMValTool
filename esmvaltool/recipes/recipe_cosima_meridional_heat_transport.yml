@@ -1,0 +1,100 @@
+# ESMValTool
+# recipe_cosima_meridional_heat_transport.yml
+---
+documentation:
+  title: Ocean meridional heat transport (COSIMA)
+
+  description: |
+    Ocean meridional heat transport, translated from the COSIMA recipe
+    Meridional_heat_transport.ipynb onto CMORised CMIP6 data.
+
+    Two methods, as in the notebook. Method 1 reads the online
+    diagnostic: MOM5's temp_yflux_adv_int_z becomes CMIP6 hfbasin, the
+    basin-integrated northward heat transport, which is already zonally
+    integrated. Method 2 integrates the net surface heat flux hfds
+    (plus the frazil term hfsifrazil where published) northward from the
+    south pole; it assumes a steady state, and the notebook's warning
+    about that carries over unchanged.
+
+    hfbasin is published by fewer models than hfds, so the diagnostic
+    plots whichever it finds and both where both exist. Note that the
+    surface-flux method must not be regridded before integration: the
+    latitude binning works on the model's own grid so that the cell
+    areas and the flux stay consistent.
+
+    Staying native means the cell areas cannot be derived from a
+    representative 1D latitude, because a tripolar grid's cells do not
+    follow latitude circles. areacello is requested below and is the
+    best source, being the model's own areas. Where a model does not
+    publish it for this experiment, there are two further options and
+    the diagnostic takes them automatically:
+
+      1. borrow areacello from another experiment of the same model,
+         since the ocean grid does not change between them, by adding
+         'exp: piControl' to the supplementary entry;
+      2. compute the area from the cell corner vertices, which CMOR
+         requires on latitude and longitude, as an exact spherical
+         polygon. This is what cosima_common.area_from_bounds does and
+         it needs nothing beyond the data file itself.
+
+    ESMValCore itself cannot do (2): its try_adding_calculated_cell_area
+    handles regular and rotated-pole grids and raises
+    CoordinateMultiDimError for irregular ones.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  # No regridding: the flux integration bins by the model's own
+  # latitudes and weights by its own cell areas.
+  climatology_native:
+    climate_statistics:
+      operator: mean
+      period: full
+
+diagnostics:
+
+  meridional_heat_transport:
+    description: |
+      Global ocean meridional heat transport from the online hfbasin
+      diagnostic and from the integrated surface heat flux.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      hfbasin:
+        mip: Omon
+        preprocessor: climatology_native
+        timerange: 1990/2009
+      hfds:
+        mip: Omon
+        preprocessor: climatology_native
+        timerange: 1990/2009
+        supplementary_variables:
+          - short_name: areacello
+            mip: Ofx
+      hfsifrazil:
+        mip: Omon
+        preprocessor: climatology_native
+        timerange: 1990/2009
+    scripts:
+      transport:
+        script: cosima/meridional_heat_transport.py
