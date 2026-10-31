@@ -11,13 +11,13 @@ Python port of russell18jgr-fig5g.ncl.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -28,10 +28,10 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 MONTH_LABELS = [
     "Jan",
@@ -49,7 +49,7 @@ MONTH_LABELS = [
 ]
 
 
-def main(cfg):
+def main(cfg):  # noqa: PLR0915 - prepares model data and plot outputs
     """Run the diagnostic."""
     metadata = list(cfg["input_data"].values())
     sic_data = [m for m in metadata if m["short_name"] in ("sic", "siconc")]
@@ -62,6 +62,7 @@ def main(cfg):
     ancestors, nc_files = [], []
 
     for meta in sic_data:
+        inputs = [meta["filename"]]
         cube = rc.load_cube(meta["filename"], meta["short_name"])
         clim = rc.monthly_climatology(cube)
         sic = rc.sea_ice_percent(clim)
@@ -73,14 +74,16 @@ def main(cfg):
         else:
             area_meta = rc.match_by_dataset(area_data, meta["dataset"])
             if area_meta is None:
-                raise ValueError(
+                msg = (
                     f"areacello file for {meta['dataset']} not found; "
                     "please add the dataset to the areacello section "
                     "of the recipe."
                 )
+                raise ValueError(msg)
             area = np.ma.masked_invalid(
-                rc.load_cube(area_meta["filename"], "areacello").data
+                rc.load_cube(area_meta["filename"], "areacello").data,
             )
+            inputs.append(area_meta["filename"])
             sh_rows = lat[:, 0] < 0.0
 
         ice_area = sic * area[np.newaxis, :, :]
@@ -109,7 +112,8 @@ def main(cfg):
             long_name="southern hemisphere area under sea ice",
         )
         out_cube.add_dim_coord(
-            iris.coords.DimCoord(np.arange(1, 13), var_name="month"), 0
+            iris.coords.DimCoord(np.arange(1, 13), var_name="month"),
+            0,
         )
         nc_name = get_diagnostic_filename(
             f"russell18jgr-fig5g_{var0}_{meta['dataset']}_"
@@ -118,7 +122,7 @@ def main(cfg):
         )
         iris.save(out_cube, nc_name)
         nc_files.append(nc_name)
-        ancestors.append(meta["filename"])
+        ancestors.append(inputs)
 
     axes.set_ylim(0, 24)
     axes.set_xticks(months)
@@ -139,12 +143,24 @@ def main(cfg):
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        "Russell et al 2018 figure 5g", ancestors, plot_types=("times",)
-    )
+    caption = "Russell et al 2018 figure 5g"
     with ProvenanceLogger(cfg) as prov:
-        for filename in nc_files + [plot_file]:
+        for filename, inputs in zip(nc_files, ancestors, strict=True):
+            record = rc.provenance_record(
+                caption,
+                inputs,
+                plot_types=("times",),
+            )
             prov.log(filename, record)
+        all_inputs = list(
+            dict.fromkeys(path for inputs in ancestors for path in inputs),
+        )
+        record = rc.provenance_record(
+            caption,
+            all_inputs,
+            plot_types=("times",),
+        )
+        prov.log(plot_file, record)
 
 
 if __name__ == "__main__":

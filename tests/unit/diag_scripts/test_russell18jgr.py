@@ -18,6 +18,7 @@ from esmvaltool.diag_scripts.russell18jgr.russell_common import (
 from esmvaltool.diag_scripts.russell18jgr.russell_fig6_shared import (
     prepare_section,
 )
+from esmvaltool.diag_scripts.russell18jgr.russell_fig9_shared import save_pairs
 
 
 def _volume_cube(data, lat, lon, *, monthly=False):
@@ -29,10 +30,14 @@ def _volume_cube(data, lat, lon, *, monthly=False):
         attributes={"positive": "down"},
     )
     latitude = iris.coords.DimCoord(
-        lat, standard_name="latitude", units="degrees"
+        lat,
+        standard_name="latitude",
+        units="degrees",
     )
     longitude = iris.coords.DimCoord(
-        lon, standard_name="longitude", units="degrees"
+        lon,
+        standard_name="longitude",
+        units="degrees",
     )
     coords = [(depth, 0), (latitude, 1), (longitude, 2)]
     if monthly:
@@ -50,7 +55,7 @@ def test_figure4_monthly_cell_volume_matches_mean_fixed_volume():
     """Drake transport uses the period mean when volume varies monthly."""
     script = (
         Path(__file__).resolve().parents[3]
-        / "esmvaltool/diag_scripts/russell18jgr/russell18jgr-fig4.py"
+        / "esmvaltool/diag_scripts/russell18jgr/russell18jgr_fig4.py"
     )
     spec = importlib.util.spec_from_file_location("russell_fig4", script)
     module = importlib.util.module_from_spec(spec)
@@ -76,9 +81,13 @@ def test_figure4_monthly_cell_volume_matches_mean_fixed_volume():
     )
     section = np.ones((2, 3))
     expected = module.total_transport(
-        section, static, lat, lon, 1, [5.0, 15.0]
+        section,
+        static,
+        lat,
+        lon,
+        1,
     )
-    result = module.total_transport(section, monthly, lat, lon, 1, [5.0, 15.0])
+    result = module.total_transport(section, monthly, lat, lon, 1)
 
     np.testing.assert_allclose(result, expected)
 
@@ -124,3 +133,64 @@ def test_add_latitude_coord_accepts_nonmonotonic_rows():
     assert cube.coord("latitude").points.tolist() == lat
     assert cube.coord_dims("latitude") == (0,)
     assert cube.coord("latitude") in cube.coords(dim_coords=False)
+
+
+def test_figure9_provenance_includes_all_regression_inputs():
+    """The fitted line in every output depends on all model inputs."""
+    records = {}
+
+    class FakeProvenanceLogger:
+        """Capture the output records from the diagnostic."""
+
+        def __init__(self, _cfg):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def log(self, filename, record):
+            records[filename] = record
+
+    shared = ModuleType("esmvaltool.diag_scripts.shared")
+    shared.ProvenanceLogger = FakeProvenanceLogger
+    shared.get_diagnostic_filename = lambda basename, _cfg: basename + ".nc"
+    inputs = [
+        ["wind_a.nc", "flux_a.nc", "area_a.nc"],
+        ["wind_b.nc", "flux_b.nc", "area_b.nc"],
+    ]
+
+    with (
+        patch.dict(sys.modules, {"esmvaltool.diag_scripts.shared": shared}),
+        patch("iris.save"),
+    ):
+        save_pairs(
+            {},
+            (
+                "fig9a",
+                "heat_flux_lat_width",
+                "heat flux and wind width",
+                "Figure 9a",
+            ),
+            (
+                ["A", "B"],
+                [{"start_year": 1986, "end_year": 2005}] * 2,
+                [(1.0, 2.0), (3.0, 4.0)],
+                inputs,
+            ),
+            (np.array([2.0, 4.0]), np.array([1.0, 3.0])),
+            "fig9a.png",
+        )
+
+    assert set(records) == {
+        "fig9a_A_1986-2005.nc",
+        "fig9a_B_1986-2005.nc",
+        "fig9a.png",
+    }
+    expected_inputs = {
+        filename for model_inputs in inputs for filename in model_inputs
+    }
+    for record in records.values():
+        assert set(record["ancestors"]) == expected_inputs

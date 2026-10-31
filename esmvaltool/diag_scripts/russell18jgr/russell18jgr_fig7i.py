@@ -10,13 +10,13 @@ Python port of russell18jgr-fig7i.ncl.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -27,15 +27,15 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 UNIT_FACTOR = -0.000031536  # kg s-1  ->  PgC yr-1 (sea-to-air)
 
 
-def main(cfg):
+def main(cfg):  # noqa: PLR0915 - prepares model data and plot outputs
     """Run the diagnostic."""
     metadata = list(cfg["input_data"].values())
     fgco2_data = rc.select_by_short_name(metadata, "fgco2")
@@ -46,6 +46,7 @@ def main(cfg):
     ancestors, nc_files = [], []
 
     for meta in fgco2_data:
+        inputs = [meta["filename"]]
         cube = rc.load_cube(meta["filename"], meta["short_name"])
         cube = rc.time_mean(cube)
         data = np.ma.masked_invalid(cube.data)
@@ -56,14 +57,16 @@ def main(cfg):
         else:
             area_meta = rc.match_by_dataset(area_data, meta["dataset"])
             if area_meta is None:
-                raise ValueError(
+                msg = (
                     f"areacello file for {meta['dataset']} not found; "
                     "please add the dataset to the areacello section "
                     "of the recipe."
                 )
+                raise ValueError(msg)
             area = np.ma.masked_invalid(
-                rc.load_cube(area_meta["filename"], "areacello").data
+                rc.load_cube(area_meta["filename"], "areacello").data,
             )
+            inputs.append(area_meta["filename"])
 
         carbon_flux = data * UNIT_FACTOR * area
         per_lat = carbon_flux.sum(axis=-1)
@@ -93,7 +96,7 @@ def main(cfg):
         )
         iris.save(out_cube, nc_name)
         nc_files.append(nc_name)
-        ancestors.append(meta["filename"])
+        ancestors.append(inputs)
 
     axes.set_xlim(-80, -30)
     axes.set_ylim(-1.2, 1.0)
@@ -130,12 +133,24 @@ def main(cfg):
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        "Russell et al 2018 figure 7i", ancestors, plot_types=("zonal",)
-    )
+    caption = "Russell et al 2018 figure 7i"
     with ProvenanceLogger(cfg) as prov:
-        for filename in nc_files + [plot_file]:
+        for filename, inputs in zip(nc_files, ancestors, strict=True):
+            record = rc.provenance_record(
+                caption,
+                inputs,
+                plot_types=("zonal",),
+            )
             prov.log(filename, record)
+        all_inputs = list(
+            dict.fromkeys(path for inputs in ancestors for path in inputs),
+        )
+        record = rc.provenance_record(
+            caption,
+            all_inputs,
+            plot_types=("zonal",),
+        )
+        prov.log(plot_file, record)
 
 
 if __name__ == "__main__":

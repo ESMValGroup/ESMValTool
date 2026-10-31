@@ -9,13 +9,13 @@ Python port of russell18jgr-fig7h.ncl.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -26,10 +26,10 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 UNIT_FACTOR = -31536000000.0  # kg m-2 s-1  ->  gC m-2 yr-1 (sea-to-air)
 
@@ -111,12 +111,21 @@ def main(cfg):
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        "Russell et al 2018 figure 7h", ancestors, plot_types=("zonal",)
-    )
+    caption = "Russell et al 2018 figure 7h"
     with ProvenanceLogger(cfg) as prov:
-        for filename in nc_files + [plot_file]:
+        for filename, ancestor in zip(nc_files, ancestors, strict=True):
+            record = rc.provenance_record(
+                caption,
+                [ancestor],
+                plot_types=("zonal",),
+            )
             prov.log(filename, record)
+        record = rc.provenance_record(
+            caption,
+            ancestors,
+            plot_types=("zonal",),
+        )
+        prov.log(plot_file, record)
 
 
 if __name__ == "__main__":

@@ -8,18 +8,18 @@ band against the annual-mean integrated carbon uptake south of 30S
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import numpy as np
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 import russell_fig9_shared as f9
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 
 def main(cfg):
@@ -38,12 +38,18 @@ def main(cfg):
             logger.warning("No fgco2 for %s, skipping", dataset)
             continue
         widths.append(f9.band_width(tauu_meta))
-        fluxes.append(
-            f9.integrated_flux(fgco2_meta, area_data, f9.CARBON_FACTOR)
+        flux, area_filename = f9.integrated_flux(
+            fgco2_meta,
+            area_data,
+            f9.CARBON_FACTOR,
         )
+        fluxes.append(flux)
         datasets.append(dataset)
         metas.append(fgco2_meta)
-        ancestors.append([tauu_meta["filename"], fgco2_meta["filename"]])
+        inputs = [tauu_meta["filename"], fgco2_meta["filename"]]
+        if area_filename is not None:
+            inputs.append(area_filename)
+        ancestors.append(inputs)
 
     xlim = (
         np.round(min(widths) * 2) / 2.0 - 0.5,
@@ -54,26 +60,31 @@ def main(cfg):
         widths,
         fluxes,
         datasets,
-        "Latitudinal width of Southern Hemisphere Westerly Band",
-        "Southern ocean carbon uptake (Pg/yr)",
-        "Russell et at 2018 - fig 9b ",
-        xlim,
-        0.5,
+        (
+            "Latitudinal width of Southern Hemisphere Westerly Band",
+            "Southern ocean carbon uptake (Pg/yr)",
+            "Russell et at 2018 - fig 9b ",
+        ),
+        (xlim, 0.5),
         f"russell18jgr-fig9b_{years}",
     )
 
     f9.save_pairs(
         cfg,
-        "russell18jgr_fig9b",
-        "carbon-flux_lat-width",
-        "total carbon flux and lat width of southern westerly band",
-        datasets,
-        metas,
-        [(fluxes[i], widths[i]) for i in range(len(datasets))],
+        (
+            "russell18jgr_fig9b",
+            "carbon-flux_lat-width",
+            "total carbon flux and lat width of southern westerly band",
+            "Russell et al 2018 figure 9b",
+        ),
+        (
+            datasets,
+            metas,
+            [(fluxes[i], widths[i]) for i in range(len(datasets))],
+            ancestors,
+        ),
         regline,
         plot_file,
-        "Russell et al 2018 figure 9b",
-        ancestors,
     )
 
 

@@ -8,13 +8,13 @@ Python port of russell18jgr-fig2.ncl.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -25,10 +25,10 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 
 def main(cfg):
@@ -62,7 +62,9 @@ def main(cfg):
         )
         out_cube.add_dim_coord(
             iris.coords.DimCoord(
-                lat, standard_name="latitude", units="degrees_north"
+                lat,
+                standard_name="latitude",
+                units="degrees_north",
             ),
             0,
         )
@@ -97,10 +99,11 @@ def main(cfg):
     plt.close(fig)
     logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record("Russell et al 2018 figure 2", ancestors)
+    caption = "Russell et al 2018 figure 2"
     with ProvenanceLogger(cfg) as prov:
-        for filename in nc_files + [plot_file]:
-            prov.log(filename, record)
+        for filename, ancestor in zip(nc_files, ancestors, strict=True):
+            prov.log(filename, rc.provenance_record(caption, [ancestor]))
+        prov.log(plot_file, rc.provenance_record(caption, ancestors))
 
 
 if __name__ == "__main__":

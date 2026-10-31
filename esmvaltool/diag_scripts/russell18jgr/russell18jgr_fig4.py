@@ -14,13 +14,13 @@ Python port of russell18jgr-fig4.ncl.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import BoundaryNorm, ListedColormap
@@ -32,10 +32,12 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
+DRAKE_LONGITUDE = 291.0
+WESTERN_LONGITUDE_THRESHOLD = 200.0
 
 # Colour table of the NCL script (RGB 0-256)
 COLORS = (
@@ -59,7 +61,7 @@ COLORS = (
             [238, 91, 12],
             [209, 49, 7],
             [178, 0, 0],
-        ]
+        ],
     )
     / 256.0
 )
@@ -68,8 +70,8 @@ COLORS = (
 def drake_passage_section(cube):
     """Section at the longitude closest to 69W: (section, lat, lev, a)."""
     lon = rc.lon_1d(cube)
-    if np.max(lon) > 291.0:
-        a = rc.closest_index(291.0, lon)
+    if np.max(lon) > DRAKE_LONGITUDE:
+        a = rc.closest_index(DRAKE_LONGITUDE, lon)
     else:
         a = rc.closest_index(-69.0, lon)
     lat = rc.lat_1d(cube)
@@ -78,7 +80,7 @@ def drake_passage_section(cube):
     return section, lat, lev, a, lon
 
 
-def total_transport(section, vol_cube, lat, lon, a, lev):
+def total_transport(section, vol_cube, lat, lon, a):
     """Net transport estimate (Sv) from climatological velocity and volume."""
     vol_cube = rc.time_mean(vol_cube)
     volcello = np.ma.masked_invalid(vol_cube.data)
@@ -95,7 +97,7 @@ def total_transport(section, vol_cube, lat, lon, a, lev):
         filled = area_2d.filled(np.nan)
         for k in range(min(area_2d.shape[0], section.shape[0])):
             interp[k] = np.ma.masked_invalid(
-                np.interp(lat, vol_lat, filled[k])
+                np.interp(lat, vol_lat, filled[k]),
             )
         area_2d = interp
     transport_per_cell = section * area_2d / 1.0e6  # m3/s -> Sv
@@ -106,7 +108,7 @@ def total_transport(section, vol_cube, lat, lon, a, lev):
     return float(per_lat[b1 : b2 + 1].sum())
 
 
-def main(cfg):
+def main(cfg):  # noqa: PLR0915 - orchestrates paginated plots and outputs
     """Run the diagnostic."""
     metadata = list(cfg["input_data"].values())
     uo_data = rc.select_by_short_name(metadata, "uo")
@@ -123,13 +125,17 @@ def main(cfg):
     cmap = ListedColormap(COLORS)
     norm = BoundaryNorm(levels, ncolors=cmap.N, extend="both")
 
-    ancestors, nc_files, plot_files = [], [], []
+    nc_ancestors, plot_ancestors = {}, {}
     pages = [
         uo_data[i : i + per_page] for i in range(0, len(uo_data), per_page)
     ]
     for ipage, page in enumerate(pages):
+        page_inputs = []
         fig, axs = plt.subplots(
-            nvert, nhori, figsize=(8 * nhori, 5 * nvert), squeeze=False
+            nvert,
+            nhori,
+            figsize=(8 * nhori, 5 * nvert),
+            squeeze=False,
         )
         for iax in range(per_page):
             axes = axs.flat[iax]
@@ -137,8 +143,9 @@ def main(cfg):
                 axes.set_visible(False)
                 continue
             meta = page[iax]
+            panel_inputs = [meta["filename"]]
             cube = rc.time_mean(
-                rc.load_cube(meta["filename"], meta["short_name"])
+                rc.load_cube(meta["filename"], meta["short_name"]),
             )
             section, lat, lev, a, lon = drake_passage_section(cube)
 
@@ -148,8 +155,13 @@ def main(cfg):
                 try:
                     vol_cube = rc.load_cube(vol_meta["filename"], "volcello")
                     transport = total_transport(
-                        section, vol_cube, lat, lon, a, lev
+                        section,
+                        vol_cube,
+                        lat,
+                        lon,
+                        a,
                     )
+                    panel_inputs.append(vol_meta["filename"])
                 except Exception:
                     logger.warning(
                         "Transport calculation failed for %s",
@@ -164,7 +176,11 @@ def main(cfg):
                 )
 
             exact_lon = lon[a]
-            exact_lon = 360.0 - exact_lon if exact_lon > 200.0 else -exact_lon
+            exact_lon = (
+                360.0 - exact_lon
+                if exact_lon > WESTERN_LONGITUDE_THRESHOLD
+                else -exact_lon
+            )
 
             b1 = rc.closest_index(-76.0, lat)
             b2 = rc.closest_index(-48.0, lat)
@@ -220,22 +236,26 @@ def main(cfg):
                 cfg,
             )
             iris.save(cube, nc_name)
-            nc_files.append(nc_name)
-            ancestors.append(meta["filename"])
+            nc_ancestors[nc_name] = [meta["filename"]]
+            page_inputs.extend(panel_inputs)
         suffix = f"_page{ipage + 1}" if len(pages) > 1 else ""
         fig.tight_layout()
         plot_file = get_plot_filename(
-            f"Russell18jgr-fig4_{years}{suffix}", cfg
+            f"Russell18jgr-fig4_{years}{suffix}",
+            cfg,
         )
         fig.savefig(plot_file, bbox_inches="tight", dpi=200)
         plt.close(fig)
-        plot_files.append(plot_file)
+        plot_ancestors[plot_file] = page_inputs
         logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record("Russell et al 2018 figure 4", ancestors)
+    caption = "Russell et al 2018 figure 4"
     with ProvenanceLogger(cfg) as prov:
-        for filename in nc_files + plot_files:
-            prov.log(filename, record)
+        for filename, inputs in {**nc_ancestors, **plot_ancestors}.items():
+            prov.log(
+                filename,
+                rc.provenance_record(caption, list(dict.fromkeys(inputs))),
+            )
 
 
 if __name__ == "__main__":

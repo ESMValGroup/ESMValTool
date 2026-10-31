@@ -10,7 +10,9 @@ esmvaltool/diag_scripts/russell18jgr/ using numpy/iris/matplotlib only.
 import logging
 
 import iris
+import iris.coord_categorisation
 import iris.coords
+import matplotlib.pyplot as plt
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -18,6 +20,10 @@ logger = logging.getLogger(__name__)
 # Constants used throughout the original NCL scripts
 EARTH_RADIUS = 6.37e06  # m (value used in the NCL scripts)
 DEG2RAD = 0.0174533  # value used in the NCL scripts
+TWO_DIMENSIONS = 2
+FRACTION_HEURISTIC_LIMIT = 5.0
+MAX_FRONT_GAP = 20.0
+KELVIN_THRESHOLD = 273.0
 
 
 def load_cube(filename, short_name=None):
@@ -25,10 +31,16 @@ def load_cube(filename, short_name=None):
     if short_name is not None:
         try:
             return iris.load_cube(
-                filename, iris.NameConstraint(var_name=short_name)
+                filename,
+                iris.NameConstraint(var_name=short_name),
             )
-        except Exception:  # noqa: BLE001 - fall through to plain load
-            pass
+        except Exception:
+            logger.debug(
+                "Could not select %s from %s; trying an unconstrained load",
+                short_name,
+                filename,
+                exc_info=True,
+            )
     return iris.load_cube(filename)
 
 
@@ -45,21 +57,21 @@ def coord_1d_or_2d(cube, axis):
 
 
 def has_regular_grid(cube):
-    """True if the cube has 1D lat/lon coordinates."""
+    """Check whether the cube has 1D lat/lon coordinates."""
     return (
         cube.coord("latitude").ndim == 1 and cube.coord("longitude").ndim == 1
     )
 
 
 def lat_1d(cube):
-    """A representative 1D latitude array.
+    """Return a representative 1D latitude array.
 
     For regular grids this is the latitude coordinate itself; for
     curvilinear grids the first column of the 2D array is used (the NCL
     scripts used column 0 or 10 of the 2D lat array interchangeably).
     """
     lat = coord_1d_or_2d(cube, "latitude")
-    if lat.ndim == 2:
+    if lat.ndim == TWO_DIMENSIONS:
         return lat[:, 0]
     return lat
 
@@ -75,9 +87,9 @@ def add_latitude_coord(cube, lat):
 
 
 def lon_1d(cube):
-    """A representative 1D longitude array (row 0 for 2D grids)."""
+    """Return a representative 1D longitude array (row 0 for 2D grids)."""
     lon = coord_1d_or_2d(cube, "longitude")
-    if lon.ndim == 2:
+    if lon.ndim == TWO_DIMENSIONS:
         return lon[0, :]
     return lon
 
@@ -93,8 +105,6 @@ def time_mean(cube):
 
 def monthly_climatology(cube):
     """12-month climatology of a monthly time series (like clmMonTLL)."""
-    import iris.coord_categorisation
-
     if not any(c.name() == "month_number" for c in cube.coords()):
         iris.coord_categorisation.add_month_number(cube, "time")
     clim = cube.aggregated_by("month_number", iris.analysis.MEAN)
@@ -104,7 +114,7 @@ def monthly_climatology(cube):
 
 
 def surface_field(cube):
-    """The surface (shallowest) level, if the cube has a depth axis.
+    """Select the surface (shallowest) level, if the cube has a depth axis.
 
     ``ph`` is a full-depth field in CMIP5 (time, lev, lat, lon) while
     russell18jgr figure 8 is the *surface* pH, so the shallowest level
@@ -144,7 +154,9 @@ def sea_ice_percent(cube):
     elif unit in ("1", "1.0", "", "unknown", "none", "fraction"):
         is_fraction = True
     else:
-        is_fraction = data.count() > 0 and data.max() < 5.0
+        is_fraction = (
+            data.count() > 0 and data.max() < FRACTION_HEURISTIC_LIMIT
+        )
     if is_fraction:
         data = data * 100.0
     return np.ma.masked_outside(data, 0.0, 100.0)
@@ -166,7 +178,9 @@ def style_for(dataset, styleset="CMIP5"):
     have ESMValCore installed fall back to the matplotlib colour cycle.
     """
     try:
-        from esmvaltool.diag_scripts.shared.plot import get_dataset_style
+        from esmvaltool.diag_scripts.shared.plot import (  # noqa: PLC0415
+            get_dataset_style,
+        )
 
         return get_dataset_style(dataset, str(styleset).lower())
     except Exception:  # noqa: BLE001 - be permissive about style lookup
@@ -339,10 +353,11 @@ def westerly_band_width(tauu_zonal, lat):
                 (lat1 - lat2) * tauu[i] / (tauu[i] - tauu[i + 1])
             )
     if final_lat is None or lower_lat is None:
-        raise ValueError(
+        msg = (
             "Could not find the zero crossings of the zonal wind stress "
             "around 50S needed to compute the westerly band width."
         )
+        raise ValueError(msg)
     return float(final_lat - lower_lat)
 
 
@@ -374,24 +389,26 @@ def extract_isoline(lon2d, lat2d, field, level):
     Returns (x, y): longitudes and latitudes of the isoline, ordered
     with increasing longitude.
     """
-    import matplotlib.pyplot as plt
-
     fig = plt.figure()
     try:
         contours = plt.contour(
-            lon2d, lat2d, np.ma.masked_invalid(field), [level]
+            lon2d,
+            lat2d,
+            np.ma.masked_invalid(field),
+            [level],
         )
         segments = [seg for seg in contours.allsegs[0] if len(seg) > 1]
     finally:
         plt.close(fig)
     if not segments:
-        raise ValueError(f"No isoline found at level {level}")
+        msg = f"No isoline found at level {level}"
+        raise ValueError(msg)
     segments.sort(key=len, reverse=True)
     main = segments[0]
     x = list(main[:, 0])
     y = list(main[:, 1])
     for seg in segments[1:]:
-        if abs(seg[0, 0] - x[-1]) < 20.0:
+        if abs(seg[0, 0] - x[-1]) < MAX_FRONT_GAP:
             x.extend(seg[:, 0])
             y.extend(seg[:, 1])
     x = np.asarray(x)
@@ -416,7 +433,7 @@ def to_kelvin(data):
     (some models use 0 as a fill value).
     """
     data = np.ma.masked_invalid(data)
-    if data.max() > 273.0:
+    if data.max() > KELVIN_THRESHOLD:
         return np.ma.masked_values(data, 0.0) if data.min() == 0 else data
     return data + 273.0
 
@@ -428,7 +445,7 @@ def provenance_record(
     statistics=("mean",),
     domains=("sh",),
 ):
-    """Standard provenance record for the russell18jgr diagnostics."""
+    """Build a standard provenance record for the Russell diagnostics."""
     return {
         "caption": caption,
         "statistics": list(statistics),

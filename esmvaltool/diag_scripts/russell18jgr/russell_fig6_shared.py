@@ -11,20 +11,21 @@ density-classified transports.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
 logger = logging.getLogger(__name__)
+KELVIN_TEMPERATURE_THRESHOLD = 250.0
 
 # Layer bounds: each condition is (sigma_variable, lower, upper) and all
 # conditions of a layer are combined with AND.  sigma variables are
@@ -141,7 +142,7 @@ def _interp_to_lon(field, src_lon, dst_lon):
         return field  # not monotonic: use as-is (as the NCL script did)
     out = np.ma.masked_all((field.shape[0], len(dst_lon)))
     src_ext = np.concatenate(
-        [src_lon[-1:] - 360.0, src_lon, src_lon[:1] + 360.0]
+        [src_lon[-1:] - 360.0, src_lon, src_lon[:1] + 360.0],
     )
     for k in range(field.shape[0]):
         row = np.ma.filled(field[k], np.nan)
@@ -170,7 +171,7 @@ def prepare_section(thetao_cube, so_cube, vo_cube, volcello_cube):
     theta_sec = _interp_to_lon(theta_sec, rc.lon_1d(theta), vo_lon)
     so_sec = _interp_to_lon(so_sec, rc.lon_1d(salt), vo_lon)
 
-    if np.ma.max(theta_sec) > 250.0:  # make sure temperature is in C
+    if np.ma.max(theta_sec) > KELVIN_TEMPERATURE_THRESHOLD:
         theta_sec = theta_sec - 273.15
 
     sigma = {}
@@ -206,9 +207,9 @@ def layer_mask(sigma, conditions):
     for var, lower, upper in conditions:
         values = sigma[var]
         if lower is not None:
-            mask &= np.ma.filled(values >= lower, False)
+            mask &= np.ma.filled(values >= lower, fill_value=False)
         if upper is not None:
-            mask &= np.ma.filled(values < upper, False)
+            mask &= np.ma.filled(values < upper, fill_value=False)
     return mask
 
 
@@ -230,11 +231,20 @@ def layer_sums(sigma, transport):
 
 
 def plot_layer_bars(
-    main, sub, talley, dataset, meta, exact_lat, xlimit, xstep, unit, net_label
+    main,
+    sub,
+    talley,
+    dataset,
+    meta,
+    exact_lat,
+    plot_options,
 ):
-    """One bar-chart figure (blue main bars, red sublayers, magenta
-    Talley reference).
+    """Draw one bar-chart figure.
+
+    Blue bars show main layers, red bars show sublayers, and magenta
+    lines show the Talley reference.
     """
+    xlimit, xstep, unit, net_label = plot_options
     fig, axes = plt.subplots(figsize=(7, 9))
     y_edges = np.arange(-1.0, 12.0)  # bottom edges of the 12 main bars
 
@@ -314,7 +324,7 @@ def run_fig6(cfg, mode):
     that the notebooks can reuse the functions above with only
     ESMValCore installed.
     """
-    from esmvaltool.diag_scripts.shared import (
+    from esmvaltool.diag_scripts.shared import (  # noqa: PLC0415
         ProvenanceLogger,
         get_diagnostic_filename,
         get_plot_filename,
@@ -372,10 +382,11 @@ def run_fig6(cfg, mode):
             so_meta = rc.match_by_dataset(so_data, dataset)
             vol_meta = rc.match_by_dataset(vol_data, dataset)
             if None in (thetao_meta, so_meta, vol_meta):
-                raise ValueError(
+                msg = (
                     f"thetao/so/volcello for {dataset} not all found; "
                     "please keep the four variable groups consistent."
                 )
+                raise ValueError(msg)
 
             section = prepare_section(
                 rc.load_cube(thetao_meta["filename"], "thetao"),
@@ -405,10 +416,7 @@ def run_fig6(cfg, mode):
                 dataset,
                 vo_meta,
                 section["exact_lat"],
-                xlimit,
-                xstep,
-                unit,
-                net_label,
+                (xlimit, xstep, unit, net_label),
             )
             plot_file = get_plot_filename(
                 f"russell18jgr-fig{tag}_{dataset}_"
@@ -441,6 +449,7 @@ def run_fig6(cfg, mode):
                     vo_meta["filename"],
                     thetao_meta["filename"],
                     so_meta["filename"],
+                    vol_meta["filename"],
                 ],
                 plot_types=("bar", "vert"),
             )

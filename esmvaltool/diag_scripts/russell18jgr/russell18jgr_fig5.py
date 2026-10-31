@@ -9,14 +9,15 @@ Python port of russell18jgr-fig5.ncl.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,10 +30,12 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
+ICE_EDGE_PERCENT = 15.0
+SOUTH_POLE_LATITUDE = -90.0
 
 
 def circular_boundary():
@@ -49,8 +52,8 @@ def ice_extent_field(cube):
     field = np.ma.masked_all(sic[0].shape)
     # the edge of full coverage is defined by 15% areal coverage;
     # March is applied last so it wins where both months qualify
-    field[np.ma.filled(sic[8] > 15.0, False)] = 1.0
-    field[np.ma.filled(sic[2] > 15.0, False)] = 2.0
+    field[np.ma.filled(sic[8] > ICE_EDGE_PERCENT, fill_value=False)] = 1.0
+    field[np.ma.filled(sic[2] > ICE_EDGE_PERCENT, fill_value=False)] = 2.0
     if field.count() == 0:
         logger.warning(
             "No cell exceeds 15%% sea ice concentration - the panel will "
@@ -61,7 +64,7 @@ def ice_extent_field(cube):
     return field, clim
 
 
-def main(cfg):
+def main(cfg):  # noqa: PLR0915 - orchestrates paginated plots and outputs
     """Run the diagnostic."""
     input_data = [
         m
@@ -79,12 +82,13 @@ def main(cfg):
     cmap = ListedColormap(["#00008b", "#ff0000"])  # blue4, red
     norm = BoundaryNorm([0.5, 1.5, 2.5], ncolors=2)
 
-    ancestors, nc_files, plot_files = [], [], []
+    nc_ancestors, plot_ancestors = {}, {}
     pages = [
         input_data[i : i + per_page]
         for i in range(0, len(input_data), per_page)
     ]
     for ipage, page in enumerate(pages):
+        page_inputs = []
         fig = plt.figure(figsize=(5.5 * nhori, 5.5 * nvert))
         for ipanel, meta in enumerate(page):
             cube = rc.load_cube(meta["filename"], meta["short_name"])
@@ -101,12 +105,15 @@ def main(cfg):
             # even though the Southern Ocean is the only plotted region.
             # Keep the data used for NetCDF output intact, but give the map
             # only rows that intersect its latitude range.
-            in_region = (lat2d >= -90.0) & (lat2d <= max_lat)
+            in_region = (lat2d >= SOUTH_POLE_LATITUDE) & (lat2d <= max_lat)
             rows = np.any(in_region, axis=1)
             plot_field = np.ma.masked_where(~in_region[rows], field[rows])
 
             axes = fig.add_subplot(
-                nvert, nhori, ipanel + 1, projection=ccrs.SouthPolarStereo()
+                nvert,
+                nhori,
+                ipanel + 1,
+                projection=ccrs.SouthPolarStereo(),
             )
             axes.set_extent([-180, 180, -90, max_lat], ccrs.PlateCarree())
             axes.set_boundary(circular_boundary(), transform=axes.transAxes)
@@ -120,10 +127,10 @@ def main(cfg):
                 shading="auto",
             )
             try:
-                import cartopy.feature as cfeature
-
                 axes.add_feature(
-                    cfeature.LAND, facecolor=(0.5, 0.5, 0.5), zorder=2
+                    cfeature.LAND,
+                    facecolor=(0.5, 0.5, 0.5),
+                    zorder=2,
                 )
                 axes.coastlines(linewidth=0.4, zorder=3)
             except Exception:  # noqa: BLE001
@@ -163,7 +170,8 @@ def main(cfg):
             for coord in ("latitude", "longitude"):
                 dims = clim.coord_dims(clim.coord(coord))
                 out_cube.add_aux_coord(
-                    clim.coord(coord), tuple(d - 1 for d in dims)
+                    clim.coord(coord),
+                    tuple(d - 1 for d in dims),
                 )
             nc_name = get_diagnostic_filename(
                 f"russell18jgr_fig5_{var0}_{meta['dataset']}_"
@@ -171,23 +179,22 @@ def main(cfg):
                 cfg,
             )
             iris.save(out_cube, nc_name)
-            nc_files.append(nc_name)
-            ancestors.append(meta["filename"])
+            nc_ancestors[nc_name] = [meta["filename"]]
+            page_inputs.append(meta["filename"])
         suffix = f"_page{ipage + 1}" if len(pages) > 1 else ""
         plot_file = get_plot_filename(
-            f"russell18jgr-fig5_{var0}_{years}{suffix}", cfg
+            f"russell18jgr-fig5_{var0}_{years}{suffix}",
+            cfg,
         )
         fig.savefig(plot_file, bbox_inches="tight", dpi=200)
         plt.close(fig)
-        plot_files.append(plot_file)
+        plot_ancestors[plot_file] = page_inputs
         logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        "Russell et al 2018 figure 5 -polar", ancestors
-    )
+    caption = "Russell et al 2018 figure 5 -polar"
     with ProvenanceLogger(cfg) as prov:
-        for filename in nc_files + plot_files:
-            prov.log(filename, record)
+        for filename, inputs in {**nc_ancestors, **plot_ancestors}.items():
+            prov.log(filename, rc.provenance_record(caption, inputs))
 
 
 if __name__ == "__main__":

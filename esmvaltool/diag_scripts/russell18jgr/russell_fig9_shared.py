@@ -6,17 +6,17 @@ Port of the common parts of russell18jgr-fig9[abc].ncl.
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
 logger = logging.getLogger(__name__)
@@ -28,40 +28,44 @@ HEAT_FACTOR = 1.0e-15  # W -> PW
 def band_width(tauu_meta):
     """Westerly band width from the zonal mean wind stress."""
     cube = rc.time_mean(
-        rc.load_cube(tauu_meta["filename"], tauu_meta["short_name"])
+        rc.load_cube(tauu_meta["filename"], tauu_meta["short_name"]),
     )
     zonal = rc.zonal_mean(cube.data)
     lat = rc.coord_1d_or_2d(cube, "latitude")
-    if lat.ndim == 2:
+    if lat.ndim == rc.TWO_DIMENSIONS:
         lat = np.mean(lat, axis=1)
     return rc.westerly_band_width(zonal, lat)
 
 
 def area_for(meta, area_data, data_shape, cube):
-    """Cell areas: areacello fx file, or the manual regular-grid calc."""
+    """Return cell areas and the input filename, if a file was used."""
     area_meta = rc.match_by_dataset(area_data, meta["dataset"])
     if rc.has_regular_grid(cube):
         # some models provide the flux on a different grid than
         # areacello, so the area is computed manually (as in NCL)
-        return rc.ncl_cell_area(rc.lat_1d(cube), rc.lon_1d(cube), data_shape)
+        area = rc.ncl_cell_area(rc.lat_1d(cube), rc.lon_1d(cube), data_shape)
+        return area, None
     if area_meta is None:
-        raise ValueError(
+        msg = (
             f"areacello file of {meta['dataset']} not found in the "
             "recipe. If available, please copy the dataset name to the "
             "additional dataset section of areacello."
         )
-    return np.ma.masked_invalid(
-        rc.load_cube(area_meta["filename"], "areacello").data
+        raise ValueError(msg)
+    area = np.ma.masked_invalid(
+        rc.load_cube(area_meta["filename"], "areacello").data,
     )
+    return area, area_meta["filename"]
 
 
 def integrated_flux(meta, area_data, factor):
     """Integrated flux (sum flux*area*factor) south of 30S."""
     cube = rc.time_mean(rc.load_cube(meta["filename"], meta["short_name"]))
     data = np.ma.masked_invalid(cube.data)
-    area = area_for(meta, area_data, data.shape, cube)
+    area, area_filename = area_for(meta, area_data, data.shape, cube)
     lat = rc.lat_1d(cube)
-    return rc.southern_ocean_flux_sum(data, area, lat, factor)
+    flux = rc.southern_ocean_flux_sum(data, area, lat, factor)
+    return flux, area_filename
 
 
 def heat_flux(meta, area_data):
@@ -70,16 +74,18 @@ def heat_flux(meta, area_data):
     data = np.ma.masked_invalid(cube.data)
     area_meta = rc.match_by_dataset(area_data, meta["dataset"])
     if area_meta is None:
-        raise ValueError(
+        msg = (
             f"areacello file of {meta['dataset']} not found in the "
             "recipe. If available, please copy the dataset name to the "
             "additional dataset section of areacello."
         )
+        raise ValueError(msg)
     area = np.ma.masked_invalid(
-        rc.load_cube(area_meta["filename"], "areacello").data
+        rc.load_cube(area_meta["filename"], "areacello").data,
     )
     lat = rc.lat_1d(cube)
-    return rc.southern_ocean_flux_sum(data, area, lat, HEAT_FACTOR)
+    flux = rc.southern_ocean_flux_sum(data, area, lat, HEAT_FACTOR)
+    return flux, area_meta["filename"]
 
 
 def scatter_with_regression(
@@ -87,15 +93,17 @@ def scatter_with_regression(
     xvals,
     yvals,
     datasets,
-    xlabel,
-    ylabel,
-    title,
-    xlim,
-    xtick_spacing,
+    labels,
+    xaxis,
     plot_name,
 ):
     """Scatter plot with line of best fit and per-model markers."""
-    from esmvaltool.diag_scripts.shared import get_plot_filename
+    from esmvaltool.diag_scripts.shared import (  # noqa: PLC0415
+        get_plot_filename,
+    )
+
+    xlabel, ylabel, title = labels
+    xlim, xtick_spacing = xaxis
 
     xvals = np.asarray(xvals, dtype=float)
     yvals = np.asarray(yvals, dtype=float)
@@ -121,7 +129,7 @@ def scatter_with_regression(
     axes.set_xlim(*xlim)
     if xtick_spacing is not None:
         axes.set_xticks(
-            np.arange(xlim[0], xlim[1] + xtick_spacing / 2, xtick_spacing)
+            np.arange(xlim[0], xlim[1] + xtick_spacing / 2, xtick_spacing),
         )
     ymin = np.floor((yvals.min() - 0.1) * 10) / 10
     ymax = np.ceil((yvals.max() + 0.1) * 10) / 10
@@ -148,26 +156,33 @@ def scatter_with_regression(
 
 def save_pairs(
     cfg,
-    basename,
-    var_name,
-    description,
-    datasets,
-    metas,
-    pair_values,
+    output_info,
+    model_info,
     regline,
     plot_file,
-    caption,
-    ancestor_lists,
 ):
     """Per-dataset netCDF output + provenance, as the NCL scripts did."""
-    from esmvaltool.diag_scripts.shared import (
+    from esmvaltool.diag_scripts.shared import (  # noqa: PLC0415
         ProvenanceLogger,
         get_diagnostic_filename,
     )
 
+    basename, var_name, description, caption = output_info
+    datasets, metas, pair_values, ancestor_lists = model_info
     xline, yline = regline
+    # Each NetCDF includes the regression line fitted across all datasets.
+    # Its provenance must therefore include all inputs, like the plot.
+    all_ancestors = list(
+        dict.fromkeys(
+            filename for paths in ancestor_lists for filename in paths
+        ),
+    )
+    record = rc.provenance_record(
+        caption,
+        all_ancestors,
+        plot_types=("scatter",),
+    )
     with ProvenanceLogger(cfg) as prov:
-        plot_logged = False
         for i, dataset in enumerate(datasets):
             meta = metas[i]
             out = iris.cube.Cube(
@@ -185,10 +200,5 @@ def save_pairs(
                 cfg,
             )
             iris.save(out, nc_name)
-            record = rc.provenance_record(
-                caption, ancestor_lists[i], plot_types=("scatter",)
-            )
             prov.log(nc_name, record)
-            if not plot_logged:
-                prov.log(plot_file, record)
-                plot_logged = True
+        prov.log(plot_file, record)

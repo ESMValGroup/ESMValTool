@@ -20,14 +20,14 @@ Diagnostic script options (same as the NCL version):
 """
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 import cartopy.crs as ccrs
 import iris
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
 import numpy as np
@@ -40,10 +40,10 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import russell_common as rc
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 
 def colormap_from_cfg(cfg, nlevels):
@@ -54,7 +54,7 @@ def colormap_from_cfg(cfg, nlevels):
             # NCL spreads the interior palette over the visible intervals.
             # The outer palette entries are reserved for omitted end boxes.
             indices = np.rint(
-                np.linspace(1, len(rgb) - 2, nlevels - 1)
+                np.linspace(1, len(rgb) - 2, nlevels - 1),
             ).astype(int)
             rgb = rgb[indices]
         return ListedColormap(np.clip(rgb, 0, 1))
@@ -62,7 +62,7 @@ def colormap_from_cfg(cfg, nlevels):
     ncl_to_mpl = {"BlWhRe": "bwr", "nrl_sirkes_nowhite": "RdYlBu_r"}
     cmap = plt.get_cmap(ncl_to_mpl.get(name, name))
     return ListedColormap(
-        [cmap(i / max(nlevels, 1)) for i in range(nlevels + 1)]
+        [cmap(i / max(nlevels, 1)) for i in range(nlevels + 1)],
     )
 
 
@@ -75,9 +75,16 @@ def circular_boundary():
 
 
 def plot_dataset(
-    axes, cube, levels, cmap, extend, cfg, title, subtitle, units_str, var_name
+    axes,
+    cube,
+    levels,
+    cmap,
+    extend,
+    cfg,
+    labels,
 ):
     """Draw one polar contour panel."""
+    title, subtitle, units_str, var_name = labels
     lat = rc.coord_1d_or_2d(cube, "latitude")
     lon = rc.coord_1d_or_2d(cube, "longitude")
     if lat.ndim == 1:
@@ -144,7 +151,12 @@ def plot_dataset(
     # they never overlap (the NCL layout)
     axes.set_title(title, fontsize=11, pad=30)
     axes.text(
-        1.0, 1.06, subtitle, fontsize=8, transform=axes.transAxes, ha="right"
+        1.0,
+        1.06,
+        subtitle,
+        fontsize=8,
+        transform=axes.transAxes,
+        ha="right",
     )
     axes.text(
         0.0,
@@ -166,7 +178,7 @@ def main(cfg):
     grid_min = float(cfg.get("grid_min", 0.0))
     grid_max = float(cfg.get("grid_max", 1.0))
     grid_step = float(cfg.get("grid_step", 0.1))
-    nsteps = int(round((grid_max - grid_min) / grid_step)) + 1
+    nsteps = round((grid_max - grid_min) / grid_step) + 1
     levels = np.linspace(grid_min, grid_max, nsteps)
     extend = (
         "neither"
@@ -180,14 +192,14 @@ def main(cfg):
     per_page = nvert * nhori
 
     factor = float(cfg.get("unitCorrectionalFactor", 1.0))
-    ancestors, nc_files = [], []
+    nc_ancestors, plot_ancestors = {}, {}
 
     pages = [
         input_data[i : i + per_page]
         for i in range(0, len(input_data), per_page)
     ]
-    plot_files = []
     for ipage, page in enumerate(pages):
+        page_inputs = []
         fig = plt.figure(figsize=(5.5 * nhori, 5.5 * nvert))
         for ipanel, meta in enumerate(page):
             cube = rc.load_cube(meta["filename"], meta["short_name"])
@@ -200,7 +212,10 @@ def main(cfg):
                 cube.data = cube.data * factor
             units_str = f" ({cfg.get('new_units', cube.units)})"
             axes = fig.add_subplot(
-                nvert, nhori, ipanel + 1, projection=ccrs.SouthPolarStereo()
+                nvert,
+                nhori,
+                ipanel + 1,
+                projection=ccrs.SouthPolarStereo(),
             )
             subtitle = f"annual mean {meta['start_year']} - {meta['end_year']}"
             filled = plot_dataset(
@@ -210,10 +225,7 @@ def main(cfg):
                 cmap,
                 extend,
                 cfg,
-                meta["dataset"],
-                subtitle,
-                units_str,
-                meta["short_name"],
+                (meta["dataset"], subtitle, units_str, meta["short_name"]),
             )
             cbar = fig.colorbar(
                 filled,
@@ -230,23 +242,22 @@ def main(cfg):
                 cfg,
             )
             iris.save(cube, nc_name)
-            nc_files.append(nc_name)
-            ancestors.append(meta["filename"])
+            nc_ancestors[nc_name] = [meta["filename"]]
+            page_inputs.append(meta["filename"])
         suffix = f"_page{ipage + 1}" if len(pages) > 1 else ""
         plot_file = get_plot_filename(
-            f"Russell_polar-contour_{var0}_{years}{suffix}", cfg
+            f"Russell_polar-contour_{var0}_{years}{suffix}",
+            cfg,
         )
         fig.savefig(plot_file, bbox_inches="tight", dpi=200)
         plt.close(fig)
-        plot_files.append(plot_file)
+        plot_ancestors[plot_file] = page_inputs
         logger.info("Wrote %s", plot_file)
 
-    record = rc.provenance_record(
-        f"Russell et al 2018 polar plot {var0}", ancestors
-    )
+    caption = f"Russell et al 2018 polar plot {var0}"
     with ProvenanceLogger(cfg) as prov:
-        for filename in nc_files + plot_files:
-            prov.log(filename, record)
+        for filename, inputs in {**nc_ancestors, **plot_ancestors}.items():
+            prov.log(filename, rc.provenance_record(caption, inputs))
 
 
 if __name__ == "__main__":

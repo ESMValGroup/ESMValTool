@@ -22,20 +22,20 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/russell18jgr/
 
-* russell18jgr-polar.py (figures 1, 7, 8): calculates and plots annual-mean variables (tauu, sic, fgco2, pH) as polar contour map.
-* russell18jgr-fig2.py:  calculates and plots The zonal and annual means of the zonal wind stress (N/m\ :sup:`2`\).
-* russell18jgr-fig3b.py: calculates and plots the latitudinal position of Subantarctic Front. Using definitions from Orsi et al (1995).
-* russell18jgr-fig3b-2.py: calculates and plots the latitudinal position of Polar Front. Using definitions from Orsi et al (1995).
-* russell18jgr-fig4.py:  calculates and plots the zonal velocity through Drake Passage (at 69W) and total transport through the passage if the volcello file is available.
-* russell18jgr-fig5.py:  calculates and plots the mean extent of sea ice for September(max) in blue and mean extent of sea ice for February(min) in red.
-* russell18jgr-fig5g.py: calculates and plots the annual cycle of sea ice area in southern ocean.
-* russell18jgr-fig6a.py: calculates and plots the density layer based volume transport(in Sv) across 30S based on the layer definitions in Talley (2008).
-* russell18jgr-fig6b.py: calculates and plots the Density layer based heat transport(in PW) across 30S based on the layer definitions in Talley (2008).
-* russell18jgr-fig7h.py: calculates and plots the zonal mean flux of fgco2 in gC/(yr * m\ :sup:`2`\).
-* russell18jgr-fig7i.py: calculates and plots the cumulative integral of the net CO2 flux from 90S to 30S (in PgC/yr).
-* russell18jgr-fig9a.py: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated heat uptake south of 30S (in PW), along with the line of best fit.
-* russell18jgr-fig9b.py: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
-* russell18jgr-fig9c.py: calculates and plots the scatter plot of the net heat uptake south of 30S (in PW) against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
+* russell18jgr_polar.py (figures 1, 7, 8): calculates and plots annual-mean variables (tauu, sic, fgco2, pH) as polar contour map.
+* russell18jgr_fig2.py:  calculates and plots The zonal and annual means of the zonal wind stress (N/m\ :sup:`2`\).
+* russell18jgr_fig3b.py: calculates and plots the latitudinal position of Subantarctic Front. Using definitions from Orsi et al (1995).
+* russell18jgr_fig3b_2.py: calculates and plots the latitudinal position of Polar Front. Using definitions from Orsi et al (1995).
+* russell18jgr_fig4.py:  calculates and plots the zonal velocity through Drake Passage (at 69W) and total transport through the passage if the volcello file is available.
+* russell18jgr_fig5.py:  calculates and plots the mean extent of sea ice for September(max) in blue and mean extent of sea ice for March(min) in red.
+* russell18jgr_fig5g.py: calculates and plots the annual cycle of sea ice area in southern ocean.
+* russell18jgr_fig6a.py: calculates and plots the density layer based volume transport(in Sv) across 30S based on the layer definitions in Talley (2008).
+* russell18jgr_fig6b.py: calculates and plots the Density layer based heat transport(in PW) across 30S based on the layer definitions in Talley (2008).
+* russell18jgr_fig7h.py: calculates and plots the zonal mean flux of fgco2 in gC/(yr * m\ :sup:`2`\).
+* russell18jgr_fig7i.py: calculates and plots the cumulative integral of the net CO2 flux from 90S to 30S (in PgC/yr).
+* russell18jgr_fig9a.py: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated heat uptake south of 30S (in PW), along with the line of best fit.
+* russell18jgr_fig9b.py: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
+* russell18jgr_fig9c.py: calculates and plots the scatter plot of the net heat uptake south of 30S (in PW) against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
 
 The following modules are not diagnostics themselves; they hold code shared by several of the scripts above:
 
@@ -54,7 +54,7 @@ same period as the velocity data.
 User settings in recipe
 -----------------------
 
-#. Script russell18jgr-polar.py
+#. Script russell18jgr_polar.py
 
    *Required settings (scripts)*
 
@@ -86,7 +86,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig2.py
+#. Script russell18jgr_fig2.py
 
    *Required settings (scripts)*
 
@@ -97,7 +97,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig3b.py
+#. Script russell18jgr_fig3b.py
 
    *Required settings (scripts)*
 
@@ -108,7 +108,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig3b-2.py
+#. Script russell18jgr_fig3b_2.py
 
    *Required settings (scripts)*
 
@@ -119,7 +119,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig4.py
+#. Script russell18jgr_fig4.py
 
    *Required settings (scripts)*
 
@@ -133,7 +133,7 @@ User settings in recipe
    * new_units : "cm/s"
 
 
-#. Script russell18jgr-fig5.py
+#. Script russell18jgr_fig5.py
 
    *Required settings (scripts)*
 
@@ -146,7 +146,7 @@ User settings in recipe
    * max_hori  :  1 - 4 (user preference)
 
 
-#. Script russell18jgr-fig5g.py
+#. Script russell18jgr_fig5g.py
 
    *Required settings (scripts)*
 
@@ -157,7 +157,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig6a.py
+#. Script russell18jgr_fig6a.py
 
    *Required settings (scripts)*
 
@@ -168,7 +168,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig6b.py
+#. Script russell18jgr_fig6b.py
 
    *Required settings (scripts)*
 
@@ -179,7 +179,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig7h.py
+#. Script russell18jgr_fig7h.py
 
    *Required settings (scripts)*
 
@@ -190,7 +190,7 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig7i.py
+#. Script russell18jgr_fig7i.py
 
    *Required settings (scripts)*
 
@@ -200,18 +200,7 @@ User settings in recipe
 
    * none
 
-#. Script russell18jgr-fig9a.py
-
-   *Required settings (scripts)*
-
-   * styleset : CMIP5(recommended), default, etc.
-
-   *Optional settings (scripts)*
-
-   * none
-
-
-#. Script russell18jgr-fig9b.py
+#. Script russell18jgr_fig9a.py
 
    *Required settings (scripts)*
 
@@ -222,7 +211,18 @@ User settings in recipe
    * none
 
 
-#. Script russell18jgr-fig9c.py
+#. Script russell18jgr_fig9b.py
+
+   *Required settings (scripts)*
+
+   * styleset : CMIP5(recommended), default, etc.
+
+   *Optional settings (scripts)*
+
+   * none
+
+
+#. Script russell18jgr_fig9c.py
 
    *Required settings (scripts)*
 
@@ -338,7 +338,7 @@ Example plots
    :align:   center
    :width: 50%
 
-   Figure 5: Mean extent of sea ice for September(max) in blue and February(min) in red plotted as polar contour map.
+   Figure 5: Mean extent of sea ice for September(max) in blue and March(min) in red plotted as polar contour map.
 
 
 .. _fig_russell_5g:
