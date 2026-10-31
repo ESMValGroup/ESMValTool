@@ -50,6 +50,13 @@ def colormap_from_cfg(cfg, nlevels):
     """Build the colormap requested in the recipe."""
     if "colors" in cfg:
         rgb = np.array(cfg["colors"], dtype=float) / 256.0
+        if cfg.get("labelBar_end_type") == "ExcludeOuterBoxes":
+            # NCL spreads the interior palette over the visible intervals.
+            # The outer palette entries are reserved for omitted end boxes.
+            indices = np.rint(
+                np.linspace(1, len(rgb) - 2, nlevels - 1)
+            ).astype(int)
+            rgb = rgb[indices]
         return ListedColormap(np.clip(rgb, 0, 1))
     name = cfg.get("colormap", "nrl_sirkes_nowhite")
     ncl_to_mpl = {"BlWhRe": "bwr", "nrl_sirkes_nowhite": "RdYlBu_r"}

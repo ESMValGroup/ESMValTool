@@ -1,13 +1,15 @@
 # PR 4612 Gadi figure checks
 
-These are outputs from the Python diagnostics in PR 4612, run with ESMValTool and ESMValCore 2.15.0 in Gadi `analysis3-26.08`. Both recipe runs completed all tasks and produced plots and NetCDF outputs. The source was staged under `/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_1600deb/`.
+These are outputs from the Python diagnostics in PR 4612, run with ESMValTool and ESMValCore 2.15.0 in Gadi `analysis3-26.08`. The focused and full recipe runs completed and produced plots and NetCDF outputs. The source was staged under `/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_1600deb/`.
 
 | Figure | Gadi PBS job | Input and result | Reference comparison |
 | --- | --- | --- | --- |
-| 1 | `180167947.gadi-pbs` | CMIP5 CanESM2 and GFDL-ESM2M, `Omon tauuo`, 1986–2005. The polar maps contain the Southern Ocean wind stress band. | The existing documentation image uses `tauu`, while the runnable recipe now uses `tauuo`; compare broad geography, not pixel values. The old `Amon tauu` selection was rejected by ESMValCore on Gadi. |
+| 1 | `182726068.gadi-pbs` | CMIP5 CanESM2 and GFDL-ESM2M, `Amon tauu`, 1986–2005. [New plot](Fig1_Gadi_tauu_1986-2005.png). | The input now matches the [documentation figure](../Fig1_polar-contour_tauu_1986-2005.png); the NCL colour bins are reproduced. The earlier [`tauuo` plot](Fig1_Gadi_tauuo_1986-2005.png) explains the previous field difference. |
 | 2 | `180167684.gadi-pbs` | CMIP5 CanESM2 and GFDL-ESM2M, `Omon tauuo`, 1986–2005. | The two wind stress curves and peak amplitudes agree visually with the documentation image. Legend placement and rendering differ. |
 
-The `Fig*_Gadi_*.png` files are the unmodified diagnostic plots. The `Fig*_documentation_comparison.jpg` files place each new plot beside the existing documentation image. These visual comparisons do not establish numerical equivalence for every diagnostic.
+The `Fig*_Gadi_*.png` files are the unmodified diagnostic plots. The `Fig*_documentation_comparison.jpg` files place the initial Gadi plots beside the existing documentation images; the Figure 1 comparison JPEG still shows the earlier `tauuo` run. These visual comparisons do not establish numerical equivalence for every diagnostic.
+
+The original Figure 1 documentation image is labelled `tauu`. The first PR validation run used `tauuo`, which has a visibly different wind-stress field. A follow-up recipe using the available CMIP5 `Amon tauu` files passed for both models (PBS `182725881.gadi-pbs`, exit 0). The NCL `ExcludeOuterBoxes` colour setting also uses the six interior palette colours across eight intervals; the Python mapping now reproduces the reference colour bar to within one 8-bit RGB count. The final rerun passed in PBS `182726068.gadi-pbs` (exit 0). Coastlines, graticule labels, and contour rendering still differ between NCL and Cartopy/Matplotlib. The reference PNG has no companion NetCDF file here, so exact data-field equivalence cannot be established from the images alone.
 
 ## Representative all-diagnostic run
 

@@ -44,20 +44,17 @@ diagnostics:
   Figure_1:
     description: |
       Diagnostic for russell et al figure 1. Plots Annual-mean zonal wind
-       stress as polar contour map. Here, we are using tauuo. Figures in
-      russell18jgr paper were  made using tauuo, but tauu can also be used if
-      tauuo file is not available. To use tauu variable in this recipe just
-      uncomment variable 'tauu' and add dataset names in additional datasets of
-      respective variable. If there are no dataset in a variable, entire
-      variable section needs to be commented out.
+      stress as a polar contour map. Use Amon tauu to reproduce the existing
+      documentation figure; Omon tauuo is an alternative input with a
+      different spatial pattern and amplitude.
     themes:
       - phys
     realms:
       - ocean
     variables:
-      tauuo:
-        preprocessor: preprocessor_time
-        mip: Omon
+      tauu:
+        preprocessor: preprocessor_time_land
+        mip: Amon
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
