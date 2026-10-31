@@ -43,6 +43,14 @@ The following modules are not diagnostics themselves; they hold code shared by s
 * russell_fig6_shared.py: the Talley (2008) density-layer definitions and the transport calculation shared by figures 6a and 6b.
 * russell_fig9_shared.py: the flux integrals, regression and scatter plotting shared by figures 9a, 9b and 9c.
 
+For figures 4, 6a, and 6b, ``volcello`` can be a fixed field or a monthly
+time series. The diagnostics use its mean over the selected period, matching
+the time-mean velocity fields; monthly velocity-volume covariance is not
+resolved. The example recipe requests the CMIP5 fixed field (``mip: fx``);
+for a model that publishes monthly ``volcello``, update its recipe metadata
+(including ``frequency: mon`` for CMIP7) to select the monthly field and the
+same period as the velocity data.
+
 User settings in recipe
 -----------------------
 

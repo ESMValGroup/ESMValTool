@@ -175,6 +175,7 @@ def prepare_section(thetao_cube, so_cube, vo_cube, volcello_cube):
         sigma[name] = 1000.0 * (rho - 1.0)
 
     # north-south cross-section area of each cell at the section
+    volcello_cube = rc.time_mean(volcello_cube)
     volcello = np.ma.masked_invalid(volcello_cube.data)
     vol_lev = volcello_cube.coord(axis="Z").points
     dlat = abs(vo_lat[a] - vo_lat[a + 1]) * rc.EARTH_RADIUS * rc.DEG2RAD
