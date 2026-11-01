@@ -3,9 +3,12 @@
 Antarctic sea ice seasonality
 =============================
 
+Overview
+--------
+
 ``recipe_seaice_seasonality.yml`` calculates the day of sea ice advance,
 retreat, and season duration from daily CMIP6 ``SIday siconc``. It produces
-NetCDF fields for each model and a polar map with one row per model and
+NetCDF files for each model and a polar map with one row per model and
 common colour scales. The default example compares ACCESS-CM2 and
 BCC-CSM2-MR for the 2000/01 sea ice year. Both models publish daily
 ``SIday siconc`` for this period; ACCESS-ESM1-5 does not.
@@ -45,3 +48,26 @@ cells. Model calendars can have different numbers of days; compare
 the ordinal maps with that difference in mind. The example recipe does
 not yet include observational sea ice concentration, so it supports
 model-to-model comparison rather than an observational skill score.
+
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/cosima
+
+* recipe_seaice_seasonality.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/cosima/
+
+* seaice_seasonality.py: Maps Antarctic sea ice advance, retreat, and season duration.
+
+   *Required settings for script*
+
+   * `concentration_threshold``: 0.15 (*between 0 and 1*)
+   * `consecutive_days``: 5 (*positive integer less than length of the ice year*)
+
+References
+----------
+
+* `Massom R, Reid P, Stammerjohn S, Raymond B, Fraser A, Ushio S (2013)
+Change and Variability in East Antarctic Sea Ice Seasonality, 1979/80-2009/10.
+PLoS ONE 8(5): e64756.<https://doi.org/10.1371/journal.pone.0064756>`_
