@@ -474,16 +474,16 @@ diagnostics:
     scripts:
       mvi_global:
         <<: *mvi_global
-        mask_below: 1e-2
+        mask_below: 0.01
       mvi_nh:
         <<: *mvi_nh
-        mask_below: 1e-2
+        mask_below: 0.01
       mvi_sh:
         <<: *mvi_sh
-        mask_below: 1e-2
+        mask_below: 0.01
       mvi_trop:
         <<: *mvi_trop
-        mask_below: 1e-2
+        mask_below: 0.01
 
   diag_main_gpp:
     description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
