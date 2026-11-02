@@ -133,7 +133,7 @@ diagnostics:
     description: Plot annual cycles including reference datasets.
     variables:
       clt_tropics: &clt_settings
-        <<: [*time_period, *clt_settings]
+        <<: *time_period
         preprocessor: pp_Tropics
         short_name: clt
         mip: Amon
