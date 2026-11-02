@@ -293,7 +293,7 @@ Observations and reformat scripts
 
   *Reformat script:* cmorizers/data/formatters/datasets/hadisst.ncl
 
-* JRA-55 (ana4mips) - reanalysis of sea surface pressure
+* JRA-55 (ana4MIPs) - reanalysis of sea surface pressure
 
 * NCEP-NCAR-R1 - reanalysis of surface temperature
 
