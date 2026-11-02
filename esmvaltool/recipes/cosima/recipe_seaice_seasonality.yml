@@ -55,6 +55,6 @@ diagnostics:
         timerange: 20000215/20010215
     scripts:
       seasonality:
-        script: seaice/seaice_seasonality.py
+        script: cosima/seaice_seasonality.py
         concentration_threshold: 0.15
         consecutive_days: 5

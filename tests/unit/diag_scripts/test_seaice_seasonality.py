@@ -4,7 +4,7 @@ import iris
 import numpy as np
 import pytest
 
-from esmvaltool.diag_scripts.seaice import seaice_seasonality as seasonality
+from esmvaltool.diag_scripts.cosima import seaice_seasonality as seasonality
 
 
 def make_cube(data):
