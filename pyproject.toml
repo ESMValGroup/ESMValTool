@@ -148,6 +148,18 @@ exclude_lines = [
     "if TYPE_CHECKING:",
 ]
 
+# Configure type checks
+
+[tool.pyrefly]
+# See https://pyrefly.org/en/docs/configuration/
+project-includes = [
+    "esmvaltool",
+    "tests",
+]
+
+[tool.pyrefly.errors]
+redundant-condition = "error"
+
 # Configure linters
 
 [tool.codespell]
@@ -294,7 +306,9 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "jupyterlab" = "*"
 "pre-commit" = "*"
 "py-spy" = "*"
+"pyrefly" = "*"
 "ruff" = "==0.14.5" # keep in sync with .pre-commit-config.yaml
+"types-pyyaml" = "*" # type stubs for pyrefly
 "yamllint" = "*"
 
 # Feature for running tests with Python 3.12.
