@@ -62,12 +62,12 @@ Diagnostics are stored in esmvaltool/diag_scripts/cosima/
 
    *Required settings for script*
 
-   * `concentration_threshold``: 0.15 (*between 0 and 1*)
-   * `consecutive_days``: 5 (*positive integer less than length of the ice year*)
+   * ``concentration_threshold``: 0.15 (*between 0 and 1*)
+   * ``consecutive_days``: 5 (*positive integer less than length of the ice year*)
 
 References
 ----------
 
 * Massom R, Reid P, Stammerjohn S, Raymond B, Fraser A, Ushio S (2013)
   Change and Variability in East Antarctic Sea Ice Seasonality, 1979/80-2009/10.
-  PLoS ONE 8(5): e64756.https://doi.org/10.1371/journal.pone.0064756
+  PLoS ONE 8(5): e64756. https://doi.org/10.1371/journal.pone.0064756
