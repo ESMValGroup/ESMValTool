@@ -155,7 +155,7 @@ class WKSpectra:
         """
         Prewhiten the data: eg remove the annual cycle.
 
-        Actually, this will remove all time periods less than
+        Actually, this will remove all frequencies less than
           those corresponding to 'f_crit'.
         Note: The original fortran code provided by JET did not remove
           the grid point means so .... rmv_means=False

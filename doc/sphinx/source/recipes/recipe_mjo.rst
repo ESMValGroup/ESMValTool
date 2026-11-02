@@ -14,8 +14,8 @@ equatorial belt, derives a smoothed background spectrum, and produces
 ratio spectra (signal/background). In addition, it computes seasonal
 eastward/westward wavenumber-frequency spectra for boreal winter and summer.
 
-The current recipe is configured for daily precipitation and zonal wind,
-with zonal wind at 850 hPa and 200 hPa.
+The recipe supports daily precipitation, top-of-atmosphere outgoing longwave
+radiation (OLR), and zonal wind, with zonal wind at 850 hPa and 200 hPa.
 
 
 Available recipes and diagnostics
@@ -31,6 +31,9 @@ Diagnostics are stored in esmvaltool/diag_scripts/mjo/
    spectra workflows.
 * spectra_compute.py: Wheeler-Kiladis computations, smoothing,
    dispersion-curve overlays, plotting, and NetCDF output writing.
+
+The recipe defines three diagnostics: ``eqw_spectra_pr`` for precipitation,
+``eqw_spectra_olr`` for OLR, and ``eqw_spectra_winds`` for zonal wind.
 
 
 User settings in recipe
@@ -54,6 +57,7 @@ User settings in recipe
 
     * variable_group metadata is used internally to select processing branches.
     * eqw_spectra_pr requires variable pr with daily frequency.
+    * eqw_spectra_olr requires variable rlut with daily frequency.
     * eqw_spectra_winds requires variable ua with daily frequency.
 
     Optional settings for variables
@@ -72,6 +76,7 @@ User settings in recipe
        * end_latitude: 15.
 
     * pp_precip converts precipitation to mm day-1.
+    * pp_olr extracts the equatorial region from rlut. no unit conversion is applied.
     * pp_levels_winds extracts 85000 Pa and 20000 Pa levels from ua.
 
     Notes and constraints
@@ -85,11 +90,13 @@ Variables
 ---------
 
 * pr (atmos, daily mean, longitude latitude time)
+* rlut (atmos, daily mean, longitude latitude time)
 * ua (atmos, daily mean, longitude latitude time pressure)
 
 Derived variable names in output are:
 
 * Precipitation (from pr)
+* toa_outgoing_longwave_flux (from rlut)
 * x_wind_850hPa and x_wind_200hPa (from ua)
 
 
@@ -124,6 +131,3 @@ including:
 * Ratio anti-symmetric spectra (raw/background)
 * Ratio symmetric spectra (raw/background)
 * Seasonal (winter/summer) wavenumber-frequency spectra
-
-At the moment, no static example image is shipped in
-doc/sphinx/source/recipes/figures/mjo/.
