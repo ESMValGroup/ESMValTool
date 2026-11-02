@@ -60,7 +60,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/cosima/
 
 * seaice_seasonality.py: Maps Antarctic sea ice advance, retreat, and season duration.
 
-   *Required settings for script*
+*Required settings for script*
 
    * `concentration_threshold``: 0.15 (*between 0 and 1*)
    * `consecutive_days``: 5 (*positive integer less than length of the ice year*)
