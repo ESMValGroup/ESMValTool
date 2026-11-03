@@ -24,6 +24,7 @@ import sys
 from pathlib import Path
 
 import cartopy.crs as ccrs
+from cartopy.util import add_cyclic
 import iris
 import matplotlib as mpl
 
@@ -99,6 +100,8 @@ def plot_dataset(
     # Baltic, the Great Lakes, the Kara Sea) are computed and can place
     # labels on the plot.
     data = np.ma.masked_where(lat2d > max_lat, data)
+    # Close the longitude seam for contouring without changing saved data.
+    data, lon2d, lat2d = add_cyclic(data, x=lon2d, y=lat2d)
     logger.info(
         "%s: %s range %.4g to %.4g south of %g degrees latitude",
         title,
