@@ -83,9 +83,9 @@ All pull requests
 ~~~~~~~~~~~~~~~~~
 
 - 🛠 :ref:`The pull request has a descriptive title <descriptive_pr_title>`
+- 🛠 :ref:`AI policy <ai_policy>` has been followed and any AI usage has been disclosed
 - 🛠 Code is written according to the :ref:`code quality guidelines <code_quality>`
 - 🛠 Documentation_ is available
-- 🛠 Tests_ run successfully
 - 🛠 The :ref:`list of authors <authors>` is up to date
 - 🛠 Changed dependencies are :ref:`added or removed correctly <dependencies>`
 - 🛠 The :ref:`checks shown below the pull request <pull_request_checks>` are successful
@@ -515,11 +515,24 @@ of the dependency you want to add and any of its dependencies are
 with the
 `Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/main/LICENSE/>`_
 license that applies to the ESMValTool.
-Note that GPL version 2 license is considered incompatible with the Apache 2.0
-license, while the compatibility of GPL version 3 license with the Apache 2.0
-license is questionable.
+Permissively licensed dependencies (e.g. MIT, BSD, Apache 2.0) can be added,
+as can dependencies licensed under a weak copyleft license such as the LGPL or
+MPL 2.0.
+Because the R software ecosystem largely consists of packages licensed under
+the GPL family of licenses, R dependencies licensed under the GPL version 3 or
+the GPL version 2 or later can also be added.
+The combination of ESMValTool with a GPL-licensed dependency can only be
+distributed under the terms of the GPL version 3.
+Do not add dependencies licensed under the GPL version 2 only, because the Free
+Software Foundation considers it incompatible with Apache 2.0, or under
+licenses that are not open source, for example because they restrict
+commercial use or redistribution.
 See this `statement <https://www.apache.org/licenses/GPL-compatibility.html>`__
 by the authors of the Apache 2.0 license for more information.
+Please note that, for historical reasons, some existing functionality relies on
+dependencies that do not meet these requirements, including dependencies
+licensed under the GPL version 2 only and dependencies with licenses that
+restrict commercial use or redistribution.
 
 When adding or removing dependencies, please consider applying the changes in
 the following two locations in ``pyproject.toml``:

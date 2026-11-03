@@ -51,6 +51,7 @@ Atmosphere
    recipe_iht_toa
    recipe_impact
    recipe_lifetime
+   recipe_mjo_hovmoeller
    recipe_modes_of_variability
    recipe_mpqb_xch4
    recipe_quantilebias

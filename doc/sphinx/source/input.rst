@@ -78,7 +78,7 @@ Observations
 ============
 
 Observational and reanalysis products in the standard CF/CMOR format used in
-CMIP and required by ESMValTool are available via the obs4MIPs and ana4mips
+CMIP and required by ESMValTool are available via the obs4MIPs and ana4MIPs
 projects hosted by ESGF (e.g., https://pcmdi.github.io/obs4MIPs/).
 Their use is strongly recommended, when possible.
 
@@ -103,7 +103,7 @@ Tiers
 
 All observational datasets are grouped into in three tiers:
 
-* **Tier 1**: obs4mips and ana4mips datasets. These datasets are publicly and freely available without any license restrictions. These datasets do not need any reformatting and can be used as is with ESMValTool.
+* **Tier 1**: obs4MIPs and ana4MIPs datasets. These datasets are publicly and freely available without any license restrictions. These datasets do not need any reformatting and can be used as is with ESMValTool.
 * **Tier 2** other freely available datasets that are not obs4mips. There are no license restrictions. These datasets need to be reformatted to be used with ESMValTool ('CMORization', see above).
 * **Tier 3** restricted datasets. Datasets which require registration to be downloaded or that can only be obtained upon request from the respective authors. License restrictions do not allow us to redistribute Tier 3 datasets. The data have to be obtained and reformatted by the user ('CMORization', see above).
 
@@ -201,7 +201,7 @@ data is stored, ``~/RAWOBS`` in this example but it can be chosen freely.
 
 Within the directory pointed to by ``--original-data-dir``, the data are expected to be organized in subdirectories
 corresponding to the data tier: Tier2 for freely-available datasets (other than
-obs4MIPs and ana4mips) and Tier3 for restricted datasets (i.e., dataset which
+obs4MIPs and ana4MIPs) and Tier3 for restricted datasets (i.e., dataset which
 requires a registration to be retrieved or provided upon request to the
 respective contact or PI).
 The CMORization follows the `CMIP5 CMOR tables

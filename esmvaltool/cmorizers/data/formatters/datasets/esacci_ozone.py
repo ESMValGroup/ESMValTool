@@ -83,7 +83,9 @@ logger = logging.getLogger(__name__)
 
 
 def _convert_units(
-    cubes: iris.cube.CubeList, short_name: str, var: dict
+    cubes: iris.cube.CubeList,
+    short_name: str,
+    var: dict,
 ) -> iris.cube.Cube:
     """Perform variable-specific conversion of units.
 
@@ -187,7 +189,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year, month):
             [
                 timecoord.units.date2num(start_date),
                 timecoord.units.date2num(end_date),
-            ]
+            ],
         )
 
     # Add longitude coordinate to cube only for o3_sage_omps.

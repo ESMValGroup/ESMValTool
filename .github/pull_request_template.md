@@ -44,9 +44,9 @@ It is the responsibility of the author to make sure the pull request is ready to
 [2]: https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review
 
 - [ ] [🛠][1] This pull request has a [descriptive title](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#pull-request-title)
+- [ ] [🛠][1] [AI policy](https://docs.esmvaltool.org/en/latest/community/ai_policy.html) has been followed and any AI usage has been disclosed
 - [ ] [🛠][1] Code is written according to the [code quality guidelines](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#code-quality)
 - [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#documentation) is available
-- [ ] [🛠][1] [Tests](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#tests) run successfully
 - [ ] [🛠][1] The [list of authors](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#list-of-authors) is up to date
 - [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#dependencies)
 - [ ] [🛠][1] All [checks below this pull request](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#pull-request-checks) were successful
