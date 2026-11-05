@@ -1,0 +1,193 @@
+# ESMValTool
+# recipe_impact_cordex-cmip6.yml
+---
+documentation:
+  title: Quick insight for climate impact researchers
+  description: >
+    This recipe provides quick insight into the spread and performance of multiple models.
+
+    Many impact researchers do not have the time and finances to use a large
+    ensemble of climate model runs for their impact analysis. To get an idea of
+    the range of impacts of climate change it also suffices to use a small
+    number of climate model runs. In case a system is only sensitive to annual
+    temperature, one can select a run with a high change and one with a low
+    change of annual temperature, preferably both with a low bias.
+
+    Results of this recipe can be viewed interactively at
+    https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact/.
+
+    Notes:
+
+    - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015, on the 0.25 degree ERA5 grid.
+    - Future change is calculated for 2035-2065 as compared to 1986-2015.
+    - Results are shown for each CORDEX domain with data available: Europe
+      (EUR-12) and Central America (CAM-25).
+    - All data are taken from the SSP 8.5 scenario.
+
+  authors:
+    - kalverla_peter
+    - andela_bouwe
+  maintainer:
+    - andela_bouwe
+  projects:
+    - eso4clima
+    - isenes3
+
+preprocessors:
+
+  calculate_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &reference_period
+        start_year: 1986
+        start_month: 1
+        start_day: 1
+        end_year: 2015
+        end_month: 12
+        end_day: 31
+      standardize: false
+    extract_time:  # Future period
+      start_year: 2035
+      start_month: 1
+      start_day: 1
+      end_year: 2065
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+
+  # The bias is calculated on the 0.25 degree ERA5 grid, so it does not depend
+  # on the resolution of the model. The target grid of each domain covers the
+  # ERA5 grid cells overlapping the grids of all models in that domain. Grid
+  # cells outside a model grid are masked and the common mask is applied to
+  # all datasets, so the bias of each model is calculated over the same area.
+  calculate_bias_EUR: &calculate_bias
+    regrid: &regrid_bias
+      scheme: area_weighted
+      cache_weights: true
+      target_grid:
+        start_latitude: 20.75
+        end_latitude: 74.25
+        step_latitude: 0.25
+        start_longitude: -52
+        end_longitude: 73
+        step_longitude: 0.25
+    extract_time:
+      <<: *reference_period
+    mask_multimodel:
+    regrid_time:
+      frequency: mon
+      calendar: standard
+    distance_metric:
+      metric: weighted_rmse
+      coords: [time, latitude, longitude]
+      keep_reference_dataset: false
+
+  calculate_bias_CAM:
+    <<: *calculate_bias
+    regrid:
+      <<: *regrid_bias
+      target_grid:
+        start_latitude: -26
+        end_latitude: 38.5
+        step_latitude: 0.25
+        start_longitude: -131.25
+        end_longitude: 33.25
+        step_longitude: 0.25
+
+# Each domain has its own diagnostic, named after the domain without its
+# resolution, e.g. EUR. The grid of each model is given by the domain in its
+# dataset entry, so models on another grid of the same domain, e.g. EUR-25, can
+# be added to the diagnostic of that domain.
+# Datasets were selected by searching ESGF for runs that provide tas and pr for
+# the historical and ssp585 experiments, and areacella.
+diagnostics:
+  bias_and_change_EUR: &diagnostic
+    description: >
+      Provide quick insights into the behaviour of each model by plotting the
+      bias with respect to observations and change with respect to the reference
+      period.
+
+    themes:
+      - phys
+    realms:
+      - atmos
+
+    additional_datasets:
+      - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: NorESM2-MM, ensemble: r1i1p1f1, institute: CNRM-MF, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: CNRM-ESM2-1, ensemble: r1i1p1f2, institute: CLMcom-BTU, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: EC-Earth3-Veg, ensemble: r1i1p1f1, institute: CLMcom-Hereon, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MIROC6, ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MPI-ESM1-2-HR, ensemble: r1i1p1f1, institute: CLMcom-DWD, domain: EUR-12}
+
+    variables:
+      tas_change: &change
+        short_name: tas
+        area: the European CORDEX domain (EUR)
+        exp: [historical, ssp585]
+        mip: mon
+        project: CORDEX-CMIP6
+        timerange: '1986/2065'
+        preprocessor: calculate_anomalies
+        supplementary_variables:
+          - {short_name: areacella, mip: fx, exp: historical}
+      pr_change: &pr_change
+        <<: *change
+        short_name: pr
+      tas_bias: &bias
+        short_name: tas
+        area: the European CORDEX domain (EUR)
+        exp: [historical, ssp585]
+        mip: mon
+        project: CORDEX-CMIP6
+        timerange: '1986/2015'
+        preprocessor: calculate_bias_EUR
+        additional_datasets:
+          - {dataset: ERA-5, mip: Amon, project: obs4MIPs, reference_for_metric: true}
+      pr_bias: &pr_bias
+        <<: *bias
+        short_name: pr
+        additional_datasets:
+          - {dataset: ERA5, mip: Amon, project: native6, type: reanaly, version: v1, tier: 3, reference_for_metric: true}
+
+    scripts:
+      visualize:
+        script: impact/bias_and_change.py
+        notes:
+          - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015, on the 0.25 degree ERA5 grid.
+          - Future change is calculated for 2035-2065 as compared to 1986-2015.
+          - Area is set to {area}.
+          - All data are taken from the SSP5-8.5 scenario.
+        axis_titles:
+          bias: Bias with respect to ERA5 (1986-2015)
+          change: Projected change (2050 versus 2000)
+        alias_facets:
+          dataset: model
+          rcm_version: version_realization
+          driver: driver
+          ensemble: member
+          domain: domain
+
+  bias_and_change_CAM:
+    <<: *diagnostic
+    additional_datasets:
+      - {dataset: CNRM-ALADIN64C1, rcm_version: v1-r1, driver: NorESM2-MM, ensemble: r1i1p1f1, institute: CNRM, domain: CAM-25}
+
+    variables:
+      tas_change:
+        <<: *change
+        area: the Central American CORDEX domain (CAM)
+      pr_change:
+        <<: *pr_change
+        area: the Central American CORDEX domain (CAM)
+      tas_bias:
+        <<: *bias
+        area: the Central American CORDEX domain (CAM)
+        preprocessor: calculate_bias_CAM
+      pr_bias:
+        <<: *pr_bias
+        area: the Central American CORDEX domain (CAM)
+        preprocessor: calculate_bias_CAM
