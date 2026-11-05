@@ -143,7 +143,7 @@ def get_provenance_record(
         "project": project,
         "experiment": experiment,
         "timerange": timerange,
-        "plot_type": plot_type[var],
+        "plot_types": [plot_type[var]],
         "authors": ["lenhardt_julien"],
         "ancestors": ancestors,
     }

@@ -365,8 +365,8 @@ def save_cube(cube, field_name, config, ancestors):
         config,
         caption=field_name,
         statistics=["mean", "diff"],
-        domain=["global"],
-        plot_type=["map"],
+        domains=["global"],
+        plot_types=["map"],
         ancestors=ancestors,
     )
     save_data(
@@ -521,8 +521,8 @@ def create_quadmap(
         caption=f"Quadmap models comparison against observation level="
         f"{formatted_depth})",
         statistics=["mean", "diff"],
-        domain=["global"],
-        plot_type=["map"],
+        domains=["global"],
+        plot_types=["map"],
         ancestors=ancestors,
     )
 

@@ -191,7 +191,7 @@ def get_provenance_record(
         "caption": caption,
         "statistics": statistics,
         "domains": domains,
-        "plot_type": plot_type,
+        "plot_types": [plot_type],
         "projects": ["cmug"],
         "realms": ["atmos"],
         "themes": ["atmDyn"],

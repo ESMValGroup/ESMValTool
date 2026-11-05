@@ -132,7 +132,7 @@ def make_ssh_gradient_plot(cfg, metadata, filename):
     provenance_record = {
         "caption": "SSH gradient magnitude map for " + dataset + ".",
         "statistics": ["mean"],
-        "domain": ["global"],
+        "domains": ["global"],
         "plot_types": ["map"],
         "ancestors": [filename],
     }

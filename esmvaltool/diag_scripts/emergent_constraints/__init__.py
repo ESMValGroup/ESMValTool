@@ -1318,7 +1318,7 @@ def plot_individual_scatterplots(
                 attributes,
                 [feature, label],
                 caption=get_caption(attributes, feature, label, group=group),
-                plot_type="scatter",
+                plot_types=["scatter"],
             )
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
@@ -1486,7 +1486,7 @@ def plot_merged_scatterplots(
             attributes,
             [feature, label],
             caption=get_caption(attributes, feature, label),
-            plot_type="scatter",
+            plot_types=["scatter"],
         )
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1684,7 +1684,7 @@ def plot_target_distributions(
                 f"{attributes[feature]['plot_title']}: Probability "
                 f"densitiy of {label}."
             ),
-            plot_type="probability",
+            plot_types=["probability"],
         )
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)

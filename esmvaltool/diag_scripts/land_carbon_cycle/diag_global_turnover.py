@@ -845,7 +845,7 @@ def main(diag_config):
     provenance_record_matrix = _get_provenance_record(
         "Matrix Comparison of global distributions of turnover time of carbon",
         ["mean", "perc"],
-        ["global"],
+        ["map"],
         _get_ancestor_files(diag_config, "tau_ctotal"),
     )
 
@@ -853,7 +853,7 @@ def main(diag_config):
         "Multimodel bias and agreements of global distributions of turnover"
         "time of carbon. Reproduces figure 3 in Carvalhais et al. (2014).",
         ["mean", "perc"],
-        ["global"],
+        ["map"],
         _get_ancestor_files(diag_config, "tau_ctotal"),
     )
 
@@ -895,7 +895,7 @@ def main(diag_config):
         provenance_record_mod = _get_provenance_record(
             "Map of global distribution of turnover time of carbon",
             ["mean", "perc"],
-            ["global"],
+            ["map"],
             {model_name: model_dataset},
         )
         _plot_single_map(
@@ -951,7 +951,7 @@ def main(diag_config):
     provenance_record_obs = _get_provenance_record(
         "Map of observed global distribution of turnover time of carbon",
         ["mean", "perc"],
-        ["global"],
+        ["map"],
         global_tau_obs["input_files"].tolist(),
     )
 
