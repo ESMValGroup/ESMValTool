@@ -1,0 +1,147 @@
+# ESMValTool
+# recipe_anav13jclim.xml
+---
+documentation:
+  title: Land and ocean components of the global carbon cycle in CMIP5
+
+  description: |
+    This recipe reproduces most of the figures of Anav et al. (2013).
+
+  authors:
+    - gier_bettina
+
+  maintainer:
+    - gier_bettina
+
+  references:
+    - anav13jclim
+
+  projects:
+    - trr181
+
+
+datasets:
+  #- {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, start_year: 1950, end_year: 1960}
+  - {dataset: MPI-ESM1-2-LR}
+
+preprocessors:
+
+  # annual statistics
+  # global mean
+  statistical_averaging: &ann_global_mean
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+  stat_sum: &stat_sum
+    area_statistics:
+      operator: sum
+    annual_statistics:
+      operator: mean
+
+  landmask: &landmask
+    mask_landsea:
+      mask_out: sea
+
+  land_fraction_weighting: &land_fraction_weighting
+    weighting_landsea_fraction: &weighting_options
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP2018',
+        'inmcm4',
+        'JMA-TRANSCOM',
+        'LAI3g',
+        'MTE',
+        'NDP',
+      ]
+
+  sea_fraction_weighting: &sea_fraction_weighting
+    weighting_landsea_fraction:
+      <<: *weighting_options
+      area_type: sea
+
+  land_preproc: &land_preproc
+    <<: *land_fraction_weighting
+    <<: *stat_sum
+    mask_landsea:
+      mask_out: sea
+      threshold: 100.
+
+  landflux_preproc:
+    <<: *land_preproc
+    convert_units:
+      units: Pg yr-1
+
+  oceanflux_preproc:
+    <<: *sea_fraction_weighting
+    <<: *stat_sum
+    mask_landsea:
+      mask_out: land
+      threshold: 100.
+    convert_units:
+      units: Pg yr-1
+
+
+  tas_preproc:
+    <<: *ann_global_mean
+    convert_units:
+      units: degC
+
+diagnostics:
+
+  cc_preproc:
+    description: Preprocessing of carbon fluxes and pools to compute carbon feedbacks
+    themes:
+      - carbon
+    realms:
+      - atmos
+      - land
+      - ocean
+      - ocnBgchem
+    variables:
+      tas: &tas
+        preprocessor: tas_preproc
+        project: CMIP6
+        mip: Amon
+        exp: piControl
+        ensemble: r1i1p1f1
+        grid: gn
+        start_year: 1850
+        end_year: 1860
+      # co2s:
+      #   <<: *tas
+      #   short_name: co2s
+      netAtmosLandCO2Flux:
+        <<: *tas
+        preprocessor: landflux_preproc
+        mip: Emon
+        short_name: netAtmosLandCO2Flux
+      fgco2:
+        <<: *tas
+        preprocessor: oceanflux_preproc
+        mip: Omon
+        short_name: fgco2
+    #additional_datasets: *tas_datasets
+    scripts:
+      null
+      # main:
+      #   script: carbon_cycle/carbon_feedback_preparation.py
+      #   write_legacy_csv: true
+
+
+  # cc_feedbacks:
+  #   description: Compute carbon feedbacks
+  #   themes:
+  #     - carbon
+  #   realms:
+  #     - atmos
+  #     - land
+  #     - ocean
+  #     - ocnBgchem
+  #   scripts:
+  #     main:
+  #       script: carbon_cycle/carbon_feedback_compute.py
+  #       ancestors: ['cc_preproc/main']
+  #       external_ancestor_file_path: false
