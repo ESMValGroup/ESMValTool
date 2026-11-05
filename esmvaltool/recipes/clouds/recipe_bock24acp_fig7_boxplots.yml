@@ -254,16 +254,13 @@ diagnostics:
         <<: *var_clt_1
         additional_datasets: *datasets_ecs_low
       clt_ECS_high_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         additional_datasets: *datasets_ecs_high_scenario
       clt_ECS_med_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         additional_datasets: *datasets_ecs_med_scenario
       clt_ECS_low_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         additional_datasets: *datasets_ecs_low_scenario
       clivi_ECS_high_hist:
         <<: *var_clt_1
@@ -278,19 +275,16 @@ diagnostics:
         short_name: clivi
         additional_datasets: *datasets_ecs_low
       clivi_ECS_high_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: clivi
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       clivi_ECS_med_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: clivi
         additional_datasets: *datasets_ecs_med_scenario
       clivi_ECS_low_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: clivi
         additional_datasets: *datasets_ecs_low_scenario
       lwp_ECS_high_hist:
@@ -309,21 +303,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       lwp_ECS_high_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: lwp
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       lwp_ECS_med_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       lwp_ECS_low_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -343,21 +334,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       netcre_ECS_high_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: netcre
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       netcre_ECS_med_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       netcre_ECS_low_scen:
-        <<: *var_clt_1
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_1]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -371,18 +359,15 @@ diagnostics:
         <<: *var_tas_1
         additional_datasets: *datasets_ecs_low
       tas_ECS_high_scen:
-        <<: *var_tas_1
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_1]
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       tas_ECS_med_scen:
-        <<: *var_tas_1
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_1]
         exp: ssp585
         additional_datasets: *datasets_ecs_med_scenario
       tas_ECS_low_scen:
-        <<: *var_tas_1
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_1]
         exp: ssp585
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
@@ -407,16 +392,13 @@ diagnostics:
         <<: *var_clt_2
         additional_datasets: *datasets_ecs_low
       clt_ECS_high_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         additional_datasets: *datasets_ecs_high_scenario
       clt_ECS_med_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         additional_datasets: *datasets_ecs_med_scenario
       clt_ECS_low_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         additional_datasets: *datasets_ecs_low_scenario
       clivi_ECS_high_hist:
         <<: *var_clt_2
@@ -431,19 +413,16 @@ diagnostics:
         short_name: clivi
         additional_datasets: *datasets_ecs_low
       clivi_ECS_high_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: clivi
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       clivi_ECS_med_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: clivi
         additional_datasets: *datasets_ecs_med_scenario
       clivi_ECS_low_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: clivi
         additional_datasets: *datasets_ecs_low_scenario
       lwp_ECS_high_hist:
@@ -462,21 +441,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       lwp_ECS_high_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: lwp
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       lwp_ECS_med_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       lwp_ECS_low_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -496,21 +472,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       netcre_ECS_high_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: netcre
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       netcre_ECS_med_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       netcre_ECS_low_scen:
-        <<: *var_clt_2
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_2]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -524,18 +497,15 @@ diagnostics:
         <<: *var_tas_2
         additional_datasets: *datasets_ecs_low
       tas_ECS_high_scen:
-        <<: *var_tas_2
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_2]
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       tas_ECS_med_scen:
-        <<: *var_tas_2
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_2]
         exp: ssp585
         additional_datasets: *datasets_ecs_med_scenario
       tas_ECS_low_scen:
-        <<: *var_tas_2
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_2]
         exp: ssp585
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
@@ -560,16 +530,13 @@ diagnostics:
         <<: *var_clt_3
         additional_datasets: *datasets_ecs_low
       clt_ECS_high_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         additional_datasets: *datasets_ecs_high_scenario
       clt_ECS_med_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         additional_datasets: *datasets_ecs_med_scenario
       clt_ECS_low_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         additional_datasets: *datasets_ecs_low_scenario
       clivi_ECS_high_hist:
         <<: *var_clt_3
@@ -584,19 +551,16 @@ diagnostics:
         short_name: clivi
         additional_datasets: *datasets_ecs_low
       clivi_ECS_high_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: clivi
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       clivi_ECS_med_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: clivi
         additional_datasets: *datasets_ecs_med_scenario
       clivi_ECS_low_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: clivi
         additional_datasets: *datasets_ecs_low_scenario
       lwp_ECS_high_hist:
@@ -615,21 +579,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       lwp_ECS_high_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: lwp
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       lwp_ECS_med_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       lwp_ECS_low_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -649,21 +610,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       netcre_ECS_high_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: netcre
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       netcre_ECS_med_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       netcre_ECS_low_scen:
-        <<: *var_clt_3
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_3]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -677,18 +635,15 @@ diagnostics:
         <<: *var_tas_3
         additional_datasets: *datasets_ecs_low
       tas_ECS_high_scen:
-        <<: *var_tas_3
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_3]
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       tas_ECS_med_scen:
-        <<: *var_tas_3
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_3]
         exp: ssp585
         additional_datasets: *datasets_ecs_med_scenario
       tas_ECS_low_scen:
-        <<: *var_tas_3
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_3]
         exp: ssp585
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
@@ -713,16 +668,13 @@ diagnostics:
         <<: *var_clt_str
         additional_datasets: *datasets_ecs_low
       clt_ECS_high_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         additional_datasets: *datasets_ecs_high_scenario
       clt_ECS_med_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         additional_datasets: *datasets_ecs_med_scenario
       clt_ECS_low_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         additional_datasets: *datasets_ecs_low_scenario
       clivi_ECS_high_hist:
         <<: *var_clt_str
@@ -737,19 +689,16 @@ diagnostics:
         short_name: clivi
         additional_datasets: *datasets_ecs_low
       clivi_ECS_high_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: clivi
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       clivi_ECS_med_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: clivi
         additional_datasets: *datasets_ecs_med_scenario
       clivi_ECS_low_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: clivi
         additional_datasets: *datasets_ecs_low_scenario
       lwp_ECS_high_hist:
@@ -768,21 +717,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       lwp_ECS_high_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: lwp
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       lwp_ECS_med_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       lwp_ECS_low_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -802,21 +748,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       netcre_ECS_high_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: netcre
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       netcre_ECS_med_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       netcre_ECS_low_scen:
-        <<: *var_clt_str
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_str]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -830,18 +773,15 @@ diagnostics:
         <<: *var_tas_str
         additional_datasets: *datasets_ecs_low
       tas_ECS_high_scen:
-        <<: *var_tas_str
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_str]
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       tas_ECS_med_scen:
-        <<: *var_tas_str
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_str]
         exp: ssp585
         additional_datasets: *datasets_ecs_med_scenario
       tas_ECS_low_scen:
-        <<: *var_tas_str
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_str]
         exp: ssp585
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
@@ -866,16 +806,13 @@ diagnostics:
         <<: *var_clt_5
         additional_datasets: *datasets_ecs_low
       clt_ECS_high_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         additional_datasets: *datasets_ecs_high_scenario
       clt_ECS_med_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         additional_datasets: *datasets_ecs_med_scenario
       clt_ECS_low_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         additional_datasets: *datasets_ecs_low_scenario
       clivi_ECS_high_hist:
         <<: *var_clt_5
@@ -890,19 +827,16 @@ diagnostics:
         short_name: clivi
         additional_datasets: *datasets_ecs_low
       clivi_ECS_high_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: clivi
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       clivi_ECS_med_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: clivi
         additional_datasets: *datasets_ecs_med_scenario
       clivi_ECS_low_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: clivi
         additional_datasets: *datasets_ecs_low_scenario
       lwp_ECS_high_hist:
@@ -921,21 +855,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       lwp_ECS_high_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: lwp
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       lwp_ECS_med_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       lwp_ECS_low_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: lwp
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -955,21 +886,18 @@ diagnostics:
         derive: true
         additional_datasets: *datasets_ecs_low
       netcre_ECS_high_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: netcre
         derive: true
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       netcre_ECS_med_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_med_scenario
       netcre_ECS_low_scen:
-        <<: *var_clt_5
-        <<: *years_scen
+        <<: [*years_scen, *var_clt_5]
         short_name: netcre
         derive: true
         additional_datasets: *datasets_ecs_low_scenario
@@ -983,18 +911,15 @@ diagnostics:
         <<: *var_tas_5
         additional_datasets: *datasets_ecs_low
       tas_ECS_high_scen:
-        <<: *var_tas_5
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_5]
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
       tas_ECS_med_scen:
-        <<: *var_tas_5
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_5]
         exp: ssp585
         additional_datasets: *datasets_ecs_med_scenario
       tas_ECS_low_scen:
-        <<: *var_tas_5
-        <<: *years_scen
+        <<: [*years_scen, *var_tas_5]
         exp: ssp585
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
