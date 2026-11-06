@@ -1,0 +1,17 @@
+attributes:
+  project_id: CMIP6
+  dataset_id: MIDAS
+  modeling_realm: atmos # ????
+  type: sat # ?????
+  tier: 2
+  version: V1
+  source: https://zenodo.org/records/4244106#.Y5ekg3bMKMo
+  reference: midas
+
+  filename_fmt: "MODIS-AQUA-C061_AOD-and-DOD-V1-GRID_RESOLUTION_0.1-*.nc"
+
+variables:
+  od550dust:
+    raw_name: Modis-total-dust-optical-depth-at-550nm
+    mip: AERmon
+    frequency: mon
