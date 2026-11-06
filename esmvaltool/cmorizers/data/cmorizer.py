@@ -17,6 +17,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import esmvalcore
+import esmvalcore.io
+import esmvalcore.io.local
 import yaml
 from esmvalcore._task import write_ncl_settings
 from esmvalcore.config import CFG
@@ -111,18 +113,6 @@ class _Formatter:
         # Locate the input data.
         if original_data_dir is None:
             original_data_dir = Path.cwd()
-            # TODO: remove the lines below in ESMValTool v2.16.0.
-            rawobs = self.config.get("rootpath", {}).get("RAWOBS", None)
-            if rawobs is not None:
-                logger.warning(
-                    (
-                        "Using the 'rootpath: RAWOBS' setting to specify the "
-                        "input data directory is deprecated and this will stop "
-                        "working in ESMValTool v2.16.0. Please use the "
-                        "'--original-data-dir' argument instead."
-                    ),
-                )
-                original_data_dir = Path(rawobs[0])
 
         self.original_data_dir = Path(
             os.path.expandvars(original_data_dir),
@@ -457,21 +447,6 @@ class _Formatter:
             Path to the installation directory, or None if it cannot be
             determined.
         """
-        tier = self._get_dataset_tier(dataset)
-        if "rootpath" in self.config:
-            # May not be available since ESMValCore v2.14, will be removed in
-            # ESMValCore v2.16.
-            rootpath = self.config["rootpath"]
-            target_dir = rootpath.get("OBS", rootpath["default"])[0]
-            return Path(target_dir, tier, dataset)
-
-        try:
-            # Only available since ESMValCore v2.14
-            import esmvalcore.io
-            import esmvalcore.io.local
-        except ImportError:
-            return None
-
         target_dir = None
         # Normalize the attributes so they can be used as facets in the
         # directory name template of a LocalDataSource.
