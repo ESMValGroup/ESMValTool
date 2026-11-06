@@ -1,0 +1,5 @@
+---
+# ESMValTool configuration for running the RTW.
+auxiliary_data_dir: /work/bd0854/DATA/ESMValTool2/AUX
+output_dir: ${OUTPUT_DIR}
+remove_preproc_dir: false

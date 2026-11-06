@@ -10,8 +10,8 @@ The |RTW| performs the following steps:
 
 ``install_env_file``
   :Description:
-     Copies the environment file for |ESMValTool|, based on the ``SITE``
-     provided
+     Copies the environment file and configuration files for |ESMValTool|,
+     based on the ``SITE`` provided
   :Runs on:
      Localhost
   :Executes:
@@ -34,11 +34,11 @@ The |RTW| performs the following steps:
 
 ``configure``
   :Description:
-     Creates the |ESMValTool| user configuration file and validates it
+     Creates the |ESMValTool| configuration directory and validates its contents
   :Runs on:
      Localhost
   :Executes:
-     The ``configure.py`` script from the |Rose| app
+     The ``configure.sh`` script from the |Rose| app
   :Details:
      Runs each cycle after ``get_esmval`` has completed
 
@@ -103,9 +103,18 @@ and ``opt`` directories within the |RTW|. The files required are:
   Contains details on how to set up the environment for ESMValTool at the
   ``SITE``
 
+``site/<site>/config/``
+  Contains the |ESMValTool| :ref:`configuration files
+  <esmvalcore:config_overview>` for the ``SITE``, which define for example
+  where to store the output.
+  If the ``SITE`` is not supported by one of the example configuration files
+  provided by ESMValCore, this directory should also define the
+  :ref:`data sources <esmvalcore:config-data-sources>`
+
 ``opt/rose-suite-<site>.conf``
   Contains configuration items specific to the ``SITE``, including ``SITE``
-  and where to find the required datasets
+  and ``DATA_SOURCES_FILE``, the name of the example configuration file provided
+  by ESMValCore that describes where to find the required datasets
 
 Metadata
 ~~~~~~~~

@@ -1,0 +1,4 @@
+---
+# ESMValTool configuration for running the RTW.
+output_dir: ${OUTPUT_DIR}
+remove_preproc_dir: false
