@@ -12,7 +12,10 @@ from esmvaltool.diag_scripts.rf_shap._bootstrap import ensure_rf_shap_on_path
 
 ensure_rf_shap_on_path()
 
-from rf_shap.explain.evaluate import compare_explanations, interaction_shap  # noqa: E402
+from rf_shap.explain.evaluate import (  # noqa: E402
+    compare_explanations,
+    interaction_shap,
+)
 
 
 def _xy_shap(result):
@@ -29,10 +32,11 @@ def _xy_shap(result):
 def _shared_features(names_ref, names_other):
     common = [name for name in names_ref if name in names_other]
     if not common:
-        raise ValueError(
+        msg = (
             "The two explanations share no features: "
             f"{list(names_ref)} versus {list(names_other)}"
         )
+        raise ValueError(msg)
     return common
 
 
