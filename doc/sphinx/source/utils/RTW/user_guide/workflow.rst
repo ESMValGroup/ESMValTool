@@ -107,14 +107,14 @@ and ``opt`` directories within the |RTW|. The files required are:
   Contains the |ESMValTool| :ref:`configuration files
   <esmvalcore:config_overview>` for the ``SITE``, which define for example
   where to store the output.
-  If the ``SITE`` is not supported by one of the example configuration files
-  provided by ESMValCore, this directory should also define the
+  If the ``SITE`` is not supported by one of the site-specific configuration
+  files provided by ESMValCore, this directory should also define the
   :ref:`data sources <esmvalcore:config-data-sources>`
 
 ``opt/rose-suite-<site>.conf``
   Contains configuration items specific to the ``SITE``, including ``SITE``
-  and ``DATA_SOURCES_FILE``, the name of the example configuration file provided
-  by ESMValCore that describes where to find the required datasets
+  and ``DATA_SOURCES_FILE``, the name of the site-specific configuration file
+  provided by ESMValCore that describes where to find the required datasets
 
 Metadata
 ~~~~~~~~
