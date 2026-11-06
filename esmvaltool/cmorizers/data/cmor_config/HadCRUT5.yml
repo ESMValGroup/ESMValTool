@@ -2,7 +2,7 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: HadCRUT5
-  version: '5.0.1.0'
+  version: '5.2.0.0'
   tier: 2
   type: ground
   project_id: OBS
@@ -15,9 +15,9 @@ climatology:
 
 filenames:
   analysis:
-    'HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc'
+    'HadCRUT.5.2.0.0.analysis.anomalies.ensemble_mean.nc'
   noninfilled:
-    'HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc'
+    'HadCRUT.5.2.0.0.noninfilled.anomalies.ensemble_mean.nc'
 
 # Variables to cmorize
 variables:
