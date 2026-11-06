@@ -65,6 +65,7 @@ all = [
     "fiona",
     "fire",
     "fsspec",
+    "gsw",
     "GDAL",
     "ipython",
     "jinja2",

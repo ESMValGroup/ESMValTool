@@ -1,0 +1,117 @@
+# ESMValTool
+# recipe_cosima_cross_contour_transport.yml
+---
+documentation:
+  title: Transport across a closed bathymetry contour (COSIMA)
+
+  description: |
+    Volume transport across a closed bathymetry contour, for example
+    onto the Antarctic continental shelf across the 1000 m isobath.
+    Translated from the COSIMA recipe Cross-contour_transport.ipynb.
+
+    The upstream notebook carries a standing warning that its contour
+    and mask construction can produce contours that are not closed
+    (COSIMA/cosima-recipes#669), together with the non-monotonic
+    contour indexing of #383. That is the part this translation changes
+    rather than copies:
+
+    - the contour cells are made adjacently connected by construction,
+      by inserting an intermediate cell at every diagonal step;
+    - exactly one signed face crossing is then assigned per step.
+
+    Both properties are asserted in validation/test_cosima_common.py,
+    including that a closed contour has balanced crossings in each
+    direction, which is the check that catches an unclosed contour.
+
+    The transport is sum(mask_u * umo + mask_v * vmo) per depth level,
+    converted from mass to volume transport with a Boussinesq reference
+    density of 1035 kg/m3. Positive is outward, away from the shallow
+    side.
+
+    umo and vmo remain on their native face grids. The deptho contour is
+    used only when its extracted grid matches the shared transport domain;
+    otherwise bottom depth is inferred from the wet transport levels. That
+    fallback quantises the contour to model levels, so it is only an
+    approximation of the requested isobath.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  # Nothing is regridded, and that is deliberate.
+  #
+  # umo and vmo are *extensive*: kg s-1 through one cell face, not a
+  # flux per unit area. Interpolation does not rescale them for the new
+  # cell size, so regridding and then summing scales the total with the
+  # cell count. The 0.5x0.5 regrid this recipe used to do inflated the
+  # transport by a factor of 3.8 -- silently, because a cross-shelf
+  # transport of the wrong magnitude still looks like a transport.
+  #
+  # extract_region is kept: it *selects* cells rather than
+  # interpolating between them, so it leaves each cell's transport
+  # untouched and is safe for an extensive quantity. It also keeps the
+  # contour search on the Antarctic margin instead of letting the
+  # longest 1000 m contour on Earth win.
+  #
+  # The contour machinery does not need a regular grid: the contour is
+  # traced in index space on deptho and the face masks are applied to
+  # umo/vmo on that same grid, so working natively is both correct and
+  # simpler.
+  southern_ocean_climatology:
+    climate_statistics:
+      operator: mean
+      period: full
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -82.
+      end_latitude: -59.
+
+  southern_ocean_fx:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -82.
+      end_latitude: -59.
+
+diagnostics:
+
+  cross_contour_transport:
+    description: |
+      Volume transport across the 1000 m isobath around Antarctica, by
+      depth.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      umo:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 2000/2009
+      vmo:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 2000/2009
+      deptho:
+        mip: Ofx
+        preprocessor: southern_ocean_fx
+    scripts:
+      transport:
+        script: cosima/cross_contour_transport.py
+        contour_depth: 1000.0

@@ -1,0 +1,108 @@
+# ESMValTool
+# recipe_cosima_geostrophic_velocities.yml
+---
+documentation:
+  title: Surface geostrophic velocities and eddy kinetic energy (COSIMA)
+
+  description: |
+    Surface geostrophic velocities from daily sea level, translated from
+    the COSIMA recipe Geostrophic_Velocities_from_Sea_Level.ipynb:
+
+      u_g = -(g/f) deta/dy      v_g = (g/f) deta/dx
+
+    The notebook differences on MOM5's staggered B-grid with xgcm. After
+    the regrid preprocessor zos is on a regular grid, so the derivatives
+    are central differences with spherical metrics evaluated at the
+    tracer points, and no interpolation between grid positions is
+    needed.
+
+    Geostrophic balance fails as f approaches zero at the equator. The
+    diagnostic therefore masks the equatorial band through 5 degrees
+    north and south by default, before dividing by f. The regrid
+    preprocessor is also required: the finite-difference calculation is
+    defined on its rectilinear latitude/longitude grid, not on the
+    native curvilinear MOM grid.
+
+    Frequency caveat. CMIP6 publishes no daily zos: the Oday table holds
+    only chlos, omldamax, phycos, sos, sossq, tos and tossq, and zos
+    exists only in Omon. This recipe therefore uses monthly sea level,
+    which is fine for the time-mean geostrophic circulation that the
+    notebook's main figure shows, but means the velocity variance it
+    also reports is low-frequency sea-level-driven kinetic energy and
+    NOT mesoscale eddy kinetic energy. The diagnostic checks the
+    sampling interval and names the output accordingly (ske_lowfreq for
+    monthly input, eke only for sub-weekly input), so the distinction
+    survives into the netCDF and the figure.
+
+    The same gap settles the COSIMA
+    Eddy-Mean_Kinetic_Energy_Decomposition.ipynb: it needs daily 3D
+    velocities, and CMIP6 has neither those nor daily sea level, so no
+    form of mesoscale EKE can be obtained from CMIP6 and that notebook
+    has no faithful translation. Point this recipe at native ACCESS-OM2
+    daily output if mesoscale EKE is what you need.
+
+    uo and vo are included to compare against the model's own surface
+    velocities, which include the ageostrophic part and so are not
+    expected to agree exactly.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  # The time axis must survive: the variance is taken about the
+  # velocity's own time mean.
+  timeseries_regridded:
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+
+  climatology_regridded:
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+
+diagnostics:
+
+  geostrophic_velocities:
+    description: |
+      Surface geostrophic velocity derived from sea surface height,
+      with the variance of that velocity about its time mean.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      zos:
+        mip: Omon
+        preprocessor: timeseries_regridded
+        timerange: 2000/2009
+      uo:
+        mip: Omon
+        preprocessor: climatology_regridded
+        timerange: 2000/2009
+      vo:
+        mip: Omon
+        preprocessor: climatology_regridded
+        timerange: 2000/2009
+    scripts:
+      geostrophy:
+        script: cosima/geostrophic_velocities.py
+        equator_mask_degrees: 5.0

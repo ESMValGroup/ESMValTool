@@ -1,0 +1,99 @@
+# ESMValTool
+# recipe_cosima_temperature_salinity_diagram.yml
+---
+documentation:
+  title: Volume-weighted temperature-salinity diagram (COSIMA)
+
+  description: |
+    Volume-weighted temperature-salinity diagram, translated from the
+    COSIMA recipe Temperature_Salinity_Diagram.ipynb.
+
+    The notebook weights the joint T-S histogram by volcello using
+    xhistogram; here the weighting is numpy.histogram2d with volume
+    weights, which conserves the total volume exactly.
+
+    The axes are TEOS-10 quantities, as in the notebook: practical
+    salinity so is converted to absolute salinity and potential
+    temperature thetao to conservative temperature. Plotting CMOR's
+    potential temperature against absolute salinity would misplace the
+    water masses relative to the sigma2 contours drawn over them.
+
+    volcello is a supplementary variable rather than a requirement: when
+    a model does not publish it the diagnostic falls back on layer
+    thickness times areacello, which is exactly what the notebook
+    recommends for MOM5 output that has no volcello either.
+
+    The region is a meridional section by default, as in the notebook.
+    Widen extract_region for a basin-wide diagram, but note that the
+    histogram then covers a much larger volume and the bins may need
+    rescaling.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  # No climate_statistics: the time axis is kept on purpose.
+  #
+  # The original histograms every month rather than a climatology, and
+  # that is not incidental. Averaging first leaves one T and one S per
+  # cell, so the diagram collapses onto the mean water masses and loses
+  # the seasonal excursions that give the surface end of the T-S curve
+  # its spread. It also cuts the number of distinct values by the
+  # number of months, which is what makes fine bins alias into white
+  # streaks across the distribution.
+  #
+  # Keep the region small (this is a narrow meridional section, as in
+  # the original) so that holding every month in memory stays cheap.
+  southern_section:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 330.
+      end_longitude: 340.
+      start_latitude: -90.
+      end_latitude: -37.
+
+diagnostics:
+
+  temperature_salinity_diagram:
+    description: |
+      Volume-weighted T-S distribution with sigma2 contours over a
+      Southern Ocean meridional section.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        preprocessor: southern_section
+        timerange: 1990/2009
+        supplementary_variables:
+          - short_name: volcello
+            mip: Ofx
+      so:
+        mip: Omon
+        preprocessor: southern_section
+        timerange: 1990/2009
+    scripts:
+      ts_diagram:
+        script: cosima/temperature_salinity_diagram.py
+        # The original's widths. Bin *ranges* come from the data.
+        temperature_bin_width: 0.5
+        salinity_bin_width: 0.1
