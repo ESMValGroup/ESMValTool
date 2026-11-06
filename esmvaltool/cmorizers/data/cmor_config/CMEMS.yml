@@ -1,0 +1,21 @@
+---
+# Filename
+filename: 'dt_global_allsat_phy_l4.*.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  project_id: OBS6
+  dataset_id: CMEMS
+  version: 'SEALEVEL-GLO-PHY-L4'
+  tier: 2
+  type: sat
+  source: ''
+  reference: 'cmems'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  zos:
+    mip: Omon
+    raw: adt
+    name: sea_surface_height_above_geoid
