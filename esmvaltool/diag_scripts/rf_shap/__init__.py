@@ -12,6 +12,10 @@ The ESMValTool recipe entry point remains ``diagnostic.py``.
 
 import sys
 
-from rf_shap.namespace import install_namespace
+from esmvaltool.diag_scripts.rf_shap._bootstrap import ensure_rf_shap_on_path
+
+ensure_rf_shap_on_path()
+
+from rf_shap.namespace import install_namespace  # noqa: E402
 
 install_namespace(sys.modules[__name__])

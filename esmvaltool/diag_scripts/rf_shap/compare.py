@@ -8,7 +8,11 @@ from __future__ import annotations
 
 import numpy as np
 
-from rf_shap.explain.evaluate import compare_explanations, interaction_shap
+from esmvaltool.diag_scripts.rf_shap._bootstrap import ensure_rf_shap_on_path
+
+ensure_rf_shap_on_path()
+
+from rf_shap.explain.evaluate import compare_explanations, interaction_shap  # noqa: E402
 
 
 def _xy_shap(result):

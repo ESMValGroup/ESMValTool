@@ -9,12 +9,11 @@ plot directories.
 from __future__ import annotations
 
 import logging
-import sys
 from pathlib import Path
 
-_REPO_SRC = Path(__file__).resolve().parents[3] / "src"
-if _REPO_SRC.is_dir():
-    sys.path.insert(0, str(_REPO_SRC))
+from esmvaltool.diag_scripts.rf_shap._bootstrap import ensure_rf_shap_on_path
+
+ensure_rf_shap_on_path()
 
 from esmvaltool.diag_scripts.shared import (  # noqa: E402
     ProvenanceLogger,
