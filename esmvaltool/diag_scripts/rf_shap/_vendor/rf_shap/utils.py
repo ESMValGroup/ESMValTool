@@ -29,7 +29,9 @@ def subset_index(index: pd.MultiIndex, mask: np.ndarray) -> pd.MultiIndex:
     return index[np.asarray(mask, dtype=bool)]
 
 
-def check_names(names: Sequence[str], available: Iterable[str], kind: str) -> list[str]:
+def check_names(
+    names: Sequence[str], available: Iterable[str], kind: str
+) -> list[str]:
     available_set = set(available)
     missing = [name for name in names if name not in available_set]
     if missing:

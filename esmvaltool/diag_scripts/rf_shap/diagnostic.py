@@ -78,7 +78,12 @@ def _save_nc(basename: str, dataset, cfg, provenance: dict) -> Path:
     path = Path(get_diagnostic_filename(basename, cfg, extension="nc"))
     path.parent.mkdir(parents=True, exist_ok=True)
     encoding = {
-        name: {"dtype": "float32", "zlib": True, "complevel": 1, "_FillValue": None}
+        name: {
+            "dtype": "float32",
+            "zlib": True,
+            "complevel": 1,
+            "_FillValue": None,
+        }
         for name in dataset.data_vars
     }
     tmp = path.with_suffix(path.suffix + ".tmp")
@@ -108,7 +113,9 @@ def load_xy_from_esmvaltool(cfg):
     predictors = list(cfg.get("predictors") or [])
     target = cfg.get("target")
     if not target:
-        msg = "Recipe script must set 'target' (Y short_name or variable_group)"
+        msg = (
+            "Recipe script must set 'target' (Y short_name or variable_group)"
+        )
         raise ValueError(msg)
     if not predictors:
         names = sorted({r.get("short_name") for r in records})
@@ -170,7 +177,12 @@ def _plot_path(cfg, basename: str) -> Path:
 def _save_fig(basename: str, caption: str, cfg, ancestors, fig) -> Path | None:
     if fig is None:
         return None
-    save_figure(basename, _provenance(cfg, ancestors, caption), cfg, figure=fig)
+    save_figure(
+        basename,
+        _provenance(cfg, ancestors, caption),
+        cfg,
+        figure=fig,
+    )
     return _plot_path(cfg, basename)
 
 
@@ -200,7 +212,15 @@ def _try_fig(plots, key, basename, caption, cfg, ancestors, factory) -> None:
         logger.exception("Could not plot %s", key)
 
 
-def _write_prediction_outputs(result, cfg, ancestors, tag, source_label, plots, prov) -> None:
+def _write_prediction_outputs(
+    result,
+    cfg,
+    ancestors,
+    tag,
+    source_label,
+    plots,
+    prov,
+) -> None:
     if result.prediction_cube is None:
         return
     _save_nc(
@@ -222,14 +242,24 @@ def _write_prediction_outputs(result, cfg, ancestors, tag, source_label, plots, 
         plots,
         "prediction_maps",
         f"{tag}prediction_maps",
-        _source_caption("RF predicted versus true target (time mean)", source_label),
+        _source_caption(
+            "RF predicted versus true target (time mean)",
+            source_label,
+        ),
         cfg,
         ancestors,
         _factory,
     )
 
 
-def _write_shap_outputs(result, cfg, ancestors, tag, source_label, plots) -> None:
+def _write_shap_outputs(
+    result,
+    cfg,
+    ancestors,
+    tag,
+    source_label,
+    plots,
+) -> None:
     if result.shap_cube is not None:
         shap_cap = _source_caption(
             "SHAP restored to a (time, lat, lon) cube; time-mean of test-period cells",
@@ -255,7 +285,10 @@ def _write_shap_outputs(result, cfg, ancestors, tag, source_label, plots) -> Non
         plots,
         "shap_summary",
         f"{tag}shap_summary",
-        _source_caption("SHAP summary (colour is the feature value)", source_label),
+        _source_caption(
+            "SHAP summary (colour is the feature value)",
+            source_label,
+        ),
         cfg,
         ancestors,
         lambda: plot_shap_summary(shap_vals, xs, names),
@@ -274,9 +307,22 @@ def _write_shap_outputs(result, cfg, ancestors, tag, source_label, plots) -> Non
     )
 
 
-def _write_importance_outputs(result, cfg, ancestors, tag, source_label, plots, prov) -> None:
+def _write_importance_outputs(
+    result,
+    cfg,
+    ancestors,
+    tag,
+    source_label,
+    plots,
+    prov,
+) -> None:
     if "rf_importance" in result.artifacts:
-        _save_csv(f"{tag}rf_importance", result.artifacts["rf_importance"], cfg, prov)
+        _save_csv(
+            f"{tag}rf_importance",
+            result.artifacts["rf_importance"],
+            cfg,
+            prov,
+        )
         _try_fig(
             plots,
             "rf_importance",
@@ -299,11 +345,21 @@ def _write_importance_outputs(result, cfg, ancestors, tag, source_label, plots, 
             _source_caption("Permutation importance", source_label),
             cfg,
             ancestors,
-            lambda: plot_importance_bars(frame, title="permutation importance"),
+            lambda: plot_importance_bars(
+                frame,
+                title="permutation importance",
+            ),
         )
 
 
-def _write_effect_outputs(result, cfg, ancestors, tag, source_label, plots) -> None:
+def _write_effect_outputs(
+    result,
+    cfg,
+    ancestors,
+    tag,
+    source_label,
+    plots,
+) -> None:
     if "ale" in result.artifacts:
         _try_fig(
             plots,
@@ -346,16 +402,35 @@ def write_outputs(
     if prefix == "cmip":
         _save_csv("metrics", metrics, cfg, prov)
 
-    _write_prediction_outputs(result, cfg, ancestors, tag, source_label, plots, prov)
+    _write_prediction_outputs(
+        result,
+        cfg,
+        ancestors,
+        tag,
+        source_label,
+        plots,
+        prov,
+    )
     _write_shap_outputs(result, cfg, ancestors, tag, source_label, plots)
-    _write_importance_outputs(result, cfg, ancestors, tag, source_label, plots, prov)
+    _write_importance_outputs(
+        result,
+        cfg,
+        ancestors,
+        tag,
+        source_label,
+        plots,
+        prov,
+    )
     _write_effect_outputs(result, cfg, ancestors, tag, source_label, plots)
 
     _try_fig(
         plots,
         "pred_vs_obs",
         f"{tag}pred_vs_obs",
-        _source_caption("Predicted versus true target on the test sample", source_label),
+        _source_caption(
+            "Predicted versus true target on the test sample",
+            source_label,
+        ),
         cfg,
         ancestors,
         lambda: plot_pred_scatter(
@@ -423,7 +498,9 @@ _COMPARISON_PLOTS = {
 
 
 def _side_labels(cfg) -> tuple[str, str]:
-    model = str(cfg.get("predictor_dataset") or cfg.get("target_dataset") or "CMIP")
+    model = str(
+        cfg.get("predictor_dataset") or cfg.get("target_dataset") or "CMIP",
+    )
     ref = cfg.get("reference") or {}
     obs_pred = ref.get("predictor_dataset") or "observations"
     obs_tgt = ref.get("target_dataset") or obs_pred
@@ -431,7 +508,12 @@ def _side_labels(cfg) -> tuple[str, str]:
     return obs, model
 
 
-def write_explanation_comparison(reference_result, other_result, cfg, ancestors: list[str]) -> dict:
+def write_explanation_comparison(
+    reference_result,
+    other_result,
+    cfg,
+    ancestors: list[str],
+) -> dict:
     """Write curve distances and slope differences. Reference is the baseline."""
     reference_cfg = cfg.get("reference") or {}
     tables = compare_pipeline_results(
@@ -445,12 +527,19 @@ def write_explanation_comparison(reference_result, other_result, cfg, ancestors:
         spec = _COMPARISON_PLOTS.get(
             name,
             {
-                "value_col": "distance" if "distance" in frame.columns else frame.columns[-1],
+                "value_col": "distance"
+                if "distance" in frame.columns
+                else frame.columns[-1],
                 "caption": name.replace("_", " "),
                 "xlabel": None,
             },
         )
-        _save_csv(name, frame, cfg, _provenance(cfg, ancestors, spec["caption"]))
+        _save_csv(
+            name,
+            frame,
+            cfg,
+            _provenance(cfg, ancestors, spec["caption"]),
+        )
         _try_fig(
             plots,
             name,
@@ -529,7 +618,10 @@ def write_paired_overlays(
                 cmip_label=cmip_label,
             ),
         )
-    if "ice_pdp" in obs_result.artifacts and "ice_pdp" in cmip_result.artifacts:
+    if (
+        "ice_pdp" in obs_result.artifacts
+        and "ice_pdp" in cmip_result.artifacts
+    ):
         _try_fig(
             plots,
             "compare_pdp",
@@ -544,7 +636,10 @@ def write_paired_overlays(
                 cmip_label=cmip_label,
             ),
         )
-    if "rf_importance" in obs_result.artifacts and "rf_importance" in cmip_result.artifacts:
+    if (
+        "rf_importance" in obs_result.artifacts
+        and "rf_importance" in cmip_result.artifacts
+    ):
         _try_fig(
             plots,
             "compare_rf_importance",
@@ -594,7 +689,14 @@ def write_paired_overlays(
     return plots
 
 
-def _write_gallery(cfg, obs_label, cmip_label, obs_plots, cmip_plots, compare_plots) -> None:
+def _write_gallery(
+    cfg,
+    obs_label,
+    cmip_label,
+    obs_plots,
+    cmip_plots,
+    compare_plots,
+) -> None:
     rows = [
         {
             "title": "Predicted vs true target",
@@ -639,7 +741,8 @@ def _write_gallery(cfg, obs_label, cmip_label, obs_plots, cmip_plots, compare_pl
             "caption": "Accumulated local effects of each driver.",
             "obs": obs_plots.get("ale"),
             "cmip": cmip_plots.get("ale"),
-            "compare": compare_plots.get("compare_ale") or compare_plots.get("ale_distance"),
+            "compare": compare_plots.get("compare_ale")
+            or compare_plots.get("ale_distance"),
         },
         {
             "title": "ICE / PDP",
@@ -733,7 +836,12 @@ def main(cfg) -> None:
         prefix="cmip",
         source_label=cmip_label,
     )
-    compare_plots = write_explanation_comparison(reference_result, result, cfg, all_anc)
+    compare_plots = write_explanation_comparison(
+        reference_result,
+        result,
+        cfg,
+        all_anc,
+    )
     compare_plots.update(
         write_paired_overlays(
             reference_result,
@@ -744,7 +852,14 @@ def main(cfg) -> None:
             cmip_label,
         ),
     )
-    _write_gallery(cfg, obs_label, cmip_label, obs_plots, cmip_plots, compare_plots)
+    _write_gallery(
+        cfg,
+        obs_label,
+        cmip_label,
+        obs_plots,
+        cmip_plots,
+        compare_plots,
+    )
 
 
 if __name__ == "__main__":

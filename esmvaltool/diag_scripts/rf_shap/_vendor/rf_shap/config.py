@@ -53,7 +53,9 @@ class PipelineConfig:
         return Path(self.raw.get("output_dir", "outputs"))
 
 
-def load_config(path: str | Path | None = None, override: Mapping[str, Any] | None = None) -> PipelineConfig:
+def load_config(
+    path: str | Path | None = None, override: Mapping[str, Any] | None = None
+) -> PipelineConfig:
     if path is None:
         cfg = PipelineConfig()
     else:

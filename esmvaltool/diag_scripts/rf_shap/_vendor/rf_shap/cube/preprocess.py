@@ -30,10 +30,17 @@ def detrend_along_time(da: xr.DataArray) -> xr.DataArray:
             continue
         model.fit(t[mask], col[mask])
         out[mask, i] = col[mask] - model.predict(t[mask])
-    return xr.DataArray(out.reshape(n_t, n_y, n_x), coords=da.coords, dims=("time", "lat", "lon"), name=da.name)
+    return xr.DataArray(
+        out.reshape(n_t, n_y, n_x),
+        coords=da.coords,
+        dims=("time", "lat", "lon"),
+        name=da.name,
+    )
 
 
-def deseasonalize(da: xr.DataArray, how: Climatology = "month") -> xr.DataArray:
+def deseasonalize(
+    da: xr.DataArray, how: Climatology = "month"
+) -> xr.DataArray:
     try:
         idx = _group_index(da, how)
         clim = da.groupby(idx).mean("time")
@@ -77,7 +84,9 @@ def preprocess_dataarray(
     return out
 
 
-def preprocess_dataset(ds: xr.Dataset, options: dict | None = None) -> xr.Dataset:
+def preprocess_dataset(
+    ds: xr.Dataset, options: dict | None = None
+) -> xr.Dataset:
     options = options or {}
     processed = {}
     for name, da in ds.data_vars.items():

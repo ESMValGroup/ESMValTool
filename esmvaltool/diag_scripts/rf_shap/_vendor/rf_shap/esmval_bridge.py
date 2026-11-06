@@ -44,7 +44,9 @@ def open_field(path: str | Path, name: str | None = None) -> xr.DataArray:
     if name and name in ds.data_vars:
         da = ds[name]
     else:
-        data_vars = [v for v in ds.data_vars if {"lat", "lon"} <= set(ds[v].dims)]
+        data_vars = [
+            v for v in ds.data_vars if {"lat", "lon"} <= set(ds[v].dims)
+        ]
         if not data_vars:
             raise ValueError(f"No lat/lon variable in {path}")
         da = ds[data_vars[0]]
@@ -66,8 +68,12 @@ def dataset_from_fields(fields: dict[str, xr.DataArray]) -> xr.Dataset:
     return ds
 
 
-def load_xy_from_files(x_files: dict, y_file: str | Path, y_name: str = "y") -> tuple[xr.Dataset, xr.Dataset]:
-    x_fields = {name: open_field(path, name) for name, path in dict(x_files).items()}
+def load_xy_from_files(
+    x_files: dict, y_file: str | Path, y_name: str = "y"
+) -> tuple[xr.Dataset, xr.Dataset]:
+    x_fields = {
+        name: open_field(path, name) for name, path in dict(x_files).items()
+    }
     y = xr.Dataset({y_name: open_field(y_file, y_name)})
     return dataset_from_fields(x_fields), y
 
@@ -80,7 +86,9 @@ def default_pipeline_cfg() -> dict:
             "x": {"deseasonalize": False, "detrend": False},
             "y": {"deseasonalize": False, "detrend": False},
         },
-        "feature_selection": {"methods": ["collinearity", "pairwise_importance"]},
+        "feature_selection": {
+            "methods": ["collinearity", "pairwise_importance"]
+        },
         "split": {"method": "time", "test_size": 0.2},
         "sampling": {"method": "random", "n_samples": 8000},
         "model": {
@@ -117,14 +125,20 @@ def run_pipeline_on_cubes(
     pipe_cfg = PipelineConfig.from_dict(default_pipeline_cfg())
     if override:
         pipe_cfg = pipe_cfg.updated(override)
-    x, y = align_xy(x, y, regrid=regrid, join_time=join_time, target=align_target)
+    x, y = align_xy(
+        x, y, regrid=regrid, join_time=join_time, target=align_target
+    )
     result = DiagnosisPipeline(pipe_cfg).run(x=x, y=y)
     if isinstance(result, list):
         return result[0]
     return result
 
 
-def save_result_files(result: PipelineResult, work_dir: str | Path, plot_dir: str | Path | None = None) -> None:
+def save_result_files(
+    result: PipelineResult,
+    work_dir: str | Path,
+    plot_dir: str | Path | None = None,
+) -> None:
     work = Path(work_dir)
     work.mkdir(parents=True, exist_ok=True)
     plots = Path(plot_dir or work / "plots")
@@ -134,10 +148,16 @@ def save_result_files(result: PipelineResult, work_dir: str | Path, plot_dir: st
 
     pd.Series(result.metrics).to_frame("value").to_csv(work / "metrics.csv")
     if result.prediction_cube is not None:
-        result.prediction_cube.to_dataset(name="prediction").to_netcdf(work / "prediction.nc")
+        result.prediction_cube.to_dataset(name="prediction").to_netcdf(
+            work / "prediction.nc"
+        )
         try:
-            obs_cube = reconstruct_prediction(result.split.test.y, result.split.test, name="obs")
-            plot_error_map(obs_cube, result.prediction_cube).savefig(plots / "prediction_maps.png")
+            obs_cube = reconstruct_prediction(
+                result.split.test.y, result.split.test, name="obs"
+            )
+            plot_error_map(obs_cube, result.prediction_cube).savefig(
+                plots / "prediction_maps.png"
+            )
         except Exception:
             pass
     if result.shap_cube is not None:
@@ -149,14 +169,20 @@ def save_result_files(result: PipelineResult, work_dir: str | Path, plot_dir: st
         shap_res = result.artifacts.get("shap_result")
         if shap_res is not None:
             xs = result.split.test.X[shap_res.sample_positions]
-            plot_shap_summary(shap_res.values, xs, shap_res.feature_names).savefig(plots / "shap_summary.png")
+            plot_shap_summary(
+                shap_res.values, xs, shap_res.feature_names
+            ).savefig(plots / "shap_summary.png")
     if "rf_importance" in result.artifacts:
-        result.artifacts["rf_importance"].to_csv(work / "rf_importance.csv", index=False)
-        plot_importance_bars(result.artifacts["rf_importance"], title="tree importance").savefig(
-            plots / "rf_importance.png"
+        result.artifacts["rf_importance"].to_csv(
+            work / "rf_importance.csv", index=False
         )
+        plot_importance_bars(
+            result.artifacts["rf_importance"], title="tree importance"
+        ).savefig(plots / "rf_importance.png")
     if "permutation_importance" in result.artifacts:
-        result.artifacts["permutation_importance"].to_csv(work / "permutation_importance.csv", index=False)
+        result.artifacts["permutation_importance"].to_csv(
+            work / "permutation_importance.csv", index=False
+        )
         plot_importance_bars(
             result.artifacts["permutation_importance"],
             title="permutation importance",
@@ -168,10 +194,14 @@ def save_result_files(result: PipelineResult, work_dir: str | Path, plot_dir: st
             pass
     if "ice_pdp" in result.artifacts:
         try:
-            plot_ice_pdp(result.artifacts["ice_pdp"]).savefig(plots / "ice_pdp.png")
+            plot_ice_pdp(result.artifacts["ice_pdp"]).savefig(
+                plots / "ice_pdp.png"
+            )
         except Exception:
             pass
-    plot_pred_scatter(result.split.test.y, result.prediction, result.metrics).savefig(plots / "pred_vs_obs.png")
+    plot_pred_scatter(
+        result.split.test.y, result.prediction, result.metrics
+    ).savefig(plots / "pred_vs_obs.png")
     import matplotlib.pyplot as plt
 
     plt.close("all")

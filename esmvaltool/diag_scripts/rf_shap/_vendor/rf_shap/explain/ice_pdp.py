@@ -20,7 +20,9 @@ def ice_pdp(
     ice_idx = rng.choice(n, size=min(ice_n_samples, n), replace=False)
     out = {}
     for j, name in enumerate(names):
-        grid = np.unique(np.nanquantile(x[:, j], np.linspace(0.02, 0.98, n_grid)))
+        grid = np.unique(
+            np.nanquantile(x[:, j], np.linspace(0.02, 0.98, n_grid))
+        )
         ice = np.zeros((len(ice_idx), len(grid)))
         for k, value in enumerate(grid):
             xx = x[ice_idx].copy()

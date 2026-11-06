@@ -46,11 +46,17 @@ class PipelineResult:
         if self.shap_cube is not None:
             self.shap_cube.to_netcdf(out / "shap.nc")
         if "rf_importance" in self.artifacts:
-            self.artifacts["rf_importance"].to_csv(out / "rf_importance.csv", index=False)
+            self.artifacts["rf_importance"].to_csv(
+                out / "rf_importance.csv", index=False
+            )
         if "permutation_importance" in self.artifacts:
-            self.artifacts["permutation_importance"].to_csv(out / "permutation_importance.csv", index=False)
+            self.artifacts["permutation_importance"].to_csv(
+                out / "permutation_importance.csv", index=False
+            )
         if "shap_table" in self.artifacts:
-            self.artifacts["shap_table"].to_csv(out / "shap_samples.csv", index=False)
+            self.artifacts["shap_table"].to_csv(
+                out / "shap_samples.csv", index=False
+            )
         return out
 
 
@@ -92,7 +98,9 @@ class DiagnosisPipeline:
         y, x = xr.align(y, x, join="inner")
         table = cube_to_table(x, y)
         table.extras["x_transform"] = meta
-        if xt_cfg.get("mode") in {"pca", "lag_pca"} and xt_cfg.get("feature_pca", True):
+        if xt_cfg.get("mode") in {"pca", "lag_pca"} and xt_cfg.get(
+            "feature_pca", True
+        ):
             # additional table-level PCA is optional; cube EOF already applied
             pass
         if xt_cfg.get("table_pca"):
@@ -108,7 +116,9 @@ class DiagnosisPipeline:
 
     def _fit_one(self, split: SplitResult) -> PipelineResult:
         seed = self.config.seed
-        train = select_features(split.train, self.config.raw.get("feature_selection"), seed=seed)
+        train = select_features(
+            split.train, self.config.raw.get("feature_selection"), seed=seed
+        )
         test = split.test.select_columns(train.feature_names)
         samp = self.config.raw.get("sampling", {})
         names = list(train.index.names)
@@ -119,9 +129,15 @@ class DiagnosisPipeline:
             n_samples=samp.get("n_samples"),
             n_bins=int(samp.get("n_bins", 10)),
             seed=seed,
-            lat=np.asarray(train.index.get_level_values("lat")) if "lat" in names else None,
-            lon=np.asarray(train.index.get_level_values("lon")) if "lon" in names else None,
-            time=np.asarray(train.index.get_level_values("time")) if "time" in names else None,
+            lat=np.asarray(train.index.get_level_values("lat"))
+            if "lat" in names
+            else None,
+            lon=np.asarray(train.index.get_level_values("lon"))
+            if "lon" in names
+            else None,
+            time=np.asarray(train.index.get_level_values("time"))
+            if "time" in names
+            else None,
             area_weights=samp.get("area_weights"),
             time_weights=samp.get("time_weights"),
             strata=samp.get("strata"),
@@ -144,7 +160,11 @@ class DiagnosisPipeline:
         )
         train_s = train.take(idx)
         model_cfg = self.config.raw.get("model", {})
-        model = build_model(model_cfg.get("name", "extra_trees"), model_cfg.get("params"), seed=seed)
+        model = build_model(
+            model_cfg.get("name", "extra_trees"),
+            model_cfg.get("params"),
+            seed=seed,
+        )
         model.fit(train_s.X, train_s.y)
         pred = model.predict(test.X)
         metrics = regression_metrics(test.y, pred)
@@ -152,11 +172,16 @@ class DiagnosisPipeline:
         metrics["n_test"] = int(len(test.y))
         metrics["n_features"] = int(len(train.feature_names))
         pred_cube = None
-        template = train.extras.get("template", split.train.extras.get("template"))
+        template = train.extras.get(
+            "template", split.train.extras.get("template")
+        )
         if template is not None:
             train.extras["template"] = template
             test.extras["template"] = template
-        if self.config.get("predict", "restore_cube", default=True) and template is not None:
+        if (
+            self.config.get("predict", "restore_cube", default=True)
+            and template is not None
+        ):
             pred_cube = reconstruct_prediction(pred, test)
         artifacts: dict[str, Any] = {
             "features": list(train.feature_names),
@@ -166,7 +191,9 @@ class DiagnosisPipeline:
         explain_cfg = self.config.raw.get("explain", {})
         if explain_cfg.get("rf_importance", True):
             try:
-                artifacts["rf_importance"] = model_importance(model, train.feature_names)
+                artifacts["rf_importance"] = model_importance(
+                    model, train.feature_names
+                )
             except AttributeError:
                 pass
         if explain_cfg.get("permutation_importance", True):
@@ -194,7 +221,9 @@ class DiagnosisPipeline:
                 n_jobs=int(shap_cfg.get("n_jobs", -1)),
                 seed=seed,
                 background=train_s.X,
-                feature_perturbation=shap_cfg.get("feature_perturbation", "tree_path_dependent"),
+                feature_perturbation=shap_cfg.get(
+                    "feature_perturbation", "tree_path_dependent"
+                ),
             )
             artifacts["shap_result"] = shap_res
             artifacts["shap_table"] = shap_res.to_frame()
@@ -211,13 +240,26 @@ class DiagnosisPipeline:
                 seed=seed,
             )
         used_split = SplitResult(train_s, test, split.method, split.extras)
-        return PipelineResult(metrics, model, train, used_split, pred, pred_cube, shap_cube, artifacts)
+        return PipelineResult(
+            metrics,
+            model,
+            train,
+            used_split,
+            pred,
+            pred_cube,
+            shap_cube,
+            artifacts,
+        )
 
-    def run(self, x: xr.Dataset | None = None, y: xr.Dataset | None = None) -> PipelineResult | list[PipelineResult]:
+    def run(
+        self, x: xr.Dataset | None = None, y: xr.Dataset | None = None
+    ) -> PipelineResult | list[PipelineResult]:
         if x is None or y is None:
             x, y = self.load_xy()
         table = self.prepare_table(x, y)
-        split = split_table(table, self.config.raw.get("split"), seed=self.config.seed)
+        split = split_table(
+            table, self.config.raw.get("split"), seed=self.config.seed
+        )
         if isinstance(split, list):
             results = [self._fit_one(s) for s in split]
             return results
@@ -230,7 +272,7 @@ def run_pipeline(config_path=None, override=None, x=None, y=None):
     out_dir = cfg.output_dir
     if isinstance(result, list):
         for i, item in enumerate(result):
-            item.save(out_dir / f"fold_{i+1}")
+            item.save(out_dir / f"fold_{i + 1}")
     else:
         result.save(out_dir)
     return result

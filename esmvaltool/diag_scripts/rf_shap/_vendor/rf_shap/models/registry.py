@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from sklearn.ensemble import ExtraTreesRegressor, HistGradientBoostingRegressor, RandomForestRegressor
+from sklearn.ensemble import (
+    ExtraTreesRegressor,
+    HistGradientBoostingRegressor,
+    RandomForestRegressor,
+)
 
 from rf_shap.models.fast_forest import fast_forest
 
@@ -25,14 +29,20 @@ def available_models() -> list[str]:
         except ImportError:
             pass
     try:
-        __import__("data_structures.wrappers.histogram_random_forest_regressor")
+        __import__(
+            "data_structures.wrappers.histogram_random_forest_regressor"
+        )
         names.append("fastforest")
     except ImportError:
         pass
     return names
 
 
-def build_model(name: str = "extra_trees", params: dict[str, Any] | None = None, seed: int = 42):
+def build_model(
+    name: str = "extra_trees",
+    params: dict[str, Any] | None = None,
+    seed: int = 42,
+):
     """Tree-model factory, including faster RF-style backends.
 
     Fast RF options (inspired by Kursa & Piwoński 2026 SoftwareX `fru`,
@@ -99,4 +109,6 @@ def build_model(name: str = "extra_trees", params: dict[str, Any] | None = None,
     if name in {"fastforest", "fast_forest", "mabforest"}:
         return fast_forest(**params)
 
-    raise ValueError(f"Unknown model '{name}'. Available: {available_models()}")
+    raise ValueError(
+        f"Unknown model '{name}'. Available: {available_models()}"
+    )

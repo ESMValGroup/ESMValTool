@@ -21,11 +21,17 @@ def regression_metrics(y_true, y_pred) -> dict[str, float]:
     bias = float(np.mean(yp - yt))
     ubrmse = float(np.sqrt(max(rmse**2 - bias**2, 0.0)))
     nse_den = np.sum((yt - yt.mean()) ** 2)
-    nse = float(1 - np.sum((yp - yt) ** 2) / nse_den) if nse_den > 0 else np.nan
+    nse = (
+        float(1 - np.sum((yp - yt) ** 2) / nse_den) if nse_den > 0 else np.nan
+    )
     r = _corr(yt, yp)
     alpha = float(yp.std() / yt.std()) if yt.std() > 0 else np.nan
     beta = float(yp.mean() / yt.mean()) if yt.mean() != 0 else np.nan
-    kge = float(1 - np.sqrt((r - 1) ** 2 + (alpha - 1) ** 2 + (beta - 1) ** 2)) if np.isfinite(r) else np.nan
+    kge = (
+        float(1 - np.sqrt((r - 1) ** 2 + (alpha - 1) ** 2 + (beta - 1) ** 2))
+        if np.isfinite(r)
+        else np.nan
+    )
     mape_den = np.where(yt == 0, np.nan, yt)
     mape = float(np.nanmean(np.abs((yp - yt) / mape_den)))
     return {

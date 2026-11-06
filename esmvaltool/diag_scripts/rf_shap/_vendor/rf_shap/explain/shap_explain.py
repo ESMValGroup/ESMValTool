@@ -21,16 +21,23 @@ class ShapResult:
     algorithm: str = ""
 
     def to_frame(self) -> pd.DataFrame:
-        frame = pd.DataFrame(self.values, columns=self.feature_names, index=self.index[self.sample_positions])
+        frame = pd.DataFrame(
+            self.values,
+            columns=self.feature_names,
+            index=self.index[self.sample_positions],
+        )
         return frame.reset_index()
 
 
 def _try_import_shap():
     try:
         import shap
+
         return shap
     except ImportError as exc:
-        raise ImportError("Install shap to compute SHAP values: pip install shap") from exc
+        raise ImportError(
+            "Install shap to compute SHAP values: pip install shap"
+        ) from exc
 
 
 def _prepare_numpy_for_fasttreeshap():
@@ -58,6 +65,7 @@ def _try_import_fasttreeshap():
     _prepare_numpy_for_fasttreeshap()
     try:
         import fasttreeshap
+
         return fasttreeshap
     except ImportError:
         return None
@@ -138,11 +146,17 @@ def fast_tree_shap(
         )
     algo = algorithm if algorithm in {"v0", "v1", "v2", "auto"} else "v2"
     if feature_perturbation is None:
-        feature_perturbation = "interventional" if background is not None else "tree_path_dependent"
+        feature_perturbation = (
+            "interventional"
+            if background is not None
+            else "tree_path_dependent"
+        )
     data = None
     if feature_perturbation == "interventional":
         if background is None:
-            raise ValueError("interventional FastTreeSHAP requires a background sample")
+            raise ValueError(
+                "interventional FastTreeSHAP requires a background sample"
+            )
         data = np.asarray(background, dtype=np.float64)
     explainer = fast.TreeExplainer(
         model,
@@ -153,7 +167,9 @@ def fast_tree_shap(
         memory_tolerance=memory_tolerance,
         feature_names=None if feature_names is None else list(feature_names),
     )
-    values = explainer.shap_values(np.asarray(x, dtype=np.float64), check_additivity=check_additivity)
+    values = explainer.shap_values(
+        np.asarray(x, dtype=np.float64), check_additivity=check_additivity
+    )
     if isinstance(values, list):
         values = values[-1]
     return _normalize_values(values), explainer.expected_value
@@ -161,7 +177,11 @@ def fast_tree_shap(
 
 def _sklearn_tree_estimators(model) -> list:
     if hasattr(model, "estimators_"):
-        return [estimator for estimator in np.ravel(model.estimators_) if hasattr(estimator, "tree_")]
+        return [
+            estimator
+            for estimator in np.ravel(model.estimators_)
+            if hasattr(estimator, "tree_")
+        ]
     if hasattr(model, "tree_"):
         return [model]
     return []
@@ -199,7 +219,9 @@ def linear_tree_shap(
         ) from exc
     estimators = _sklearn_tree_estimators(model)
     if not estimators:
-        raise TypeError("linear_tree_shap only supports scikit-learn trees and forests")
+        raise TypeError(
+            "linear_tree_shap only supports scikit-learn trees and forests"
+        )
     features = np.asarray(x, dtype=np.float64)
     if features.ndim == 1:
         features = features.reshape(1, -1)
@@ -209,11 +231,15 @@ def linear_tree_shap(
         tree = estimator.tree_
         weighted = getattr(tree, "weighted_n_node_samples", None)
         saved_counts = None
-        if weighted is not None and not np.array_equal(weighted, tree.n_node_samples):
+        if weighted is not None and not np.array_equal(
+            weighted, tree.n_node_samples
+        ):
             # Bootstrap forests keep duplicate-sample counts in weighted_n_node_samples.
             # linear_tree_shap.copy_tree reads n_node_samples, which drops that multiplicity.
             saved_counts = np.array(tree.n_node_samples, copy=True)
-            tree.n_node_samples[:] = np.rint(weighted).astype(saved_counts.dtype, copy=False)
+            tree.n_node_samples[:] = np.rint(weighted).astype(
+                saved_counts.dtype, copy=False
+            )
         try:
             explainer = linear_tree_shap.TreeExplainer(estimator)
             if use_v2:
@@ -222,7 +248,9 @@ def linear_tree_shap(
                 values = explainer.shap_values(features)
         except ImportError:
             rows = [
-                explainer.py_shap_values_v2(row) if use_v2 else explainer.py_shap_values(row)
+                explainer.py_shap_values_v2(row)
+                if use_v2
+                else explainer.py_shap_values(row)
                 for row in features
             ]
             values = np.vstack(rows)
@@ -231,7 +259,9 @@ def linear_tree_shap(
                 tree.n_node_samples[:] = saved_counts
         parts.append(np.asarray(values, dtype=np.float64))
     values = np.mean(parts, axis=0) if len(parts) > 1 else parts[0]
-    expected = float(np.mean([_root_prediction(estimator) for estimator in estimators]))
+    expected = float(
+        np.mean([_root_prediction(estimator) for estimator in estimators])
+    )
     return _normalize_values(values), expected
 
 
@@ -241,7 +271,9 @@ def _tree_shap(model, x_explain, background, n_jobs: int):
     if background is None:
         explainer = shap.TreeExplainer(model)
     else:
-        explainer = shap.TreeExplainer(model, data=background, feature_perturbation="interventional")
+        explainer = shap.TreeExplainer(
+            model, data=background, feature_perturbation="interventional"
+        )
     if hasattr(explainer, "shap_values"):
         try:
             values = explainer.shap_values(x_explain, check_additivity=False)
@@ -263,7 +295,11 @@ def _permutation_shap(model, x_explain, background):
     shap = _try_import_shap()
     explainer = shap.PermutationExplainer(model.predict, background)
     explanation = explainer(x_explain)
-    return np.asarray(explanation.values), explanation.base_values, "permutation"
+    return (
+        np.asarray(explanation.values),
+        explanation.base_values,
+        "permutation",
+    )
 
 
 def _sampling_shap(model, x_explain, background):
@@ -344,23 +380,35 @@ def compute_shap(
                 feature_names=list(table.feature_names),
             )
             used = "fasttreeshap"
-            used_algorithm = algorithm if algorithm in {"v0", "v1", "v2", "auto"} else "v2"
+            used_algorithm = (
+                algorithm if algorithm in {"v0", "v1", "v2", "auto"} else "v2"
+            )
         except ImportError:
             if method == "fasttreeshap":
                 raise
 
-    if values is None and method in {"auto", "treeshap"} and _is_tree_model(model):
+    if (
+        values is None
+        and method in {"auto", "treeshap"}
+        and _is_tree_model(model)
+    ):
         # path-dependent TreeSHAP does not grow with a background set
         values, expected, used = _tree_shap(model, x_explain, None, n_jobs)
 
     if values is None and method in {"linear_treeshap", "lineartreeshap"}:
         linear_version = algorithm if algorithm in {"v1", "v2"} else "v2"
-        values, expected = linear_tree_shap(model, x_explain, version=linear_version)
+        values, expected = linear_tree_shap(
+            model, x_explain, version=linear_version
+        )
         used = "linear_treeshap"
         used_algorithm = linear_version
 
     if values is None:
-        bg = background if background is not None else _background(x, background_size, seed)
+        bg = (
+            background
+            if background is not None
+            else _background(x, background_size, seed)
+        )
         if len(bg) > background_size:
             bg = _row_sample(bg, background_size, seed)
         if method in {"kernel"}:
@@ -387,7 +435,9 @@ def compute_shap(
 def shap_to_cube(result: ShapResult, table: SampleTable) -> xr.Dataset:
     template = table.extras.get("template")
     if template is None:
-        raise ValueError("SampleTable is missing a cube template; cannot restore SHAP")
+        raise ValueError(
+            "SampleTable is missing a cube template; cannot restore SHAP"
+        )
     index = table.index[result.sample_positions]
     ds = values_to_cubes(result.values, index, template, result.feature_names)
     ds.attrs["shap_method"] = result.method

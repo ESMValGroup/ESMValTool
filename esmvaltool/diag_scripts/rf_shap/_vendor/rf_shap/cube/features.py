@@ -18,10 +18,17 @@ def add_lags(ds: xr.Dataset, lags: Sequence[int]) -> xr.Dataset:
     return out.isel(time=slice(max(int(l) for l in lags), None))
 
 
-def pca_transform_table(x: np.ndarray, n_components=0.95, whiten: bool = False, random_state: int = 42):
-    model = PCA(n_components=n_components, whiten=whiten, random_state=random_state)
+def pca_transform_table(
+    x: np.ndarray,
+    n_components=0.95,
+    whiten: bool = False,
+    random_state: int = 42,
+):
+    model = PCA(
+        n_components=n_components, whiten=whiten, random_state=random_state
+    )
     transformed = model.fit_transform(x)
-    names = [f"pc{i+1}" for i in range(transformed.shape[1])]
+    names = [f"pc{i + 1}" for i in range(transformed.shape[1])]
     return transformed, names, model
 
 
@@ -42,7 +49,9 @@ def eof_compress(ds: xr.Dataset, n_components: int = 5) -> xr.Dataset:
         scores = model.fit_transform(filled)
         recon = model.inverse_transform(scores).reshape(n_t, n_y, n_x)
         recon[~np.isfinite(values)] = np.nan
-        out[name] = xr.DataArray(recon, coords=da.coords, dims=da.dims, name=name)
+        out[name] = xr.DataArray(
+            recon, coords=da.coords, dims=da.dims, name=name
+        )
     return xr.Dataset(out)
 
 
@@ -70,6 +79,8 @@ def build_x_features(
         n = pca_n_components if isinstance(pca_n_components, int) else 8
         cube = eof_compress(cube, n_components=int(n))
         meta["eof_n_components"] = int(n)
-    meta["feature_pca"] = pca_n_components if mode in {"pca", "lag_pca"} else None
+    meta["feature_pca"] = (
+        pca_n_components if mode in {"pca", "lag_pca"} else None
+    )
     meta["pca_whiten"] = pca_whiten
     return cube, meta

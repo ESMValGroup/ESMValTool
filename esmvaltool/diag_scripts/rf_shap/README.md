@@ -22,3 +22,7 @@ Core stack already expected by ESMValTool: ``numpy``, ``pandas``, ``xarray``,
 
 * ``recipe_rf_shap_demo.yml`` — synthetic cubes (no climate files)
 * ``recipe_rf_shap_gpp.yml`` — CMIP6 GPP vs FluxCom/ERA5 drivers
+
+## Lint / pre-commit
+
+The vendored kernel under ``_vendor/`` is excluded from the repository pre-commit/ruff hooks (see ``.pre-commit-config.yaml``). Wrapper modules in this directory are still linted.

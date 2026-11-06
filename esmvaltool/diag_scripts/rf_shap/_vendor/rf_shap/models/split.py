@@ -16,11 +16,21 @@ class SplitResult:
     extras: dict
 
 
-def _mask_split(table: SampleTable, train_mask: np.ndarray, method: str, extras: dict | None = None) -> SplitResult:
+def _mask_split(
+    table: SampleTable,
+    train_mask: np.ndarray,
+    method: str,
+    extras: dict | None = None,
+) -> SplitResult:
     train_mask = np.asarray(train_mask, dtype=bool)
     if train_mask.all() or (~train_mask).all():
         raise ValueError("Split produced empty train or test set")
-    return SplitResult(table.subset(train_mask), table.subset(~train_mask), method, extras or {})
+    return SplitResult(
+        table.subset(train_mask),
+        table.subset(~train_mask),
+        method,
+        extras or {},
+    )
 
 
 def _sorted_times(index: pd.MultiIndex) -> np.ndarray:
@@ -32,20 +42,30 @@ def _sorted_times(index: pd.MultiIndex) -> np.ndarray:
         return uniq
 
 
-def time_split(table: SampleTable, test_size: float = 0.2, train_end=None) -> SplitResult:
+def time_split(
+    table: SampleTable, test_size: float = 0.2, train_end=None
+) -> SplitResult:
     times = pd.Series(table.index.get_level_values("time"))
     uniq = pd.Index(_sorted_times(table.index))
     if train_end is not None:
-        cutoff = pd.Timestamp(train_end) if np.issubdtype(uniq.to_numpy().dtype, np.datetime64) else train_end
+        cutoff = (
+            pd.Timestamp(train_end)
+            if np.issubdtype(uniq.to_numpy().dtype, np.datetime64)
+            else train_end
+        )
         train_mask = times <= cutoff
     else:
         cut_i = max(1, int(round(len(uniq) * (1 - test_size)))) - 1
         cutoff = uniq[cut_i]
         train_mask = times <= cutoff
-    return _mask_split(table, train_mask.to_numpy(), "time", {"cutoff": cutoff})
+    return _mask_split(
+        table, train_mask.to_numpy(), "time", {"cutoff": cutoff}
+    )
 
 
-def random_split(table: SampleTable, test_size: float = 0.2, seed: int = 42) -> SplitResult:
+def random_split(
+    table: SampleTable, test_size: float = 0.2, seed: int = 42
+) -> SplitResult:
     rng = np.random.default_rng(seed)
     n = table.n_samples
     test_n = max(1, int(round(n * test_size)))
@@ -55,7 +75,13 @@ def random_split(table: SampleTable, test_size: float = 0.2, seed: int = 42) -> 
     return _mask_split(table, train_mask, "random")
 
 
-def space_split(table: SampleTable, mode: str = "lon_band", n_blocks: int = 4, test_size: float = 0.2, seed: int = 42) -> SplitResult:
+def space_split(
+    table: SampleTable,
+    mode: str = "lon_band",
+    n_blocks: int = 4,
+    test_size: float = 0.2,
+    seed: int = 42,
+) -> SplitResult:
     lat = np.asarray(table.index.get_level_values("lat"), dtype=float)
     lon = np.asarray(table.index.get_level_values("lon"), dtype=float)
     mode = mode.lower()
@@ -66,12 +92,20 @@ def space_split(table: SampleTable, mode: str = "lon_band", n_blocks: int = 4, t
         q = np.quantile(lat, 1 - test_size)
         train_mask = lat < q
     elif mode == "checkerboard":
-        lat_bin = np.digitize(lat, np.linspace(lat.min(), lat.max(), n_blocks + 1)[1:-1])
-        lon_bin = np.digitize(lon, np.linspace(lon.min(), lon.max(), n_blocks + 1)[1:-1])
+        lat_bin = np.digitize(
+            lat, np.linspace(lat.min(), lat.max(), n_blocks + 1)[1:-1]
+        )
+        lon_bin = np.digitize(
+            lon, np.linspace(lon.min(), lon.max(), n_blocks + 1)[1:-1]
+        )
         train_mask = ((lat_bin + lon_bin) % 2) == 0
     elif mode == "block":
-        lat_bin = np.digitize(lat, np.linspace(lat.min(), lat.max(), n_blocks + 1)[1:-1])
-        lon_bin = np.digitize(lon, np.linspace(lon.min(), lon.max(), n_blocks + 1)[1:-1])
+        lat_bin = np.digitize(
+            lat, np.linspace(lat.min(), lat.max(), n_blocks + 1)[1:-1]
+        )
+        lon_bin = np.digitize(
+            lon, np.linspace(lon.min(), lon.max(), n_blocks + 1)[1:-1]
+        )
         block_id = lat_bin * n_blocks + lon_bin
         uniq = np.unique(block_id)
         rng = np.random.default_rng(seed)
@@ -83,7 +117,9 @@ def space_split(table: SampleTable, mode: str = "lon_band", n_blocks: int = 4, t
     return _mask_split(table, train_mask, f"space:{mode}")
 
 
-def extreme_split(table: SampleTable, quantile: float = 0.9, hold_extremes_as: str = "test") -> SplitResult:
+def extreme_split(
+    table: SampleTable, quantile: float = 0.9, hold_extremes_as: str = "test"
+) -> SplitResult:
     y = table.y
     lo, hi = np.nanquantile(y, [1 - quantile, quantile])
     extreme = (y <= lo) | (y >= hi)
@@ -93,7 +129,9 @@ def extreme_split(table: SampleTable, quantile: float = 0.9, hold_extremes_as: s
         train_mask = extreme
     else:
         raise ValueError("hold_extremes_as must be 'test' or 'train'")
-    return _mask_split(table, train_mask, "extreme", {"lo": float(lo), "hi": float(hi)})
+    return _mask_split(
+        table, train_mask, "extreme", {"lo": float(lo), "hi": float(hi)}
+    )
 
 
 def time_window_splits(
@@ -124,7 +162,11 @@ def time_window_splits(
                 table.subset(train_mask),
                 table.subset(test_mask),
                 "time_window",
-                {"test_start": test_times[0], "test_end": test_times[-1], "expanding": expanding},
+                {
+                    "test_start": test_times[0],
+                    "test_end": test_times[-1],
+                    "expanding": expanding,
+                },
             )
         )
     if not results:
@@ -132,13 +174,17 @@ def time_window_splits(
     return results
 
 
-def split_table(table: SampleTable, options: dict | None = None, seed: int = 42):
+def split_table(
+    table: SampleTable, options: dict | None = None, seed: int = 42
+):
     options = options or {}
     method = str(options.get("method", "time")).lower()
     test_size = float(options.get("test_size", 0.2))
     if method == "time":
         cfg = options.get("time", {})
-        return time_split(table, test_size=test_size, train_end=cfg.get("train_end"))
+        return time_split(
+            table, test_size=test_size, train_end=cfg.get("train_end")
+        )
     if method == "random":
         return random_split(table, test_size=test_size, seed=seed)
     if method == "space":

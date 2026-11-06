@@ -12,7 +12,9 @@ def _corr_matrix(x: np.ndarray) -> np.ndarray:
     return np.nan_to_num(corr, nan=0.0)
 
 
-def drop_by_correlation(x: np.ndarray, names: Sequence[str], threshold: float = 0.9) -> list[str]:
+def drop_by_correlation(
+    x: np.ndarray, names: Sequence[str], threshold: float = 0.9
+) -> list[str]:
     corr = np.abs(_corr_matrix(x))
     np.fill_diagonal(corr, 0.0)
     keep = np.ones(x.shape[1], dtype=bool)
@@ -43,7 +45,9 @@ def vif_scores(x: np.ndarray) -> np.ndarray:
     return scores
 
 
-def drop_by_vif(x: np.ndarray, names: Sequence[str], threshold: float = 10.0) -> list[str]:
+def drop_by_vif(
+    x: np.ndarray, names: Sequence[str], threshold: float = 10.0
+) -> list[str]:
     keep = list(range(x.shape[1]))
     while len(keep) > 1:
         scores = vif_scores(x[:, keep])
@@ -54,7 +58,9 @@ def drop_by_vif(x: np.ndarray, names: Sequence[str], threshold: float = 10.0) ->
     return [names[i] for i in keep]
 
 
-def drop_by_linreg(x: np.ndarray, names: Sequence[str], r2_threshold: float = 0.95) -> list[str]:
+def drop_by_linreg(
+    x: np.ndarray, names: Sequence[str], r2_threshold: float = 0.95
+) -> list[str]:
     """Drop a feature if it is almost perfectly predicted by the others."""
     keep = list(range(x.shape[1]))
     changed = True

@@ -80,17 +80,25 @@ def random_sample(n: int, n_samples: int | None, seed: int) -> np.ndarray:
     return _rng(seed).choice(n, size=k, replace=False)
 
 
-def stratified_sample(y: np.ndarray, n_samples: int | None, n_bins: int = 10, seed: int = 42) -> np.ndarray:
+def stratified_sample(
+    y: np.ndarray, n_samples: int | None, n_bins: int = 10, seed: int = 42
+) -> np.ndarray:
     n = len(y)
     k = _cap(n_samples, n)
-    bins = np.digitize(y, np.nanquantile(y, np.linspace(0, 1, n_bins + 1)[1:-1]))
+    bins = np.digitize(
+        y, np.nanquantile(y, np.linspace(0, 1, n_bins + 1)[1:-1])
+    )
     rng = _rng(seed)
     chosen = []
     remaining = k
     groups = [np.where(bins == b)[0] for b in np.unique(bins)]
     groups = [g for g in groups if len(g)]
     for i, group in enumerate(groups):
-        take = remaining if i == len(groups) - 1 else max(1, int(round(k * len(group) / n)))
+        take = (
+            remaining
+            if i == len(groups) - 1
+            else max(1, int(round(k * len(group) / n)))
+        )
         take = min(take, len(group), remaining)
         chosen.append(rng.choice(group, size=take, replace=False))
         remaining -= take
@@ -99,7 +107,14 @@ def stratified_sample(y: np.ndarray, n_samples: int | None, n_bins: int = 10, se
     idx = np.concatenate(chosen) if chosen else random_sample(n, k, seed)
     if len(idx) < k:
         extra = np.setdiff1d(np.arange(n), idx)
-        idx = np.concatenate([idx, rng.choice(extra, size=min(k - len(idx), len(extra)), replace=False)])
+        idx = np.concatenate(
+            [
+                idx,
+                rng.choice(
+                    extra, size=min(k - len(idx), len(extra)), replace=False
+                ),
+            ]
+        )
     return idx[:k]
 
 
@@ -127,9 +142,16 @@ def cluster_sample(
     draw = draw.lower()
     if draw not in {"centroid", "medoid", "within"}:
         raise ValueError("cluster draw must be centroid, medoid, or within")
-    n_clust = k if draw != "within" else min(int(n_clusters or max(2, k // 5)), k, n)
+    n_clust = (
+        k if draw != "within" else min(int(n_clusters or max(2, k // 5)), k, n)
+    )
     scaled = StandardScaler().fit_transform(x)
-    km = MiniBatchKMeans(n_clusters=n_clust, random_state=seed, batch_size=min(2048, n), n_init=3)
+    km = MiniBatchKMeans(
+        n_clusters=n_clust,
+        random_state=seed,
+        batch_size=min(2048, n),
+        n_init=3,
+    )
     labels = km.fit_predict(scaled)
     centers = km.cluster_centers_
     rng = _rng(seed)
@@ -141,12 +163,17 @@ def cluster_sample(
     if not groups:
         return random_sample(n, k, seed)
     if draw == "within":
-        return _draw_from_groups(n, k, [members for _c, members in groups], rng, balance="equal")
+        return _draw_from_groups(
+            n, k, [members for _c, members in groups], rng, balance="equal"
+        )
     chosen = []
     for c, members in groups:
         if draw == "medoid" and len(members) <= 800:
             block = scaled[members]
-            total = np.sum(np.linalg.norm(block[:, None, :] - block[None, :, :], axis=2), axis=1)
+            total = np.sum(
+                np.linalg.norm(block[:, None, :] - block[None, :, :], axis=2),
+                axis=1,
+            )
             chosen.append(int(members[int(np.argmin(total))]))
         else:
             dist = np.linalg.norm(scaled[members] - centers[c], axis=1)
@@ -154,7 +181,9 @@ def cluster_sample(
     return np.unique(chosen)
 
 
-def fs_coverage_sample(x: np.ndarray, n_samples: int | None, seed: int = 42) -> np.ndarray:
+def fs_coverage_sample(
+    x: np.ndarray, n_samples: int | None, seed: int = 42
+) -> np.ndarray:
     """Feature-space coverage sampling: the real row nearest each centre.
 
     Brus (2019) minimises the mean squared shortest distance in standardized
@@ -163,7 +192,9 @@ def fs_coverage_sample(x: np.ndarray, n_samples: int | None, seed: int = 42) -> 
     return cluster_sample(x, n_samples, seed, draw="centroid")
 
 
-def kennard_stone(x: np.ndarray, n_samples: int | None, seed: int = 42) -> np.ndarray:
+def kennard_stone(
+    x: np.ndarray, n_samples: int | None, seed: int = 42
+) -> np.ndarray:
     n = len(x)
     k = _cap(n_samples, n)
     if k == n:
@@ -182,11 +213,15 @@ def kennard_stone(x: np.ndarray, n_samples: int | None, seed: int = 42) -> np.nd
         nxt = max(remaining, key=lambda i: min_dist[i])
         selected.append(nxt)
         remaining.remove(nxt)
-        min_dist = np.minimum(min_dist, np.linalg.norm(scaled - scaled[nxt], axis=1))
+        min_dist = np.minimum(
+            min_dist, np.linalg.norm(scaled - scaled[nxt], axis=1)
+        )
     return np.asarray(selected)
 
 
-def maximin_sample(x: np.ndarray, n_samples: int | None, seed: int = 42) -> np.ndarray:
+def maximin_sample(
+    x: np.ndarray, n_samples: int | None, seed: int = 42
+) -> np.ndarray:
     """Greedy maximin / farthest-point sample of existing rows.
 
     Kennard & Stone (1969) start from the farthest pair, then repeatedly add
@@ -209,12 +244,16 @@ def maximin_sample(x: np.ndarray, n_samples: int | None, seed: int = 42) -> np.n
         selected.append(second)
     min_dist = np.linalg.norm(scaled - scaled[selected[0]], axis=1)
     for row in selected[1:]:
-        min_dist = np.minimum(min_dist, np.linalg.norm(scaled - scaled[row], axis=1))
+        min_dist = np.minimum(
+            min_dist, np.linalg.norm(scaled - scaled[row], axis=1)
+        )
     min_dist[selected] = -np.inf
     while len(selected) < k:
         nxt = int(np.argmax(min_dist))
         selected.append(nxt)
-        min_dist = np.minimum(min_dist, np.linalg.norm(scaled - scaled[nxt], axis=1))
+        min_dist = np.minimum(
+            min_dist, np.linalg.norm(scaled - scaled[nxt], axis=1)
+        )
         min_dist[nxt] = -np.inf
     return np.asarray(selected, dtype=int)
 
@@ -226,7 +265,9 @@ def _farthest_pair(scaled: np.ndarray, seed: int) -> tuple[int, int]:
         block = 400
         for i0 in range(0, n, block):
             i1 = min(n, i0 + block)
-            dist = np.linalg.norm(scaled[i0:i1, None, :] - scaled[None, :, :], axis=2)
+            dist = np.linalg.norm(
+                scaled[i0:i1, None, :] - scaled[None, :, :], axis=2
+            )
             flat = int(np.argmax(dist))
             row, col = divmod(flat, n)
             if dist[row, col] > best[0]:
@@ -278,12 +319,23 @@ def _occupancy_cost(strata: np.ndarray, choice: np.ndarray, k: int) -> float:
     return cost
 
 
-def _class_cost(labels: np.ndarray, choice: np.ndarray, proportions: np.ndarray) -> float:
-    counts = np.bincount(labels[choice], minlength=len(proportions)).astype(float)
+def _class_cost(
+    labels: np.ndarray, choice: np.ndarray, proportions: np.ndarray
+) -> float:
+    counts = np.bincount(labels[choice], minlength=len(proportions)).astype(
+        float
+    )
     return float(np.abs(counts / max(len(choice), 1) - proportions).sum())
 
 
-def _anneal(score_fn, n: int, k: int, rng: np.random.Generator, n_iter: int, cooling: float = 0.95) -> np.ndarray:
+def _anneal(
+    score_fn,
+    n: int,
+    k: int,
+    rng: np.random.Generator,
+    n_iter: int,
+    cooling: float = 0.95,
+) -> np.ndarray:
     """Swap one selected pool row at a time. Worse swaps are accepted with exp(-delta/T)."""
     selected = rng.choice(n, size=k, replace=False)
     pool = np.setdiff1d(np.arange(n), selected)
@@ -336,15 +388,23 @@ def clhs_sample(
     k = _cap(n_samples, n)
     if k == n:
         return np.arange(n)
-    weights = (1.0, 1.0, 1.0) if objective_weights is None else tuple(objective_weights)
+    weights = (
+        (1.0, 1.0, 1.0)
+        if objective_weights is None
+        else tuple(objective_weights)
+    )
     strata = _marginal_strata(x, k)
     population = _correlation(x)
     labels = None if categorical is None else _as_labels(categorical)
-    proportions = None if labels is None else np.bincount(labels).astype(float) / n
+    proportions = (
+        None if labels is None else np.bincount(labels).astype(float) / n
+    )
 
     def score(choice: np.ndarray) -> float:
         o1 = _occupancy_cost(strata, choice, k)
-        o2 = 0.0 if labels is None else _class_cost(labels, choice, proportions)
+        o2 = (
+            0.0 if labels is None else _class_cost(labels, choice, proportions)
+        )
         o3 = _correlation_cost(x[choice], population)
         return weights[0] * o1 + weights[1] * o2 + weights[2] * o3
 
@@ -357,12 +417,16 @@ def _as_labels(categorical) -> np.ndarray:
     return inverse.astype(int)
 
 
-def spatial_sample(lat: np.ndarray, lon: np.ndarray, n_samples: int | None, seed: int = 42) -> np.ndarray:
+def spatial_sample(
+    lat: np.ndarray, lon: np.ndarray, n_samples: int | None, seed: int = 42
+) -> np.ndarray:
     coords = np.column_stack([lat, lon])
     return cluster_sample(coords, n_samples, seed)
 
 
-def systematic_sample(n: int, n_samples: int | None, seed: int = 42) -> np.ndarray:
+def systematic_sample(
+    n: int, n_samples: int | None, seed: int = 42
+) -> np.ndarray:
     k = _cap(n_samples, n)
     step = n / k
     start = float(_rng(seed).uniform(0, step))
@@ -422,7 +486,9 @@ def area_weighted_sample(
     k = _cap(n_samples, n)
     if area_weights is None:
         if lat is None:
-            raise ValueError("area-weighted sampling needs lat or area_weights")
+            raise ValueError(
+                "area-weighted sampling needs lat or area_weights"
+            )
         area_weights = grid_area_weights(lat, time_weights)
     elif time_weights is not None:
         area_weights = _as_float(area_weights) * _as_float(time_weights)
@@ -432,7 +498,9 @@ def area_weighted_sample(
     weights = np.where(np.isfinite(weights) & (weights > 0), weights, 0.0)
     if int(np.count_nonzero(weights)) < k:
         raise ValueError("not enough rows with a positive area weight")
-    return _rng(seed).choice(n, size=k, replace=False, p=weights / weights.sum())
+    return _rng(seed).choice(
+        n, size=k, replace=False, p=weights / weights.sum()
+    )
 
 
 def _season_codes(time: np.ndarray) -> np.ndarray:
@@ -486,16 +554,28 @@ def stratum_codes(
             if int(column) in categorical:
                 parts.append(_as_labels(values))
             else:
-                edges = np.unique(np.nanquantile(_as_float(values), np.linspace(0, 1, n_bins + 1)[1:-1]))
+                edges = np.unique(
+                    np.nanquantile(
+                        _as_float(values), np.linspace(0, 1, n_bins + 1)[1:-1]
+                    )
+                )
                 parts.append(np.digitize(_as_float(values), edges))
     if time is not None and not stratum_columns and strata is None:
         parts.append(_season_codes(time))
     if not parts:
-        raise ValueError("process stratification needs strata, stratum_columns, or time")
+        raise ValueError(
+            "process stratification needs strata, stratum_columns, or time"
+        )
     return _combine_codes(parts)
 
 
-def _draw_from_groups(n: int, k: int, groups: list[np.ndarray], rng: np.random.Generator, balance: str) -> np.ndarray:
+def _draw_from_groups(
+    n: int,
+    k: int,
+    groups: list[np.ndarray],
+    rng: np.random.Generator,
+    balance: str,
+) -> np.ndarray:
     balance = balance.lower()
     if balance not in {"equal", "proportional"}:
         raise ValueError("balance must be equal or proportional")
@@ -503,7 +583,11 @@ def _draw_from_groups(n: int, k: int, groups: list[np.ndarray], rng: np.random.G
     if balance == "proportional":
         remaining = k
         for i, group in enumerate(groups):
-            take = remaining if i == len(groups) - 1 else max(1, int(round(k * len(group) / n)))
+            take = (
+                remaining
+                if i == len(groups) - 1
+                else max(1, int(round(k * len(group) / n)))
+            )
             take = min(take, len(group), remaining)
             if take > 0:
                 chosen.append(rng.choice(group, size=take, replace=False))
@@ -513,7 +597,9 @@ def _draw_from_groups(n: int, k: int, groups: list[np.ndarray], rng: np.random.G
     else:
         if k < len(groups):
             pick = rng.choice(len(groups), size=k, replace=False)
-            return np.asarray([int(rng.choice(groups[int(i)])) for i in pick], dtype=int)
+            return np.asarray(
+                [int(rng.choice(groups[int(i)])) for i in pick], dtype=int
+            )
         base, extra = divmod(k, len(groups))
         order = np.argsort([-len(group) for group in groups])
         remaining = k
@@ -521,13 +607,24 @@ def _draw_from_groups(n: int, k: int, groups: list[np.ndarray], rng: np.random.G
             take = base + (1 if rank < extra else 0)
             take = min(take, len(groups[int(group_i)]), remaining)
             if take > 0:
-                chosen.append(rng.choice(groups[int(group_i)], size=take, replace=False))
+                chosen.append(
+                    rng.choice(groups[int(group_i)], size=take, replace=False)
+                )
                 remaining -= take
     idx = np.concatenate(chosen) if chosen else np.array([], dtype=int)
     if len(idx) < k:
         leftover = np.setdiff1d(np.arange(n), idx)
         if len(leftover):
-            idx = np.concatenate([idx, rng.choice(leftover, size=min(k - len(idx), len(leftover)), replace=False)])
+            idx = np.concatenate(
+                [
+                    idx,
+                    rng.choice(
+                        leftover,
+                        size=min(k - len(idx), len(leftover)),
+                        replace=False,
+                    ),
+                ]
+            )
     return idx[:k]
 
 
@@ -549,7 +646,11 @@ def process_stratified_sample(
     the balance across known states. ``balance="proportional"`` follows the
     stratum's share of the pool. Strata with no rows are skipped.
     """
-    n = len(x) if x is not None else len(strata if strata is not None else time)
+    n = (
+        len(x)
+        if x is not None
+        else len(strata if strata is not None else time)
+    )
     k = _cap(n_samples, n)
     codes = stratum_codes(
         x,
@@ -620,7 +721,13 @@ def extreme_sample(
     n = len(y)
     k = _cap(n_samples, n)
     score = y if column is None else _as_float(x)[:, int(column)]
-    mask = _extreme_mask(score, quantile=quantile, side=side, threshold=threshold, threshold_band=threshold_band)
+    mask = _extreme_mask(
+        score,
+        quantile=quantile,
+        side=side,
+        threshold=threshold,
+        threshold_band=threshold_band,
+    )
     extreme_rows = np.where(mask)[0]
     bulk_rows = np.where(~mask)[0]
     if len(extreme_rows) == 0 or len(bulk_rows) == 0:
@@ -633,7 +740,11 @@ def extreme_sample(
         n_extreme = min(len(extreme_rows), k - n_bulk)
     weights = None
     if area_weights is not None or lat is not None:
-        weights = grid_area_weights(lat, time_weights) if area_weights is None else _as_float(area_weights)
+        weights = (
+            grid_area_weights(lat, time_weights)
+            if area_weights is None
+            else _as_float(area_weights)
+        )
         if time_weights is not None and area_weights is not None:
             weights = weights * _as_float(time_weights)
     rng = _rng(seed)
@@ -641,23 +752,36 @@ def extreme_sample(
     picked_bulk = _weighted_choice(bulk_rows, n_bulk, weights, rng)
     idx = np.concatenate([picked_ext, picked_bulk])
     inclusion = np.empty(len(idx), dtype=float)
-    inclusion[: len(picked_ext)] = _pool_weight(extreme_rows, picked_ext, weights)
-    inclusion[len(picked_ext) :] = _pool_weight(bulk_rows, picked_bulk, weights)
+    inclusion[: len(picked_ext)] = _pool_weight(
+        extreme_rows, picked_ext, weights
+    )
+    inclusion[len(picked_ext) :] = _pool_weight(
+        bulk_rows, picked_bulk, weights
+    )
     return idx, inclusion
 
 
-def _weighted_choice(rows: np.ndarray, take: int, weights: np.ndarray | None, rng: np.random.Generator) -> np.ndarray:
+def _weighted_choice(
+    rows: np.ndarray,
+    take: int,
+    weights: np.ndarray | None,
+    rng: np.random.Generator,
+) -> np.ndarray:
     if take <= 0:
         return np.array([], dtype=int)
     if weights is None:
         return rng.choice(rows, size=take, replace=False)
-    local = np.where(np.isfinite(weights[rows]) & (weights[rows] > 0), weights[rows], 0.0)
+    local = np.where(
+        np.isfinite(weights[rows]) & (weights[rows] > 0), weights[rows], 0.0
+    )
     if float(local.sum()) <= 0.0 or int(np.count_nonzero(local)) < take:
         return rng.choice(rows, size=take, replace=False)
     return rng.choice(rows, size=take, replace=False, p=local / local.sum())
 
 
-def _pool_weight(pool: np.ndarray, picked: np.ndarray, weights: np.ndarray | None) -> np.ndarray:
+def _pool_weight(
+    pool: np.ndarray, picked: np.ndarray, weights: np.ndarray | None
+) -> np.ndarray:
     if len(picked) == 0:
         return np.array([], dtype=float)
     if weights is None:
@@ -666,14 +790,20 @@ def _pool_weight(pool: np.ndarray, picked: np.ndarray, weights: np.ndarray | Non
     return _pps_inside(pool, picked, weights)
 
 
-def _pps_inside(pool: np.ndarray, picked: np.ndarray, weights: np.ndarray) -> np.ndarray:
-    local = np.where(np.isfinite(weights[pool]) & (weights[pool] > 0), weights[pool], 0.0)
+def _pps_inside(
+    pool: np.ndarray, picked: np.ndarray, weights: np.ndarray
+) -> np.ndarray:
+    local = np.where(
+        np.isfinite(weights[pool]) & (weights[pool] > 0), weights[pool], 0.0
+    )
     total = float(local.sum())
     if total <= 0.0:
         probability = len(picked) / max(len(pool), 1)
         return np.full(len(picked), 1.0 / max(probability, 1e-12))
     position = {int(row): i for i, row in enumerate(pool)}
-    probability = local[np.array([position[int(row)] for row in picked])] / total
+    probability = (
+        local[np.array([position[int(row)] for row in picked])] / total
+    )
     inclusion = 1.0 - (1.0 - probability) ** len(picked)
     return 1.0 / np.maximum(inclusion, 1e-12)
 
@@ -720,7 +850,11 @@ def active_learning_sample(
         )
         model.fit(x[selected], y[selected])
         remaining = np.setdiff1d(np.arange(n), np.asarray(selected, dtype=int))
-        take = min(int(batch_size or max(1, int(np.ceil((k - initial) / rounds)))), k - len(selected), len(remaining))
+        take = min(
+            int(batch_size or max(1, int(np.ceil((k - initial) / rounds)))),
+            k - len(selected),
+            len(remaining),
+        )
         uncertainty = _committee_std(model, x[remaining])
         if len(remaining) > 4000:
             keep = np.argpartition(uncertainty, -4000)[-4000:]
@@ -728,7 +862,13 @@ def active_learning_sample(
             candidate_rows = remaining[keep]
         else:
             candidate_rows = remaining
-        picked = _diverse_argmax(scaled, np.asarray(selected, dtype=int), candidate_rows, uncertainty, take)
+        picked = _diverse_argmax(
+            scaled,
+            np.asarray(selected, dtype=int),
+            candidate_rows,
+            uncertainty,
+            take,
+        )
         selected.extend(int(row) for row in picked)
     return np.asarray(selected[:k], dtype=int)
 
@@ -736,7 +876,9 @@ def active_learning_sample(
 def _committee_std(model, rows: np.ndarray) -> np.ndarray:
     if not hasattr(model, "estimators_"):
         raise TypeError("active learning needs an ensemble with estimators_")
-    predictions = np.stack([estimator.predict(rows) for estimator in model.estimators_], axis=0)
+    predictions = np.stack(
+        [estimator.predict(rows) for estimator in model.estimators_], axis=0
+    )
     return predictions.std(axis=0)
 
 
@@ -761,7 +903,9 @@ def _diverse_argmax(
         pick = int(np.argmax(utility))
         chosen.append(int(candidates[pick]))
         scores[pick] = np.nan
-        step = np.linalg.norm(scaled[candidates] - scaled[candidates[pick]], axis=1)
+        step = np.linalg.norm(
+            scaled[candidates] - scaled[candidates[pick]], axis=1
+        )
         min_dist = np.minimum(min_dist, step)
         min_dist[pick] = 0.0
     return np.asarray(chosen, dtype=int)
@@ -773,7 +917,10 @@ def _min_distance(candidates: np.ndarray, selected: np.ndarray) -> np.ndarray:
     nearest = np.full(len(candidates), np.inf)
     block = 512
     for i0 in range(0, len(selected), block):
-        dist = np.linalg.norm(candidates[:, None, :] - selected[i0 : i0 + block][None, :, :], axis=2)
+        dist = np.linalg.norm(
+            candidates[:, None, :] - selected[i0 : i0 + block][None, :, :],
+            axis=2,
+        )
         nearest = np.minimum(nearest, dist.min(axis=1))
     return nearest
 
@@ -828,17 +975,25 @@ def _dependence_coordinates(
 
 
 def _variogram_edges(coords: np.ndarray, n_lags: int) -> np.ndarray:
-    probe = coords if len(coords) <= 600 else coords[np.linspace(0, len(coords) - 1, 600).astype(int)]
+    probe = (
+        coords
+        if len(coords) <= 600
+        else coords[np.linspace(0, len(coords) - 1, 600).astype(int)]
+    )
     dist = np.linalg.norm(probe[:, None, :] - probe[None, :, :], axis=2)
     positive = dist[dist > 0]
     min_val = float(np.min(positive)) if len(positive) else 1.0
-    edges = np.arange(min_val / 2.0, min_val * (n_lags + 1) + min_val * 0.5, min_val)
+    edges = np.arange(
+        min_val / 2.0, min_val * (n_lags + 1) + min_val * 0.5, min_val
+    )
     if len(edges) < 2:
         edges = np.array([0.0, max(min_val, 1.0)])
     return edges
 
 
-def _classical_variogram(coords: np.ndarray, values: np.ndarray, edges: np.ndarray) -> np.ndarray:
+def _classical_variogram(
+    coords: np.ndarray, values: np.ndarray, edges: np.ndarray
+) -> np.ndarray:
     """Matheron estimator used by geoR's classical variogram: mean half squared difference."""
     n_bins = len(edges) - 1
     gamma = np.full(n_bins, np.nan)
@@ -858,7 +1013,9 @@ def _classical_variogram(coords: np.ndarray, values: np.ndarray, edges: np.ndarr
         left = np.repeat(np.arange(n - 1), np.arange(n - 1, 0, -1))
         right = np.concatenate([np.arange(i + 1, n) for i in range(n - 1)])
         take = min(len(left), 20000)
-        pick = _rng(n * 17 + int(np.round(np.nansum(values[: min(8, n)]) * 1000))).choice(len(left), size=take, replace=False)
+        pick = _rng(
+            n * 17 + int(np.round(np.nansum(values[: min(8, n)]) * 1000))
+        ).choice(len(left), size=take, replace=False)
         left, right = left[pick], right[pick]
         dist_v = np.linalg.norm(coords[left] - coords[right], axis=1)
         half = 0.5 * (values[left] - values[right]) ** 2
@@ -870,7 +1027,12 @@ def _classical_variogram(coords: np.ndarray, values: np.ndarray, edges: np.ndarr
     return gamma
 
 
-def _variogram_cost(coords: np.ndarray, values: np.ndarray, edges: np.ndarray, reference: np.ndarray) -> float:
+def _variogram_cost(
+    coords: np.ndarray,
+    values: np.ndarray,
+    edges: np.ndarray,
+    reference: np.ndarray,
+) -> float:
     gamma = _classical_variogram(coords, values, edges)
     both = np.isfinite(gamma) & np.isfinite(reference)
     if not np.any(both):
@@ -911,12 +1073,20 @@ def aclhs_sample(
     if k == n:
         return np.arange(n)
     coords = _dependence_coordinates(n, time, lat, lon, dependence)
-    weights = (1.0, 1.0, 1.0) if objective_weights is None else tuple(float(v) for v in objective_weights)
+    weights = (
+        (1.0, 1.0, 1.0)
+        if objective_weights is None
+        else tuple(float(v) for v in objective_weights)
+    )
     strata = _marginal_strata(x, k)
     population = _correlation(x)
     rng = _rng(seed)
     reference_n = min(n, 800)
-    reference = rng.choice(n, size=reference_n, replace=False) if reference_n < n else np.arange(n)
+    reference = (
+        rng.choice(n, size=reference_n, replace=False)
+        if reference_n < n
+        else np.arange(n)
+    )
     edges = _variogram_edges(coords[reference], n_lags)
     gamma_ref = _classical_variogram(coords[reference], y[reference], edges)
 
@@ -938,7 +1108,14 @@ def aclhs_sample(
     return _anneal_from(score, initial, n, rng, n_iter)
 
 
-def _anneal_from(score_fn, selected: np.ndarray, n: int, rng: np.random.Generator, n_iter: int, cooling: float = 0.95) -> np.ndarray:
+def _anneal_from(
+    score_fn,
+    selected: np.ndarray,
+    n: int,
+    rng: np.random.Generator,
+    n_iter: int,
+    cooling: float = 0.95,
+) -> np.ndarray:
     selected = np.asarray(selected, dtype=int).copy()
     k = len(selected)
     pool = np.setdiff1d(np.arange(n), selected)
@@ -1023,7 +1200,9 @@ def sample_train(
     elif method in {"cluster_medoid", "medoid"}:
         idx = cluster_sample(x, n_samples, seed, draw="medoid")
     elif method in {"cluster_within"}:
-        idx = cluster_sample(x, n_samples, seed, draw="within", n_clusters=n_clusters)
+        idx = cluster_sample(
+            x, n_samples, seed, draw="within", n_clusters=n_clusters
+        )
     elif method in {"clhs", "lhs"}:
         idx = clhs_sample(
             x,
@@ -1052,7 +1231,11 @@ def sample_train(
             area_weights=area_weights,
             time_weights=time_weights,
         )
-        used = grid_area_weights(lat, time_weights) if area_weights is None else _as_float(area_weights)
+        used = (
+            grid_area_weights(lat, time_weights)
+            if area_weights is None
+            else _as_float(area_weights)
+        )
         if time_weights is not None and area_weights is not None:
             used = used * _as_float(time_weights)
         weights = pps_weights(used, idx)

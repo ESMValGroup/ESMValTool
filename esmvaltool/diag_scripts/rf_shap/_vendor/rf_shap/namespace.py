@@ -70,7 +70,9 @@ def install_namespace(dest: ModuleType) -> None:
     dest.linear_tree_shap = linear_tree_shap
     dest.fast_forest = fast_forest
     dest.regrid_to_1deg = regrid_to_1deg
-    dest.regrid_curvilinear_nearest_to_1deg = regrid_curvilinear_nearest_to_1deg
+    dest.regrid_curvilinear_nearest_to_1deg = (
+        regrid_curvilinear_nearest_to_1deg
+    )
     dest.regrid_file_to_1deg = regrid_file_to_1deg
     dest.compare_explanations = compare_explanations
     dest.ale_curve_distance = ale_curve_distance

@@ -104,7 +104,9 @@ class FastForestRegressor:
         features = np.asarray(x, dtype=np.float64)
         if features.ndim == 1:
             features = features.reshape(1, -1)
-        return np.asarray(self._model.predict_batch(features), dtype=np.float64)
+        return np.asarray(
+            self._model.predict_batch(features), dtype=np.float64
+        )
 
     @property
     def feature_importances_(self) -> np.ndarray:
@@ -140,7 +142,11 @@ def fast_forest(
     raises ``ImportError`` until the FastForest repository is on ``PYTHONPATH``.
     """
     _load_fastforest()
-    unused = {key: value for key, value in unused.items() if key not in _IGNORED_SKLEARN_KEYS}
+    unused = {
+        key: value
+        for key, value in unused.items()
+        if key not in _IGNORED_SKLEARN_KEYS
+    }
     if unused:
         unknown = ", ".join(sorted(unused))
         raise TypeError(f"fast_forest() got unexpected arguments: {unknown}")

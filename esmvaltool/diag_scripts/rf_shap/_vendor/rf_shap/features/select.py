@@ -11,7 +11,9 @@ from rf_shap.features.permutation import permutation_elimination
 from rf_shap.features.rfe import recursive_feature_elimination
 
 
-def select_features(table: SampleTable, options: dict | None = None, seed: int = 42) -> SampleTable:
+def select_features(
+    table: SampleTable, options: dict | None = None, seed: int = 42
+) -> SampleTable:
     options = options or {}
     methods: Sequence[str] = options.get("methods") or []
     names = list(table.feature_names)

@@ -12,29 +12,45 @@ from rf_shap.utils import check_names
 STANDARD_DIMS = ("time", "lat", "lon")
 
 
-def _rename_dims(ds: xr.Dataset, time_name: str, lat_name: str, lon_name: str) -> xr.Dataset:
+def _rename_dims(
+    ds: xr.Dataset, time_name: str, lat_name: str, lon_name: str
+) -> xr.Dataset:
     mapping = {}
-    for src, dst in [(time_name, "time"), (lat_name, "lat"), (lon_name, "lon")]:
+    for src, dst in [
+        (time_name, "time"),
+        (lat_name, "lat"),
+        (lon_name, "lon"),
+    ]:
         if src in ds.dims and src != dst:
             mapping[src] = dst
         elif src in ds.coords and src != dst and dst not in ds.dims:
             mapping[src] = dst
     if mapping:
         ds = ds.rename(mapping)
-    missing = [name for name in STANDARD_DIMS if name not in ds.dims and name not in ds.coords]
+    missing = [
+        name
+        for name in STANDARD_DIMS
+        if name not in ds.dims and name not in ds.coords
+    ]
     if missing:
-        raise ValueError(f"Cube must contain time/lat/lon. Missing: {missing}. Dims={list(ds.dims)}")
+        raise ValueError(
+            f"Cube must contain time/lat/lon. Missing: {missing}. Dims={list(ds.dims)}"
+        )
     return ds
 
 
-def _ensure_cube(ds: xr.Dataset, variables: Sequence[str] | None = None) -> xr.Dataset:
+def _ensure_cube(
+    ds: xr.Dataset, variables: Sequence[str] | None = None
+) -> xr.Dataset:
     keep = list(variables) if variables else [v for v in ds.data_vars]
     check_names(keep, ds.data_vars, "cube")
     ds = ds[keep]
     for name in keep:
         da = ds[name]
         if set(STANDARD_DIMS) - set(da.dims):
-            raise ValueError(f"Variable {name} must have dims time, lat, lon; got {da.dims}")
+            raise ValueError(
+                f"Variable {name} must have dims time, lat, lon; got {da.dims}"
+            )
         ds[name] = da.transpose("time", "lat", "lon")
     return ds
 
@@ -49,11 +65,17 @@ def dataset_from_arrays(
     for name, values in arrays.items():
         arr = np.asarray(values)
         if arr.ndim != 3:
-            raise ValueError(f"{name} must be (time, lat, lon), got {arr.shape}")
+            raise ValueError(
+                f"{name} must be (time, lat, lon), got {arr.shape}"
+            )
         data_vars[name] = (("time", "lat", "lon"), arr)
     return xr.Dataset(
         data_vars,
-        coords={"time": np.asarray(time), "lat": np.asarray(lat), "lon": np.asarray(lon)},
+        coords={
+            "time": np.asarray(time),
+            "lat": np.asarray(lat),
+            "lon": np.asarray(lon),
+        },
     )
 
 
@@ -67,7 +89,9 @@ def table_to_dataset(
     needed = [time_name, lat_name, lon_name, *variables]
     check_names(needed, frame.columns, "table")
     work = frame[needed].copy()
-    work = work.rename(columns={time_name: "time", lat_name: "lat", lon_name: "lon"})
+    work = work.rename(
+        columns={time_name: "time", lat_name: "lat", lon_name: "lon"}
+    )
     work = work.set_index(["time", "lat", "lon"]).sort_index()
     if work.index.duplicated().any():
         work = work.groupby(level=[0, 1, 2]).mean()
@@ -101,18 +125,28 @@ def load_npy(
         time = payload[time_name]
         lat = payload[lat_name]
         lon = payload[lon_name]
-        var_names = variables or [k for k in keys if k not in {time_name, lat_name, lon_name}]
+        var_names = variables or [
+            k for k in keys if k not in {time_name, lat_name, lon_name}
+        ]
         arrays = {name: payload[name] for name in var_names}
-        return _ensure_cube(dataset_from_arrays(arrays, time, lat, lon), var_names)
+        return _ensure_cube(
+            dataset_from_arrays(arrays, time, lat, lon), var_names
+        )
 
     if path.is_dir():
         time = np.load(path / f"{time_name}.npy")
         lat = np.load(path / f"{lat_name}.npy")
         lon = np.load(path / f"{lon_name}.npy")
-        files = sorted(p for p in path.glob("*.npy") if p.stem not in {time_name, lat_name, lon_name})
+        files = sorted(
+            p
+            for p in path.glob("*.npy")
+            if p.stem not in {time_name, lat_name, lon_name}
+        )
         var_names = list(variables) if variables else [p.stem for p in files]
         arrays = {name: np.load(path / f"{name}.npy") for name in var_names}
-        return _ensure_cube(dataset_from_arrays(arrays, time, lat, lon), var_names)
+        return _ensure_cube(
+            dataset_from_arrays(arrays, time, lat, lon), var_names
+        )
 
     arr = np.load(path)
     if arr.ndim != 3:
@@ -142,7 +176,15 @@ def load_table(
         frame = pd.read_csv(path)
     if time_name in frame.columns:
         frame[time_name] = pd.to_datetime(frame[time_name], errors="ignore")
-    vars_ = list(variables) if variables else [c for c in frame.columns if c not in {time_name, lat_name, lon_name}]
+    vars_ = (
+        list(variables)
+        if variables
+        else [
+            c
+            for c in frame.columns
+            if c not in {time_name, lat_name, lon_name}
+        ]
+    )
     return table_to_dataset(frame, vars_, time_name, lat_name, lon_name)
 
 

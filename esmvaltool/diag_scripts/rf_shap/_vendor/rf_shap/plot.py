@@ -60,7 +60,11 @@ def plot_cube_maps(
     for ax, name in zip(axes[0], names):
         da = ds[name]
         if "time" in da.dims:
-            da = da.mean("time") if reduce == "mean" else da.isel(time=time_index)
+            da = (
+                da.mean("time")
+                if reduce == "mean"
+                else da.isel(time=time_index)
+            )
         im = ax.pcolormesh(
             ds.lon,
             ds.lat,
@@ -78,7 +82,9 @@ def plot_cube_maps(
     return fig
 
 
-def plot_spatial_mean_timeseries(ds: xr.Dataset, title: str = "domain-mean time series"):
+def plot_spatial_mean_timeseries(
+    ds: xr.Dataset, title: str = "domain-mean time series"
+):
     _style()
     fig, ax = plt.subplots(figsize=(8, 3.5))
     for name, da in ds.data_vars.items():
@@ -92,13 +98,22 @@ def plot_spatial_mean_timeseries(ds: xr.Dataset, title: str = "domain-mean time 
     return fig
 
 
-def plot_histograms(table_like: pd.DataFrame, columns: Sequence[str], title: str = "feature distributions"):
+def plot_histograms(
+    table_like: pd.DataFrame,
+    columns: Sequence[str],
+    title: str = "feature distributions",
+):
     _style()
     cols = list(columns)
     n = len(cols)
     fig, axes = plt.subplots(1, n, figsize=(3.2 * n, 3.2), squeeze=False)
     for ax, col in zip(axes[0], cols):
-        ax.hist(table_like[col].dropna(), bins=25, color="steelblue", edgecolor="white")
+        ax.hist(
+            table_like[col].dropna(),
+            bins=25,
+            color="steelblue",
+            edgecolor="white",
+        )
         ax.set_title(col)
         ax.set_xlabel(col)
         ax.set_ylabel("count")
@@ -107,7 +122,9 @@ def plot_histograms(table_like: pd.DataFrame, columns: Sequence[str], title: str
     return fig
 
 
-def plot_correlation(x: np.ndarray, names: Sequence[str], title: str = "feature correlation"):
+def plot_correlation(
+    x: np.ndarray, names: Sequence[str], title: str = "feature correlation"
+):
     _style()
     corr = pd.DataFrame(x, columns=list(names)).corr()
     fig, ax = plt.subplots(figsize=(5.5, 4.8))
@@ -118,21 +135,38 @@ def plot_correlation(x: np.ndarray, names: Sequence[str], title: str = "feature 
     ax.set_yticklabels(names)
     for i in range(len(names)):
         for j in range(len(names)):
-            ax.text(j, i, f"{corr.iloc[i, j]:.2f}", ha="center", va="center", fontsize=8)
+            ax.text(
+                j,
+                i,
+                f"{corr.iloc[i, j]:.2f}",
+                ha="center",
+                va="center",
+                fontsize=8,
+            )
     fig.colorbar(im, ax=ax, fraction=0.046)
     ax.set_title(title)
     fig.tight_layout()
     return fig
 
 
-def plot_split_coverage(train_index: pd.MultiIndex, test_index: pd.MultiIndex, title: str = "train / test coverage"):
+def plot_split_coverage(
+    train_index: pd.MultiIndex,
+    test_index: pd.MultiIndex,
+    title: str = "train / test coverage",
+):
     _style()
     fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.8))
     for ax, index, label, color in (
         (axes[0], train_index, "train", "tab:blue"),
         (axes[1], test_index, "test", "tab:orange"),
     ):
-        ax.scatter(index.get_level_values("lon"), index.get_level_values("lat"), s=8, alpha=0.35, c=color)
+        ax.scatter(
+            index.get_level_values("lon"),
+            index.get_level_values("lat"),
+            s=8,
+            alpha=0.35,
+            c=color,
+        )
         ax.set_xlabel("lon")
         ax.set_ylabel("lat")
         ax.set_title(f"{label} n={len(index)}")
@@ -157,11 +191,29 @@ def plot_split_time(train_index: pd.MultiIndex, test_index: pd.MultiIndex):
     return fig
 
 
-def plot_sampling_map(all_index: pd.MultiIndex, sampled_index: pd.MultiIndex, title: str = "training sample subset"):
+def plot_sampling_map(
+    all_index: pd.MultiIndex,
+    sampled_index: pd.MultiIndex,
+    title: str = "training sample subset",
+):
     _style()
     fig, ax = plt.subplots(figsize=(5.5, 4.5))
-    ax.scatter(all_index.get_level_values("lon"), all_index.get_level_values("lat"), s=6, alpha=0.15, c="gray", label="all train")
-    ax.scatter(sampled_index.get_level_values("lon"), sampled_index.get_level_values("lat"), s=12, alpha=0.6, c="crimson", label="sampled")
+    ax.scatter(
+        all_index.get_level_values("lon"),
+        all_index.get_level_values("lat"),
+        s=6,
+        alpha=0.15,
+        c="gray",
+        label="all train",
+    )
+    ax.scatter(
+        sampled_index.get_level_values("lon"),
+        sampled_index.get_level_values("lat"),
+        s=12,
+        alpha=0.6,
+        c="crimson",
+        label="sampled",
+    )
     ax.set_xlabel("lon")
     ax.set_ylabel("lat")
     ax.set_title(title)
@@ -189,7 +241,9 @@ def plot_pred_scatter(y_true, y_pred, metrics: dict | None = None):
     return fig
 
 
-def plot_error_map(obs: xr.DataArray, pred: xr.DataArray, time_index: int | None = None):
+def plot_error_map(
+    obs: xr.DataArray, pred: xr.DataArray, time_index: int | None = None
+):
     _style()
     if time_index is None:
         obs_m = obs.mean("time")
@@ -209,7 +263,10 @@ def plot_error_map(obs: xr.DataArray, pred: xr.DataArray, time_index: int | None
         kw = dict(
             shading="auto",
             cmap=cmap,
-            **_color_limits(da.values, diverging="obs" in title and title.startswith("pred")),
+            **_color_limits(
+                da.values,
+                diverging="obs" in title and title.startswith("pred"),
+            ),
         )
         im = ax.pcolormesh(da.lon, da.lat, da, **kw)
         ax.set_title(title)
@@ -221,18 +278,32 @@ def plot_error_map(obs: xr.DataArray, pred: xr.DataArray, time_index: int | None
     return fig
 
 
-def plot_importance_bars(frame: pd.DataFrame, value_col: str = "importance", title: str = "feature importance"):
+def plot_importance_bars(
+    frame: pd.DataFrame,
+    value_col: str = "importance",
+    title: str = "feature importance",
+):
     _style()
     df = frame.sort_values(value_col)
     fig, ax = plt.subplots(figsize=(6, max(2.5, 0.35 * len(df) + 1)))
-    ax.barh(df["feature"], df[value_col], color="steelblue", xerr=df["std"] if "std" in df.columns else None)
+    ax.barh(
+        df["feature"],
+        df[value_col],
+        color="steelblue",
+        xerr=df["std"] if "std" in df.columns else None,
+    )
     ax.set_xlabel(value_col)
     ax.set_title(title)
     fig.tight_layout()
     return fig
 
 
-def plot_shap_summary(shap_values: np.ndarray, x: np.ndarray, names: Sequence[str], title: str = "SHAP summary"):
+def plot_shap_summary(
+    shap_values: np.ndarray,
+    x: np.ndarray,
+    names: Sequence[str],
+    title: str = "SHAP summary",
+):
     _style()
     names = list(names)
     order = np.argsort(np.abs(shap_values).mean(axis=0))
@@ -241,14 +312,27 @@ def plot_shap_summary(shap_values: np.ndarray, x: np.ndarray, names: Sequence[st
     for row, j in enumerate(order):
         vals = shap_values[:, j]
         feat = x[:, j]
-        colors = (feat - np.nanmin(feat)) / (np.nanmax(feat) - np.nanmin(feat) + 1e-12)
+        colors = (feat - np.nanmin(feat)) / (
+            np.nanmax(feat) - np.nanmin(feat) + 1e-12
+        )
         jitter = rng.normal(0, 0.08, size=len(vals))
-        sc = ax.scatter(vals, np.full(len(vals), row) + jitter, c=colors, cmap="coolwarm", s=8, alpha=0.7, vmin=0, vmax=1)
+        sc = ax.scatter(
+            vals,
+            np.full(len(vals), row) + jitter,
+            c=colors,
+            cmap="coolwarm",
+            s=8,
+            alpha=0.7,
+            vmin=0,
+            vmax=1,
+        )
     ax.set_yticks(range(len(order)), [names[j] for j in order])
     ax.axvline(0, color="k", lw=0.8)
     ax.set_xlabel("SHAP value")
     ax.set_title(title)
-    fig.colorbar(sc, ax=ax, fraction=0.03, pad=0.02, label="feature value (low→high)")
+    fig.colorbar(
+        sc, ax=ax, fraction=0.03, pad=0.02, label="feature value (low→high)"
+    )
     fig.tight_layout()
     return fig
 
@@ -263,7 +347,9 @@ def plot_shap_maps(
     Default is the time mean: a chronological split leaves early times empty.
     """
     if time_index is None:
-        return plot_cube_maps(shap_cube, reduce="mean", cmap="RdBu_r", title=title)
+        return plot_cube_maps(
+            shap_cube, reduce="mean", cmap="RdBu_r", title=title
+        )
     return plot_cube_maps(
         shap_cube,
         time_index=min(time_index, shap_cube.sizes["time"] - 1),
@@ -284,7 +370,11 @@ def plot_comparison_bars(
     if "feature" not in df.columns:
         df = df.reset_index().rename(columns={"index": "feature"})
     if "interacts_with" in df.columns:
-        df["feature"] = df["feature"].astype(str) + " × " + df["interacts_with"].astype(str)
+        df["feature"] = (
+            df["feature"].astype(str)
+            + " × "
+            + df["interacts_with"].astype(str)
+        )
     df = df.dropna(subset=[value_col]).sort_values(value_col)
     fig, ax = plt.subplots(figsize=(6.2, max(2.6, 0.4 * len(df) + 1)))
     colors = ["tab:red" if v < 0 else "steelblue" for v in df[value_col]]
@@ -336,7 +426,9 @@ def plot_ice_pdp(ice_pdp: dict, title: str = "ICE (thin) + PDP (thick)"):
 def _subsample_rows(n: int, max_points: int, seed: int = 0) -> np.ndarray:
     if n <= max_points:
         return np.arange(n)
-    return np.random.default_rng(seed).choice(n, size=max_points, replace=False)
+    return np.random.default_rng(seed).choice(
+        n, size=max_points, replace=False
+    )
 
 
 def plot_shap_dependence(
@@ -358,10 +450,23 @@ def plot_shap_dependence(
     fig, axes = plt.subplots(1, n, figsize=(3.6 * n, 3.5), squeeze=False)
     keep = _subsample_rows(len(features), max_points)
     for ax, j, name in zip(axes[0], range(n), names):
-        ax.scatter(features[keep, j], values[keep, j], s=6, alpha=0.25, c="0.45", linewidths=0)
+        ax.scatter(
+            features[keep, j],
+            values[keep, j],
+            s=6,
+            alpha=0.25,
+            c="0.45",
+            linewidths=0,
+        )
         curve = binned_dependence(features[:, j], values[:, j], n_bins=n_bins)
         if len(curve):
-            ax.plot(curve["x"], curve["y"], color="tab:red", lw=2.0, label="binned mean")
+            ax.plot(
+                curve["x"],
+                curve["y"],
+                color="tab:red",
+                lw=2.0,
+                label="binned mean",
+            )
         ax.axhline(0, color="k", lw=0.6)
         ax.set_xlabel(name)
         ax.set_ylabel(f"SHAP of {name}")
@@ -397,15 +502,25 @@ def plot_shap_dependence_overlay(
     cmip_s = np.asarray(shap_cmip, dtype=np.float64)
     obs_idx = {name: i for i, name in enumerate(names_obs)}
     cmip_idx = {name: i for i, name in enumerate(names_cmip)}
-    fig, axes = plt.subplots(1, len(names), figsize=(3.6 * len(names), 3.5), squeeze=False)
+    fig, axes = plt.subplots(
+        1, len(names), figsize=(3.6 * len(names), 3.5), squeeze=False
+    )
     for ax, name in zip(axes[0], names):
         i, j = obs_idx[name], cmip_idx[name]
         left = binned_dependence(obs_x[:, i], obs_s[:, i], n_bins=n_bins)
         right = binned_dependence(cmip_x[:, j], cmip_s[:, j], n_bins=n_bins)
         if len(left):
-            ax.plot(left["x"], left["y"], color="tab:blue", lw=2.2, label=obs_label)
+            ax.plot(
+                left["x"], left["y"], color="tab:blue", lw=2.2, label=obs_label
+            )
         if len(right):
-            ax.plot(right["x"], right["y"], color="tab:orange", lw=2.2, label=cmip_label)
+            ax.plot(
+                right["x"],
+                right["y"],
+                color="tab:orange",
+                lw=2.2,
+                label=cmip_label,
+            )
         ax.axhline(0, color="k", lw=0.6)
         ax.set_xlabel(name)
         ax.set_ylabel(f"SHAP of {name}")
@@ -430,7 +545,9 @@ _VERIFY_LABELS = {
 }
 
 
-def plot_shap_metric_verification(result: dict, title: str = "Fig. 2  SHAP metrics against a nonlinear truth"):
+def plot_shap_metric_verification(
+    result: dict, title: str = "Fig. 2  SHAP metrics against a nonlinear truth"
+):
     """Three-panel figure: x–y maps, SHAP dependence, m1–m3 versus truth."""
     _style()
     metrics = result["metrics"]
@@ -440,10 +557,23 @@ def plot_shap_metric_verification(result: dict, title: str = "Fig. 2  SHAP metri
     ax = axes[0]
     scatter = curves["true:scatter"]
     keep = _subsample_rows(len(scatter), 800, seed=0)
-    ax.scatter(scatter["x"].to_numpy()[keep], scatter["y"].to_numpy()[keep], s=6, alpha=0.15, c="0.65", linewidths=0)
+    ax.scatter(
+        scatter["x"].to_numpy()[keep],
+        scatter["y"].to_numpy()[keep],
+        s=6,
+        alpha=0.15,
+        c="0.65",
+        linewidths=0,
+    )
     for case in ("true", "m1", "m2", "m3"):
         curve = curves[f"{case}:y"]
-        ax.plot(curve["x"], curve["y"], color=_VERIFY_COLORS[case], lw=2.2, label=_VERIFY_LABELS[case])
+        ax.plot(
+            curve["x"],
+            curve["y"],
+            color=_VERIFY_COLORS[case],
+            lw=2.2,
+            label=_VERIFY_LABELS[case],
+        )
     ax.set_xlabel("$x_1$")
     ax.set_ylabel("$y$")
     ax.set_title("(a) $x$–$y$ relationship")
@@ -452,7 +582,13 @@ def plot_shap_metric_verification(result: dict, title: str = "Fig. 2  SHAP metri
     ax = axes[1]
     for case in ("true", "m1", "m2", "m3"):
         curve = curves[f"{case}:x1"]
-        ax.plot(curve["x"], curve["y"], color=_VERIFY_COLORS[case], lw=2.2, label=_VERIFY_LABELS[case])
+        ax.plot(
+            curve["x"],
+            curve["y"],
+            color=_VERIFY_COLORS[case],
+            lw=2.2,
+            label=_VERIFY_LABELS[case],
+        )
     ax.axhline(0, color="k", lw=0.6)
     ax.set_xlabel("$x_1$")
     ax.set_ylabel("SHAP of $x_1$")
@@ -465,8 +601,12 @@ def plot_shap_metric_verification(result: dict, title: str = "Fig. 2  SHAP metri
     xpos = np.arange(len(cases))
     width = 0.36
 
-    def _median_band(case: str, column: str, absolute: bool = False) -> tuple[float, float, float]:
-        values = x1_raw.loc[x1_raw["case"] == case, column].to_numpy(dtype=float)
+    def _median_band(
+        case: str, column: str, absolute: bool = False
+    ) -> tuple[float, float, float]:
+        values = x1_raw.loc[x1_raw["case"] == case, column].to_numpy(
+            dtype=float
+        )
         if absolute:
             values = np.abs(values)
         med = float(np.median(values))
@@ -506,7 +646,10 @@ def plot_shap_metric_verification(result: dict, title: str = "Fig. 2  SHAP metri
     return fig
 
 
-def plot_ale_metric_supplement(result: dict, title: str = "Supplement  ALE distances versus the nonlinear truth"):
+def plot_ale_metric_supplement(
+    result: dict,
+    title: str = "Supplement  ALE distances versus the nonlinear truth",
+):
     """ALE curves and distances for m1–m3 (not in Fig. 2)."""
     _style()
     summary = result["summary"]
@@ -515,7 +658,13 @@ def plot_ale_metric_supplement(result: dict, title: str = "Supplement  ALE dista
     ax = axes[0]
     for case in ("true", "m1", "m2", "m3"):
         curve = curves[f"{case}:ale:x1"]
-        ax.plot(curve["x"], curve["ale"], color=_VERIFY_COLORS[case], lw=2.0, label=_VERIFY_LABELS[case])
+        ax.plot(
+            curve["x"],
+            curve["ale"],
+            color=_VERIFY_COLORS[case],
+            lw=2.0,
+            label=_VERIFY_LABELS[case],
+        )
     ax.axhline(0, color="k", lw=0.6)
     ax.set_xlabel("$x_1$")
     ax.set_ylabel("ALE of $x_1$")
@@ -550,10 +699,24 @@ def plot_ale_overlay(
     names = [name for name in ale_obs if name in ale_cmip]
     if not names:
         raise ValueError("No shared features for ALE overlay")
-    fig, axes = plt.subplots(1, len(names), figsize=(3.8 * len(names), 3.4), squeeze=False)
+    fig, axes = plt.subplots(
+        1, len(names), figsize=(3.8 * len(names), 3.4), squeeze=False
+    )
     for ax, name in zip(axes[0], names):
-        ax.plot(ale_obs[name]["x"], ale_obs[name]["ale"], color="tab:blue", lw=2.0, label=obs_label)
-        ax.plot(ale_cmip[name]["x"], ale_cmip[name]["ale"], color="tab:orange", lw=2.0, label=cmip_label)
+        ax.plot(
+            ale_obs[name]["x"],
+            ale_obs[name]["ale"],
+            color="tab:blue",
+            lw=2.0,
+            label=obs_label,
+        )
+        ax.plot(
+            ale_cmip[name]["x"],
+            ale_cmip[name]["ale"],
+            color="tab:orange",
+            lw=2.0,
+            label=cmip_label,
+        )
         ax.axhline(0, color="k", lw=0.6)
         ax.set_xlabel(name)
         ax.set_ylabel("ALE")
@@ -575,10 +738,24 @@ def plot_pdp_overlay(
     names = [name for name in ice_obs if name in ice_cmip]
     if not names:
         raise ValueError("No shared features for PDP overlay")
-    fig, axes = plt.subplots(1, len(names), figsize=(3.8 * len(names), 3.4), squeeze=False)
+    fig, axes = plt.subplots(
+        1, len(names), figsize=(3.8 * len(names), 3.4), squeeze=False
+    )
     for ax, name in zip(axes[0], names):
-        ax.plot(ice_obs[name]["grid"], ice_obs[name]["pdp"], color="tab:blue", lw=2.2, label=obs_label)
-        ax.plot(ice_cmip[name]["grid"], ice_cmip[name]["pdp"], color="tab:orange", lw=2.2, label=cmip_label)
+        ax.plot(
+            ice_obs[name]["grid"],
+            ice_obs[name]["pdp"],
+            color="tab:blue",
+            lw=2.2,
+            label=obs_label,
+        )
+        ax.plot(
+            ice_cmip[name]["grid"],
+            ice_cmip[name]["pdp"],
+            color="tab:orange",
+            lw=2.2,
+            label=cmip_label,
+        )
         ax.set_xlabel(name)
         ax.set_ylabel("prediction")
         ax.set_title(name)
@@ -602,8 +779,20 @@ def plot_importance_overlay(
     names = [name for name in left.index if name in right.index]
     y = np.arange(len(names))
     fig, ax = plt.subplots(figsize=(6.5, max(2.6, 0.4 * len(names) + 1)))
-    ax.barh(y - 0.18, [left.loc[n] for n in names], height=0.35, color="tab:blue", label=obs_label)
-    ax.barh(y + 0.18, [right.loc[n] for n in names], height=0.35, color="tab:orange", label=cmip_label)
+    ax.barh(
+        y - 0.18,
+        [left.loc[n] for n in names],
+        height=0.35,
+        color="tab:blue",
+        label=obs_label,
+    )
+    ax.barh(
+        y + 0.18,
+        [right.loc[n] for n in names],
+        height=0.35,
+        color="tab:orange",
+        label=cmip_label,
+    )
     ax.set_yticks(y, names)
     ax.set_xlabel(value_col)
     ax.set_title(title)
@@ -620,11 +809,27 @@ def plot_metrics_compare(
     cmip_label: str = "CMIP",
 ):
     _style()
-    keys = [k for k in ("r2", "rmse", "ubrmse", "bias") if k in metrics_obs and k in metrics_cmip]
+    keys = [
+        k
+        for k in ("r2", "rmse", "ubrmse", "bias")
+        if k in metrics_obs and k in metrics_cmip
+    ]
     x = np.arange(len(keys))
     fig, ax = plt.subplots(figsize=(6.2, 3.6))
-    ax.bar(x - 0.18, [metrics_obs[k] for k in keys], width=0.35, color="tab:blue", label=obs_label)
-    ax.bar(x + 0.18, [metrics_cmip[k] for k in keys], width=0.35, color="tab:orange", label=cmip_label)
+    ax.bar(
+        x - 0.18,
+        [metrics_obs[k] for k in keys],
+        width=0.35,
+        color="tab:blue",
+        label=obs_label,
+    )
+    ax.bar(
+        x + 0.18,
+        [metrics_cmip[k] for k in keys],
+        width=0.35,
+        color="tab:orange",
+        label=cmip_label,
+    )
     ax.set_xticks(x, keys)
     ax.set_title(title)
     ax.legend()
@@ -643,7 +848,9 @@ def plot_cube_difference(
     names = [name for name in obs_ds.data_vars if name in cmip_ds.data_vars]
     if not names:
         raise ValueError("No shared variables for cube difference")
-    fig, axes = plt.subplots(1, len(names), figsize=(4.2 * len(names), 3.6), squeeze=False)
+    fig, axes = plt.subplots(
+        1, len(names), figsize=(4.2 * len(names), 3.6), squeeze=False
+    )
     for ax, name in zip(axes[0], names):
         left = obs_ds[name]
         right = cmip_ds[name]
@@ -706,7 +913,7 @@ def write_three_column_html(
         caption = row.get("caption") or ""
         blocks.append(
             f'<section class="row-block">'
-            f'<h2>{row.get("title", "")}</h2>'
+            f"<h2>{row.get('title', '')}</h2>"
             f'<div class="grid">{"".join(cells)}</div>'
             f'<p class="caption">{caption}</p>'
             f"</section>"

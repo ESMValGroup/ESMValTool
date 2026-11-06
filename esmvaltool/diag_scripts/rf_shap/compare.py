@@ -45,7 +45,13 @@ def _columns(matrix, names, keep):
     return np.asarray(matrix, dtype=np.float64)[:, index]
 
 
-def compare_pipeline_results(reference, other, *, interaction: bool = False, n_bins: int = 20):
+def compare_pipeline_results(
+    reference,
+    other,
+    *,
+    interaction: bool = False,
+    n_bins: int = 20,
+):
     """Curve distances and dependence-slope differences between two pipeline fits.
 
     ``reference`` is the baseline explanation. ``other`` is compared against it.
@@ -70,11 +76,21 @@ def compare_pipeline_results(reference, other, *, interaction: bool = False, n_b
         kwargs["shap_other"] = _columns(shap_other, names_other, keep)
         kwargs["feature_names"] = keep
         if interaction:
-            kwargs["interaction_ref"] = interaction_shap(reference.model, kwargs["x_ref"])
-            kwargs["interaction_other"] = interaction_shap(other.model, kwargs["x_other"])
+            kwargs["interaction_ref"] = interaction_shap(
+                reference.model,
+                kwargs["x_ref"],
+            )
+            kwargs["interaction_other"] = interaction_shap(
+                other.model,
+                kwargs["x_other"],
+            )
     if ale_ref is not None and ale_other is not None:
         if keep is None:
             keep = _shared_features(list(ale_ref), list(ale_other))
-        kwargs["ale_ref"] = {name: ale_ref[name] for name in keep if name in ale_ref}
-        kwargs["ale_other"] = {name: ale_other[name] for name in keep if name in ale_other}
+        kwargs["ale_ref"] = {
+            name: ale_ref[name] for name in keep if name in ale_ref
+        }
+        kwargs["ale_other"] = {
+            name: ale_other[name] for name in keep if name in ale_other
+        }
     return compare_explanations(n_bins=n_bins, **kwargs)

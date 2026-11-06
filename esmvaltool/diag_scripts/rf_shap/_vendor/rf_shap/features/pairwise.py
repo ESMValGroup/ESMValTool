@@ -6,7 +6,9 @@ import numpy as np
 from sklearn.ensemble import ExtraTreesRegressor
 
 
-def _importance(x: np.ndarray, y: np.ndarray, random_state: int = 42) -> np.ndarray:
+def _importance(
+    x: np.ndarray, y: np.ndarray, random_state: int = 42
+) -> np.ndarray:
     model = ExtraTreesRegressor(
         n_estimators=120,
         max_depth=10,

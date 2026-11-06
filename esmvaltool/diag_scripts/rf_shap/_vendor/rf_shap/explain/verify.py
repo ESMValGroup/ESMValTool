@@ -52,7 +52,9 @@ def sample_verification_inputs(
 ) -> np.ndarray:
     """Draw bivariate Gaussian (x1, x2) with the requested correlation."""
     rng = np.random.default_rng(seed)
-    cov = np.array([[scale**2, corr * scale], [corr * scale, 1.0]], dtype=np.float64)
+    cov = np.array(
+        [[scale**2, corr * scale], [corr * scale, 1.0]], dtype=np.float64
+    )
     mean = np.array([loc, 0.0], dtype=np.float64)
     return rng.multivariate_normal(mean, cov, size=int(n))
 
@@ -81,7 +83,9 @@ def linear_approximation(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     return design @ coef
 
 
-def model_target(x: np.ndarray, kind: str, y_true: np.ndarray | None = None) -> np.ndarray:
+def model_target(
+    x: np.ndarray, kind: str, y_true: np.ndarray | None = None
+) -> np.ndarray:
     if kind == "true":
         return verification_target(x, "true")
     if kind == "linear_approx":
@@ -116,12 +120,24 @@ def fit_and_explain(
     y_obs = np.asarray(y, dtype=np.float64) + noise * rng.normal(size=len(y))
     model = build_model(
         "extra_trees",
-        params={"n_estimators": n_estimators, "max_depth": max_depth, "n_jobs": n_jobs, "min_samples_leaf": 2},
+        params={
+            "n_estimators": n_estimators,
+            "max_depth": max_depth,
+            "n_jobs": n_jobs,
+            "min_samples_leaf": 2,
+        },
         seed=seed,
     )
     model.fit(x, y_obs)
     table = _table(x, y_obs)
-    shap = compute_shap(model, table, method="auto", max_samples=max_samples, seed=seed, n_jobs=n_jobs)
+    shap = compute_shap(
+        model,
+        table,
+        method="auto",
+        max_samples=max_samples,
+        seed=seed,
+        n_jobs=n_jobs,
+    )
     positions = np.asarray(shap.sample_positions)
     x_used = np.asarray(x, dtype=np.float64)[positions]
     pred = np.asarray(model.predict(x_used), dtype=np.float64)
@@ -142,7 +158,9 @@ def fit_and_explain(
     }
 
 
-def _compare_pair(ref: dict[str, Any], other: dict[str, Any], n_bins: int = 20) -> dict[str, pd.DataFrame]:
+def _compare_pair(
+    ref: dict[str, Any], other: dict[str, Any], n_bins: int = 20
+) -> dict[str, pd.DataFrame]:
     return compare_explanations(
         ale_ref=ref["ale"],
         ale_other=other["ale"],
@@ -155,7 +173,9 @@ def _compare_pair(ref: dict[str, Any], other: dict[str, Any], n_bins: int = 20) 
     )
 
 
-def _curve(x: np.ndarray, values: np.ndarray, feature: str = "x1", n_bins: int = 20) -> pd.DataFrame:
+def _curve(
+    x: np.ndarray, values: np.ndarray, feature: str = "x1", n_bins: int = 20
+) -> pd.DataFrame:
     j = FEATURE_NAMES.index(feature)
     curve = binned_dependence(x[:, j], values, n_bins=n_bins)
     return curve.copy()
@@ -193,10 +213,18 @@ def run_attribution_verification(
             max_samples=max_samples,
             n_jobs=n_jobs,
         )
-        add_rows.append({"seed": seed, "case": "true", "additivity_rmse": truth["additivity_rmse"]})
+        add_rows.append(
+            {
+                "seed": seed,
+                "case": "true",
+                "additivity_rmse": truth["additivity_rmse"],
+            }
+        )
         if seed == display_seed:
             curves["true:y"] = _curve(x, y_true, n_bins=n_bins)
-            curves["true:x1"] = _curve(truth["x"], truth["shap"][:, 0], n_bins=n_bins)
+            curves["true:x1"] = _curve(
+                truth["x"], truth["shap"][:, 0], n_bins=n_bins
+            )
             curves["true:ale:x1"] = truth["ale"]["x1"].assign(feature="x1")
             curves["true:scatter"] = pd.DataFrame({"x": x[:, 0], "y": y_true})
 
@@ -212,33 +240,55 @@ def run_attribution_verification(
                 max_samples=max_samples,
                 n_jobs=n_jobs,
             )
-            add_rows.append({"seed": seed, "case": case, "additivity_rmse": other["additivity_rmse"]})
+            add_rows.append(
+                {
+                    "seed": seed,
+                    "case": case,
+                    "additivity_rmse": other["additivity_rmse"],
+                }
+            )
             compared = _compare_pair(truth, other, n_bins=n_bins)
             dep = compared["dependence_distance"].set_index("feature")
             slope = compared["slope_difference"].set_index("feature")
             ale = compared["ale_distance"].set_index("feature")
             for feature in FEATURE_NAMES:
-                expected = EXPECTED_SLOPE_SIGN_X1.get(case) if feature == "x1" else None
+                expected = (
+                    EXPECTED_SLOPE_SIGN_X1.get(case)
+                    if feature == "x1"
+                    else None
+                )
                 difference = float(slope.loc[feature, "difference"])
-                metric_rows.append({
-                    "seed": seed,
-                    "case": case,
-                    "label": spec["label"],
-                    "feature": feature,
-                    "dependence_distance": float(dep.loc[feature, "distance"]),
-                    "ale_distance": float(ale.loc[feature, "distance"]),
-                    "slope_ref": float(slope.loc[feature, "slope_ref"]),
-                    "slope_other": float(slope.loc[feature, "slope_other"]),
-                    "slope_difference": difference,
-                    "expected_sign": expected,
-                    "sign_hit": (
-                        float(np.sign(difference) == expected) if expected is not None else np.nan
-                    ),
-                })
+                metric_rows.append(
+                    {
+                        "seed": seed,
+                        "case": case,
+                        "label": spec["label"],
+                        "feature": feature,
+                        "dependence_distance": float(
+                            dep.loc[feature, "distance"]
+                        ),
+                        "ale_distance": float(ale.loc[feature, "distance"]),
+                        "slope_ref": float(slope.loc[feature, "slope_ref"]),
+                        "slope_other": float(
+                            slope.loc[feature, "slope_other"]
+                        ),
+                        "slope_difference": difference,
+                        "expected_sign": expected,
+                        "sign_hit": (
+                            float(np.sign(difference) == expected)
+                            if expected is not None
+                            else np.nan
+                        ),
+                    }
+                )
             if seed == display_seed:
                 curves[f"{case}:y"] = _curve(x, y_model, n_bins=n_bins)
-                curves[f"{case}:x1"] = _curve(other["x"], other["shap"][:, 0], n_bins=n_bins)
-                curves[f"{case}:ale:x1"] = other["ale"]["x1"].assign(feature="x1")
+                curves[f"{case}:x1"] = _curve(
+                    other["x"], other["shap"][:, 0], n_bins=n_bins
+                )
+                curves[f"{case}:ale:x1"] = other["ale"]["x1"].assign(
+                    feature="x1"
+                )
 
     metrics = pd.DataFrame(metric_rows)
     additivity = pd.DataFrame(add_rows)
@@ -246,8 +296,14 @@ def run_attribution_verification(
         metrics.groupby(["case", "label", "feature"], sort=False)
         .agg(
             dependence_distance=("dependence_distance", "median"),
-            dependence_q10=("dependence_distance", lambda s: float(s.quantile(0.1))),
-            dependence_q90=("dependence_distance", lambda s: float(s.quantile(0.9))),
+            dependence_q10=(
+                "dependence_distance",
+                lambda s: float(s.quantile(0.1)),
+            ),
+            dependence_q90=(
+                "dependence_distance",
+                lambda s: float(s.quantile(0.9)),
+            ),
             ale_distance=("ale_distance", "median"),
             ale_q10=("ale_distance", lambda s: float(s.quantile(0.1))),
             ale_q90=("ale_distance", lambda s: float(s.quantile(0.9))),
@@ -258,4 +314,9 @@ def run_attribution_verification(
         )
         .reset_index()
     )
-    return {"metrics": metrics, "summary": summary, "curves": curves, "additivity": additivity}
+    return {
+        "metrics": metrics,
+        "summary": summary,
+        "curves": curves,
+        "additivity": additivity,
+    }

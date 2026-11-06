@@ -30,7 +30,11 @@ def recursive_feature_elimination(
         selector = RFECV(
             estimator,
             step=step,
-            cv=KFold(n_splits=min(cv, max(2, len(y) // 10)), shuffle=True, random_state=random_state),
+            cv=KFold(
+                n_splits=min(cv, max(2, len(y) // 10)),
+                shuffle=True,
+                random_state=random_state,
+            ),
             scoring="r2",
             n_jobs=-1,
         )

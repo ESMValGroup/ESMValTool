@@ -47,7 +47,9 @@ def _overlap_curves(x_ref, y_ref, x_other, y_other, n_grid: int = 40):
     return x_ref, y_ref, x_other, y_other, lower, upper, reference, other
 
 
-def curve_distance(x_ref, y_ref, x_other, y_other, *, n_grid: int = 40) -> float:
+def curve_distance(
+    x_ref, y_ref, x_other, y_other, *, n_grid: int = 40
+) -> float:
     """Root-mean-square difference of two curves on their overlapping x range.
 
     Both curves are interpolated onto one shared grid. Identical curves return 0.
@@ -56,11 +58,15 @@ def curve_distance(x_ref, y_ref, x_other, y_other, *, n_grid: int = 40) -> float
     overlapped = _overlap_curves(x_ref, y_ref, x_other, y_other, n_grid=n_grid)
     if overlapped is None:
         return float("nan")
-    _x_ref, _y_ref, _x_other, _y_other, _lower, _upper, reference, other = overlapped
+    _x_ref, _y_ref, _x_other, _y_other, _lower, _upper, reference, other = (
+        overlapped
+    )
     return float(np.sqrt(np.mean((reference - other) ** 2)))
 
 
-def curve_fidelity(x_ref, y_ref, x_other, y_other, *, n_grid: int = 40) -> dict[str, float]:
+def curve_fidelity(
+    x_ref, y_ref, x_other, y_other, *, n_grid: int = 40
+) -> dict[str, float]:
     """Level, shape, interval-slope and direction agreement of two curves.
 
     Level distance is the RMSE on the shared overlap grid. Shape distance
@@ -80,9 +86,17 @@ def curve_fidelity(x_ref, y_ref, x_other, y_other, *, n_grid: int = 40) -> dict[
     overlapped = _overlap_curves(x_ref, y_ref, x_other, y_other, n_grid=n_grid)
     if overlapped is None:
         return empty
-    x_left, y_left, x_right, _y_right, lower, upper, reference, other = overlapped
+    x_left, y_left, x_right, _y_right, lower, upper, reference, other = (
+        overlapped
+    )
     level = float(np.sqrt(np.mean((reference - other) ** 2)))
-    shape = float(np.sqrt(np.mean(((reference - reference.mean()) - (other - other.mean())) ** 2)))
+    shape = float(
+        np.sqrt(
+            np.mean(
+                ((reference - reference.mean()) - (other - other.mean())) ** 2
+            )
+        )
+    )
     inside = (x_left >= lower) & (x_left <= upper)
     slopes_ref = []
     slopes_other = []
@@ -102,12 +116,18 @@ def curve_fidelity(x_ref, y_ref, x_other, y_other, *, n_grid: int = 40) -> dict[
         return empty
     ref_slope = np.asarray(slopes_ref, dtype=np.float64)
     other_slope = np.asarray(slopes_other, dtype=np.float64)
-    same = (np.sign(ref_slope) == np.sign(other_slope)) & (ref_slope != 0.0) & (other_slope != 0.0)
+    same = (
+        (np.sign(ref_slope) == np.sign(other_slope))
+        & (ref_slope != 0.0)
+        & (other_slope != 0.0)
+    )
     scale = float(np.mean(np.abs(ref_slope)))
     return {
         "level_distance": level,
         "shape_distance": shape,
-        "slope_distance": float(np.sqrt(np.mean((ref_slope - other_slope) ** 2))),
+        "slope_distance": float(
+            np.sqrt(np.mean((ref_slope - other_slope) ** 2))
+        ),
         "slope_scale": scale,
         "direction_agreement": float(np.mean(same)),
     }
@@ -129,14 +149,26 @@ def binned_dependence(x, y, n_bins: int = 20) -> pd.DataFrame:
         return pd.DataFrame(columns=["x", "y", "n"])
     edges = np.unique(np.quantile(x, np.linspace(0.0, 1.0, int(n_bins) + 1)))
     if len(edges) < 2:
-        return pd.DataFrame({"x": [float(x.mean())], "y": [float(y.mean())], "n": [int(len(x))]})
+        return pd.DataFrame(
+            {
+                "x": [float(x.mean())],
+                "y": [float(y.mean())],
+                "n": [int(len(x))],
+            }
+        )
     bins = np.digitize(x, edges[1:-1], right=False)
     rows = []
     for bin_id in range(len(edges) - 1):
         chosen = bins == bin_id
         if not np.any(chosen):
             continue
-        rows.append({"x": float(x[chosen].mean()), "y": float(y[chosen].mean()), "n": int(chosen.sum())})
+        rows.append(
+            {
+                "x": float(x[chosen].mean()),
+                "y": float(y[chosen].mean()),
+                "n": int(chosen.sum()),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -162,7 +194,9 @@ def _feature_names(names: Sequence[str] | None, n_features: int) -> list[str]:
         return [f"f{i}" for i in range(n_features)]
     names = [str(name) for name in names]
     if len(names) != n_features:
-        raise ValueError(f"Expected {n_features} feature names, got {len(names)}")
+        raise ValueError(
+            f"Expected {n_features} feature names, got {len(names)}"
+        )
     return names
 
 
@@ -175,7 +209,12 @@ def _matrix(values, n_features: int | None = None) -> np.ndarray:
     return array
 
 
-def dependence_slopes(x, shap_values, feature_names: Sequence[str] | None = None, n_bins: int = 20) -> pd.DataFrame:
+def dependence_slopes(
+    x,
+    shap_values,
+    feature_names: Sequence[str] | None = None,
+    n_bins: int = 20,
+) -> pd.DataFrame:
     """Slope of each dependence-SHAP curve, a sensitivity of SHAP to that input.
 
     The slope is the weighted least-squares slope of bin-mean SHAP against
@@ -186,7 +225,9 @@ def dependence_slopes(x, shap_values, feature_names: Sequence[str] | None = None
     names = _feature_names(feature_names, features.shape[1])
     rows = []
     for index, name in enumerate(names):
-        curve = binned_dependence(features[:, index], values[:, index], n_bins=n_bins)
+        curve = binned_dependence(
+            features[:, index], values[:, index], n_bins=n_bins
+        )
         rows.append({"feature": name, "slope": _weighted_slope(curve)})
     return pd.DataFrame(rows)
 
@@ -200,8 +241,12 @@ def dependence_slope_difference(
     n_bins: int = 20,
 ) -> pd.DataFrame:
     """Difference of dependence-SHAP slopes, ``slope_other - slope_ref``."""
-    reference = dependence_slopes(x_ref, shap_ref, feature_names, n_bins=n_bins)
-    other = dependence_slopes(x_other, shap_other, feature_names, n_bins=n_bins)
+    reference = dependence_slopes(
+        x_ref, shap_ref, feature_names, n_bins=n_bins
+    )
+    other = dependence_slopes(
+        x_other, shap_other, feature_names, n_bins=n_bins
+    )
     merged = reference.merge(other, on="feature", suffixes=("_ref", "_other"))
     merged["difference"] = merged["slope_other"] - merged["slope_ref"]
     return merged
@@ -222,14 +267,24 @@ def dependence_fidelity(
     shap_left = _matrix(shap_ref, left.shape[1])
     shap_right = _matrix(shap_other, right.shape[1])
     if left.shape[1] != right.shape[1]:
-        raise ValueError("The two dependence inputs have different feature counts")
+        raise ValueError(
+            "The two dependence inputs have different feature counts"
+        )
     names = _feature_names(feature_names, left.shape[1])
     rows = []
     for index, name in enumerate(names):
-        curve_left = binned_dependence(left[:, index], shap_left[:, index], n_bins=n_bins)
-        curve_right = binned_dependence(right[:, index], shap_right[:, index], n_bins=n_bins)
+        curve_left = binned_dependence(
+            left[:, index], shap_left[:, index], n_bins=n_bins
+        )
+        curve_right = binned_dependence(
+            right[:, index], shap_right[:, index], n_bins=n_bins
+        )
         scores = curve_fidelity(
-            curve_left["x"], curve_left["y"], curve_right["x"], curve_right["y"], n_grid=n_grid
+            curve_left["x"],
+            curve_left["y"],
+            curve_right["x"],
+            curve_right["y"],
+            n_grid=n_grid,
         )
         scores["feature"] = name
         rows.append(scores)
@@ -251,36 +306,66 @@ def dependence_curve_distance(
     shap_left = _matrix(shap_ref, left.shape[1])
     shap_right = _matrix(shap_other, right.shape[1])
     if left.shape[1] != right.shape[1]:
-        raise ValueError("The two dependence inputs have different feature counts")
+        raise ValueError(
+            "The two dependence inputs have different feature counts"
+        )
     names = _feature_names(feature_names, left.shape[1])
     rows = []
     for index, name in enumerate(names):
-        curve_left = binned_dependence(left[:, index], shap_left[:, index], n_bins=n_bins)
-        curve_right = binned_dependence(right[:, index], shap_right[:, index], n_bins=n_bins)
-        rows.append({
-            "feature": name,
-            "distance": curve_distance(curve_left["x"], curve_left["y"], curve_right["x"], curve_right["y"], n_grid=n_grid),
-        })
+        curve_left = binned_dependence(
+            left[:, index], shap_left[:, index], n_bins=n_bins
+        )
+        curve_right = binned_dependence(
+            right[:, index], shap_right[:, index], n_bins=n_bins
+        )
+        rows.append(
+            {
+                "feature": name,
+                "distance": curve_distance(
+                    curve_left["x"],
+                    curve_left["y"],
+                    curve_right["x"],
+                    curve_right["y"],
+                    n_grid=n_grid,
+                ),
+            }
+        )
     return pd.DataFrame(rows)
 
 
-def ale_curve_distance(ale_ref: dict, ale_other: dict, *, n_grid: int = 40) -> pd.DataFrame:
+def ale_curve_distance(
+    ale_ref: dict, ale_other: dict, *, n_grid: int = 40
+) -> pd.DataFrame:
     """Distance between 1D ALE curves from :func:`rf_shap.explain.ale.ale_1d`."""
     rows = []
     for name in sorted(set(ale_ref) & set(ale_other)):
         left = ale_ref[name]
         right = ale_other[name]
-        rows.append({
-            "feature": str(name),
-            "distance": curve_distance(left["x"], left["ale"], right["x"], right["ale"], n_grid=n_grid),
-        })
+        rows.append(
+            {
+                "feature": str(name),
+                "distance": curve_distance(
+                    left["x"],
+                    left["ale"],
+                    right["x"],
+                    right["ale"],
+                    n_grid=n_grid,
+                ),
+            }
+        )
     return pd.DataFrame(rows)
 
 
 def _interaction_array(values, n_features: int) -> np.ndarray:
     array = np.asarray(values, dtype=np.float64)
-    if array.ndim != 3 or array.shape[1] != n_features or array.shape[2] != n_features:
-        raise ValueError(f"Interaction SHAP must have shape (n_samples, {n_features}, {n_features})")
+    if (
+        array.ndim != 3
+        or array.shape[1] != n_features
+        or array.shape[2] != n_features
+    ):
+        raise ValueError(
+            f"Interaction SHAP must have shape (n_samples, {n_features}, {n_features})"
+        )
     return array
 
 
@@ -302,7 +387,9 @@ def interaction_curve_distance(
     left = np.asarray(x_ref, dtype=np.float64)
     right = np.asarray(x_other, dtype=np.float64)
     if left.shape[1] != right.shape[1]:
-        raise ValueError("The two interaction inputs have different feature counts")
+        raise ValueError(
+            "The two interaction inputs have different feature counts"
+        )
     n_features = left.shape[1]
     inter_left = _interaction_array(interaction_ref, n_features)
     inter_right = _interaction_array(interaction_other, n_features)
@@ -312,15 +399,25 @@ def interaction_curve_distance(
         for j, other_name in enumerate(names):
             if i == j:
                 continue
-            curve_left = binned_dependence(left[:, i], inter_left[:, i, j], n_bins=n_bins)
-            curve_right = binned_dependence(right[:, i], inter_right[:, i, j], n_bins=n_bins)
-            rows.append({
-                "feature": feature,
-                "interacts_with": other_name,
-                "distance": curve_distance(
-                    curve_left["x"], curve_left["y"], curve_right["x"], curve_right["y"], n_grid=n_grid
-                ),
-            })
+            curve_left = binned_dependence(
+                left[:, i], inter_left[:, i, j], n_bins=n_bins
+            )
+            curve_right = binned_dependence(
+                right[:, i], inter_right[:, i, j], n_bins=n_bins
+            )
+            rows.append(
+                {
+                    "feature": feature,
+                    "interacts_with": other_name,
+                    "distance": curve_distance(
+                        curve_left["x"],
+                        curve_left["y"],
+                        curve_right["x"],
+                        curve_right["y"],
+                        n_grid=n_grid,
+                    ),
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -367,8 +464,12 @@ def compare_explanations(
             raise ValueError("ALE comparison needs both ale_ref and ale_other")
         compared["ale_distance"] = ale_curve_distance(ale_ref, ale_other)
     if shap_ref is not None or shap_other is not None:
-        if any(value is None for value in (x_ref, shap_ref, x_other, shap_other)):
-            raise ValueError("Dependence comparison needs x and SHAP for both explanations")
+        if any(
+            value is None for value in (x_ref, shap_ref, x_other, shap_other)
+        ):
+            raise ValueError(
+                "Dependence comparison needs x and SHAP for both explanations"
+            )
         compared["dependence_distance"] = dependence_curve_distance(
             x_ref, shap_ref, x_other, shap_other, feature_names, n_bins=n_bins
         )
@@ -376,11 +477,23 @@ def compare_explanations(
             x_ref, shap_ref, x_other, shap_other, feature_names, n_bins=n_bins
         )
     if interaction_ref is not None or interaction_other is not None:
-        if any(value is None for value in (x_ref, interaction_ref, x_other, interaction_other)):
-            raise ValueError("Interaction comparison needs x and interaction SHAP for both explanations")
+        if any(
+            value is None
+            for value in (x_ref, interaction_ref, x_other, interaction_other)
+        ):
+            raise ValueError(
+                "Interaction comparison needs x and interaction SHAP for both explanations"
+            )
         compared["interaction_distance"] = interaction_curve_distance(
-            x_ref, interaction_ref, x_other, interaction_other, feature_names, n_bins=min(n_bins, 15)
+            x_ref,
+            interaction_ref,
+            x_other,
+            interaction_other,
+            feature_names,
+            n_bins=min(n_bins, 15),
         )
     if not compared:
-        raise ValueError("Provide ALE curves, dependence SHAP, or interaction SHAP to compare")
+        raise ValueError(
+            "Provide ALE curves, dependence SHAP, or interaction SHAP to compare"
+        )
     return compared

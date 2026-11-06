@@ -11,7 +11,9 @@ def _grid(x_col: np.ndarray, n_grid: int) -> np.ndarray:
     return np.unique(np.nanquantile(x_col, qs))
 
 
-def ale_1d(model, x: np.ndarray, names: Sequence[str], n_grid: int = 20) -> dict[str, pd.DataFrame]:
+def ale_1d(
+    model, x: np.ndarray, names: Sequence[str], n_grid: int = 20
+) -> dict[str, pd.DataFrame]:
     """1D Accumulated Local Effects for each feature."""
     x = np.asarray(x, dtype=np.float64)
     out = {}
