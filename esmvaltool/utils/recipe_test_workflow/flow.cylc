@@ -82,7 +82,6 @@
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            MAX_PARALLEL_TASKS = {{ MAX_PARALLEL_TASKS }}
 
     # Bash variable substitution below replaces `--` with `/` to obtain path to
     # recipe.

@@ -1,4 +1,11 @@
 ---
 # ESMValTool configuration for running the RTW.
+dask:
+  use: local_threaded
+  profiles:
+    local_threaded:
+      scheduler: threads
+      num_workers: 2
+max_parallel_tasks: 1
 output_dir: ${OUTPUT_DIR}
 remove_preproc_dir: false
