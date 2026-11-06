@@ -65,7 +65,6 @@ import iris
 import numpy as np
 from dask import array as da
 from dateutil import relativedelta
-from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -130,8 +129,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip"]
     attributes["raw"] = var["raw"]
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip"], var["short_name"])
+    definition = cfg["cmor_table"].get_variable(var["mip"], var["short_name"])
 
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
