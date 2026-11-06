@@ -132,7 +132,11 @@ Ocean
    recipe_esacci_oc
    recipe_enso_ref
    recipe_enso_clivar
+<<<<<<< HEAD
    recipe_ocean_transport
+=======
+   recipe_indian_ocean_cmip_evaluation
+>>>>>>> 6a304ca0f (added initial docs)
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
