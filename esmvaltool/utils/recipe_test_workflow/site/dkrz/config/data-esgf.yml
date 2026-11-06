@@ -1,0 +1,18 @@
+---
+# Download data from ESGF if it is not available locally.
+projects:
+  CMIP6: &esgf
+    data:
+      esgf:
+        type: esmvalcore.io.esgf.ESGFDataSource
+        download_dir: /work/bd0854/DATA/ESMValTool2/download
+        # Use a lower priority than for the local data sources.
+        priority: 10
+  CMIP5:
+    <<: *esgf
+  CMIP3:
+    <<: *esgf
+  CORDEX:
+    <<: *esgf
+  obs4MIPs:
+    <<: *esgf
