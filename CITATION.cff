@@ -462,6 +462,10 @@ authors:
     family-names: Ghosh
     given-names: Supriyo
     orcid: "https://orcid.org/0000-0003-0581-9907"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Caspers
+    given-names: Laura
 
 cff-version: 1.2.0
 date-released: 2026-07-28
