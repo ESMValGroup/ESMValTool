@@ -7,6 +7,9 @@
         execution time limit = PT3M
         [[[directives]]]
             --wckey = RTW
+            --account = esmeval
+            --partition = standard
+            --qos = high
             --ntasks = 1
             --mem = 2G
 
