@@ -1,0 +1,63 @@
+# Demo recipe for ESMValTool users who do not yet have a CMIP archive.
+# It runs the rf_shap diagnostic on synthetic cubes (no file search).
+#
+#   bash esmvaltool/install_links.sh
+#   esmvaltool run recipe_rf_shap_demo.yml
+#
+# For a real CMOR dataset, use recipe_rf_shap.yml instead.
+---
+documentation:
+  title: rf_shap diagnostic smoke test on synthetic cubes
+  description: |
+    Runs ExtraTrees + SHAP on in-memory synthetic (time, lat, lon) cubes so
+    an ESMValTool user can execute the diagnostic without locating CMIP files.
+    This is the install check; it is not a climate result.
+  authors:
+    - huang_feini
+  maintainer:
+    - swaminathan_ranjini
+  references:
+    - acknow_project
+  projects:
+    - esmval
+
+diagnostics:
+  rf_shap:
+    description: Synthetic ExtraTrees mapping with SHAP restored to a cube
+    themes:
+      - phys
+    realms:
+      - atmos
+    scripts:
+      rf_shap:
+        script: rf_shap/diagnostic.py
+        use_synthetic: true
+        synthetic_n_time: 24
+        synthetic_n_lat: 8
+        synthetic_n_lon: 10
+        seed: 7
+        caption: ExtraTrees mapping of synthetic predictors onto a synthetic target.
+        rf_shap:
+          seed: 7
+          x_transform:
+            mode: raw
+          split:
+            method: time
+            test_size: 0.2
+          sampling:
+            method: random
+            n_samples: 400
+          model:
+            name: extra_trees
+            params:
+              n_estimators: 20
+              max_depth: 6
+              n_jobs: 1
+          explain:
+            shap:
+              enabled: true
+              method: auto
+              max_samples: 200
+            ale: true
+            ice_pdp: false
+            permutation_importance: false
