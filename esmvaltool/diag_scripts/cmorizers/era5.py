@@ -4,9 +4,9 @@ import logging
 import shutil
 from pathlib import Path
 
-import esmvalcore.cmor.table
-import esmvalcore.config
 import iris
+from esmvalcore.cmor.table import get_tables
+from esmvalcore.config import CFG
 
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
@@ -19,6 +19,7 @@ logger = logging.getLogger(Path(__file__).name)
 def main(cfg):
     """Rename preprocessed native6 file."""
     fixed_files = cfg["input_data"]
+    cmip6_tables = get_tables(CFG, "CMIP6")
 
     for file, info in fixed_files.items():
         stem = Path(file).stem
@@ -26,7 +27,7 @@ def main(cfg):
 
         if info["diagnostic"] == "daily":
             for mip in ["day", "Eday", "CFday"]:
-                if esmvalcore.cmor.table.CMOR_TABLES["CMIP6"].get_variable(
+                if cmip6_tables.get_variable(
                     mip,
                     info["short_name"],
                 ):
@@ -34,7 +35,7 @@ def main(cfg):
             basename = basename.replace("E1hr", "day")
         elif info["diagnostic"] == "3hourly":
             for mip in ["3hr", "E3hr", "CF3hr"]:
-                if esmvalcore.cmor.table.CMOR_TABLES["CMIP6"].get_variable(
+                if cmip6_tables.get_variable(
                     mip,
                     info["short_name"],
                 ):
