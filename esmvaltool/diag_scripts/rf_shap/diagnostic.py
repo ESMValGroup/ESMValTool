@@ -179,8 +179,8 @@ def _shap_xy(result):
     if shap_res is None:
         return None
     x = result.split.test.X[shap_res.sample_positions]
-    # ShapResult.values is a numpy array attribute, not pandas.Series.values.
-    shap_values = np.asarray(getattr(shap_res, "values"), dtype=np.float64)
+    # ShapResult.values is a numpy ndarray field (not pandas.Series.values).
+    shap_values = np.asarray(shap_res.values, dtype=np.float64)  # noqa: PD011
     return x, shap_values, list(shap_res.feature_names)
 
 
