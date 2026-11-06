@@ -11,6 +11,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -18,6 +19,7 @@ from esmvaltool.diag_scripts.rf_shap._bootstrap import ensure_rf_shap_on_path
 
 ensure_rf_shap_on_path()
 
+# isort: off
 from esmvaltool.diag_scripts.rf_shap.compare import (  # noqa: E402
     compare_pipeline_results,
 )
@@ -54,6 +56,7 @@ from rf_shap.plot import (  # noqa: E402
 )
 from rf_shap.predict.reconstruct import reconstruct_prediction  # noqa: E402
 from rf_shap.synthetic import make_synthetic_cubes  # noqa: E402
+# isort: on
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -176,7 +179,9 @@ def _shap_xy(result):
     if shap_res is None:
         return None
     x = result.split.test.X[shap_res.sample_positions]
-    return x, shap_res.values, list(shap_res.feature_names)
+    # ShapResult.values is a numpy array attribute, not pandas.Series.values.
+    shap_values = np.asarray(getattr(shap_res, "values"), dtype=np.float64)
+    return x, shap_values, list(shap_res.feature_names)
 
 
 def _source_caption(base: str, source_label: str) -> str:
