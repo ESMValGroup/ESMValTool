@@ -117,18 +117,41 @@ All figures below are unmodified PNGs from the successful final Gadi run. They r
 | 9c | [figure](../cmip6/Fig9c.png) |
 
 
-## CMIP7 companion: final run verification pending
+## CMIP7 companion: completed Gadi validation
 
-`recipe_russell18jgr_cmip7.yml` adds a separate historical 1986–2005 companion using ACCESS-ESM1-6, CanESM6-0-MR and UKESM1-3-LL where their fields are available. The CMIP5 and CMIP6 recipe files are unchanged. The [CMIP7 documentation](../../../recipe_russell18jgr_cmip7.rst) records all selections, members, published grids and scientific limitations. There are 13 diagnostic groups; Figures 9a–c are omitted because the selected archive coverage does not provide a multi-model set with the required carbon flux and cell areas. CanESM fixed cell areas come from its `1pctCO2` publication on the same `g147` grid; no time-varying fields are borrowed from that experiment.
+`recipe_russell18jgr_cmip7.yml` adds a separate historical 1986–2005 companion using ACCESS-ESM1-6, CanESM6-0-MR and UKESM1-3-LL where their fields are available. The CMIP5 and CMIP6 recipe files are unchanged. The [CMIP7 documentation](../../../recipe_russell18jgr_cmip7.rst) records selections, members, published grids and scientific limitations. There are 13 diagnostic groups; Figures 9a–c are omitted because the selected archive does not provide a multi-model set with the required carbon flux and cell areas. CanESM fixed cell areas come from its `1pctCO2` publication on the same `g147` grid; no time-varying fields are borrowed from that experiment.
 
-The recipe in commit `d5786c0` passed the three local recipe-loading/reference/maintainer checks, YAML lint and a focused Sphinx build with warnings treated as errors. It uses the same diagnostic code as the completed CMIP6 run above.
+### Execution and consistency checks
 
-PBS `183400498.gadi-pbs` runs the complete recipe on `analysis3-26.08` with ESMValCore 2.15.0. The last confirmed progress was **34/35 tasks complete at 01:29:25 UTC on 7 November 2026**. SSH subsequently accepted the key but timed out opening sessions, and file transfers also stalled. **The final exit status, complete output audit, 240-month coverage checks and sea-ice/cell-area coordinate checks are not yet verified. Do not treat this as a completed validation.** The run directory is `/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_cmip7/output/recipe_russell18jgr_cmip7_20261107_011215/`; job scripts, logs and automatic audit outputs are in the stage's `jobs/` directory.
+- **PBS `183400498.gadi-pbs`: exit 0**, 7 November 2026, on `analysis3-26.08` with ESMValCore 2.15.0. All **35/35 tasks** completed in 26:25 wall time; peak memory was 81.12 GB.
+- **13 diagnostic groups, 17 PNG figures and 30 diagnostic NetCDF files** passed the [output/model/provenance audit](../cmip7/validation_summary.json), with no reported errors. Outputs contain finite data; front-coordinate NaNs intentionally separate disconnected contour segments.
+- All **32 preprocessed files retaining time** contain exactly 240 ordered months, January 1986–December 2005: [monthly coverage audit](../cmip7/monthly_coverage_checks.json).
+- ACCESS and CanESM sea-ice and cell-area latitude/longitude coordinates match exactly: [grid audit](../cmip7/area_grid_checks.json). This verifies CanESM's reused fixed area grid; it does not validate velocity/tracer staggering in the transport diagnostics.
+- The full run used recipe commit `d5786c0` and the diagnostic code tested for CMIP6 at `bce5290`. [Source checksums](../cmip7/sources.sha256) matched the local files. The three recipe-loading/reference/maintainer checks, YAML lint and focused Sphinx build passed locally.
+- Nonfatal input warnings remain: missing `positive` attributes for `tauu`, `tauuo` and `fgco2`, and recommendations to supply a land/ocean fraction field for masking. The diagnostics retain their documented variable sign conventions. These warnings are not suppressed or described as CMOR compliance.
 
-The following unmodified figures were retrieved from completed diagnostics before the connection failed. The three wind maps wrap without a radial gap. The sea-ice annual cycle is fully visible within its axes. ACCESS Figure 6a gives a net climatological estimate of `1.0504988 Sv`, consistent with the earlier same-period climatological check above; UKESM gives `0.8398934 Sv`. These consistency checks do not validate model-native physical transports, and the earlier monthly-covariance and staggered-grid caveats still apply.
+Run directory: `/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_cmip7/output/recipe_russell18jgr_cmip7_20261107_011215/`. Job scripts, logs and audits are retained in the stage's `jobs/` directory.
 
-| Available CMIP7 preview | Figures |
+### Scientific interpretation and visual review
+
+ACCESS Figure 6a gives a net climatological estimate of **1.0504988 Sv**, and Figure 6b gives **−0.1853350 PW**. The 11 main density-layer estimates reproduce the earlier same-period climatological check within `4.32e-7 Sv` and `2.63e-8 PW`, respectively: [comparison](../cmip7/climatological_comparison.json). UKESM gives **0.8398934 Sv** and **−0.6031913 PW**. These are consistency checks, **not validation against native monthly transports**. The earlier ACCESS native-flux discrepancies, monthly-covariance effects, density-layer migration and staggered-grid caveats still apply; no independent native-flux validation is claimed for UKESM.
+
+The wind, carbon and pH maps wrap without a spurious radial seam. Front plots retain gaps from the legacy contour selection; a gap does not imply that a physical front is absent. Figure 5 retains the legacy March/September selection. Visual review identified clipping of a UKESM Figure 6b sublayer and the ACCESS Figure 7i curve; their axis ranges were expanded without changing the calculations. The corrected diagnostics (commit `3f61c63`) were rerun on Gadi as PBS `183401838.gadi-pbs`, **exit 0**, in 5:10. Both heat-transport NetCDF arrays and the cumulative carbon-flux array are exactly equal to the full-run outputs. The gallery below uses these corrected plots. The [plotting-rerun audit](../cmip7/plotfix_validation.json) and [tested source hashes](../cmip7/plotfix_sources.sha256) record this final step. Ruff, all 12 Russell diagnostic unit tests and the focused documentation build also passed. An initial plotting job (`183401747`) failed before running a diagnostic because of a batch working-directory typo; the corrected job above supersedes it.
+
+### CMIP7 figures
+
+| Diagnostic | Full figures |
 | --- | --- |
 | Figure 1, atmospheric wind stress | [UKESM/ACCESS](../cmip7/Fig1_page1.png), [CanESM](../cmip7/Fig1_page2.png) |
+| Figure 2, ocean surface wind stress | [Figure 2](../cmip7/Fig2.png) |
+| Figure 3b, Subantarctic Front | [Figure 3b](../cmip7/Fig3b.png) |
+| Figure 3b-2, Polar Front | [Figure 3b-2](../cmip7/Fig3b-2.png) |
+| Figure 4, Drake Passage | [ACCESS/UKESM](../cmip7/Fig4_page1.png), [CanESM velocity only](../cmip7/Fig4_page2.png) |
+| Figure 5, sea ice | [Figure 5](../cmip7/Fig5.png) |
 | Figure 5g, sea-ice area | [ACCESS/CanESM](../cmip7/Fig5g.png) |
 | Figure 6a, climatological volume transport | [ACCESS](../cmip7/Fig6a_ACCESS-ESM1-6.png), [UKESM](../cmip7/Fig6a_UKESM1-3-LL.png) |
+| Figure 6b, climatological heat transport | [ACCESS](../cmip7/Fig6b_ACCESS-ESM1-6.png), [UKESM](../cmip7/Fig6b_UKESM1-3-LL.png) |
+| Figure 7, carbon flux maps | [ACCESS/UKESM](../cmip7/Fig7.png) |
+| Figure 7h, zonal carbon flux | [ACCESS/UKESM](../cmip7/Fig7h.png) |
+| Figure 7i, cumulative carbon flux | [ACCESS](../cmip7/Fig7i.png) |
+| Figure 8, surface pH | [UKESM](../cmip7/Fig8.png) |

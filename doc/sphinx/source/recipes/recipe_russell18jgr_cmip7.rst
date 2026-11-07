@@ -111,6 +111,17 @@ result for another model.
 A successful recipe run checks execution and output consistency; it does not
 remove these scientific limitations.
 
+Gadi execution check
+--------------------
+
+The complete recipe passed on Gadi using ``analysis3-26.08`` and ESMValCore
+2.15.0 (PBS job ``183400498``, 7 November 2026).
+All 35 tasks completed, producing 17 figures and 30 diagnostic NetCDF files
+across 13 groups, with model coverage and provenance checked.
+All 32 preprocessed files retaining time contain the full 240 monthly samples.
+Sea-ice and cell-area coordinates match exactly for ACCESS and CanESM.
+The scientific limitations above still apply.
+
 Example output
 --------------
 
