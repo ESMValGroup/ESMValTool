@@ -1,0 +1,12 @@
+{
+  "6a": {
+    "net": 1.050498827814156,
+    "comparison_units": "Sv",
+    "maximum_main_layer_difference_from_earlier_climatological_check": 4.3182150311071865e-07
+  },
+  "6b": {
+    "net": -0.1853349700658449,
+    "comparison_units": "PW",
+    "maximum_main_layer_difference_from_earlier_climatological_check": 2.6227591320981958e-08
+  }
+}
