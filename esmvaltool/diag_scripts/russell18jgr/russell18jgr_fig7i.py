@@ -44,6 +44,8 @@ def main(cfg):  # noqa: PLR0915 - prepares model data and plot outputs
 
     fig, axes = plt.subplots(figsize=(9, 6.5))
     ancestors, nc_files = [], []
+    xmin, xmax = -80, -30
+    ymin, ymax = -1.2, 1.0
 
     for meta in fgco2_data:
         inputs = [meta["filename"]]
@@ -71,6 +73,10 @@ def main(cfg):  # noqa: PLR0915 - prepares model data and plot outputs
         carbon_flux = data * UNIT_FACTOR * area
         per_lat = carbon_flux.sum(axis=-1)
         cumulative = np.ma.cumsum(per_lat)
+        visible = cumulative[(lat >= xmin - 1) & (lat <= xmax + 1)]
+        if visible.count():
+            ymin = min(ymin, np.floor(visible.min() / 0.2) * 0.2)
+            ymax = max(ymax, np.ceil(visible.max() / 0.2) * 0.2)
 
         style = rc.style_for(meta["dataset"], cfg.get("styleset", "CMIP5"))
         axes.plot(
@@ -98,10 +104,10 @@ def main(cfg):  # noqa: PLR0915 - prepares model data and plot outputs
         nc_files.append(nc_name)
         ancestors.append(inputs)
 
-    axes.set_xlim(-80, -30)
-    axes.set_ylim(-1.2, 1.0)
+    axes.set_xlim(xmin, xmax)
+    axes.set_ylim(ymin, ymax)
     axes.set_xticks(np.arange(-80, -29, 5))
-    axes.set_yticks(np.arange(-1.2, 1.01, 0.2))
+    axes.set_yticks(np.arange(ymin, ymax + 0.01, 0.2))
     axes.axhline(0, color="grey", linestyle="--", linewidth=0.8)
     axes.set_title("Integrated Flux", fontsize=12)
     axes.text(

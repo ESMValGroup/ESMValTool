@@ -245,6 +245,9 @@ def plot_layer_bars(
     lines show the Talley reference.
     """
     xlimit, xstep, unit, net_label = plot_options
+    largest = np.nanmax(np.abs(np.concatenate([main, sub, talley])))
+    if largest > xlimit:
+        xlimit = np.ceil(1.05 * largest / xstep) * xstep
     fig, axes = plt.subplots(figsize=(7, 9))
     y_edges = np.arange(-1.0, 12.0)  # bottom edges of the 12 main bars
 
