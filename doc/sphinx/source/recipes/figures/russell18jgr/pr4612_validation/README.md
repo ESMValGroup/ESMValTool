@@ -115,3 +115,20 @@ All figures below are unmodified PNGs from the successful final Gadi run. They r
 | 9a | [figure](../cmip6/Fig9a.png) |
 | 9b | [figure](../cmip6/Fig9b.png) |
 | 9c | [figure](../cmip6/Fig9c.png) |
+
+
+## CMIP7 companion: final run verification pending
+
+`recipe_russell18jgr_cmip7.yml` adds a separate historical 1986–2005 companion using ACCESS-ESM1-6, CanESM6-0-MR and UKESM1-3-LL where their fields are available. The CMIP5 and CMIP6 recipe files are unchanged. The [CMIP7 documentation](../../../recipe_russell18jgr_cmip7.rst) records all selections, members, published grids and scientific limitations. There are 13 diagnostic groups; Figures 9a–c are omitted because the selected archive coverage does not provide a multi-model set with the required carbon flux and cell areas. CanESM fixed cell areas come from its `1pctCO2` publication on the same `g147` grid; no time-varying fields are borrowed from that experiment.
+
+The recipe in commit `d5786c0` passed the three local recipe-loading/reference/maintainer checks, YAML lint and a focused Sphinx build with warnings treated as errors. It uses the same diagnostic code as the completed CMIP6 run above.
+
+PBS `183400498.gadi-pbs` runs the complete recipe on `analysis3-26.08` with ESMValCore 2.15.0. The last confirmed progress was **34/35 tasks complete at 01:29:25 UTC on 7 November 2026**. SSH subsequently accepted the key but timed out opening sessions, and file transfers also stalled. **The final exit status, complete output audit, 240-month coverage checks and sea-ice/cell-area coordinate checks are not yet verified. Do not treat this as a completed validation.** The run directory is `/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_cmip7/output/recipe_russell18jgr_cmip7_20261107_011215/`; job scripts, logs and automatic audit outputs are in the stage's `jobs/` directory.
+
+The following unmodified figures were retrieved from completed diagnostics before the connection failed. The three wind maps wrap without a radial gap. The sea-ice annual cycle is fully visible within its axes. ACCESS Figure 6a gives a net climatological estimate of `1.0504988 Sv`, consistent with the earlier same-period climatological check above; UKESM gives `0.8398934 Sv`. These consistency checks do not validate model-native physical transports, and the earlier monthly-covariance and staggered-grid caveats still apply.
+
+| Available CMIP7 preview | Figures |
+| --- | --- |
+| Figure 1, atmospheric wind stress | [UKESM/ACCESS](../cmip7/Fig1_page1.png), [CanESM](../cmip7/Fig1_page2.png) |
+| Figure 5g, sea-ice area | [ACCESS/CanESM](../cmip7/Fig5g.png) |
+| Figure 6a, climatological volume transport | [ACCESS](../cmip7/Fig6a_ACCESS-ESM1-6.png), [UKESM](../cmip7/Fig6a_UKESM1-3-LL.png) |
