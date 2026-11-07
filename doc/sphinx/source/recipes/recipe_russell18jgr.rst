@@ -19,6 +19,7 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_russell18jgr.yml
+* :doc:`recipe_russell18jgr_cmip6`: a CMIP6 companion including ACCESS-ESM1-5.
 
 Diagnostics are stored in diag_scripts/russell18jgr/
 

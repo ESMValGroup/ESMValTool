@@ -60,14 +60,7 @@ def main(cfg):
             units=str(cube.units),
             long_name="zonal mean surface eastward wind stress",
         )
-        out_cube.add_dim_coord(
-            iris.coords.DimCoord(
-                lat,
-                standard_name="latitude",
-                units="degrees_north",
-            ),
-            0,
-        )
+        rc.add_latitude_coord(out_cube, lat)
         nc_name = get_diagnostic_filename(
             f"russell18jgr_fig2_{meta['short_name']}_{meta['dataset']}_"
             f"{meta['start_year']}-{meta['end_year']}",

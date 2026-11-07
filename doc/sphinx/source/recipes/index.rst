@@ -136,6 +136,7 @@ Ocean
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
+   recipe_russell18jgr_cmip6
 
 Other
 ^^^^^
