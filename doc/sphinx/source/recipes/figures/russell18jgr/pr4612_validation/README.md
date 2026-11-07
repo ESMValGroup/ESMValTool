@@ -89,6 +89,29 @@ The full run exposed plotting issues that successful execution alone did not det
 
 The subsequent local checks passed 12 diagnostic regression tests, including row-rotation invariance, periodic front separation and cyclic halo handling, plus the three recipe checks and YAML lint. Corrected carbon maps were rendered from the saved Gadi fields; their saved numerical values agree with the baseline to floating-point precision. The recipe documentation passed a focused Sphinx build with warnings treated as errors.
 
-**Final Gadi validation of the post-review corrections is pending:** SSH authenticated successfully but then timed out while opening or using a session. Do not treat the successful baseline run as a complete validation of these later corrections. The existing caveats about climatological transport estimates and differences from the paper still apply.
+**Final Gadi validation passed:** PBS `183400209.gadi-pbs` completed with exit 0 using diagnostic source `bce5290`, `analysis3-26.08` and ESMValCore 2.15.0. All 47 tasks completed (16 diagnostic groups, 19 PNG figures and 55 diagnostic NetCDF files). The audit checked finite data, provenance and an output for every selected model in each group; no errors were found. The run is `/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_cmip6/output/recipe_russell18jgr_cmip6_20261107_010435/`. It reused 94 verified preprocessed files through `resume_cache_bce5290`. Earlier retries encountered an environment I/O error, an allocation reservation failure and a nested-resume path issue; these are not failures of the final diagnostic run. The existing caveats about climatological transport estimates and differences from the paper still apply.
 
-Review examples: [Gadi wind-stress map](../cmip6/Fig1_page1.png), [corrected carbon map, ACCESS/CanESM](../cmip6/Fig7_page1.png), [corrected carbon map, GFDL/IPSL](../cmip6/Fig7_page2.png). The carbon maps were rendered locally from the Gadi outputs after the plotting correction.
+The final front plots remove the artificial periodic connecting lines and IPSL zigzags. Gaps remain where the legacy longest-contour/nearby-segment selection does not retain a continuous path. These gaps must not be interpreted as evidence that a physical front is absent.
+
+The [numerical comparison](../cmip6/baseline_comparison.json) found all 47 non-front fields unchanged within `rtol=1e-6, atol=1e-8`, with masks preserved. Six output unit labels were corrected. The six non-IPSL front coordinate sets preserve their finite vertices; the two IPSL fronts change after fixing row-dependent longitude ordering. The [output audit](../cmip6/validation_summary.json) records values, units and coverage.
+
+All figures below are unmodified PNGs from the successful final Gadi run. They replace the earlier local carbon-map rerenders.
+
+| Diagnostic | Final Gadi figures |
+| --- | --- |
+| 1 | [page 1](../cmip6/Fig1_page1.png), [page 2](../cmip6/Fig1_page2.png) |
+| 2 | [figure](../cmip6/Fig2.png) |
+| 3b | [figure](../cmip6/Fig3b.png) |
+| 3b-2 | [figure](../cmip6/Fig3b-2.png) |
+| 4 | [page 1](../cmip6/Fig4_page1.png), [page 2](../cmip6/Fig4_page2.png) |
+| 5 | [figure](../cmip6/Fig5.png) |
+| 5g | [figure](../cmip6/Fig5g.png) |
+| 6a | [figure](../cmip6/Fig6a.png) |
+| 6b | [figure](../cmip6/Fig6b.png) |
+| 7 | [page 1](../cmip6/Fig7_page1.png), [page 2](../cmip6/Fig7_page2.png) |
+| 7h | [figure](../cmip6/Fig7h.png) |
+| 7i | [figure](../cmip6/Fig7i.png) |
+| 8 | [figure](../cmip6/Fig8.png) |
+| 9a | [figure](../cmip6/Fig9a.png) |
+| 9b | [figure](../cmip6/Fig9b.png) |
+| 9c | [figure](../cmip6/Fig9c.png) |

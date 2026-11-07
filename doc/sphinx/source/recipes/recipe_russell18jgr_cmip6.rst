@@ -86,6 +86,10 @@ Front extraction orders longitude within each grid row, since a single
 ordering is insufficient for some curvilinear grids.
 This can correct erroneous front positions on affected grids; the temperature
 criteria and transport formulas are unchanged.
+The legacy front extraction keeps the longest contour and appends only
+nearby segments.
+It can leave gaps; a plotted gap does not establish that a physical front
+is absent.
 
 Example output
 --------------
