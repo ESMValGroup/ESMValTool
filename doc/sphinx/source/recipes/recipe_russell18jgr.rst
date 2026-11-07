@@ -20,6 +20,7 @@ Recipes are stored in recipes/
 
 * recipe_russell18jgr.yml
 * :doc:`recipe_russell18jgr_cmip6`: a CMIP6 companion including ACCESS-ESM1-5.
+* :doc:`recipe_russell18jgr_cmip7`: a CMIP7 companion including ACCESS-ESM1-6.
 
 Diagnostics are stored in diag_scripts/russell18jgr/
 
