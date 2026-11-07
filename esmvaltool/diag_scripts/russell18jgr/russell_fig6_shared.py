@@ -296,7 +296,7 @@ def plot_layer_bars(
     axes.set_yticks(np.arange(-1, 12))
     axes.set_yticklabels(YAXIS_LABELS, fontsize=8)
     axes.tick_params(axis="x", labelsize=7)
-    axes.set_title(dataset, fontsize=12)
+    axes.set_title(dataset, fontsize=12, pad=30)
     axes.text(
         0.0,
         1.02,
@@ -430,6 +430,7 @@ def run_fig6(cfg, mode):
             out = iris.cube.Cube(
                 np.concatenate([main, sub]),
                 var_name=var_name,
+                units="1e6 m3 s-1" if mode == "volume" else "PW",
                 long_name=(
                     "transport in main layers (blue bars, i=0-11) and "
                     "sub layers (red bars, i=12-55) at "

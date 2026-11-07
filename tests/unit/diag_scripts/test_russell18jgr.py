@@ -10,9 +10,17 @@ import iris
 import iris.coords
 import iris.cube
 import numpy as np
+import pytest
+from matplotlib.path import Path as PlotPath
 
+from esmvaltool.diag_scripts.russell18jgr import (
+    russell18jgr_fig3b,
+    russell18jgr_fig3b_2,
+    russell18jgr_polar,
+)
 from esmvaltool.diag_scripts.russell18jgr.russell_common import (
     add_latitude_coord,
+    replicate_isoline,
     southern_ocean_flux_sum,
 )
 from esmvaltool.diag_scripts.russell18jgr.russell_fig6_shared import (
@@ -133,6 +141,95 @@ def test_add_latitude_coord_accepts_nonmonotonic_rows():
     assert cube.coord("latitude").points.tolist() == lat
     assert cube.coord_dims("latitude") == (0,)
     assert cube.coord("latitude") in cube.coords(dim_coords=False)
+
+
+def test_front_copies_do_not_draw_connecting_lines():
+    """Periodic front copies preserve vertices and have separate paths."""
+    x = np.array([10.0, 20.0, 30.0])
+    y = np.array([-55.0, -54.0, -56.0])
+    repeated_x, repeated_y = replicate_isoline(x, y)
+    path = PlotPath(np.column_stack([repeated_x, repeated_y]))
+    segments = list(path.iter_segments())
+
+    assert sum(code == PlotPath.MOVETO for _, code in segments) == 3
+    vertices = np.array([point for point, _ in segments])
+    np.testing.assert_array_equal(vertices[:, 0] % 360, np.tile(x, 3))
+    np.testing.assert_array_equal(vertices[:, 1], np.tile(y, 3))
+
+
+@pytest.mark.parametrize("script", [russell18jgr_fig3b, russell18jgr_fig3b_2])
+def test_front_position_respects_longitude_order_in_each_row(script):
+    """Equivalent row rotations must yield the same geographic front."""
+    lat = np.arange(-80.0, -29.0, 5.0)
+    lon = np.arange(0.0, 360.0, 30.0)
+    lon2d, lat2d = np.meshgrid(lon, lat)
+    field = 3.0 + 0.25 * (lat2d + 60.0) + np.sin(np.deg2rad(lon2d))
+
+    def cube(rotated):
+        values, longitudes = field.copy(), lon2d.copy()
+        if rotated:
+            for row in range(len(lat)):
+                values[row] = np.roll(values[row], row)
+                longitudes[row] = np.roll(longitudes[row], row)
+        depth = iris.coords.DimCoord(
+            [0.0, 100.0, 200.0, 300.0, 400.0],
+            standard_name="depth",
+            units="m",
+            attributes={"positive": "down"},
+        )
+        result = iris.cube.Cube(
+            np.broadcast_to(values, (5, *values.shape)).copy(),
+            units="degC",
+            dim_coords_and_dims=[(depth, 0)],
+        )
+        for name, points in [("latitude", lat2d), ("longitude", longitudes)]:
+            result.add_aux_coord(
+                iris.coords.AuxCoord(
+                    points,
+                    standard_name=name,
+                    units="degrees",
+                ),
+                (1, 2),
+            )
+        return result
+
+    expected = script.front_position(cube(rotated=False))
+    actual = script.front_position(cube(rotated=True))
+
+    np.testing.assert_allclose(actual, expected)
+
+
+@pytest.mark.parametrize("extra_columns", [0, 1, 2])
+def test_polar_grid_closes_wrapped_longitudes_without_reversing(extra_columns):
+    """Wrapped ocean rows and cyclic halos produce one continuous cycle."""
+    lon = (
+        np.tile(np.arange(360 + extra_columns) + 72.5, (2, 1)) % 360
+    ).astype(np.float32)
+    original_lon = lon.copy()
+    lat = np.full(lon.shape, -60.0)
+    data = np.ma.array(np.cos(np.deg2rad(lon)))
+
+    values, longitude, _ = russell18jgr_polar.cyclic_plot_grid(data, lon, lat)
+
+    assert values.shape == (2, 361)
+    assert np.all(np.diff(longitude, axis=-1) > 0)
+    np.testing.assert_allclose(longitude[:, -1] - longitude[:, 0], 360)
+    np.testing.assert_allclose(values[:, -1], values[:, 0])
+    np.testing.assert_array_equal(lon, original_lon)
+
+
+def test_polar_grid_uses_valid_cells_instead_of_masked_halos():
+    """Masked halo columns must not create a false gap in a global field."""
+    lon = np.tile(np.arange(362, dtype=np.float32) + 72.5, (2, 1)) % 360
+    lat = np.full(lon.shape, -60.0)
+    data = np.ma.array(np.cos(np.deg2rad(lon)), mask=False)
+    data.mask[:, [0, -1]] = True
+
+    values, longitude, _ = russell18jgr_polar.cyclic_plot_grid(data, lon, lat)
+
+    assert not np.ma.getmaskarray(values).any()
+    assert np.all(np.diff(longitude, axis=-1) > 0)
+    np.testing.assert_allclose(longitude[:, -1] - longitude[:, 0], 360)
 
 
 def test_figure9_provenance_includes_all_regression_inputs():

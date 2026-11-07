@@ -420,9 +420,9 @@ def extract_isoline(lon2d, lat2d, field, level):
 
 
 def replicate_isoline(x, y):
-    """Repeat the isoline three times to span -360..360 degrees."""
-    x_all = np.concatenate([x - 360.0, x, x + 360.0])
-    y_all = np.concatenate([y, y, y])
+    """Repeat the isoline without joining separate longitude copies."""
+    x_all = np.concatenate([x - 360.0, [np.nan], x, [np.nan], x + 360.0])
+    y_all = np.concatenate([y, [np.nan], y, [np.nan], y])
     return x_all, y_all
 
 

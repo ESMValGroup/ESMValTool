@@ -80,6 +80,13 @@ The results should not be interpreted as validated model-native fluxes.
 Figure 9 regressions describe the selected CMIP6 models and do not reproduce
 the paper's ensemble or reported statistical significance.
 
+The diagnostics handle longitude wrapping and overlapping grid columns when
+drawing polar maps.
+Front extraction orders longitude within each grid row, since a single
+ordering is insufficient for some curvilinear grids.
+This can correct erroneous front positions on affected grids; the temperature
+criteria and transport formulas are unchanged.
+
 Example output
 --------------
 

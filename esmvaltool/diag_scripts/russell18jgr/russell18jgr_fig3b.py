@@ -61,10 +61,11 @@ def front_position(cube):
         lat2d, lon2d = lat, lon
 
     rows = (lat2d[:, 0] >= LAT_RANGE[0]) & (lat2d[:, 0] <= LAT_RANGE[1])
-    order = np.argsort(lon2d[0, :])
-    field = field[rows][:, order]
-    lat2d = lat2d[rows][:, order]
-    lon2d = lon2d[rows][:, order]
+    # Longitude order can differ between rows on curvilinear grids.
+    order = np.argsort(lon2d[rows], axis=-1)
+    field = np.take_along_axis(field[rows], order, axis=-1)
+    lat2d = np.take_along_axis(lat2d[rows], order, axis=-1)
+    lon2d = np.take_along_axis(lon2d[rows], order, axis=-1)
 
     x, y = rc.extract_isoline(lon2d, lat2d, field, ISOTHERM)
     return rc.replicate_isoline(x, y)

@@ -72,3 +72,23 @@ A separate calculation classified each of the 240 monthly `thetao`/`so` sections
 The largest difference among the 11 non-net layers is `1.708 Sv` for volume and `0.174 PW` for heat. Reclassifying monthly density while holding climatological transport fixed accounts for differences up to `1.417 Sv` and `0.094 PW`; monthly velocity, volume, and temperature products add further differences. The [comparison plot](Fig6_CMIP7_monthly_vs_climatology_1986-2005.png) and [complete layer values](Fig6_CMIP7_monthly_vs_climatology_1986-2005.csv) make the result reviewable.
 
 The PR faithfully reproduces the NCL-style diagnostic based on climatological fields. It should be described as such: **its Figure 6 layer values are not the 20-year mean of monthly density-layer transports**, and its net heat transport is also sensitive to monthly covariation. The negligible net-volume effect of time-averaging `volcello` does not establish equivalence for the layers or heat. The model-native benchmarks above quantify the absolute net differences for this model and period, while the density-layer transports remain without a face-aligned physical benchmark.
+
+## CMIP6 companion including ACCESS-ESM1-5
+
+`recipe_russell18jgr_cmip6.yml` adds historical 1986–2005 simulations from ACCESS-ESM1-5, CanESM5, GFDL-ESM4 and IPSL-CM6A-LR, all `r1i1p1f1`. The original CMIP5 recipe is byte-identical to the previous PR version. The [companion documentation](../../../recipe_russell18jgr_cmip6.rst) describes the model-family choices, grids and field-availability limits. ACCESS-ESM1-5 is used in every group except pH, which was unavailable in the inspected archives. Figures 6a/b use its fixed `Ofx volcello`.
+
+### Completed Gadi run
+
+PBS `183398542.gadi-pbs` completed successfully on 7 November 2026 with `conda/analysis3-26.08` and ESMValCore 2.15.0: **16 diagnostic groups, 47 tasks, 19 PNG figures and 55 diagnostic NetCDF files; exit status 0**. The recipe source was commit `704232e`. An output audit found finite data and provenance records for all outputs. The run resumed completed preprocessing after Figure 2 was fixed to accept nonmonotonic grid-row latitudes.
+
+The complete output is at `/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_cmip6/output/recipe_russell18jgr_cmip6_20261107_001156/`. Job scripts and logs are under the same stage's `jobs/` directory. Input-compliance warnings concerned standardized names and missing `positive` attributes for some flux variables. Expected warnings also reported unavailable `volcello` for the two velocity-only Figure 4 models, the default ACCESS plot style, and legacy `history` attribute placement.
+
+### Corrections found during output review
+
+The full run exposed plotting issues that successful execution alone did not detect. Polar maps needed longitude unwrapping and removal of redundant masked halo columns; otherwise filled contours could show the wrong sign or a false gap. Periodic front copies needed separate line segments, and IPSL front extraction needed longitude ordering within each row. **The latter can change derived front positions on affected grids.** Map field values and transport formulas are unchanged. Titles in Figures 4/6 now avoid their annotations. Converted carbon-flux outputs and Figure 6 outputs now carry the corresponding physical units.
+
+The subsequent local checks passed 12 diagnostic regression tests, including row-rotation invariance, periodic front separation and cyclic halo handling, plus the three recipe checks and YAML lint. Corrected carbon maps were rendered from the saved Gadi fields; their saved numerical values agree with the baseline to floating-point precision. The recipe documentation passed a focused Sphinx build with warnings treated as errors.
+
+**Final Gadi validation of the post-review corrections is pending:** SSH authenticated successfully but then timed out while opening or using a session. Do not treat the successful baseline run as a complete validation of these later corrections. The existing caveats about climatological transport estimates and differences from the paper still apply.
+
+Review examples: [Gadi wind-stress map](../cmip6/Fig1_page1.png), [corrected carbon map, ACCESS/CanESM](../cmip6/Fig7_page1.png), [corrected carbon map, GFDL/IPSL](../cmip6/Fig7_page2.png). The carbon maps were rendered locally from the Gadi outputs after the plotting correction.

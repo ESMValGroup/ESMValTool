@@ -16,7 +16,7 @@ Diagnostic script options (same as the NCL version):
   colormap              : name of a colormap (NCL 'BlWhRe' -> 'bwr')
   labelBar_end_type     : 'ExcludeOuterBoxes' or triangle ends
   unitCorrectionalFactor: multiplicative unit conversion
-  new_units             : unit string shown in the title
+  new_units             : units of the converted output field
 """
 
 import logging
@@ -24,9 +24,9 @@ import sys
 from pathlib import Path
 
 import cartopy.crs as ccrs
-from cartopy.util import add_cyclic
 import iris
 import matplotlib as mpl
+from cartopy.util import add_cyclic
 
 mpl.use("Agg")
 import matplotlib.path as mpath
@@ -75,6 +75,31 @@ def circular_boundary():
     return mpath.Path(verts * radius + center)
 
 
+def cyclic_plot_grid(data, lon, lat):
+    """Unwrap grid rows and replace redundant cyclic columns for plotting."""
+    lon = np.rad2deg(
+        np.unwrap(np.deg2rad(np.asarray(lon, dtype=float)), axis=-1),
+    )
+    valid_rows = ~np.ma.getmaskarray(data).all(axis=-1)
+    # Some native grids include overlapping halo columns. Appending a
+    # cyclic point after those would make longitude turn backwards.
+    while (
+        data.shape[-1] > 1
+        and valid_rows.any()
+        and np.all(
+            np.abs(lon[valid_rows, -1] - lon[valid_rows, 0]) >= 360.0 - 1e-6,
+        )
+    ):
+        # Prefer the valid copy when a grid masks an outer halo column.
+        columns = (
+            slice(1, None)
+            if np.ma.getmaskarray(data)[:, 0].all()
+            else slice(None, -1)
+        )
+        data, lon, lat = data[:, columns], lon[:, columns], lat[:, columns]
+    return add_cyclic(data, x=lon, y=lat)
+
+
 def plot_dataset(
     axes,
     cube,
@@ -101,7 +126,7 @@ def plot_dataset(
     # labels on the plot.
     data = np.ma.masked_where(lat2d > max_lat, data)
     # Close the longitude seam for contouring without changing saved data.
-    data, lon2d, lat2d = add_cyclic(data, x=lon2d, y=lat2d)
+    data, lon2d, lat2d = cyclic_plot_grid(data, lon2d, lat2d)
     logger.info(
         "%s: %s range %.4g to %.4g south of %g degrees latitude",
         title,
@@ -213,7 +238,17 @@ def main(cfg):
             cube = rc.surface_field(cube)
             if factor != 1.0:
                 cube.data = cube.data * factor
-            units_str = f" ({cfg.get('new_units', cube.units)})"
+                if "new_units" in cfg:
+                    # Accept the legacy NCL label while saving CF units.
+                    cube.units = {
+                        "gC/ (m~S~2~N~ * yr)": "g m-2 yr-1",
+                    }.get(cfg["new_units"], cfg["new_units"])
+                if var0 == "fgco2" and factor < 0:
+                    cube.standard_name = None
+                    cube.long_name = (
+                        "Surface upward mass flux of carbon as CO2"
+                    )
+            units_str = f" ({cube.units})"
             axes = fig.add_subplot(
                 nvert,
                 nhori,

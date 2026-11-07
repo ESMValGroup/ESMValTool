@@ -213,6 +213,7 @@ def main(cfg):  # noqa: PLR0915 - orchestrates paginated plots and outputs
             axes.set_title(
                 f"Section velocity of {meta['dataset']}{units_str}",
                 fontsize=11,
+                pad=25,
             )
             left = (
                 f"Net transport : {transport:4.1f}Sv"
