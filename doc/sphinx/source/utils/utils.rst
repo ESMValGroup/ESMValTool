@@ -136,8 +136,8 @@ To prepare for using this tool:
 
 #. Log in to a system that uses `slurm <https://slurm.schedmd.com/quickstart.html>`_
 #. Make sure the required CMIP and observational datasets are available and
-   their ``rootpath`` and ``drs`` is properly set up in the :ref:`configuration
-   <esmvalcore:config_options>`
+   their :ref:`data sources <esmvalcore:config-data-sources>` are properly set
+   up in the configuration
 #. Make sure the required auxiliary data is available (see :ref:`recipe documentation <recipes>`)
 #. Install ESMValTool
 
