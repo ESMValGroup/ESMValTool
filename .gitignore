@@ -44,8 +44,7 @@ __pycache__/
 .settings
 
 #Create by VSCode
-.vscode/*
-!.vscode/extensions.json
+.vscode
 *.code-workspace
 
 #pytest
