@@ -49,7 +49,6 @@ import iris
 import numpy as np
 from dask import array as da
 from dateutil import relativedelta
-from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -111,8 +110,7 @@ def _extract_variable(cube_list, var, cfg, out_dir, is_daily):
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip"]
     attributes["raw"] = var["raw"]
-    cmor_table = CMOR_TABLES[attributes["project_id"]]
-    definition = cmor_table.get_variable(var["mip"], var["short_name"])
+    definition = cfg["cmor_table"].get_variable(var["mip"], var["short_name"])
 
     # make sure there is one cube for every day (daily data) or
     # every month (monthly data) of the year
