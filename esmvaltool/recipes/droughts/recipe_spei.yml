@@ -130,9 +130,9 @@ diagnostics:
         ancestors: [pr, pet]
         distribution: log-Logistic
         smooth_month: 6
-  plot:
+  plot_cmip7:
     scripts:
-      map:
+      map_cmip7:
         script: droughts/diffmap.py
         plot_models: True
         plot_mmm: False
