@@ -30,8 +30,23 @@ calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
       }
       print(paste("Shape of", meta$short_name))
       print(dim(data[[meta$short_name]]))
-    } else {
-      print(paste("Variable", meta$short_name, "not used for hargreaves"))
+    } 
+    else {
+      if(meta$short_name == "tas" & meta$variable_group == "tasmin"){
+        data[["tasmin"]] <- get_var_from_nc(meta)
+        data$lat <- get_var_from_nc(meta, custom_var="lat")
+        print(paste("Shape of", "tasmin"))
+        print(dim(data[["tasmin"]]))
+      }
+      else if(meta$short_name == "tas" & meta$variable_group == "tasmax"){
+        print(paste("read", meta$short_name))
+        data[["tasmax"]] <- get_var_from_nc(meta)
+        print(paste("Shape of", "tasmax"))
+        print(dim(data[["tasmax"]]))
+      }
+      else {
+        print(paste("Variable", meta$short_name, "not used for hargreaves"))
+      }
     }
   }
   dpet <- data$tasmin * NA
@@ -97,9 +112,21 @@ calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
         data$lat <- get_var_from_nc(meta, custom_var="lat")
       }
     } else {
-      print("variable not used for penman:")
-      print(meta$short_name)
-    }
+      if(meta$short_name == "tas" & meta$variable_group == "tasmin"){
+        data[["tasmin"]] <- get_var_from_nc(meta)
+        data$lat <- get_var_from_nc(meta, custom_var="lat")
+        print(paste("Shape of", "tasmin"))
+        print(dim(data[["tasmin"]]))
+      }
+      else if(meta$short_name == "tas" & meta$variable_group == "tasmax"){
+        print(paste("read", meta$short_name))
+        data[["tasmax"]] <- get_var_from_nc(meta)
+        print(paste("Shape of", "tasmax"))
+        print(dim(data[["tasmax"]]))
+      }
+      else {
+        print(paste("Variable", meta$short_name, "not used for penman"))
+      }
   }
   # calculate pet for each latitude
   dpet <- data$tasmin * NA
@@ -178,7 +205,7 @@ for (dataset in names(grouped_meta)){
     short_name="evspsblpot",
     long_name="Potential Evapotranspiration",
     units="mm day-1")
-  input_meta <- select_var(metas, "tasmin")
+  input_meta <- select_var(metas, "pr")
   input_meta$filename <- filename
   input_meta$short_name <- "evspsblpot"
   input_meta$long_name <- "Potential Evapotranspiration"
