@@ -30,7 +30,7 @@ calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
       }
       print(paste("Shape of", meta$short_name))
       print(dim(data[[meta$short_name]]))
-    } 
+    }
     else {
       if(meta$short_name == "tas" & meta$variable_group == "tasmin"){
         data[["tasmin"]] <- get_var_from_nc(meta)
@@ -127,6 +127,7 @@ calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
       else {
         print(paste("Variable", meta$short_name, "not used for penman"))
       }
+    }
   }
   # calculate pet for each latitude
   dpet <- data$tasmin * NA
