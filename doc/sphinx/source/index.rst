@@ -29,7 +29,7 @@ notebooks.
 .. raw:: html
 
    <object data="_static/esmval_diagram.svg" type="image/svg+xml" style="display:block; margin:1.5rem auto;max-width:80%;">
-     ESMValTool and ESMValCore overview diagram
+     Brief breakdown of topics for ESMValTool and ESMValCore documentation.
    </object>
 
 .. toctree::

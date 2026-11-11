@@ -1,7 +1,7 @@
 <svg class="esv" style="max-width:541px;width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      viewBox="0 0 541 262" role="img"
      aria-labelledby="esv-svg-title esv-svg-desc">
-  <title id="esv-svg-title">ESMValTool and ESMValCore overview</title>
+  <title id="esv-svg-title">ESMValTool and ESMValCore documentation overview</title>
   <desc id="esv-svg-desc">ESMValTool contains Core, available recipes, diagnostic scripts, obtaining input data and observation data formatting. Core connects to ESMValCore: configuration, recipe format overview, preprocessor functions, data fix and native data, and variable derivation.</desc>
 
   <style>
@@ -52,7 +52,7 @@
   </a>
   <a xlink:href="../input.html#observations" href="../input.html#observations" target="_top">
     <rect class="esv-hit" x="20" y="189" width="180" height="50"/>
-    <text class="esv-item" x="24" y="206">• Observation data</text>
+    <text class="esv-item" x="24" y="206">• Observational data</text>
     <text class="esv-item" x="38" y="228">formatting</text>
   </a>
 
