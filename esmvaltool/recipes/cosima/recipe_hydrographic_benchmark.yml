@@ -95,7 +95,7 @@ diagnostics:
         additional_datasets: *woa_datasets
     scripts:
       benchmark:
-        script: cosima_cmip/hydrographic_benchmark.py
+        script: cosima/hydrographic_benchmark.py
         reference_dataset: WOA
         reference_version: 2018
         reference_period: [1981, 2010]
@@ -115,4 +115,4 @@ diagnostics:
         preprocessor: annual_global_mean
     scripts:
       benchmark:
-        script: cosima_cmip/hydrographic_benchmark.py
+        script: cosima/hydrographic_benchmark.py

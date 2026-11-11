@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from esmvaltool.diag_scripts.cosima_cmip import density_compensation as dc
-from esmvaltool.diag_scripts.cosima_cmip import hydrographic_benchmark as hb
+from esmvaltool.diag_scripts.cosima import density_compensation as dc
+from esmvaltool.diag_scripts.cosima import hydrographic_benchmark as hb
 
 
 def test_reference_metrics_use_paired_cells():

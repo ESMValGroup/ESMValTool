@@ -83,7 +83,7 @@ diagnostics:
         additional_datasets: *woa_datasets
     scripts:
       compensation:
-        script: cosima_cmip/density_compensation.py
+        script: cosima/density_compensation.py
         reference_dataset: WOA
         reference_version: 2018
         reference_period: [1981, 2010]
