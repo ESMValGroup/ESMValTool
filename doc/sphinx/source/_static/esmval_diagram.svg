@@ -1,0 +1,80 @@
+<svg class="esv" style="max-width:541px;width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 541 262" role="img"
+     aria-labelledby="esv-svg-title esv-svg-desc">
+  <title id="esv-svg-title">ESMValTool and ESMValCore overview</title>
+  <desc id="esv-svg-desc">ESMValTool contains Core, available recipes, diagnostic scripts, obtaining input data and observation data formatting. Core connects to ESMValCore: configuration, recipe format overview, preprocessor functions, data fix and native data, and variable derivation.</desc>
+
+  <style>
+    /* Only applies when this file is loaded on its own (not inline),
+       so the browser keeps the canvas transparent in dark mode */
+    svg:root { color-scheme: light dark; }
+    .esv text { font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 15px; }
+    .esv .esv-title { fill: #000000; font-size: 16px; }
+    .esv .esv-item  { fill: #ffffff; }
+    .esv .esv-core  { fill: #ffffff; }
+    .esv .esv-hit   { fill: transparent; }
+    .esv a { cursor: pointer; }
+    .esv a:hover text { text-decoration: underline; }
+    .esv a:hover .esv-item { fill: #ffff00; }
+  </style>
+
+  <!-- Boxes -->
+  <rect x="2" y="40" width="205" height="218" rx="38" fill="#7030A0" stroke="#000000" stroke-width="2"/>
+  <rect x="285" y="40" width="253" height="218" rx="38" fill="#00B0F0" stroke="#000000" stroke-width="2"/>
+
+  <!-- Connector from Core to ESMValCore -->
+  <path d="M105 67 H232 A14 14 0 0 1 246 81 V113 A14 14 0 0 0 260 127 H285" fill="none" stroke="#00B0F0" stroke-width="4" stroke-linecap="butt" stroke-linejoin="round"/>
+
+  <!-- Title labels -->
+  <rect x="40" y="2" width="130" height="30" fill="#FFFF00" stroke="#000000" stroke-width="1"/>
+  <text class="esv-title" x="105" y="22" text-anchor="middle">ESMValTool</text>
+  <rect x="337" y="2" width="150" height="30" fill="#FFFF00" stroke="#000000" stroke-width="1"/>
+  <text class="esv-title" x="412" y="22" text-anchor="middle">ESMValCore</text>
+
+  <!-- Core (links to ESMValCore documentation) -->
+  <a xlink:href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/" href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/" target="_top">
+    <rect x="45" y="52" width="120" height="30" rx="5" fill="#00B0F0" stroke="#0070C0" stroke-width="2"/>
+    <text class="esv-core" x="105" y="73" text-anchor="middle">Core</text>
+  </a>
+
+  <!-- ESMValTool items (replace the links with your real pages) -->
+  <a xlink:href="../recipes/index.html" href="../recipes/index.html" target="_top">
+    <rect class="esv-hit" x="20" y="102" width="180" height="24"/>
+    <text class="esv-item" x="24" y="119">• Available recipes</text>
+  </a>
+  <a xlink:href="../api/esmvaltool.html" href="../api/esmvaltool.html" target="_top">
+    <rect class="esv-hit" x="20" y="131" width="180" height="24"/>
+    <text class="esv-item" x="24" y="148">• Diagnostic scripts</text>
+  </a>
+  <a xlink:href="../input.html" href="../input.html" target="_top">
+    <rect class="esv-hit" x="20" y="160" width="180" height="24"/>
+    <text class="esv-item" x="24" y="177">• Obtaining input data</text>
+  </a>
+  <a xlink:href="../input.html#observations" href="../input.html#observations" target="_top">
+    <rect class="esv-hit" x="20" y="189" width="180" height="50"/>
+    <text class="esv-item" x="24" y="206">• Observation data</text>
+    <text class="esv-item" x="38" y="228">formatting</text>
+  </a>
+
+  <!-- ESMValCore items (replace the links with your real pages) -->
+  <a xlink:href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html" href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html" target="_top">
+    <rect class="esv-hit" x="302" y="76" width="225" height="24"/>
+    <text class="esv-item" x="306" y="93">• Configuration</text>
+  </a>
+  <a xlink:href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/overview.html" href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/overview.html" target="_top">
+    <rect class="esv-hit" x="302" y="109" width="225" height="24"/>
+    <text class="esv-item" x="306" y="126">• Recipe format overview</text>
+  </a>
+  <a xlink:href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html" href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html" target="_top">
+    <rect class="esv-hit" x="302" y="142" width="225" height="24"/>
+    <text class="esv-item" x="306" y="159">• Preprocessor functions</text>
+  </a>
+  <a xlink:href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/develop/fixing_data.html" href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/develop/fixing_data.html" target="_top">
+    <rect class="esv-hit" x="302" y="175" width="225" height="24"/>
+    <text class="esv-item" x="306" y="192">• Data fix and native data</text>
+  </a>
+  <a xlink:href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html#variable-derivation" href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html#variable-derivation" target="_top">
+    <rect class="esv-hit" x="302" y="208" width="225" height="24"/>
+    <text class="esv-item" x="306" y="225">• Variable derivation</text>
+  </a>
+</svg>

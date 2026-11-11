@@ -26,13 +26,11 @@ The documentation navigation to the left provides more detailed information abou
 `ESMValCore documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html>`_ is also available. ESMValCore can be used without ESMValTool such as in Jupyter
 notebooks.
 
-.. container::
-   :name: figarch
+.. raw:: html
 
-   .. figure:: figures/ESMValSchemaDiagram.png
-      :alt: Brief topics for tool and core.
-      :figclass: align-center
-      :class: dark-light
+   <object data="_static/esmval_diagram.svg" type="image/svg+xml" style="display:block; margin:1.5rem auto;max-width:80%;">
+     ESMValTool and ESMValCore overview diagram
+   </object>
 
 .. toctree::
    :hidden:
