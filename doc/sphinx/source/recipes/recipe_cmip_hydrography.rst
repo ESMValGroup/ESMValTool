@@ -51,7 +51,8 @@ The diagnostic scripts require ``gsw`` from the ESMValTool ``all`` optional
 dependency set. Confirm the WOA source filenames and run both complete recipes
 on the target archive before interpreting scientific results.
 
-CMORiser: https://github.com/ESMValGroup/ESMValTool/pull/4337/changes
+CMORiser: WOA version 2018 which before the 2023 update in
+the `CMORiser <https://github.com/ESMValGroup/ESMValTool/pull/4337/changes>`_
 
 Available recipes and diagnostics
 ---------------------------------
