@@ -118,8 +118,7 @@ preprocessors:
       end_longitude: 360
 
   tropical_mask_40_500hPa:
-    <<: *tropical_mask_40_pp
-    <<: *pp500
+    <<: [*pp500, *tropical_mask_40_pp]
 
   zonal_mean:
     regrid:

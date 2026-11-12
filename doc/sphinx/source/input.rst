@@ -216,10 +216,26 @@ The output file names follow the convention:
 
     [project]_[dataset]_[type]_[version]_[mip]_[short_name]_YYYYMM_YYYYMM.nc
 
-where ``project`` may be OBS (CMIP5 format) or OBS6 (CMIP6 format), ``type``
-may be ``sat`` (satellite data), ``reanaly`` (reanalysis data),
-``ground`` (ground observations), ``clim`` (derived climatologies),
-``campaign`` (aircraft campaign).
+where ``project`` may be OBS (CMIP5 format) or OBS6 (CMIP6 format), and
+``type`` is one of the values in the table below.
+
+.. _observation_types:
+
+.. list-table:: Types of observational datasets
+   :header-rows: 1
+
+   * - Type
+     - Description
+   * - ``sat``
+     - Satellite data
+   * - ``reanaly``
+     - Reanalysis data
+   * - ``ground``
+     - Ground observations
+   * - ``clim``
+     - Derived climatologies
+   * - ``campaign``
+     - Aircraft campaign
 
 At the moment, ``esmvaltool data format`` supports Python and NCL scripts.
 

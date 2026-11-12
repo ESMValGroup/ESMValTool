@@ -36,8 +36,7 @@ preprocessors:
       mask_out: sea
 
   landmask_and_regrid:
-    <<: *regridding
-    <<: *landmask
+    <<: [*landmask, *regridding]
 
   land_fraction_weighting: &land_fraction_weighting
     weighting_landsea_fraction: &weighting_options
@@ -58,12 +57,10 @@ preprocessors:
       area_type: sea
 
   land_fraction_weighting_and_regrid:
-    <<: *regridding
-    <<: *land_fraction_weighting
+    <<: [*land_fraction_weighting, *regridding]
 
   sea_fraction_weighting_and_regrid:
-    <<: *regridding
-    <<: *sea_fraction_weighting
+    <<: [*sea_fraction_weighting, *regridding]
 
   grading:
     regrid:
@@ -79,8 +76,7 @@ preprocessors:
       threshold_fraction: 0.95
 
   land_fraction_weighting_and_regrid_to_ref:
-    <<: *land_fraction_weighting
-    <<: *regrid_to_ref
+    <<: [*regrid_to_ref, *land_fraction_weighting]
 
 
 diagnostics:
@@ -478,16 +474,16 @@ diagnostics:
     scripts:
       mvi_global:
         <<: *mvi_global
-        mask_below: 1e-2
+        mask_below: 0.01
       mvi_nh:
         <<: *mvi_nh
-        mask_below: 1e-2
+        mask_below: 0.01
       mvi_sh:
         <<: *mvi_sh
-        mask_below: 1e-2
+        mask_below: 0.01
       mvi_trop:
         <<: *mvi_trop
-        mask_below: 1e-2
+        mask_below: 0.01
 
   diag_main_gpp:
     description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
