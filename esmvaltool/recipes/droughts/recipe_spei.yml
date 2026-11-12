@@ -21,10 +21,6 @@ documentation:
   references:
     - acknow_project
 
-CMIP6: &cmip6 {project: CMIP6, mip: Amon, ensemble: r1i1p1f1, grid: gn}
-CMIP7: &cmip7 {project: CMIP7, drs_specs: MIP-DRS7,
-               mip: atmos, ensemble: r1i1p1f1, grid: g110}
-
 preprocessors:
   preprocessor:
     regrid:
@@ -53,7 +49,8 @@ diagnostics:
         <<: *var
         preprocessor: perday
     additional_datasets:
-      - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {project: CMIP6, mip: Amon, ensemble: r1i1p1f1, grid: gn,
+         dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
     scripts:
       spi:
         script: droughts/spei.R
@@ -112,9 +109,10 @@ diagnostics:
         preprocessor: perday
         branding_suffix: tavg-u-hxy-u
     additional_datasets:
-      - {<<: *cmip7, dataset: UKESM1-3-LL, institute: UKNCSP,
-          frequency: mon, region: glb,
-          supplementary_variables: [{short_name: areacella, skip: true}]}
+      - {project: CMIP7, mip: atmos, ensemble: r1i1p1f1, grid: g110,
+         dataset: UKESM1-3-LL, institute: UKNCSP,
+         frequency: mon, region: glb,
+         supplementary_variables: [{short_name: areacella, skip: true}]}
     scripts:
       spi:
         script: droughts/spei.R
