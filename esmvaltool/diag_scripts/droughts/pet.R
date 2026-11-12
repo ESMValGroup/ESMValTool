@@ -206,7 +206,7 @@ for (dataset in names(grouped_meta)){
     short_name="evspsblpot",
     long_name="Potential Evapotranspiration",
     units="mm day-1")
-  input_meta <- select_var(metas, "pr")
+  input_meta <- select_var(metas, first_meta$short_name)
   input_meta$filename <- filename
   input_meta$short_name <- "evspsblpot"
   input_meta$long_name <- "Potential Evapotranspiration"
