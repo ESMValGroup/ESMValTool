@@ -28,7 +28,7 @@ def get_provenance_record(caption, ancestor_filenames):
         "caption": caption,
         "statistics": ["mean"],
         "domains": ["global"],
-        "plot_type": "metrics",
+        "plot_types": ["metrics"],
         "authors": [
             "rumbold_heather",
             "sellar_alistair",

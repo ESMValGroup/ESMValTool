@@ -397,7 +397,7 @@ def get_provenance_record(metric_level, ancestor_files):
             "sullivan_arnold",
             "beucher_romain",
         ],
-        "references": [
+        "projects": [
             "access-nri",
         ],
         "ancestors": ancestor_files,

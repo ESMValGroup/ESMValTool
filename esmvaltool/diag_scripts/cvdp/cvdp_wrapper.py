@@ -272,8 +272,8 @@ def set_provenance(cfg):
         return {
             "caption": _get_caption(filename),
             "statistics": [_get_stat(filename)],
-            "domain": "global",
-            "plot_type": _get_plot_type(filename),
+            "domains": ["global"],
+            "plot_types": [_get_plot_type(filename)],
             "authors": [
                 "phillips_adam",
             ],
