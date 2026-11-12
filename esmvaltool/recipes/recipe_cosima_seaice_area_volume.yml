@@ -1,0 +1,89 @@
+# ESMValTool
+# recipe_cosima_seaice_area_volume.yml
+---
+documentation:
+  title: Sea-ice area, extent and volume against observations (COSIMA)
+
+  description: |
+    Seasonal cycle of sea-ice area, extent and volume compared with
+    observations, translated from the COSIMA recipe
+    Sea_Ice_Area_Concentration_Volume_with_Obs.ipynb.
+
+    The notebook pulls the NSIDC climate data record live from an
+    ERDDAP server. Here the observations come through ESMValTool's own
+    CMORisers and are therefore ordinary datasets in the recipe. Run the
+    CMORisers first:
+
+      esmvaltool data format NSIDC-G02202-sh
+      esmvaltool data format OSI-450-sh
+      esmvaltool data format PIOMAS
+
+    Both area and extent count only cells at or above 15%
+    concentration, which is the NSIDC convention and the reason extent
+    is always at least the area. Weighting every cell regardless of
+    concentration, which a naive reading of "area" suggests, breaks that
+    relation as soon as the marginal ice zone is wide.
+
+    CMOR siconc is a percentage, but several models publish a fraction.
+    The diagnostic masks fill values before deciding between the two;
+    deciding from max(siconc) < 5 with fill values still present is what
+    silently empties sea-ice figures.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  seaice_regridded:
+    regrid:
+      target_grid: 1x1
+      scheme: nearest
+
+diagnostics:
+
+  seaice_area_volume:
+    description: |
+      Seasonal cycle of Southern Hemisphere sea-ice area, extent and
+      volume, model against observations.
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      siconc:
+        mip: SImon
+        preprocessor: seaice_regridded
+        timerange: 1991/2010
+        supplementary_variables:
+          - short_name: areacello
+            mip: Ofx
+        additional_datasets:
+          - {dataset: NSIDC-G02202-sh, project: OBS6, type: reanaly,
+             version: 4, tier: 2, timerange: 1991/2010}
+          - {dataset: OSI-450-sh, project: OBS6, type: reanaly,
+             version: v2, tier: 2, timerange: 1991/2010}
+      sivol:
+        mip: SImon
+        preprocessor: seaice_regridded
+        timerange: 1991/2010
+        supplementary_variables:
+          - short_name: areacello
+            mip: Ofx
+    scripts:
+      area_volume:
+        script: cosima/seaice_area_volume.py
+        hemisphere: south
