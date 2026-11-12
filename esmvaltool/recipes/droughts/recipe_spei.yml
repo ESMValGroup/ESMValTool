@@ -101,7 +101,6 @@ diagnostics:
         <<: *var7
         branding_suffix: tmaxavg-h2m-hxy-u
       pr:
-        preprocessor: perday
         reference_dataset: UKESM1-3-LL
         start_year: 2000
         end_year: 2005
