@@ -21,11 +21,6 @@ documentation:
   references:
     - acknow_project
 
-CMIP6: &cmip6 {project: CMIP6, mip: Amon, ensemble: r1i1p1f1, grid: gn}
-
-datasets:
-- {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
-
 preprocessors:
   preprocessor:
     regrid:
@@ -53,6 +48,9 @@ diagnostics:
       pr:
         <<: *var
         preprocessor: perday
+    additional_datasets:
+      - {project: CMIP6, mip: Amon, ensemble: r1i1p1f1, grid: gn,
+         dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
     scripts:
       spi:
         script: droughts/spei.R
@@ -86,3 +84,64 @@ diagnostics:
         titles:
           last: "{dataset} Yearly Average 2005"
         ancestors: [diagnostic/spi, diagnostic/spei]
+
+  diagnostic_cmip7:
+    description: Calculating SPI and SPEI index for CMIP7 data
+    variables:
+      tasmin: &var7
+        short_name: tas
+        variable: tas
+        reference_dataset: UKESM1-3-LL
+        preprocessor: preprocessor
+        branding_suffix: tminavg-h2m-hxy-u
+        start_year: 2000
+        end_year: 2005
+        exp: [esm-hist]
+      tasmax:
+        <<: *var7
+        branding_suffix: tmaxavg-h2m-hxy-u
+      pr:
+        reference_dataset: UKESM1-3-LL
+        start_year: 2000
+        end_year: 2005
+        exp: [esm-hist]
+        preprocessor: perday
+        branding_suffix: tavg-u-hxy-u
+    additional_datasets:
+      - {project: CMIP7, mip: atmos, ensemble: r1i1p1f1, grid: g110,
+         dataset: UKESM1-3-LL, institute: UKNCSP,
+         frequency: mon, region: glb,
+         supplementary_variables: [{short_name: areacella, skip: true}]}
+    scripts:
+      spi:
+        script: droughts/spei.R
+        ancestors: [pr]
+        distribution: Gamma
+        smooth_month: 6
+      pet:
+        pet_type: "Hargreaves"
+        script: droughts/pet.R
+      spei:
+        indexname: SPEI
+        script: droughts/spei.R
+        ancestors: [pr, pet]
+        distribution: log-Logistic
+        smooth_month: 6
+  plot_cmip7:
+    scripts:
+      map_cmip7:
+        script: droughts/diffmap.py
+        plot_models: True
+        plot_mmm: False
+        comparison_period: 1
+        metrics: "last"
+        strip_plots: False
+        plot_kwargs:
+          cbar_label: "{short_name}"
+          cmap: RdYlBu
+          extend: both
+          vmin: -2
+          vmax: 2
+        titles:
+          last: "{dataset} Yearly Average 2005"
+        ancestors: [diagnostic_cmip7/spi, diagnostic_cmip7/spei]
