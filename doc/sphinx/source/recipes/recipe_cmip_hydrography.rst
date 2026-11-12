@@ -3,20 +3,23 @@
 CMIP ocean hydrography and density compensation
 ===============================================
 
-The `hydrographic benchmark recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/recipe_cmip_hydrographic_benchmark.yml>`_
+Overview
+--------
+
+The `hydrographic benchmark recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cosima/recipe_hydrographic_benchmark.yml>`_
 compares CMIP6 ``thetao`` and ``so`` with WOA18 at 10, 100, 500, 1000, and
 2000 m. It reports area-weighted historical-minus-WOA mean differences, root
 mean square differences, and paired wet-cell coverage by depth and latitude
 band. It also estimates piControl drift from annual fixed-depth fields and
-from archived whole-ocean ``thetaoga``. The
-`density compensation recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/recipe_cmip_density_compensation.yml>`_
+from archived whole-ocean ``thetaoga``.
+The `density compensation recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cosima/recipe_density_compensation.yml>`_
 uses the same hydrographic comparison to attribute the density difference to
 temperature and salinity with TEOS-10. Both recipes save numeric NetCDF outputs
 and figures. With two or more models, they also save a comparison using cells
 that are valid in WOA and every model.
 
-Input and interpretation
-------------------------
+Observations input and interpretation
+-------------------------------------
 
 * The historical comparison uses 1981–2010 annual model means. The intended
   reference is the WOA18 ``decav81B0`` 1981–2010 climate normal, supplied as
@@ -47,6 +50,36 @@ Input and interpretation
 The diagnostic scripts require ``gsw`` from the ESMValTool ``all`` optional
 dependency set. Confirm the WOA source filenames and run both complete recipes
 on the target archive before interpreting scientific results.
+
+CMORiser: WOA version 2018 which before the 2023 update in
+the `CMORiser <https://github.com/ESMValGroup/ESMValTool/pull/4337/changes>`_
+
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/cosima/
+
+* recipe_hydrographic_benchmark.yml
+* recipe_density_compensation.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/cosima/
+
+* hydrographic_benchmark.py: Fixed-depth historical hydrographic differences and piControl drift.
+
+   *Optional settings for script when there is a reference dataset*
+
+   * reference_dataset: dataset used as reference (default WOA)
+   * reference_version: version of the dataset (eg for WOA: 2018)
+   * reference_period: period tuple of years for reference climatology(eg. [1981, 2010] )
+
+* desnsity_compensation.py: Explain hydrographic density bias as temperature and salinity effects.
+
+   *Required settings for script*
+
+   * reference_dataset: WOA
+   * reference_version: 2018
+   * reference_period: [1981, 2010]
+
 
 Gadi validation and example figures
 -----------------------------------
