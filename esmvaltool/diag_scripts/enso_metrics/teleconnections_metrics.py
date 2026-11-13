@@ -302,6 +302,24 @@ def get_provenance_record(caption, ancestor_files):
     return record
 
 
+def select_model_mask(input_data, model):
+    """Select exactly one mask for the current project, model and member."""
+    keys = ("project", "dataset", "exp", "ensemble")
+    matches = [
+        item
+        for item in input_data
+        if item.get("variable_group") == "enso_mask"
+        and all(item.get(key) == model.get(key) for key in keys)
+    ]
+    if len(matches) != 1:
+        msg = (
+            f"Expected one ENSO mask for {model['dataset']}; "
+            f"found {len(matches)}"
+        )
+        raise ValueError(msg)
+    return matches[0]
+
+
 def main(cfg):
     """Run ENSO metrics."""
     input_data = cfg["input_data"].values()
@@ -311,15 +329,6 @@ def main(cfg):
         "pr_telecon": ["tos_enso", "pr_global", "ts_enso_events"],
         "ts_telecon": ["tos_enso", "tos_global", "ts_enso_events"],
     }
-
-    mask_grp = select_metadata(
-        input_data,
-        variable_group="enso_mask",
-        project="CMIP6",
-    )
-    mask_var = [
-        iris.load_cube(dataset["filename"]) for dataset in mask_grp
-    ]  # for multiple datasets do we need to iterate through?
 
     for metric, var_preproc in metrics.items():
         logger.info("%s,%s", metric, var_preproc)
@@ -384,6 +393,9 @@ def main(cfg):
                 )
                 for attributes in mod_ds
             }
+            mask_metadata = select_model_mask(input_data, mod_ds[0])
+            mask_var = iris.load_cube(mask_metadata["filename"])
+            dt_files.append(mask_metadata["filename"])
 
             input_pair = {obsds_label: obs_datasets, dataset: model_datasets}
             logger.info(pformat(model_datasets))
@@ -391,7 +403,7 @@ def main(cfg):
             values, fig, fig_lvl2 = compute_telecon_metrics(
                 input_pair,
                 var_preproc,
-                mask_var[0],
+                mask_var,
                 metric,
             )
 

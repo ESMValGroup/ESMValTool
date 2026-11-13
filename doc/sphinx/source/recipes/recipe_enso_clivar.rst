@@ -45,6 +45,12 @@ Diagnostics are stored in esmvaltool/diag_scripts/enso_metrics/
 User settings in recipe
 -----------------------
 
+The teleconnection diagnostic supports CMIP6 and CMIP7 model data.
+It selects the ``enso_mask`` input matching each model's project, dataset,
+experiment and ensemble member, and includes the mask in the output provenance.
+A missing or ambiguous mask raises an error.
+Use one experiment and ensemble member per model in each recipe run.
+
 #. Script: **matrix.py**
 
    *Required settings for script*
