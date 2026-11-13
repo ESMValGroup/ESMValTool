@@ -167,6 +167,7 @@ diagnostics:
               default:
                 cmap: YlOrRd
                 levels: [0.0, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0]
+                norm: boundary
             projection: NorthPolarStereo
             projection_kwargs:
               central_longitude: 0
