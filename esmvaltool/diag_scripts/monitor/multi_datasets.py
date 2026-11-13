@@ -287,6 +287,14 @@ plot_kwargs: dict, optional
     specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
     be used instead of ``vmin`` or ``vmax`` (see
     :class:`~matplotlib.colors.CenteredNorm`).
+    With ``{norm: 'boundary'}``, a
+    :class:`~matplotlib.colors.BoundaryNorm` with the list given by ``levels``
+    as boundaries is used, i.e., the colors of the color map ``cmap`` are
+    evenly distributed over the intervals between the levels (and the
+    extensions of the colorbar given by ``extend``), even if the levels are
+    not evenly spaced. Example: ``{cmap: 'YlOrRd', norm: 'boundary', levels:
+    [0, 1, 5, 10, 50, 100], extend: 'max'}``. This requires a plot function
+    that supports ``levels`` (e.g., ``plot_func: 'contourf'``).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
@@ -417,7 +425,7 @@ from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord, Coord
 from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
-from matplotlib.colors import CenteredNorm
+from matplotlib.colors import BoundaryNorm, CenteredNorm
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import (
     AutoMinorLocator,
@@ -1505,6 +1513,19 @@ class MultiDatasets(MonitorBase):
                 halfrange=plot_kwargs.pop("halfrange", None),
             )
             plot_kwargs["norm"] = norm
+        elif plot_kwargs.get("norm") == "boundary":
+            if not isinstance(plot_kwargs.get("levels"), list):
+                msg = (
+                    f"plot_kwargs of {plot_type} with 'norm: boundary' need "
+                    f"a list of 'levels', got {plot_kwargs.get('levels')}"
+                )
+                raise ValueError(msg)
+            cmap = mpl.colormaps.get_cmap(plot_kwargs.get("cmap"))
+            plot_kwargs["norm"] = BoundaryNorm(
+                plot_kwargs["levels"],
+                ncolors=cmap.N,
+                extend=plot_kwargs.get("extend", "neither"),
+            )
 
         return deepcopy(plot_kwargs)
 
@@ -1816,7 +1837,10 @@ class MultiDatasets(MonitorBase):
             **subplot_kwargs,
         )
         additional_plot_kwargs = {}
-        if self.plots[plot_type]["common_cbar"]:
+        if self.plots[plot_type]["common_cbar"] and not isinstance(
+            plot_left.norm,
+            BoundaryNorm,
+        ):
             additional_plot_kwargs.setdefault("vmin", plot_left.get_clim()[0])
             additional_plot_kwargs.setdefault("vmax", plot_left.get_clim()[1])
         plot_right = self._plot_2d_data(
