@@ -1,0 +1,174 @@
+# recipe_ipccwg1ar6ch3_santer21jclim.yml
+---
+documentation:
+  title: Water vapour trend histogram (IPCC).
+  description: |
+    Recipe for reproducing the plots from B. D. Santer
+
+  authors:
+    - mammes_mareike
+    - weigel_katja
+
+  maintainer:
+    - weigel_katja
+
+  references:
+    - eyring21ipcc
+    - santer21jclim
+    - santer07jclim
+
+  projects:
+    - eval4cmip
+    - 4c
+    - trr181
+
+preprocessors:
+  tropical_ocean:
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    extract_region:
+      start_latitude: -50
+      end_latitude: 50
+      start_longitude: 0
+      end_longitude: 360
+
+diagnostics:
+  wvtrend:
+    description: Plot figure from B. D. Santer with observations
+    variables:
+      prw:
+        preprocessor: tropical_ocean
+        reference_dataset: RSS
+        mip: Amon
+        field: T2Ms
+        start_year: 1988
+        end_year: 2019
+        derive: false
+    additional_datasets:
+      - {dataset: RSS, project: OBS6, type: reanaly, version: v07r01,
+         tier: 2}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+         tier: 3, start_year: 1988, end_year: 2019}
+      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn}
+      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r3i1p1f1, grid: gn}
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:3)i1p1f1, grid: gn}
+      - {dataset: CanESM5, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:10)i1p2f1, grid: gn}
+      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2, institute: NCAR, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r10i1p1f1, grid: gn}
+      - {dataset: CESM2, institute: NCAR, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r4i1p1f1, grid: gn}
+      - {dataset: CNRM-CM6-1, institute: CNRM-CERFACS, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:2)i1p1f2, grid: gr}
+      - {dataset: CNRM-CM6-1, institute: CNRM-CERFACS, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(4:6)i1p1f2, grid: gr}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: HadGEM3-GC31-LL, institute: MOHC, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:3)i1p1f3, grid: gn}
+      - {dataset: HadGEM3-GC31-MM, institute: MOHC, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:3)i1p1f3, grid: gn}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:4)i1p1f1, grid: gr}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r6i1p1f1, grid: gr}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r14i1p1f1, grid: gr}
+      - {dataset: MIROC6, institute: MIROC, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:3)i1p1f1, grid: gn}
+      - {dataset: MIROC-ES2L, institute: MIROC, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:10)i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, institute: NUIST, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, institute: NUIST, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r2i1p1f1, grid: gn}
+      - {dataset: NorESM2-MM, institute: NCC, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, institute: MOHC, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r(1:4)i1p1f2, grid: gn}
+      - {dataset: UKESM1-0-LL, institute: MOHC, project: CMIP6,
+         exp: [historical, ssp585], ensemble: r8i1p1f2, grid: gn}
+      - {dataset: ACCESS1-0, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: ACCESS1-3, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: CanESM2, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r(1:5)i1p1}
+      - {dataset: CCSM4, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r(1:3)i1p1}
+      - {dataset: CESM1-CAM5, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r(1:3)i1p1}
+      - {dataset: CESM1-BGC, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p3}
+      - {dataset: GISS-E2-R, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p2}
+      - {dataset: GISS-E2-R, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p3}
+      - {dataset: HadGEM2-CC, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: HadGEM2-CC, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r2i1p1}
+      - {dataset: HadGEM2-CC, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r3i1p1}
+      - {dataset: HadGEM2-ES, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: HadGEM2-ES, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r2i1p1}
+      - {dataset: MIROC-ESM, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r(1:3)i1p1}
+      - {dataset: MRI-CGCM3, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: NorESM1-M, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+      - {dataset: NorESM1-ME, project: CMIP5,
+         exp: [historical, rcp85], ensemble: r1i1p1}
+
+    scripts:
+      santer20jclim:
+        script: ipcc_ar6/santer21jclimfig.py
+        # histmin: -3.0
+        # histmax: 3.0
+        # ymax: 4.0
+        # The mask for the RSS sampling can be produced with
+        # esmvaltool/cmorizers/obs/cmorize_obs_rssanom.ncl
+        # It has to be stored in the auxiliary_data_dir defined in config-user.yml
+        # If the keyword sample_obs is not given the recipe it runs without filtering
+        sample_obs: 'OBS6_RSS_reanaly_v07r01_Amon_filter_198801-202010.nc'
+        # Add model names for additional figure with pdf of ensemble members
+        add_model_dist: ['MPI-ESM1-2-LR', 'CanESM5']
