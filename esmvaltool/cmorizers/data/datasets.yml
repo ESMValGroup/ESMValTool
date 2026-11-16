@@ -121,6 +121,16 @@ datasets:
       Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
       as well as the version and years you require to download.
 
+  CarboScope:
+    tier: 2
+    source: https://www.bgc-jena.mpg.de/CarboScope/?ID=s
+    last_access: 2026-07-16
+    info: |
+      Data is freely available.
+      For previous versions, click on archive of outdated results.
+      Download the co2 fluxes in the full resolution (daily, gridded)
+        from https://www.bgc-jena.mpg.de/CarboScope/?ID=s
+
   CDS-SATELLITE-ALBEDO:
     tier: 3
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
