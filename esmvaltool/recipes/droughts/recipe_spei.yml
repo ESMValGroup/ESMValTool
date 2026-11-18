@@ -111,7 +111,7 @@ diagnostics:
       - {project: CMIP7, mip: atmos, ensemble: r1i1p1f1, grid: g110,
          dataset: UKESM1-3-LL, institute: UKNCSP,
          frequency: mon, region: glb,
-         supplementary_variables: [{short_name: areacella, skip: true}]}
+         }
     scripts:
       spi:
         script: droughts/spei.R
