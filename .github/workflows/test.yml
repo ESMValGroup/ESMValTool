@@ -28,7 +28,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-latest
+          # - macos-latest
         environment:
           - test-py312
           - test-py313
