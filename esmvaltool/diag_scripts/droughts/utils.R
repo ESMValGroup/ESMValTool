@@ -242,13 +242,13 @@ get_var_from_nc <- function(meta, custom_var=FALSE) {
 group_meta <- function(metadata) {
   grouped <- list()
   for (meta in metadata) {
-    if (! meta$dataset %in% names(grouped)) {
-      grouped[[meta$dataset]] <- list()
+    if (! meta$alias %in% names(grouped)) {
+      grouped[[meta$alias]] <- list()
     }
     entry <- list(meta)
     names(entry) <- list(meta$filename)
     entry[meta$filename] <- list(meta)
-    grouped[[meta$dataset]] <- append(grouped[[meta$dataset]], entry)
+    grouped[[meta$alias]] <- append(grouped[[meta$alias]], entry)
   }
   return(grouped)
 }
