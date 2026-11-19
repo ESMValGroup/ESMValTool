@@ -283,10 +283,10 @@ configuration file. The updated file should look like this:
          break_on_error: true
          confirm_download: false
          default_open_kwargs:
-         chunks: auto
-         compat: override
-         coords: minimal
-         data_vars: minimal
+           chunks: auto
+           compat: override
+           coords: minimal
+           data_vars: minimal
          default_project: CMIP7
          download_db: ~/.config/intake-esgf/download.db
          esg_dataroot:
@@ -295,26 +295,26 @@ configuration file. The updated file should look like this:
          - /global/cfs/projectdirs/m3522/cmip6/
          - /glade/campaign/collections/cmip.mirror
          globus_indices:
-         ESGF2-US-1.5-Catalog: true
+           ESGF2-US-1.5-Catalog: true
          local_cache:
          - ~/.esgf/
          logfile: ~/.config/intake-esgf/esgf.log
          num_threads: 6
          print_log_on_error: false
          requests_cache:
-         cache_name: intake-esgf/requests-cache.sqlite
-         expire_after: 3600
-         use_cache_dir: true
+           cache_name: intake-esgf/requests-cache.sqlite
+           expire_after: 3600
+           use_cache_dir: true
          slow_download_threshold: 0.5
          solr_indices:
-         esg-dn1.nsc.liu.se: false
-         esgf-data.dkrz.de: false
-         esgf-node.ipsl.upmc.fr: false
-         esgf.ceda.ac.uk: false
-         esgf.nci.org.au: false
+           esg-dn1.nsc.liu.se: false
+           esgf-data.dkrz.de: false
+           esgf-node.ipsl.upmc.fr: false
+           esgf.ceda.ac.uk: false
+           esgf.nci.org.au: false
          stac_indices:
-         discovery.east.esgf.io: true
-         discovery.west.esgf.io: true
+           discovery.east.esgf.io: true
+           discovery.west.esgf.io: true
 
 
 .. admonition:: Set the correct rootpaths

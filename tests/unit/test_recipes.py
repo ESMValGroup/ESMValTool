@@ -12,6 +12,7 @@ from tests.integration.test_recipes_loading import IDS, RECIPES
 
 ESMVALTOOL_ROOT = Path(esmvaltool.__file__).absolute().parent
 REFERENCES_PATH = ESMVALTOOL_ROOT / "references"
+DIAG_SCRIPTS_PATH = ESMVALTOOL_ROOT / "diag_scripts"
 
 CONFIG_REFERENCES_PATH = ESMVALTOOL_ROOT / "config-references.yml"
 AUTHORS = yaml.safe_load(CONFIG_REFERENCES_PATH.read_text())["authors"]
@@ -79,3 +80,22 @@ def test_maintainers(recipe_file):
         f"are authors from {CONFIG_REFERENCES_PATH}."
     )
     assert not invalid_maintainers, msg
+
+
+@pytest.mark.parametrize("recipe_file", RECIPES, ids=IDS)
+def test_diagnostic_scripts(recipe_file):
+    """Check that diagnostic scripts are relative to the diag_scripts directory.
+
+    Other relative paths only work from a particular working directory, for
+    example the root of the repository, and not for an installed ESMValTool.
+    """
+    recipe = load_recipe(recipe_file)
+    for diagnostic_name, diagnostic in recipe["diagnostics"].items():
+        for script_name, script in (diagnostic.get("scripts") or {}).items():
+            path = script["script"]
+            msg = (
+                f"Script '{path}' of '{diagnostic_name}/{script_name}' is "
+                f"not a file in {DIAG_SCRIPTS_PATH}. Give the path relative to "
+                "that directory."
+            )
+            assert (DIAG_SCRIPTS_PATH / path).is_file(), msg
