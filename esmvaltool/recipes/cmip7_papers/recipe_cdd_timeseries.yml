@@ -1,0 +1,93 @@
+# ESMValTool
+---
+documentation:
+  title: Precip histograms
+  description: >
+    Plot PDF of precipitation rates.
+  authors:
+    - lauer_axel
+
+
+datasets:
+  # one year is enough data
+#  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, frequency: 1hr, alias: 'ERA5'}
+###  - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: atmos, frequency: day, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-h2m-hxy-u}
+  - {project: CMIP7, dataset: ACCESS-ESM1-6, exp: historical, ensemble: r1i1p1f1, grid: '*', mip: atmos, frequency: day, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-h2m-hxy-u}
+#  - {project: CMIP7, dataset: UKCM2-0-LL, exp: historical, ensemble: r1i1p1f1, grid: '*', mip: atmos, frequency: day, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-h2m-hxy-u}
+
+
+preprocessors:
+  pp_daily2:
+#    custom_order: true
+#    regrid:
+#      target_grid: 1x1
+#      scheme: linear
+    mask_landsea:
+      mask_out: sea
+    daily_statistics:
+    extract_shape:
+      shapefile: ar6
+      crop: true
+      decomposed: false
+      ids:
+        Name:
+          - Western-Africa
+
+
+diagnostics:
+
+  cdd22_time_series:
+    description: Plot time series of CDD.
+    variables:
+      cdd22:
+        preprocessor: pp_daily
+        mip: atmos
+        derive: true
+        timerange: '2020/2020'
+        supplementary_variables:
+          - short_name: areacella
+            skip: true
+          - short_name: areacello
+            skip: true
+          - short_name: sftlf
+            skip: true
+          - short_name: sftof
+            skip: true
+    scripts: null
+#      plot:
+#        script: seaborn_diag.py
+#        seaborn_func: displot
+#        reset_index: true
+#        write_netcdf: true
+#        seaborn_kwargs:
+#          kind: hist
+#          stat: density
+#          binwidth: 0.25
+#          x: pr
+##          hue: dataset
+#          hue: shape_id
+#          facet_kws:
+#            sharey: false
+#          col: alias
+##          col: shape_id
+##          col_order:
+##            - tropics
+##            - nh_midlat
+##            - sh_midlat
+#          col_wrap: 3
+#        add_aux_coords: true
+#        dropna_kwargs:
+#          axis: 0
+#          how: any
+##        legend_title: Dataset
+#        legend_title: shape_id
+#        plot_object_methods:
+#          set:
+#            xlabel: 'Precipitation [mm/hr]'
+#            xlim: [0, 20]
+##          set_titles: '{col_name}'
+#        seaborn_settings:
+#          style: ticks
+#          rc:
+#            axes.titlepad: 15.0
+#        suptitle: 'PDF of daily precipitation rates'

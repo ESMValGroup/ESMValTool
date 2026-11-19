@@ -1,0 +1,148 @@
+# ESMValTool
+---
+documentation:
+  title: Precip histograms
+  description: >
+    Plot PDF of precipitation rates.
+  authors:
+    - lauer_axel
+
+
+datasets:
+  # one year is enough data
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, frequency: 1hr, alias: 'ERA5'}
+#  - {dataset: ICON-XPP, project: ICON, exp: tvp1802_001, start_year: 2005, end_year: 2014, component: atm, var_type: atm_3d_ml, alias: 'ICON-XPP'}
+#  - {dataset: ICON-XPP, project: ICON, exp: historical-202510p1, start_year: 2005, end_year: 2014, component: atm, var_type: atm_3d_ml, alias: 'ICON-XPP'}
+###  - {project: CMIP7, dataset: '*', exp: historical, ensemble: r1i1p1f1, grid: '*', mip: atmos, frequency: day, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-u}
+  - {project: CMIP7, dataset: ACCESS-ESM1-6, exp: historical, ensemble: r1i1p1f1, grid: '*', mip: atmos, frequency: day, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-u}
+#  - {project: CMIP7, dataset: UKCM2-0-LL, exp: historical, ensemble: r1i1p1f1, grid: '*', mip: atmos, frequency: day, region: glb, activity: CMIP, institute: '*', branding_suffix: tavg-u-hxy-u}
+
+
+preprocessors:
+  pp_daily:
+    custom_order: true
+#    regrid:
+#      target_grid: 1x1
+#      scheme: linear
+    daily_statistics:
+    extract_shape:
+      shapefile: shapefiles/clim_regs.shp
+      crop: true
+      decomposed: true
+      ids:
+        clim_regs:
+          - tropics
+          - nh_midlat
+          - sh_midlat
+    convert_units:
+      units: mm hour-1
+
+  pp_daily2:
+    custom_order: true
+#    regrid:
+#      target_grid: 1x1
+#      scheme: linear
+    daily_statistics:
+    extract_shape:
+      shapefile: shapefiles/clim_regs.shp
+      crop: true
+      decomposed: false
+      ids:
+        clim_regs:
+          - tropics
+#          - nh_midlat
+#          - sh_midlat
+    convert_units:
+      units: mm hour-1
+    histogram:
+      bins: 40
+#      bins: [0, 0.5, 1, 1.5, 2, 2.5, 3, 5, 7, 10, 15, 20]
+      normalization: integral
+      bin_range:
+        - 0.0
+        - 20.0
+
+
+diagnostics:
+
+#  precip_rate_pdf:
+#    description: Plot PDF of daily precipitation rates.
+#    variables:
+#      pr:
+#        preprocessor: pp_daily
+#        mip: day
+#        timerange: '2020/2020'
+#        supplementary_variables:
+#          - short_name: areacella
+#            skip: true
+#          - short_name: areacello
+#            skip: true
+#          - short_name: sftlf
+#            skip: true
+#          - short_name: sftof
+#            skip: true
+#    scripts:
+#      plot:
+#        script: seaborn_diag.py
+#        seaborn_func: displot
+#        reset_index: true
+#        write_netcdf: true
+#        seaborn_kwargs:
+#          kind: hist
+#          stat: density
+#          binwidth: 0.25
+#          x: pr
+##          hue: dataset
+#          hue: shape_id
+#          facet_kws:
+#            sharey: false
+#          col: alias
+##          col: shape_id
+##          col_order:
+##            - tropics
+##            - nh_midlat
+##            - sh_midlat
+#          col_wrap: 3
+#        add_aux_coords: true
+#        dropna_kwargs:
+#          axis: 0
+#          how: any
+##        legend_title: Dataset
+#        legend_title: shape_id
+#        plot_object_methods:
+#          set:
+#            xlabel: 'Precipitation [mm/hr]'
+#            xlim: [0, 20]
+##          set_titles: '{col_name}'
+#        seaborn_settings:
+#          style: ticks
+#          rc:
+#            axes.titlepad: 15.0
+#        suptitle: 'PDF of daily precipitation rates'
+
+  precip_rate_pdf2:
+    description: Plot PDF of daily precipitation rates.
+    variables:
+      pr:
+        preprocessor: pp_daily2
+        mip: day
+        timerange: '2011/2020'
+        supplementary_variables:
+          - short_name: areacella
+            skip: true
+          - short_name: areacello
+            skip: true
+          - short_name: sftlf
+            skip: true
+          - short_name: sftof
+            skip: true
+    scripts:
+      plot:
+        script: plot_histogram.py
+        log_y: true
+        ylim:
+          - 0.0
+          - 1.0
+        suptitle: 'Tropics (30S-30N), 2011-2020'
+        xlabel: 'Daily mean precipitation rate [mm hr-1]'
+        ylabel: 'Probability density'
