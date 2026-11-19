@@ -63,6 +63,8 @@ for (dataset in names(grouped_meta)){
   print(paste("-- processing dataset:", dataset))
   metas <- grouped_meta[[dataset]]  # list of files for this dataset
   mask <- get_merged_mask(metas) # use mask per dataset
+  # all input files are used to compute the mask
+  xprov$ancestors <- as.list(names(metas))
   pr_meta <- select_var(metas, "pr")
   pr <- get_var_from_nc(pr_meta)
   lat <- get_var_from_nc(pr_meta, custom_var="lat")
@@ -81,7 +83,8 @@ for (dataset in names(grouped_meta)){
   if (cfg$write_wb) {
     filename_wb <- write_nc_file_like(cfg, pr_meta, pme, fillfloat, short_name="wb")
     meta[[filename_wb]] <- list(filename=filename_wb, short_name="wb", dataset = dataset)
-    provenance[[filename_wb]] <- list(caption="Water balance per grid point.")
+    provenance[[filename_wb]] <- modifyList(xprov,
+      list(caption="Water balance per grid point."))
   }
 
   cfg <- fill_refperiod(cfg, tsvec)
@@ -122,12 +125,14 @@ for (dataset in names(grouped_meta)){
   new_meta = list(filename=filename, short_name=cfg$indexname,
       long_name=cfg$indexname, units="1", dataset=dataset)
   meta[[filename]] <- modifyList(pr_meta, new_meta)
-  provenance[[filename]] = list(caption=paste(cfg$indexname, " index per grid point."))
+  provenance[[filename]] <- modifyList(xprov,
+    list(caption=paste(cfg$indexname, "index per grid point.")))
   if (cfg$write_coeffs) {
     for (c_name in names(coeffs)){
       filename_c <- write_nc_file_like(cfg, pr_meta, coeffs[[c_name]], fillfloat, short_name=c_name, moty=TRUE)
       meta[[filename_c]] <- list(filename=filename_c, short_name=c_name, dataset=dataset)
-      provenance[[filename_c]] <- list(caption=paste(c_name, " (fitting parameter) per grid point."))
+      provenance[[filename_c]] <- modifyList(xprov,
+        list(caption=paste(c_name, "(fitting parameter) per grid point.")))
     }
   }
 }  # end of dataset loop

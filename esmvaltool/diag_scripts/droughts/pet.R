@@ -19,7 +19,7 @@ setwd(dirname(commandArgs(asValues=TRUE)$file))
 source("utils.R")
 
 
-calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
+calculate_hargreaves <- function(metas, use_pr=FALSE) {
   data <- list(tasmin=NULL, tasmax=NULL, rsdt=NULL, pr=NULL)
   for (meta in metas) {
     if (meta$short_name %in% names(data) && !(meta$short_name == "pr" && !use_pr)) {
@@ -30,8 +30,23 @@ calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
       }
       print(paste("Shape of", meta$short_name))
       print(dim(data[[meta$short_name]]))
-    } else {
-      print(paste("Variable", meta$short_name, "not used for hargreaves"))
+    }
+    else {
+      if(meta$short_name == "tas" & meta$variable_group == "tasmin"){
+        data[["tasmin"]] <- get_var_from_nc(meta)
+        data$lat <- get_var_from_nc(meta, custom_var="lat")
+        print(paste("Shape of", "tasmin"))
+        print(dim(data[["tasmin"]]))
+      }
+      else if(meta$short_name == "tas" & meta$variable_group == "tasmax"){
+        print(paste("read", meta$short_name))
+        data[["tasmax"]] <- get_var_from_nc(meta)
+        print(paste("Shape of", "tasmax"))
+        print(dim(data[["tasmax"]]))
+      }
+      else {
+        print(paste("Variable", meta$short_name, "not used for hargreaves"))
+      }
     }
   }
   dpet <- data$tasmin * NA
@@ -52,12 +67,11 @@ calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
   return(dpet)
 }
 
-calculate_thornthwaite <- function(metas, xprov) {
+calculate_thornthwaite <- function(metas) {
   for (meta in metas) {
     if (meta$short_name == "tas") {
       tas = get_var_from_nc(meta)
       lat = get_var_from_nc(meta, custom_var="lat")
-      xprov$ancestors <- append(xprov$ancestors, meta$filename)
     } else {
       print(paste("Variable", meta$short_name, "not used for Thornthwaite."))
     }
@@ -77,7 +91,7 @@ calculate_thornthwaite <- function(metas, xprov) {
 }
 
 
-calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
+calculate_penman <- function(metas, method="ICID", crop="tall") {
   data <- list(
     tasmin = NULL,
     tasmax = NULL,
@@ -92,13 +106,25 @@ calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
   for(meta in metas){
     if (meta$short_name %in% names(data)){
       data[[meta$short_name]] <- get_var_from_nc(meta)
-      xprov$ancestors <- append(xprov$ancestors, meta$filename)
       if(meta$short_name == "tasmin"){
         data$lat <- get_var_from_nc(meta, custom_var="lat")
       }
     } else {
-      print("variable not used for penman:")
-      print(meta$short_name)
+      if(meta$short_name == "tas" & meta$variable_group == "tasmin"){
+        data[["tasmin"]] <- get_var_from_nc(meta)
+        data$lat <- get_var_from_nc(meta, custom_var="lat")
+        print(paste("Shape of", "tasmin"))
+        print(dim(data[["tasmin"]]))
+      }
+      else if(meta$short_name == "tas" & meta$variable_group == "tasmax"){
+        print(paste("read", meta$short_name))
+        data[["tasmax"]] <- get_var_from_nc(meta)
+        print(paste("Shape of", "tasmax"))
+        print(dim(data[["tasmax"]]))
+      }
+      else {
+        print(paste("Variable", meta$short_name, "not used for penman"))
+      }
     }
   }
   # calculate pet for each latitude
@@ -155,12 +181,13 @@ grouped_meta <- group_meta(ancestor_meta)
 print("--- Process each dataset")
 for (dataset in names(grouped_meta)){
   metas <- grouped_meta[[dataset]]  # list of files for this dataset
-  xprov$ancestors <- list()
+  # all input files are used to compute the mask
+  xprov$ancestors <- as.list(names(metas))
   switch(params$pet_type,
-    Penman = {pet <- calculate_penman(metas, xprov,
+    Penman = {pet <- calculate_penman(metas,
       method=params$method, crop=params$crop)},
-    Thornthwaite = {pet <- calculate_thornthwaite(metas, xprov)},
-    Hargreaves = {pet <- calculate_hargreaves(metas, xprov)},
+    Thornthwaite = {pet <- calculate_thornthwaite(metas)},
+    Hargreaves = {pet <- calculate_hargreaves(metas)},
     stop("pet_type must be one of: Penman, Hargreaves, Thornthwaite")
   )
   mask <- get_merged_mask(metas)
@@ -178,7 +205,7 @@ for (dataset in names(grouped_meta)){
     short_name="evspsblpot",
     long_name="Potential Evapotranspiration",
     units="mm day-1")
-  input_meta <- select_var(metas, "tasmin")
+  input_meta <- select_var(metas, first_meta$short_name)
   input_meta$filename <- filename
   input_meta$short_name <- "evspsblpot"
   input_meta$long_name <- "Potential Evapotranspiration"
