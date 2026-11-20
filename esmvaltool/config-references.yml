@@ -57,7 +57,7 @@ authors:
     email: nikolay.koldunov@awi.de
     orcid: https://orcid.org/0000-0002-3365-8146
   lauer_axel:
-    name: Lauer, Axel
+    name: Lauer_Axel
     institute: DLR, Germany
     email: axel.lauer@dlr.de
     orcid: https://orcid.org/0000-0002-9270-1044
@@ -78,7 +78,7 @@ authors:
     email: mattia.righi@dlr.de
     orcid: https://orcid.org/0000-0003-3827-5950
   schlund_manuel:
-    name: Schlund, Manuel
+    name: Schlund_Manuel
     institute: DLR, Germany
     email: manuel.schlund@dlr.de
     orcid: https://orcid.org/0000-0001-5251-0158

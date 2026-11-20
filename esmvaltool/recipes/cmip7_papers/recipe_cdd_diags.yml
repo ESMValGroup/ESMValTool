@@ -17,14 +17,14 @@ datasets:
 
 
 preprocessors:
-  pp_daily2:
-#    custom_order: true
-#    regrid:
-#      target_grid: 1x1
-#      scheme: linear
+  pp_globe:
+    climate_statistics:
+
+  pp_waf:
     mask_landsea:
       mask_out: sea
-    daily_statistics:
+    area_statistics:
+      operator: mean
     extract_shape:
       shapefile: ar6
       crop: true
@@ -36,14 +36,16 @@ preprocessors:
 
 diagnostics:
 
-  cdd22_time_series:
-    description: Plot time series of CDD.
+  cdd22_timeseries_waf:
+    description: Plot time series of CDD in Western Africa.
     variables:
       cdd22:
-        preprocessor: pp_daily
-        mip: atmos
+        preprocessor: pp_waf
+        project: CMIP6
+        mip: day
         derive: true
-        timerange: '2020/2020'
+        timerange: '1980/2022'
+        exp: historical
         supplementary_variables:
           - short_name: areacella
             skip: true
@@ -53,8 +55,74 @@ diagnostics:
             skip: true
           - short_name: sftof
             skip: true
-    scripts: null
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          timeseries:
+            plot_kwargs:
+              ACCESS-ESM1-6:
+                color: red
+              ERA5:
+                color: black
+#            pyplot_kwargs:
+#              ylim: [6, 16]
+
+
+  cdd22_map:
+    description: Plot map of CDD.
+    variables:
+      cdd22:
+        preprocessor: pp_globe
+        project: CMIP6
+        mip: day
+        derive: true
+        timerange: '2020/2020'
+        exp: historical
+        supplementary_variables:
+          - short_name: areacella
+            skip: true
+          - short_name: areacello
+            skip: true
+          - short_name: sftlf
+            skip: true
+          - short_name: sftof
+            skip: true
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{exp}'
+        facet_used_for_labels: dataset
+        plots:
+          map:
+            common_cbar: true
+            show_stats: false
+            fontsize: 9
+            pyplot_kwargs:
+              suptitle: '{long_name}'
+            plot_kwargs:
+              default:
+                cmap: YlOrRd
+#                levels: [0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0]
+#                norm: boundary
+#            projection: NorthPolarStereo
+#            projection_kwargs:
+#              central_longitude: 0
+#            axes_kwargs:
+#              set_extent: [-180, 180, 45, 90]
+#            lat: [50, 60, 70, 80, 90]
+
+
+
+
 #      plot:
+#        script: monitor/monitor.py
+#        plots:
+#          clim: {}
+
 #        script: seaborn_diag.py
 #        seaborn_func: displot
 #        reset_index: true
