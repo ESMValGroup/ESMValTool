@@ -488,7 +488,7 @@ diagnostics:
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
       - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 
-      - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1}
+      - {dataset: JRA-55, project: ana4MIPs, type: reanalysis, tier: 1}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
     scripts:
@@ -1137,7 +1137,7 @@ diagnostics:
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
       - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 
-      - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1}
+      - {dataset: JRA-55, project: ana4MIPs, type: reanalysis, tier: 1}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          tier: 3}
 

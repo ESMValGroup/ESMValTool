@@ -103,12 +103,24 @@ jobs:
             source <(pixi shell-hook --as-is --environment esmvaltool-base)
             esmvaltool version
             esmvaltool config copy data-intake-esgf.yml
-            python -c '
-            import intake_esgf
-            intake_esgf.conf["solr_indices"]["esgf.ceda.ac.uk"] = True
-            intake_esgf.conf["solr_indices"]["esgf-data.dkrz.de"] = True
-            intake_esgf.conf.save()
-            '
+            echo '
+              CMIP7:
+                data:
+                  intake-esgf:
+                    type: esmvalcore.io.intake_esgf.IntakeESGFDataSource
+                    facets:
+                      activity: "activity_id"
+                      branding_suffix: "variable_branding_suffix"
+                      dataset: "source_id"
+                      ensemble: "variant_label"
+                      exp: "experiment_id"
+                      frequency: "frequency"
+                      grid: "grid_label"
+                      institute: "institution_id"
+                      project: "project"
+                      region: "region"
+                      short_name: "variable_id"
+            ' >> ~/.config/esmvaltool/data-intake-esgf.yml
             esmvaltool run --max-parallel-tasks=2 testing/recipe_python_for_CI.yml
       - run:
           name: Check dependencies are compatible

@@ -22,7 +22,7 @@ def _normalize_facet_value(value: str) -> str:
 
 
 def _replace_tags(paths, variable):
-    """Replace tags in the config-developer's file with actual values."""
+    """Replace tags in the path templates with actual values."""
     if isinstance(paths, str):
         paths = set((paths.strip("/"),))
     else:
