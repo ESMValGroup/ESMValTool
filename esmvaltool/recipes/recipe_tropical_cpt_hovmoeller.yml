@@ -28,7 +28,7 @@ diagnostics:
         timerange: 2000/2001
     scripts:
       cpt_hovmoeller:
-        script: esmvaltool/diag_scripts/tropopause/cpt_hovmoeller.py
+        script: tropopause/cpt_hovmoeller.py
         plot_filename: tropical_cpt_hovmoeller
         pressure_bounds_hpa: [10.0, 500.0]
         tropical_lat_bounds: [-20.0, 20.0]
