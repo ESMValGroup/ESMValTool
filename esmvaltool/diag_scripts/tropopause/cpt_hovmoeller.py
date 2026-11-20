@@ -342,7 +342,7 @@ def _plot_hovmoeller_set(
     base = 10.0 ** np.floor(np.log10(target))
     candidates = np.array([1, 2, 4, 5, 10]) * base
     tick_step = int(
-        max(round(candidates[np.searchsorted(candidates, target)]), 1)
+        max(round(candidates[np.searchsorted(candidates, target)]), 1),
     )
 
     # colorbar starts and ends exactly on a tick.
@@ -352,7 +352,7 @@ def _plot_hovmoeller_set(
         cbar_max = cbar_min + tick_step
 
     # Subdivide each tick interval to keep roughly 20 shading bands.
-    n_intervals = int(round((cbar_max - cbar_min) / tick_step))
+    n_intervals = round((cbar_max - cbar_min) / tick_step)
     subdiv = max(1, round(20 / n_intervals))
     p_levels = np.linspace(cbar_min, cbar_max, n_intervals * subdiv + 1)
 
@@ -412,7 +412,7 @@ def _plot_hovmoeller_set(
         cbar = fig.colorbar(cf, ax=ax, orientation="vertical", shrink=0.95)
         cbar.set_label("CPT pressure [hPa]", fontsize=16)
         cbar.set_ticks(
-            np.arange(cbar_min, cbar_max + tick_step / 2, tick_step)
+            np.arange(cbar_min, cbar_max + tick_step / 2, tick_step),
         )
         cbar.ax.tick_params(labelsize=12)
 
