@@ -33,14 +33,14 @@ def _get_ancestor_files(cfg, obs_name, projects=None):
     return [d["filename"] for d in datasets]
 
 
-def _get_provenance_record(caption, statistics, plot_type, ancestor_files):
+def _get_provenance_record(caption, statistics, plot_types, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         "ancestors": ancestor_files,
         "authors": ["koirala_sujan"],
         "caption": caption,
         "domains": ["global"],
-        "plot_type": plot_type,
+        "plot_types": plot_types,
         "realms": ["land"],
         "references": ["carvalhais14nature"],
         "statistics": statistics,

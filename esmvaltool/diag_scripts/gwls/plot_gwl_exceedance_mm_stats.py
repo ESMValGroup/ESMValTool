@@ -228,7 +228,7 @@ def main(cfg):
                         "domains": ["global"],
                     }
                     log_provenance(provenance_dict, mean_file, cfg)
-                    provenance_dict.update({"plot_type": ["map"]})
+                    provenance_dict.update({"plot_types": ["map"]})
                     filename = (
                         SEP.join([project, "mm_mean", str(gwl)]) + ".png"
                     )
@@ -244,10 +244,10 @@ def main(cfg):
                         "references": ["swaminathan22jclim"],
                         "projects": ["ukesm"],
                         "domains": ["global"],
-                        "plot_type": ["map"],
+                        "plot_types": ["map"],
                     }
                     log_provenance(provenance_dict, stdev_file, cfg)
-                    provenance_dict.update({"plot_type": ["map"]})
+                    provenance_dict.update({"plot_types": ["map"]})
 
                     filename = (
                         SEP.join([project, "mm_stdev", str(gwl)]) + ".png"

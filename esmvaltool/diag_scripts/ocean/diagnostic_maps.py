@@ -138,8 +138,8 @@ def make_map_plots(
             cfg,
             caption=caption,
             statistics=["mean"],
-            domain=["global"],
-            plot_type=["map"],
+            domains=["global"],
+            plot_types=["map"],
             ancestors=[filename],
         )
 
@@ -257,8 +257,8 @@ def make_map_contour(
             cfg,
             caption=title,
             statistics=["mean"],
-            domain=["global"],
-            plot_type=["map"],
+            domains=["global"],
+            plot_types=["map"],
             ancestors=[filename],
         )
 
@@ -411,8 +411,8 @@ def multi_model_contours(
             cfg,
             caption=title,
             statistics=["mean"],
-            domain=["global"],
-            plot_type=["map"],
+            domains=["global"],
+            plot_types=["map"],
             ancestors=metadata.keys(),
         )
 

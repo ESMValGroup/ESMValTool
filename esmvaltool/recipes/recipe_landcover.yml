@@ -20,8 +20,6 @@ documentation:
 
   references:
     - georgievski18tac
-
-  observation references:
     - esacci-landcover
 
   projects:

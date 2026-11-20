@@ -177,14 +177,14 @@ def get_external_cubes(cfg):
     return (cubes[0], cubes[1], cubes[2])
 
 
-def get_provenance_record(caption, statistics, plot_type, ancestor_files):
+def get_provenance_record(caption, statistics, plot_types, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         "ancestors": ancestor_files,
         "authors": ["schlund_manuel"],
         "caption": caption,
         "domains": ["global"],
-        "plot_type": plot_type,
+        "plot_types": plot_types,
         "realms": ["atmos"],
         "references": ["cox18nature"],
         "statistics": statistics,

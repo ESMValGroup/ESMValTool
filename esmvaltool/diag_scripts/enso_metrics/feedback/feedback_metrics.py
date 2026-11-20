@@ -382,7 +382,7 @@ def get_provenance_record(caption, ancestor_files):
             "beucher_romain",
             "sullivan_arnold",
         ],
-        "references": [
+        "projects": [
             "access-nri",
         ],
         "ancestors": ancestor_files,

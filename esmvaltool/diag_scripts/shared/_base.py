@@ -155,8 +155,8 @@ class ProvenanceLogger:
             record = {
                 'caption': "This is a nice plot.",
                 'statistics': ['mean'],
-                'domain': ['global'],
-                'plot_type': ['zonal'],
+                'domains': ['global'],
+                'plot_types': ['zonal'],
                 'authors': [
                     'first_author',
                     'second_author',
@@ -202,8 +202,8 @@ class ProvenanceLogger:
                 - ancestors
                 - authors
                 - caption
-                - domain
-                - plot_type
+                - domains
+                - plot_types
                 - references
                 - statistics
 

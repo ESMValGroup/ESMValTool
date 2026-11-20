@@ -422,6 +422,7 @@ def main(cfg: dict) -> None:
         "ancestors": [d["filename"] for d in input_data],
         "plot_types": ["line"],
         "references": ["sanderson24gmd"],
+        "domains": ["global"],
         "realms": ["atmos"],
         "themes": ["carbon", "bgphys"],
     }

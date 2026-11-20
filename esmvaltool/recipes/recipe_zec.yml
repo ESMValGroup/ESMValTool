@@ -14,10 +14,6 @@ documentation:
     - gier_bettina
   references:
     - macdougall20
-  domains:
-    - global
-  realms:
-    - atmos
 
 preprocessors:
 
@@ -39,6 +35,8 @@ diagnostics:
 
   zec:
     description: Calculate ZEC for all available models.
+    realms:
+      - atmos
     variables:
       tas_base:
         short_name: tas
