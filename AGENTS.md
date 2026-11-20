@@ -160,6 +160,9 @@ function `parse_resume` in `esmvalcore/_main.py` in ESMValCore).
   users changes.
 - In `.rst` files, keep lines at most 80 characters long and start each
   sentence on a new line.
+- Use inclusive language in documentation, docstrings, and comments. For
+  example, write "refer to" instead of "see" and "allowlist" instead of
+  "whitelist".
 - Link to the ESMValCore documentation with `:ref:` and the `esmvalcore:`
   prefix, e.g. `` :ref:`esmvalcore:recipe` ``.
 - For functions that compute scientific results, add comments with references

@@ -57,8 +57,7 @@ global_ann: &global_ann
 
 sh_mon: &sh_mon
   custom_order: true
-  <<: *mpqbregridder
-  <<: *sh_region
+  <<: [*sh_region, *mpqbregridder]
   mask_multimodel:
   area_statistics:
     operator: mean
@@ -67,8 +66,7 @@ sh_mon: &sh_mon
 
 sh_ann: &sh_ann
   custom_order: true
-  <<: *mpqbregridder
-  <<: *sh_region
+  <<: [*sh_region, *mpqbregridder]
   mask_multimodel:
   area_statistics:
     operator: mean
@@ -77,8 +75,7 @@ sh_ann: &sh_ann
 
 nh_mon: &nh_mon
   custom_order: true
-  <<: *mpqbregridder
-  <<: *nh_region
+  <<: [*nh_region, *mpqbregridder]
   mask_multimodel:
   area_statistics:
     operator: mean
@@ -87,8 +84,7 @@ nh_mon: &nh_mon
 
 nh_ann: &nh_ann
   custom_order: true
-  <<: *mpqbregridder
-  <<: *nh_region
+  <<: [*nh_region, *mpqbregridder]
   mask_multimodel:
   area_statistics:
     operator: mean

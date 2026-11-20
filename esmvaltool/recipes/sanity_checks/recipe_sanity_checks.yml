@@ -31,7 +31,6 @@ timeseries_plot: &timeseries_plot
   plot_kwargs:
     'global mean':
       color: blue
-      label: null
       linestyle: '-'
       linewidth: 2
       label: '{dataset}'
@@ -149,7 +148,6 @@ diagnostics:
             plot_kwargs:
               'global sum':
                 color: blue
-                label: null
                 linestyle: '-'
                 linewidth: 2
                 label: '{dataset}'
@@ -186,7 +184,6 @@ diagnostics:
             plot_kwargs:
               'global sum':
                 color: blue
-                label: null
                 linestyle: '-'
                 linewidth: 2
                 label: '{dataset}'
@@ -222,7 +219,6 @@ diagnostics:
             plot_kwargs:
               'global sum':
                 color: blue
-                label: null
                 linestyle: '-'
                 linewidth: 2
                 label: '{dataset}'
