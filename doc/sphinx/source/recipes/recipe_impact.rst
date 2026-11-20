@@ -31,9 +31,9 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_impact_cmip6.yml
-    * recipe_impact_cmip7.yml
-    * recipe_impact_cordex-cmip6.yml
+    * recipe_impact_cmip6.yml: CMIP6 SSP scenarios.
+    * recipe_impact_cmip7.yml: CMIP7 ScenarioMIP scenarios.
+    * recipe_impact_cordex-cmip6.yml: CORDEX-CMIP6 SSP scenarios.
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 

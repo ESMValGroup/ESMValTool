@@ -21,8 +21,10 @@ documentation:
     - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
     - Future change is calculated for 2035-2065 as compared to 1986-2015.
     - Area is set to Europe (lon 0-39; lat 30-76.25)
-    - All data are taken from the CMIP7 ScenarioMIP high emissions scenario
-      (scen7-h), the closest CMIP7 equivalent of the CMIP6 SSP5-8.5 scenario.
+    - Data are taken from the CMIP7 ScenarioMIP very low (scen7-vl), medium
+      (scen7-m), and high (scen7-h) emissions scenarios, concatenated with the
+      historical experiment. Runs of the emission-driven versions of these
+      scenarios (esm-scen7-*) are concatenated with the esm-hist experiment.
 
   authors:
     - kalverla_peter
@@ -34,10 +36,47 @@ documentation:
     - isenes3
 
 # Datasets were selected by searching ESGF for runs that provide monthly mean
-# tas and pr for the historical and scen7-h experiments.
+# tas and pr without gaps over the period 1986-2065, for the historical
+# experiment followed by a scen7-* experiment, or the esm-hist experiment
+# followed by an esm-scen7-* experiment.
 datasets:
-  - {dataset: CanESM6-0-MR, institute: CCCma, ensemble: r(1:25)i1p1f1, grid: g150}
-  - {dataset: UKCM2a-0-HH, institute: UKNCSP, ensemble: r(1:2)i1p1f1, grid: g137}
+  # historical + scen7-vl
+  - {dataset: ACCESS-ESM1-6, institute: ACCESS-Consortium, exp: [historical, scen7-vl], ensemble: r(1:10)i1p1f1, grid: g115}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [historical, scen7-vl], ensemble: r(1:25)i1p1f1, grid: g150}
+  - {dataset: FGOALS-g3-5, institute: CAS, exp: [historical, scen7-vl], ensemble: r3i1p1f1, grid: g100}
+  - {dataset: KACE-2-0-G, institute: NIMS-KMA, exp: [historical, scen7-vl], ensemble: r1i1p1f1, grid: g110}
+  - {dataset: UKCM2-0-LL, institute: UKNCSP, exp: [historical, scen7-vl], ensemble: r2i1p1f1, grid: g110}
+  - {dataset: UKCM2a-0-HH, institute: UKNCSP, exp: [historical, scen7-vl], ensemble: r(1:2)i1p1f1, grid: g137}
+  # historical + scen7-m
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [historical, scen7-m], ensemble: r(1:25)i1p1f1, grid: g150}
+  # historical + scen7-h
+  - {dataset: ACCESS-ESM1-6, institute: ACCESS-Consortium, exp: [historical, scen7-h], ensemble: r(1:10)i1p1f1, grid: g115}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [historical, scen7-h], ensemble: r(1:25)i1p1f1, grid: g150}
+  - {dataset: FGOALS-g3-5, institute: CAS, exp: [historical, scen7-h], ensemble: r3i1p1f1, grid: g100}
+  - {dataset: KACE-2-0-G, institute: NIMS-KMA, exp: [historical, scen7-h], ensemble: r1i1p1f1, grid: g110}
+  - {dataset: UKCM2a-0-HH, institute: UKNCSP, exp: [historical, scen7-h], ensemble: r(1:2)i1p1f1, grid: g137}
+  # esm-hist + esm-scen7-vl
+  - {dataset: ACCESS-ESM1-6, institute: ACCESS-Consortium, exp: [esm-hist, esm-scen7-vl], ensemble: r1i1p1f1, grid: g115}
+  - {dataset: ACCESS-ESM1-6, institute: ACCESS-Consortium, exp: [esm-hist, esm-scen7-vl], ensemble: r(10:19)i1p1f1, grid: g115}
+  - {dataset: CanESM5-1, institute: CCCma, exp: [esm-hist, esm-scen7-vl], ensemble: r(1:25)i1p2f1, grid: g120}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [esm-hist, esm-scen7-vl], ensemble: r(1:8)i1p1f1, grid: g150}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [esm-hist, esm-scen7-vl], ensemble: r(10:24)i1p1f1, grid: g150}
+  - {dataset: EC-Earth3-ESM-1-1, institute: EC-Earth-Consortium, exp: [esm-hist, esm-scen7-vl], ensemble: r1i1p1f1, grid: g114}
+  - {dataset: UKESM1-3-LL, institute: UKNCSP, exp: [esm-hist, esm-scen7-vl], ensemble: r(1:6)i1p1f1, grid: g110}
+  # esm-hist + esm-scen7-m
+  - {dataset: CanESM5-1, institute: CCCma, exp: [esm-hist, esm-scen7-m], ensemble: r(1:25)i1p2f1, grid: g120}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [esm-hist, esm-scen7-m], ensemble: r(1:8)i1p1f1, grid: g150}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [esm-hist, esm-scen7-m], ensemble: r(10:24)i1p1f1, grid: g150}
+  - {dataset: UKESM1-3-LL, institute: UKNCSP, exp: [esm-hist, esm-scen7-m], ensemble: r(1:4)i1p1f1, grid: g110}
+  - {dataset: UKESM1-3-LL, institute: UKNCSP, exp: [esm-hist, esm-scen7-m], ensemble: r6i1p1f1, grid: g110}
+  # esm-hist + esm-scen7-h
+  - {dataset: ACCESS-ESM1-6, institute: ACCESS-Consortium, exp: [esm-hist, esm-scen7-h], ensemble: r(1:30)i1p1f1, grid: g115}
+  - {dataset: CanESM5-1, institute: CCCma, exp: [esm-hist, esm-scen7-h], ensemble: r(1:25)i1p2f1, grid: g120}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [esm-hist, esm-scen7-h], ensemble: r(1:8)i1p1f1, grid: g150}
+  - {dataset: CanESM6-0-MR, institute: CCCma, exp: [esm-hist, esm-scen7-h], ensemble: r(10:24)i1p1f1, grid: g150}
+  - {dataset: EC-Earth3-ESM-1-1, institute: EC-Earth-Consortium, exp: [esm-hist, esm-scen7-h], ensemble: r1i1p1f1, grid: g114}
+  - {dataset: EC-Earth3-ESM-1-1, institute: EC-Earth-Consortium, exp: [esm-hist, esm-scen7-h], ensemble: r4i1p1f1, grid: g114}
+  - {dataset: UKESM1-3-LL, institute: UKNCSP, exp: [esm-hist, esm-scen7-h], ensemble: r(1:6)i1p1f1, grid: g110}
 
 preprocessors:
 
@@ -101,7 +140,6 @@ diagnostics:
     variables:
       tas_change: &change
         short_name: tas
-        exp: [historical, scen7-h]
         project: CMIP7
         mip: atmos
         frequency: mon
@@ -115,7 +153,6 @@ diagnostics:
         branding_suffix: tavg-u-hxy-u
       tas_bias: &bias
         short_name: tas
-        exp: [historical, scen7-h]
         project: CMIP7
         mip: atmos
         frequency: mon
@@ -139,7 +176,13 @@ diagnostics:
           - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015.
           - Future change is calculated for 2035-2065 as compared to 1986-2015.
           - Area is set to Europe (lon 0-39; lat 30-76.25).
-          - All data are taken from the CMIP7 ScenarioMIP high emissions scenario (scen7-h).
+          - Data are taken from the CMIP7 ScenarioMIP scen7-vl, scen7-m, and scen7-h scenarios, concatenated with the historical experiment.
+          - Data from the emission-driven scenarios (esm-scen7-*) are concatenated with the esm-hist experiment.
         axis_titles:
           bias: Bias with respect to ERA5 (1986-2015)
           change: Projected change (2050 versus 2000)
+        alias_facets:
+          project: project
+          dataset: model
+          exp: experiment
+          ensemble: member

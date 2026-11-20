@@ -21,8 +21,11 @@ documentation:
     - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015, on the 0.25 degree ERA5 grid.
     - Future change is calculated for 2035-2065 as compared to 1986-2015.
     - Results are shown for each CORDEX domain with data available: Europe
-      (EUR-12) and Central America (CAM-25).
-    - All data are taken from the SSP 8.5 scenario.
+      (EUR-12), Central America (CAM-25), North America (NAM-12), Australasia
+      (AUS-25), and the extended Central European convection-permitting
+      domain (CEUX-3).
+    - Data are taken from the SSP1-2.6, SSP2-4.5, SSP3-7.0, and SSP5-8.5
+      scenarios, concatenated with the historical experiment.
 
   authors:
     - kalverla_peter
@@ -98,12 +101,52 @@ preprocessors:
         end_longitude: 33.25
         step_longitude: 0.25
 
+  calculate_bias_NAM:
+    <<: *calculate_bias
+    regrid:
+      <<: *regrid_bias
+      target_grid:
+        start_latitude: 6.25
+        end_latitude: 83
+        step_latitude: 0.25
+        start_longitude: 176.5
+        end_longitude: 352.25
+        step_longitude: 0.25
+
+  calculate_bias_AUS:
+    <<: *calculate_bias
+    regrid:
+      <<: *regrid_bias
+      target_grid:
+        start_latitude: -57.5
+        end_latitude: 43.5
+        step_latitude: 0.25
+        start_longitude: 80.25
+        end_longitude: 243.75
+        step_longitude: 0.25
+
+  calculate_bias_CEUX:
+    <<: *calculate_bias
+    regrid:
+      <<: *regrid_bias
+      target_grid:
+        start_latitude: 42.5
+        end_latitude: 57.5
+        step_latitude: 0.25
+        start_longitude: -4
+        end_longitude: 20.75
+        step_longitude: 0.25
+
 # Each domain has its own diagnostic, named after the domain without its
 # resolution, e.g. EUR. The grid of each model is given by the domain in its
 # dataset entry, so models on another grid of the same domain, e.g. EUR-25, can
-# be added to the diagnostic of that domain.
-# Datasets were selected by searching ESGF for runs that provide tas and pr for
-# the historical and ssp585 experiments, and areacella.
+# be added to the diagnostic of that domain. The data of the CEUX domain is
+# produced with convection-permitting models, which belong to the CPRCM
+# activity instead of the default DD activity.
+# Datasets were selected by searching ESGF for runs that provide monthly mean
+# tas and pr without gaps over the period 1986-2065, for the historical
+# experiment followed by an SSP experiment, and areacella for the historical
+# experiment.
 diagnostics:
   bias_and_change_EUR: &diagnostic
     description: >
@@ -117,17 +160,59 @@ diagnostics:
       - atmos
 
     additional_datasets:
-      - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: NorESM2-MM, ensemble: r1i1p1f1, institute: CNRM-MF, domain: EUR-12}
-      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: CNRM-ESM2-1, ensemble: r1i1p1f2, institute: CLMcom-BTU, domain: EUR-12}
-      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: EC-Earth3-Veg, ensemble: r1i1p1f1, institute: CLMcom-Hereon, domain: EUR-12}
-      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MIROC6, ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
-      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MPI-ESM1-2-HR, ensemble: r1i1p1f1, institute: CLMcom-DWD, domain: EUR-12}
+      # historical + ssp126
+      - {dataset: CCLM6-0-1, rcm_version: v1-r1, driver: EC-Earth3-Veg,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: CMCC-CM2-SR5,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: CNRM-MF, domain: EUR-12}
+      - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: NorESM2-MM,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: CNRM-MF, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: CNRM-ESM2-1,
+         exp: [historical, ssp126], ensemble: r1i1p1f2, institute: CLMcom-BTU, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MIROC6,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MPI-ESM1-2-HR,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: CLMcom-DWD, domain: EUR-12}
+      # historical + ssp245
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: CNRM-ESM2-1,
+         exp: [historical, ssp245], ensemble: r1i1p1f2, institute: CLMcom-BTU, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: EC-Earth3-Veg,
+         exp: [historical, ssp245], ensemble: r1i1p1f1, institute: CLMcom-Hereon, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MIROC6,
+         exp: [historical, ssp245], ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MPI-ESM1-2-HR,
+         exp: [historical, ssp245], ensemble: r1i1p1f1, institute: CLMcom-DWD, domain: EUR-12}
+      # historical + ssp370
+      - {dataset: CCLM6-0-1, rcm_version: v1-r1, driver: EC-Earth3-Veg,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: CCLM6-0-1, rcm_version: v1-r1, driver: MIROC6,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: CMCC-CM2-SR5,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: CNRM-MF, domain: EUR-12}
+      - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: NorESM2-MM,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: CNRM-MF, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: CNRM-ESM2-1,
+         exp: [historical, ssp370], ensemble: r1i1p1f2, institute: CLMcom-BTU, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MIROC6,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MPI-ESM1-2-HR,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: CLMcom-DWD, domain: EUR-12}
+      # historical + ssp585
+      - {dataset: CNRM-ALADIN64E1, rcm_version: v1-r1, driver: NorESM2-MM,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, institute: CNRM-MF, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: CNRM-ESM2-1,
+         exp: [historical, ssp585], ensemble: r1i1p1f2, institute: CLMcom-BTU, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: EC-Earth3-Veg,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, institute: CLMcom-Hereon, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MIROC6,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, institute: CLMcom-KIT, domain: EUR-12}
+      - {dataset: ICON-CLM-202407-1-1, rcm_version: v1-r1, driver: MPI-ESM1-2-HR,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, institute: CLMcom-DWD, domain: EUR-12}
 
     variables:
       tas_change: &change
         short_name: tas
         area: the European CORDEX domain (EUR)
-        exp: [historical, ssp585]
         mip: mon
         project: CORDEX-CMIP6
         timerange: '1986/2065'
@@ -140,7 +225,6 @@ diagnostics:
       tas_bias: &bias
         short_name: tas
         area: the European CORDEX domain (EUR)
-        exp: [historical, ssp585]
         mip: mon
         project: CORDEX-CMIP6
         timerange: '1986/2015'
@@ -160,7 +244,7 @@ diagnostics:
           - Bias is calculated with respect to the ERA5 reanalysis dataset over the period 1986-2015, on the 0.25 degree ERA5 grid.
           - Future change is calculated for 2035-2065 as compared to 1986-2015.
           - Area is set to {area}.
-          - All data are taken from the SSP5-8.5 scenario.
+          - Data are taken from the SSP scenarios, concatenated with the historical experiment.
         axis_titles:
           bias: Bias with respect to ERA5 (1986-2015)
           change: Projected change (2050 versus 2000)
@@ -168,13 +252,16 @@ diagnostics:
           dataset: model
           rcm_version: version_realization
           driver: driver
+          exp: experiment
           ensemble: member
           domain: domain
 
   bias_and_change_CAM:
     <<: *diagnostic
     additional_datasets:
-      - {dataset: CNRM-ALADIN64C1, rcm_version: v1-r1, driver: NorESM2-MM, ensemble: r1i1p1f1, institute: CNRM, domain: CAM-25}
+      # historical + ssp585
+      - {dataset: CNRM-ALADIN64C1, rcm_version: v1-r1, driver: NorESM2-MM,
+         exp: [historical, ssp585], ensemble: r1i1p1f1, institute: CNRM, domain: CAM-25}
 
     variables:
       tas_change:
@@ -191,3 +278,104 @@ diagnostics:
         <<: *pr_bias
         area: the Central American CORDEX domain (CAM)
         preprocessor: calculate_bias_CAM
+
+  bias_and_change_NAM:
+    <<: *diagnostic
+    additional_datasets:
+      # historical + ssp126
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: CanESM5,
+         exp: [historical, ssp126], ensemble: r1i1p2f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: MPI-ESM1-2-LR,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: NorESM2-MM,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: OURANOS, domain: NAM-12}
+      # historical + ssp245
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: CanESM5,
+         exp: [historical, ssp245], ensemble: r1i1p2f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: MPI-ESM1-2-LR,
+         exp: [historical, ssp245], ensemble: r1i1p1f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: NorESM2-MM,
+         exp: [historical, ssp245], ensemble: r1i1p1f1, institute: OURANOS, domain: NAM-12}
+      # historical + ssp370
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: CanESM5,
+         exp: [historical, ssp370], ensemble: r1i1p2f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: MPI-ESM1-2-LR,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: MPI-ESM1-2-LR,
+         exp: [historical, ssp370], ensemble: r2i1p1f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: MPI-ESM1-2-LR,
+         exp: [historical, ssp370], ensemble: r3i1p1f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: MPI-ESM1-2-LR,
+         exp: [historical, ssp370], ensemble: r4i1p1f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: MPI-ESM1-2-LR,
+         exp: [historical, ssp370], ensemble: r5i1p1f1, institute: OURANOS, domain: NAM-12}
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: NorESM2-MM,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: OURANOS, domain: NAM-12}
+      # historical + ssp585
+      - {dataset: CRCM5-SN, rcm_version: v1-r1, driver: CanESM5,
+         exp: [historical, ssp585], ensemble: r1i1p2f1, institute: OURANOS, domain: NAM-12}
+
+    variables:
+      tas_change:
+        <<: *change
+        area: the North American CORDEX domain (NAM)
+      pr_change:
+        <<: *pr_change
+        area: the North American CORDEX domain (NAM)
+      tas_bias:
+        <<: *bias
+        area: the North American CORDEX domain (NAM)
+        preprocessor: calculate_bias_NAM
+      pr_bias:
+        <<: *pr_bias
+        area: the North American CORDEX domain (NAM)
+        preprocessor: calculate_bias_NAM
+
+  bias_and_change_AUS:
+    <<: *diagnostic
+    additional_datasets:
+      # historical + ssp370
+      - {dataset: CNRM-ALADIN64P1, rcm_version: v1-r1, driver: CNRM-ESM2-1,
+         exp: [historical, ssp370], ensemble: r1i1p1f2, institute: IRD-MF, domain: AUS-25}
+
+    variables:
+      tas_change:
+        <<: *change
+        area: the Australasian CORDEX domain (AUS)
+      pr_change:
+        <<: *pr_change
+        area: the Australasian CORDEX domain (AUS)
+      tas_bias:
+        <<: *bias
+        area: the Australasian CORDEX domain (AUS)
+        preprocessor: calculate_bias_AUS
+      pr_bias:
+        <<: *pr_bias
+        area: the Australasian CORDEX domain (AUS)
+        preprocessor: calculate_bias_AUS
+
+  bias_and_change_CEUX:
+    <<: *diagnostic
+    additional_datasets:
+      # historical + ssp126
+      - {dataset: ICON-CLM-202410-2-1-x2yn2, rcm_version: v1-r1, driver: MPI-ESM1-2-HR,
+         exp: [historical, ssp126], ensemble: r1i1p1f1, institute: CLMcom-DWD, activity: CPRCM, domain: CEUX-3}
+      # historical + ssp370
+      - {dataset: ICON-CLM-202410-2-1-x2yn2, rcm_version: v1-r1, driver: MPI-ESM1-2-HR,
+         exp: [historical, ssp370], ensemble: r1i1p1f1, institute: CLMcom-DWD, activity: CPRCM, domain: CEUX-3}
+
+    variables:
+      tas_change:
+        <<: *change
+        area: the extended Central European convection-permitting CORDEX domain (CEUX)
+      pr_change:
+        <<: *pr_change
+        area: the extended Central European convection-permitting CORDEX domain (CEUX)
+      tas_bias:
+        <<: *bias
+        area: the extended Central European convection-permitting CORDEX domain (CEUX)
+        preprocessor: calculate_bias_CEUX
+      pr_bias:
+        <<: *pr_bias
+        area: the extended Central European convection-permitting CORDEX domain (CEUX)
+        preprocessor: calculate_bias_CEUX
