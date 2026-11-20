@@ -9,7 +9,8 @@ alias_facets: dict, optional
     facet values are also written to the columns given in the mapping, so
     ``dataset`` cannot be used as a column name.
     Datasets that lack any of these facets (e.g. observations) are identified
-    by their ``alias``. By default,
+    by their ``alias``. If ``exp`` is one of the facets, each experiment is
+    plotted with a different marker shape. By default,
     ``{project: project, dataset: model, ensemble: member}``.
 notes: list[str], optional
     Notes describing how the results were computed, e.g. the reference
@@ -170,13 +171,24 @@ def plot_scatter(
     tidy_df: pd.DataFrame,
     ancestors: list[str],
     cfg: DiagnosticConfig,
+    experiments: dict[str, Any] | None = None,
 ) -> None:
-    """Plot bias on one axis and change on the other."""
+    """Plot bias on one axis and change on the other.
+
+    ``experiments`` maps dataset aliases to experiments, which are plotted
+    with a different marker shape.
+    """
+    data = tidy_df.reset_index()
+    style = None
+    if experiments:
+        style = "experiment"
+        data[style] = data["dataset"].map(experiments)
     grid = sns.relplot(
-        data=tidy_df,
+        data=data,
         x=METRIC_LABELS["bias"],
         y=METRIC_LABELS["change"],
         hue="dataset",
+        style=style,
         col="variable",
         facet_kws={"sharex": False, "sharey": False},
         kind="scatter",
@@ -330,11 +342,12 @@ def build_vegalite_spec(
     """
     axis_titles = {**METRIC_LABELS, **(axis_titles or {})}
     color_field = alias_facets.get("dataset", "dataset")
+    shape_field = alias_facets.get("exp")
     facet_columns = list(dict.fromkeys([*alias_facets.values(), "project"]))
 
     def scatter(variable: str) -> dict[str, Any]:
         """Plot the bias versus the change for a single variable."""
-        return {
+        view = {
             "title": VEGALITE_TITLES[variable],
             "mark": {"type": "circle", "size": 150},
             "encoding": {
@@ -374,6 +387,14 @@ def build_vegalite_spec(
                 ],
             },
         }
+        if shape_field is not None:
+            # Only the point mark supports shapes
+            view["mark"] = {"type": "point", "filled": True, "size": 150}
+            view["encoding"]["shape"] = {
+                "field": shape_field,
+                "type": "nominal",
+            }
+        return view
 
     return {
         "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
@@ -509,7 +530,13 @@ def main(cfg: DiagnosticConfig) -> None:
     combined["metric"] = [METRIC_LABELS["bias"], METRIC_LABELS["change"]]
 
     tidy_df = make_tidy(combined)
-    plot_scatter(tidy_df, ancestors, cfg)
+    exp_column = alias_facets.get("exp")
+    experiments = (
+        {alias: values.get(exp_column) for alias, values in facets.items()}
+        if exp_column
+        else None
+    )
+    plot_scatter(tidy_df, ancestors, cfg, experiments)
     plot_table(tidy_df, ancestors, cfg)
     plot_htmltable(tidy_df, ancestors, cfg)
     wide_df = make_wide(tidy_df, facets)

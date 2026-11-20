@@ -60,7 +60,9 @@ User settings in recipe
      The values of these facets are joined to build a unique identifier for
      each model run, which is written to the ``dataset`` column of the CSV
      output file. The facet values are also written to the columns given in
-     the mapping, so ``dataset`` cannot be used as a column name. Default:
+     the mapping, so ``dataset`` cannot be used as a column name.
+     If ``exp`` is one of the facets, each experiment is plotted with a
+     different marker shape. Default:
      ``{project: project, dataset: model, ensemble: member}``.
    * notes: list of notes describing how the results were computed, e.g. the
      reference dataset and periods. These are stored in the Vega-Lite

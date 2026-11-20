@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from esmvaltool.diag_scripts.impact import bias_and_change
 from esmvaltool.diag_scripts.impact.bias_and_change import (
     DEFAULT_ALIAS_FACETS,
     METRIC_LABELS,
@@ -134,6 +135,72 @@ def test_build_vegalite_spec_cmip(cmip_df):
 
     # The specification can be serialized to JSON
     json.dumps(spec)
+
+
+def test_build_vegalite_spec_no_shape(cmip_df):
+    spec = build_vegalite_spec(
+        cmip_df,
+        "CMIP6",
+        DEFAULT_ALIAS_FACETS,
+        [],
+        "recipe_impact_20260101_120000",
+    )
+    for view in spec["hconcat"]:
+        assert view["mark"]["type"] == "circle"
+        assert "shape" not in view["encoding"]
+
+
+def test_build_vegalite_spec_shape():
+    alias_facets = {**DEFAULT_ALIAS_FACETS, "exp": "experiment"}
+    experiments = ("historical-scen7-h", "historical-scen7-vl")
+    facets = {
+        f"CMIP7_CanESM6-0-MR_{exp}_r1i1p1f1": {
+            "project": "CMIP7",
+            "model": "CanESM6-0-MR",
+            "experiment": exp,
+            "member": "r1i1p1f1",
+        }
+        for exp in experiments
+    }
+    dataframe = make_wide(make_tidy(list(facets)), facets)
+    spec = build_vegalite_spec(
+        dataframe,
+        "CMIP7",
+        alias_facets,
+        [],
+        "recipe_impact_cmip7_20260101_120000",
+    )
+    values = spec["data"]["values"]
+    assert {v["experiment"] for v in values} == set(experiments)
+    for view in spec["hconcat"]:
+        assert view["mark"]["type"] == "point"
+        assert view["encoding"]["shape"]["field"] == "experiment"
+        tooltip_fields = [t["field"] for t in view["encoding"]["tooltip"]]
+        assert "experiment" in tooltip_fields
+
+
+def test_plot_scatter_experiments(mocker, tmp_path):
+    module = "esmvaltool.diag_scripts.impact.bias_and_change"
+    filename = tmp_path / "bias_vs_change.png"
+    mocker.patch(f"{module}.get_plot_filename", return_value=str(filename))
+    mocker.patch(f"{module}.log_provenance")
+    relplot = mocker.spy(bias_and_change.sns, "relplot")
+    experiments = {
+        "CanESM6-0-MR_historical-scen7-h": "historical-scen7-h",
+        "CanESM6-0-MR_historical-scen7-vl": "historical-scen7-vl",
+    }
+
+    bias_and_change.plot_scatter(
+        make_tidy(list(experiments)),
+        [],
+        {},
+        experiments,
+    )
+
+    assert relplot.call_args.kwargs["style"] == "experiment"
+    data = relplot.call_args.kwargs["data"]
+    assert set(data["experiment"]) == set(experiments.values())
+    assert filename.exists()
 
 
 def test_build_vegalite_spec_cordex(cordex_df):
