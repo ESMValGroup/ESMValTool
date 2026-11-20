@@ -1,0 +1,136 @@
+# CMOR GPP case: ACCESS-ESM1-5 mapping judged against FluxCom GPP + ERA5 drivers.
+#
+#   bash esmvaltool/install_links.sh
+#   python esmvaltool/prepare_cmor_names.py \
+#     --src /path/to/ACCESS-ESM1-5 --dst /path/to/cmip6_esmval --grid gn
+#   python esmvaltool/prepare_obs6_gpp.py \
+#     --src /path/to/vpd_gpp_1deg/obs --dst /path/to/obs6
+#   # config-user.yml:
+#   #   rootpath.CMIP6 -> cmip6_esmval, drs.CMIP6: default  (or ESGF)
+#   #   rootpath.OBS6  -> obs6,         drs.OBS6: default
+#   esmvaltool run recipe_rf_shap_gpp.yml
+---
+documentation:
+  title: Random-forest and SHAP diagnosis of CMIP6 GPP versus observational GPP
+  description: |
+    Learn GPP = f(tas, hurs, rsds, mrsos, pr) on a 1° grid using ExtraTrees.
+    The judged mapping is ACCESS-ESM1-5 historical (CMOR CMIP6). The reference
+    mapping is FluxCom GPP with ERA5 drivers (OBS6 files from prepare_obs6_gpp.py).
+    Explanation distances are written next to the diagnostic tables.
+  authors:
+    - huang_feini
+  maintainer:
+    - swaminathan_ranjini
+  references:
+    - acknow_project
+  projects:
+    - esmval
+
+datasets:
+  - dataset: ACCESS-ESM1-5
+    project: CMIP6
+    exp: historical
+    ensemble: r1i1p1f1
+    grid: gn
+    institute: CSIRO
+
+preprocessors:
+  rf_shap_cube:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+  rf_shap:
+    description: CMIP GPP mapping compared with FluxCom/ERA5 reference explanation
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      gpp:
+        mip: Lmon
+        preprocessor: rf_shap_cube
+        timerange: "2001/2013"
+        additional_datasets:
+          - dataset: FLUXCOM
+            project: OBS6
+            type: sat
+            version: 1
+            tier: 3
+      tas:
+        mip: Amon
+        preprocessor: rf_shap_cube
+        timerange: "2001/2013"
+        additional_datasets:
+          - &era5
+            dataset: ERA5
+            project: OBS6
+            type: reanaly
+            version: 1
+            tier: 3
+      hurs:
+        mip: Amon
+        preprocessor: rf_shap_cube
+        timerange: "2001/2013"
+        additional_datasets:
+          - *era5
+      rsds:
+        mip: Amon
+        preprocessor: rf_shap_cube
+        timerange: "2001/2013"
+        additional_datasets:
+          - *era5
+      mrsos:
+        mip: Lmon
+        preprocessor: rf_shap_cube
+        timerange: "2001/2013"
+        additional_datasets:
+          - *era5
+      pr:
+        mip: Amon
+        preprocessor: rf_shap_cube
+        timerange: "2001/2013"
+        additional_datasets:
+          - *era5
+    scripts:
+      rf_shap:
+        script: rf_shap/diagnostic.py
+        target: gpp
+        predictors:
+          - tas
+          - hurs
+          - rsds
+          - mrsos
+          - pr
+        predictor_dataset: ACCESS-ESM1-5
+        target_dataset: ACCESS-ESM1-5
+        caption: ACCESS-ESM1-5 GPP mapping compared with FluxCom GPP and ERA5 drivers.
+        reference:
+          predictor_dataset: ERA5
+          target_dataset: FLUXCOM
+          n_bins: 20
+          interaction: false
+        rf_shap:
+          seed: 42
+          feature_selection:
+            methods: []
+          x_transform:
+            mode: raw
+          split:
+            method: time
+            test_size: 0.2
+          sampling:
+            method: random
+            n_samples: 8000
+          model:
+            name: extra_trees
+            params:
+              n_estimators: 120
+              max_depth: 12
+              n_jobs: -1
+          explain:
+            shap:
+              enabled: true
+              method: auto
+              max_samples: 1500
