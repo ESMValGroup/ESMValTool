@@ -7,7 +7,7 @@ Overview
 --------
 
 Reproducing ENSO metrics from the
-[CLIVAR package](https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20231121.html)
+`CLIVAR package <https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20231121.html>`_
 with dive down plots of ENSO diagnostics including characteristics, lifecycle, seasonality, feedbacks and teleconnections.
 
 Available recipes and diagnostics
