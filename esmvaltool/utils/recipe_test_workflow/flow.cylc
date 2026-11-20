@@ -54,8 +54,8 @@
         env-script = "eval $(rose task-env)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
-            USER_CONFIG_DIR = ${ROSE_DATAC}/config_dir
-            USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
+            ESMVALTOOL_CONFIG_DIR = ${ROSE_DATAC}/config_dir
+            SITE_CONFIG_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/config
             OUTPUT_DIR = ${ROSE_DATAC}
             ESMVALCORE_DIR = ""
             ESMVALTOOL_DIR = ""
@@ -66,6 +66,7 @@
         [[[environment]]]
             SITE = {{ SITE }}
             ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}/env-file
+            SITE_CONFIG_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}/config
             SHARE_BIN_DIR=${CYLC_WORKFLOW_SHARE_DIR}/bin
 
     [[get_esmval]]
@@ -75,29 +76,7 @@
     [[configure]]
         [[[environment]]]
             ROSE_TASK_APP = configure
-            AUXILIARY_DATA_DIR = {{ AUXILIARY_DATA_DIR }}
-            DOWNLOAD_DIR = {{ DOWNLOAD_DIR }}
-            DRS_CMIP3 = {{ DRS_CMIP3 }}
-            DRS_CMIP5 = {{ DRS_CMIP5 }}
-            DRS_CMIP6 = {{ DRS_CMIP6 }}
-            DRS_CORDEX = {{ DRS_CORDEX }}
-            DRS_OBS = {{ DRS_OBS }}
-            DRS_OBS6 = {{ DRS_OBS6 }}
-            DRS_ANA4MIPS = {{ DRS_ANA4MIPS }}
-            DRS_NATIVE6 = {{ DRS_NATIVE6 }}
-            DRS_OBS4MIPS = {{ DRS_OBS4MIPS }}
-            MAX_PARALLEL_TASKS = {{ MAX_PARALLEL_TASKS }}
-            ROOTPATH_CMIP3 = {{ ROOTPATH_CMIP3 }}
-            ROOTPATH_CMIP5 = {{ ROOTPATH_CMIP5 }}
-            ROOTPATH_CMIP6 = {{ ROOTPATH_CMIP6 }}
-            ROOTPATH_CORDEX = {{ ROOTPATH_CORDEX }}
-            ROOTPATH_OBS = {{ ROOTPATH_OBS }}
-            ROOTPATH_OBS6 = {{ ROOTPATH_OBS6 }}
-            ROOTPATH_ANA4MIPS = {{ ROOTPATH_ANA4MIPS }}
-            ROOTPATH_NATIVE6 = {{ ROOTPATH_NATIVE6 }}
-            ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
-            ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
-            SEARCH_ESGF = {{ SEARCH_ESGF }}
+            DATA_SOURCES_FILE = {{ DATA_SOURCES_FILE }}
 
     [[PROCESS]]
         inherit = None, COMPUTE
