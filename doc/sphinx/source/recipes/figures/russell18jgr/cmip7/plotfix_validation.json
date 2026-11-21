@@ -1,0 +1,18 @@
+{
+  "job": "183401838.gadi-pbs",
+  "exit_status": 0,
+  "walltime": "00:05:10",
+  "source_commit": "3f61c63",
+  "changed_figures": [
+    "6b",
+    "7i"
+  ],
+  "array_equality": "exact",
+  "unchanged_netcdf_arrays": [
+    "russell18jgr-figure6b_ACCESS-ESM1-6_1986-2005.nc",
+    "russell18jgr-figure6b_UKESM1-3-LL_1986-2005.nc",
+    "russell_figure-7i_fgco2_ACCESS-ESM1-6_1986-2005.nc"
+  ],
+  "run": "/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_cmip7/plotfix",
+  "errors": []
+}

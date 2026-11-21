@@ -1,0 +1,20 @@
+[
+  {
+    "model": "ACCESS-ESM1-6",
+    "files": [
+      "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5g/siconc/siconc_tavg-u-hxy-u_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+      "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5g/areacello/areacello_ti-u-hxy-u_fx_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1.nc"
+    ],
+    "latitude_maximum_difference_degrees": 0.0,
+    "longitude_maximum_difference_degrees": 0.0
+  },
+  {
+    "model": "CanESM6-0-MR",
+    "files": [
+      "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5g/siconc/siconc_tavg-u-hxy-u_mon_glb_g147_CanESM6-0-MR_historical_r1i1p1f1_1986-2005.nc",
+      "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5g/areacello/areacello_ti-u-hxy-u_fx_glb_g147_CanESM6-0-MR_1pctCO2_r1i1p1f1.nc"
+    ],
+    "latitude_maximum_difference_degrees": 0.0,
+    "longitude_maximum_difference_degrees": 0.0
+  }
+]

@@ -1,0 +1,126 @@
+{
+  "changed_values": [],
+  "changed_units": [
+    {
+      "file": "Figure_6a/Figure6a/russell18jgr-figure6a_ACCESS-ESM1-5_1986-2005.nc",
+      "before": "unknown",
+      "after": "1e6 m3 s-1"
+    },
+    {
+      "file": "Figure_6b/Figure6b/russell18jgr-figure6b_ACCESS-ESM1-5_1986-2005.nc",
+      "before": "unknown",
+      "after": "PW"
+    },
+    {
+      "file": "Figure_7/fgco2-polar/russell18jgr_polar_fgco2_ACCESS-ESM1-5_1986-2005.nc",
+      "before": "kg m-2 s-1",
+      "after": "g m-2 yr-1"
+    },
+    {
+      "file": "Figure_7/fgco2-polar/russell18jgr_polar_fgco2_CanESM5_1986-2005.nc",
+      "before": "kg m-2 s-1",
+      "after": "g m-2 yr-1"
+    },
+    {
+      "file": "Figure_7/fgco2-polar/russell18jgr_polar_fgco2_GFDL-ESM4_1986-2005.nc",
+      "before": "kg m-2 s-1",
+      "after": "g m-2 yr-1"
+    },
+    {
+      "file": "Figure_7/fgco2-polar/russell18jgr_polar_fgco2_IPSL-CM6A-LR_1986-2005.nc",
+      "before": "kg m-2 s-1",
+      "after": "g m-2 yr-1"
+    }
+  ],
+  "equal_fields": 47,
+  "fronts": {
+    "Figure_3b/Subantarctic-Front/russell18jgr_fig3b_subantarctic-front-position_ACCESS-ESM1-5_1986-2005.nc": {
+      "old_shape": [
+        2,
+        1047
+      ],
+      "new_shape": [
+        2,
+        1049
+      ],
+      "finite_vertices_unchanged": true
+    },
+    "Figure_3b/Subantarctic-Front/russell18jgr_fig3b_subantarctic-front-position_CanESM5_1986-2005.nc": {
+      "old_shape": [
+        2,
+        1434
+      ],
+      "new_shape": [
+        2,
+        1436
+      ],
+      "finite_vertices_unchanged": true
+    },
+    "Figure_3b/Subantarctic-Front/russell18jgr_fig3b_subantarctic-front-position_GFDL-ESM4_1986-2005.nc": {
+      "old_shape": [
+        2,
+        3732
+      ],
+      "new_shape": [
+        2,
+        3734
+      ],
+      "finite_vertices_unchanged": true
+    },
+    "Figure_3b/Subantarctic-Front/russell18jgr_fig3b_subantarctic-front-position_IPSL-CM6A-LR_1986-2005.nc": {
+      "old_shape": [
+        2,
+        1608
+      ],
+      "new_shape": [
+        2,
+        1085
+      ],
+      "finite_vertices_unchanged": false
+    },
+    "Figure_3b-2/Polar-front/russell18jgr_fig3b-2_polar-front-position_ACCESS-ESM1-5_1986-2005.nc": {
+      "old_shape": [
+        2,
+        1314
+      ],
+      "new_shape": [
+        2,
+        1316
+      ],
+      "finite_vertices_unchanged": true
+    },
+    "Figure_3b-2/Polar-front/russell18jgr_fig3b-2_polar-front-position_CanESM5_1986-2005.nc": {
+      "old_shape": [
+        2,
+        1440
+      ],
+      "new_shape": [
+        2,
+        1442
+      ],
+      "finite_vertices_unchanged": true
+    },
+    "Figure_3b-2/Polar-front/russell18jgr_fig3b-2_polar-front-position_GFDL-ESM4_1986-2005.nc": {
+      "old_shape": [
+        2,
+        3183
+      ],
+      "new_shape": [
+        2,
+        3185
+      ],
+      "finite_vertices_unchanged": true
+    },
+    "Figure_3b-2/Polar-front/russell18jgr_fig3b-2_polar-front-position_IPSL-CM6A-LR_1986-2005.nc": {
+      "old_shape": [
+        2,
+        1488
+      ],
+      "new_shape": [
+        2,
+        1091
+      ],
+      "finite_vertices_unchanged": false
+    }
+  }
+}
