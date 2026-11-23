@@ -475,7 +475,7 @@ authors:
     name: Munday, Gregory
     institute: MetOffice, UK
     orcid: https://orcid.org/0000-0003-4750-9923
-    github: mo-gregmunday
+    github: gregrmunday
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
@@ -558,7 +558,7 @@ authors:
     name: Schulze, Kirsten
     institute: Uni Bremen, Germany
     orcid:
-    github: kirsy05
+    github: kirsten-schulze
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -749,6 +749,10 @@ authors:
     name: Wyser, Klaus
     institute: SMHI, Sweden
     orcid:
+  xavier_prince:
+    name: Xavier, Prince
+    institute: MetOffice, UK
+    orcid: 0000-0002-1381-384X
   # Former developers
   braeu_melanie:
     name: Braeu, Melanie
@@ -798,6 +802,11 @@ authors:
     name: Loew, Alexander
     institute: LMU, Germany
     orcid:
+  mcquaid_aoife:
+    name: McQuaid, Aoife
+    institute: DLR, Germany
+    email: aoife.mcquaid@dlr.de
+    orcid: https://orcid.org/0009-0007-8644-5500
   neale_richard:
     name: Neale, Richard
     institute: NCAR, US

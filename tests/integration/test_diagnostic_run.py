@@ -15,12 +15,6 @@ def write_config_file(dirname):
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
-        "rootpath": {
-            "default": str(dirname / "input_dir"),
-        },
-        "drs": {
-            "CMIP5": "BADC",
-        },
         "log_level": "debug",
     }
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))

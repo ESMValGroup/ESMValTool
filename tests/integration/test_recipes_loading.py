@@ -11,58 +11,25 @@ import esmvalcore.cmor.check
 import esmvalcore.dataset
 import esmvalcore.typing
 import pytest
-import pytest_mock
-from esmvalcore.config import CFG, Session, _config
-
-try:
-    # Since ESValCore v2.14.0
-    from esmvalcore.io import local
-
-    USE_DATA_SOURCES = True
-except ImportError:
-    # Prior to ESMValCore v2.14.0
-    from esmvalcore import local
-
-    USE_DATA_SOURCES = False
+from esmvalcore.config import CFG, Session
+from esmvalcore.io import local
 
 import esmvaltool
 
 
 @pytest.fixture
-def session(mocker: pytest_mock.MockerFixture, tmp_path: Path) -> Session:
+def session(tmp_path: Path) -> Session:
     session = CFG.start_session("test")
     session["auxiliary_data_dir"] = str(tmp_path / "auxiliary_data_dir")
     session["check_level"] = esmvalcore.cmor.check.CheckLevels["DEFAULT"]
-    if USE_DATA_SOURCES:
-        for project in session["projects"]:
-            session["projects"][project]["data"] = {
-                "mock_data_source": {
-                    "type": "tests.integration.test_recipes_loading.MockDataSource",
-                    "priority": 1,
-                    "rootpath": tmp_path / project,
-                },
-            }
-    else:
-        # Mock input file finding.
-        mocker.patch.dict(
-            CFG,
-            drs={},
-            search_esgf="never",
-            rootpath={"default": str(tmp_path)},
-        )
-        mocker.patch.object(
-            local,
-            "glob",
-            autospec=True,
-            side_effect=lambda *_, **__: [
-                "test_0001-1849.nc",
-                "test_1850-9999.nc",
-            ],
-        )
-        # The patched_datafinder fixture does not return the correct input
-        # directory structure, so make sure it is set to flat for every project
-        for project in _config.CFG:
-            mocker.patch.dict(_config.CFG[project]["input_dir"], default="/")
+    for project in session["projects"]:
+        session["projects"][project]["data"] = {
+            "mock_data_source": {
+                "type": "tests.integration.test_recipes_loading.MockDataSource",
+                "priority": 1,
+                "rootpath": tmp_path / project,
+            },
+        }
 
     return session
 
