@@ -4,27 +4,28 @@ Tier
    Tier 3: restricted dataset.
 
 Source
-   https://nsidc.org/data/g02202/versions/4
+   https://nsidc.org/data/g02202/versions/6
 
 Last access
-   20231213
+   20261124
 
 Download and processing instructions
     Download data from:
-    https://noaadata.apps.nsidc.org/NOAA/G02202_V4/south/monthly
+    https://noaadata.apps.nsidc.org/NOAA/G02202_V6/south/monthly
     lat and lon from:
-    https://noaadata.apps.nsidc.org/NOAA/G02202_V4/ancillary/
+    https://noaadata.apps.nsidc.org/NOAA/G02202_V6/ancillary/
     area file:
     ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/
     pss25area_v3.dat
 
-    https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf
+    https://nsidc.org/sites/default/files/documents/user-guide/g02202-v006-userguide.pdf
 
 """
 
 import logging
 import os
 import re
+from datetime import datetime
 
 import iris
 import numpy as np
@@ -169,16 +170,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     glob_attrs = cfg["attributes"]
     cmor_table = cfg["cmor_table"]
+    ancillary_file = os.path.join(in_dir, cfg["custom"]["ancillary_file"])
 
     # get aux nc file
-    cubesaux = iris.load(os.path.join(in_dir, "G02202-cdr-ancillary-sh.nc"))
+    cubesaux = iris.load(ancillary_file)
     lat_coord = _create_coord(cubesaux, "lat", "latitude")
     lon_coord = _create_coord(cubesaux, "lon", "longitude")
 
-    year = 1978
+    if start_date is None:
+        start_date = datetime(1978, 11, 1)
+    if end_date is None:
+        end_date = datetime(2026, 10, 1)
     # split by year..
     sample_cube = None
-    for year in range(1979, 2022, 1):
+    for year in range(start_date.year, end_date.year + 1, 1):
         filepaths = _get_filepaths(in_dir, cfg["filename"], year)
 
         if len(filepaths) > 0:

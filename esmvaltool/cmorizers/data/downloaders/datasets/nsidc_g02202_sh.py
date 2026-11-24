@@ -36,9 +36,9 @@ def download_dataset(
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(1979, 1, 1)
-    if end_date is None:
-        end_date = datetime(2023, 1, 1)
+        start_date = datetime(1978, 11, 1)
+    if end_date is None or end_date > datetime(2026, 10, 1):
+        end_date = datetime(2026, 10, 1)
 
     loop_date = start_date
 
@@ -57,28 +57,29 @@ def download_dataset(
     downloader.download_folder(area_dat, [])
 
     anc_path = (
-        "https://noaadata.apps.nsidc.org/NOAA/G02202_V4/"
-        "ancillary/G02202-cdr-ancillary-sh.nc"
+        "https://noaadata.apps.nsidc.org/NOAA/G02202_V6/"
+        "ancillary/G02202-ancillary-pss25-v06r00.nc"
     )
     downloader.download_folder(anc_path, [])
 
     base_path = (
-        "https://noaadata.apps.nsidc.org/NOAA/G02202_V4/south/monthly"
-        "/seaice_conc_monthly_sh_{year}{month:02d}_{other}_v04r00.nc"
+        "https://noaadata.apps.nsidc.org/NOAA/G02202_V6/south/monthly"
+        "/sic_pss25_{year}{month:02d}_{other}_v06r00.nc"
     )
 
-    # regex for n07 changes to f08.. file names
-    # bins #{'197811':'n07','198708':'f08',
-    # '199201':'f11','199510':'f13', '200801':'f17'}
+    # regex for n07 changes to F08.. file names
+    # bins #{'197811':'n07','198708':'F08',
+    # '199201':'F11','199510':'F13', '200801':'F17', '202501':'am2'}
     datels = [
         datetime(1978, 11, 1),
         datetime(1987, 7, 30),
         datetime(1991, 12, 30),
         datetime(1995, 9, 30),
         datetime(2007, 12, 30),
+        datetime(2024, 12, 30),
         end_date,
     ]
-    suffls = ["n07", "f08", "f11", "f13", "f17"]
+    suffls = ["n07", "F08", "F11", "F13", "F17", "am2"]
     isuf = 0
     suffix = suffls[isuf]
     # initialize suffix if dates start higher than initial

@@ -2266,7 +2266,7 @@ diagnostics:
         mip: SImon
     additional_datasets:
       - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
-        type: reanaly, version: 4, start_year: 1979, end_year: 2022}
+        type: reanaly, version: 6, start_year: 1978, end_year: 2026}
     scripts: null
 
   TROPFLUX:
