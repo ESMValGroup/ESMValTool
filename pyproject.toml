@@ -129,7 +129,9 @@ addopts = [
     "--html=test-reports/report.html",
 ]
 log_cli_level = "INFO"
-env = { MPLBACKEND = "Agg" }
+env = [
+    "MPLBACKEND=Agg",
+]
 log_level = "WARNING"
 minversion = "6"
 markers = [
