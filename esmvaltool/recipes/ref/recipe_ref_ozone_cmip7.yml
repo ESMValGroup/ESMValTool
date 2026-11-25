@@ -93,13 +93,13 @@ datasets:
   - project: CMIP7
     activity: CMIP
     branding_suffix: tavg-p19-hxy-air
-    dataset: DUMMY-MODEL
-    ensemble: r1i1p1f3
-    exp: historical
+    dataset: UKESM1-3-LL
+    ensemble: r1i1p1f1
+    exp: esm-hist
     frequency: mon
-    grid: g999
-    institute: MOHC
-    mip: aerosol
+    grid: g110
+    institute: UKNCSP
+    mip: atmosChem
     region: glb
 
 timerange_for_toz_monthly_data: &time_period_toz_monthly
@@ -114,130 +114,130 @@ timerange_for_ozone_profile: &time_period_o3_profile
 
 
 diagnostics:
-# Total column ozone plots
-  polar_cap_time_series_SH:
-    variables:
-      toz:
-        mip: AERmon
-        exp: historical
-        preprocessor: create_time_series_SH
-        <<: *time_period_toz_monthly
-    additional_datasets:
-      - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
-    scripts:
-      plot:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_SH_Oct'
-        facet_used_for_labels: alias
-        savefig_kwargs:
-          dpi: 150
-          bbox_inches: tight
-          orientation: landscape
-        plots:
-          timeseries:
-            plot_kwargs:
-              OBS:
-                color: black
-            pyplot_kwargs:
-              title: Total Column Ozone, 60-85S, October
+# # Total column ozone plots
+  # polar_cap_time_series_SH:
+    # variables:
+      # toz:
+        # mip: AERmon
+        # exp: historical
+        # preprocessor: create_time_series_SH
+        # <<: *time_period_toz_monthly
+    # additional_datasets:
+      # - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
+    # scripts:
+      # plot:
+        # script: monitor/multi_datasets.py
+        # plot_folder: '{plot_dir}'
+        # plot_filename: '{plot_type}_{real_name}_SH_Oct'
+        # facet_used_for_labels: alias
+        # savefig_kwargs:
+          # dpi: 150
+          # bbox_inches: tight
+          # orientation: landscape
+        # plots:
+          # timeseries:
+            # plot_kwargs:
+              # OBS:
+                # color: black
+            # pyplot_kwargs:
+              # title: Total Column Ozone, 60-85S, October
 
-  polar_cap_time_series_NH:
-    variables:
-      toz:
-        mip: AERmon
-        exp: historical
-        preprocessor: create_time_series_NH
-        facet_used_for_labels: alias
-        <<: *time_period_toz_monthly
-    additional_datasets:
-      - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
-    scripts:
-      plot:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_NH_MAR'
-        facet_used_for_labels: alias
-        savefig_kwargs:
-          dpi: 150
-          bbox_inches: tight
-          orientation: landscape
-        plots:
-          timeseries:
-            plot_kwargs:
-              OBS:
-                color: black
-            pyplot_kwargs:
-              title: Total Column Ozone, 60-80N, March
+  # polar_cap_time_series_NH:
+    # variables:
+      # toz:
+        # mip: AERmon
+        # exp: historical
+        # preprocessor: create_time_series_NH
+        # facet_used_for_labels: alias
+        # <<: *time_period_toz_monthly
+    # additional_datasets:
+      # - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
+    # scripts:
+      # plot:
+        # script: monitor/multi_datasets.py
+        # plot_folder: '{plot_dir}'
+        # plot_filename: '{plot_type}_{real_name}_NH_MAR'
+        # facet_used_for_labels: alias
+        # savefig_kwargs:
+          # dpi: 150
+          # bbox_inches: tight
+          # orientation: landscape
+        # plots:
+          # timeseries:
+            # plot_kwargs:
+              # OBS:
+                # color: black
+            # pyplot_kwargs:
+              # title: Total Column Ozone, 60-80N, March
 
-  lat_time_mapplot:
-    variables:
-      toz:
-        mip: AERmon
-        exp: historical
-        preprocessor: create_lat_time_map
-        <<: *time_period_toz_zonalmean
-        additional_datasets:
-          - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
-    scripts:
-      plot:
-        script: monitor/multi_datasets.py
-        facet_used_for_labels: alias
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_LatTime_Map'
-        matplotlib_rc_params:
-          xtick.labelsize: 6
-          ytick.labelsize: 8
-          axes.labelsize: 8
-          axes.titlesize: 8
-        savefig_kwargs:
-          dpi: 150
-          bbox_inches: tight
-          orientation: landscape
-        plots:
-          hovmoeller_time_vs_lat_or_lon:
-            common_cbar: true
-            show_x_minor_ticks: false
-            time_format: '%Y'
-            time_on: x-axis
+  # lat_time_mapplot:
+    # variables:
+      # toz:
+        # mip: AERmon
+        # exp: historical
+        # preprocessor: create_lat_time_map
+        # <<: *time_period_toz_zonalmean
+        # additional_datasets:
+          # - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
+    # scripts:
+      # plot:
+        # script: monitor/multi_datasets.py
+        # facet_used_for_labels: alias
+        # plot_folder: '{plot_dir}'
+        # plot_filename: '{plot_type}_{real_name}_LatTime_Map'
+        # matplotlib_rc_params:
+          # xtick.labelsize: 6
+          # ytick.labelsize: 8
+          # axes.labelsize: 8
+          # axes.titlesize: 8
+        # savefig_kwargs:
+          # dpi: 150
+          # bbox_inches: tight
+          # orientation: landscape
+        # plots:
+          # hovmoeller_time_vs_lat_or_lon:
+            # common_cbar: true
+            # show_x_minor_ticks: false
+            # time_format: '%Y'
+            # time_on: x-axis
 
-  lat_month_mapplot:
-    variables:
-      toz:
-        mip: AERmon
-        exp: historical
-        preprocessor: create_lat_month_map
-        <<: *time_period_toz_zonalmean
-        additional_datasets:
-          - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
-    scripts:
-      plot:
-        script: monitor/multi_datasets.py
-        facet_used_for_labels: alias
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_LatTime_Map'
-        matplotlib_rc_params:
-          xtick.labelsize: 6
-          ytick.labelsize: 8
-          axes.labelsize: 8
-          axes.titlesize: 8
-        savefig_kwargs:
-          dpi: 150
-          bbox_inches: tight
-          orientation: landscape
-        plots:
-          hovmoeller_anncyc_vs_lat_or_lon:
-            common_cbar: true
-            show_x_minor_ticks: false
-            time_on: x-axis
+  # lat_month_mapplot:
+    # variables:
+      # toz:
+        # mip: AERmon
+        # exp: historical
+        # preprocessor: create_lat_month_map
+        # <<: *time_period_toz_zonalmean
+        # additional_datasets:
+          # - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
+    # scripts:
+      # plot:
+        # script: monitor/multi_datasets.py
+        # facet_used_for_labels: alias
+        # plot_folder: '{plot_dir}'
+        # plot_filename: '{plot_type}_{real_name}_LatTime_Map'
+        # matplotlib_rc_params:
+          # xtick.labelsize: 6
+          # ytick.labelsize: 8
+          # axes.labelsize: 8
+          # axes.titlesize: 8
+        # savefig_kwargs:
+          # dpi: 150
+          # bbox_inches: tight
+          # orientation: landscape
+        # plots:
+          # hovmoeller_anncyc_vs_lat_or_lon:
+            # common_cbar: true
+            # show_x_minor_ticks: false
+            # time_on: x-axis
 
 # Ozone profile plot
   zonal_mean_profiles:
     variables:
       o3:
-        mip: Amon
-        exp: historical
-        preprocessor: create_zonal_mean_profile
+        # mip: Amon
+        # exp: historical
+        # preprocessor: create_zonal_mean_profile
         <<: *time_period_o3_profile
         additional_datasets:
           - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3-SAGE-OMPS, tier: 2, reference_for_monitor_diags: true, mip: AERmon, alias: ESACCI-OZONE}
