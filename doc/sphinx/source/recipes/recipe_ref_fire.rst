@@ -171,6 +171,15 @@ References
 Example plots
 -------------
 
+.. _fig_ref_fire_cmip7_burnt_fraction:
+.. figure:: /recipes/figures/ref/burnt_fraction_CanESM6-0-MR_historical_2002_2021.png
+   :align: center
+
+   Burnt fraction from the CMIP7 CanESM6-0-MR historical simulation for
+   2002–2021. The panels show the 5th and 95th percentiles across ConFire
+   parameter samples, averaged over time. This is an example diagnostic
+   output, not a comparison with observed burnt area.
+
 .. _fig_ref_fire_burnt_area:
 .. figure::  /recipes/figures/ref/burnt_fraction_MPI-ESM1-2-LR_historical_2013_2014.png
    :align:   center
