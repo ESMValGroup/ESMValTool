@@ -17,163 +17,32 @@ documentation:
 
 datasets:
   # - {dataset: MIROC6,      project: CMIP6, exp: historical, mip: Amon, ensemble: r1i1p1f1, grid: gn}
-  - dataset: DUMMY-MODEL
+  - dataset: ACCESS-ESM1-6
     drs_specs: MIP-DRS7
     project: CMIP7
     exp: historical
-    ensemble: r1i1p1f2
-    grid: g999
+    ensemble: r1i1p1f1
     activity: CMIP
-    institute: MOHC
+    institute: ACCESS-Consortium
     mip: atmos
     frequency: mon
     region: glb
 
 preprocessors:
-  trend_tas: &trend
-    custom_order: true
-    extract_shape:
-      shapefile: ar6
-      decomposed: true
-      ids:
-        Acronym:
-          - 'NWN'
-          - 'NEN'
-          - 'GIC'
-          - 'WNA'
-          - 'CNA'
-          - 'ENA'
-          - 'NCA'
-          - 'SCA'
-          - 'CAR'
-          - 'NWS'
-          - 'NSA'
-          - 'NES'
-          - 'SAM'
-          - 'SWS'
-          - 'SES'
-          - 'SSA'
-          - 'NEU'
-          - 'WCE'
-          - 'EEU'
-          - 'MED'
-          - 'SAH'
-          - 'WAF'
-          - 'CAF'
-          - 'NEAF'
-          - 'SEAF'
-          - 'WSAF'
-          - 'ESAF'
-          - 'MDG'
-          - 'RAR'
-          - 'WSB'
-          - 'ESB'
-          - 'RFE'
-          - 'WCA'
-          - 'ECA'
-          - 'TIB'
-          - 'EAS'
-          - 'ARP'
-          - 'SAS'
-          - 'SEA'
-          - 'NAU'
-          - 'CAU'
-          - 'EAU'
-          - 'SAU'
-          - 'NZ'
-          - 'WAN'
-          - 'EAN'
-    area_statistics:
-      operator: mean
-    linear_trend:
-    convert_units:
-      units: K yr-1
-
-  trend_pr:
-    <<: *trend
-    convert_units:
-      units: mm kg m-3 day-1 yr-1
-
-  trend_psl:
-    <<: *trend
-    convert_units:
-      units: m-1 kg s-2 yr-1
-
-
   trend_ua200: &trend200
-    custom_order: true
     extract_levels:
       levels: 20000
       scheme: linear
       coordinate: air_pressure
-    extract_shape:
-      shapefile: ar6
-      decomposed: true
-      ids:
-        Acronym:
-          - 'NWN'
-          - 'NEN'
-          - 'GIC'
-          - 'WNA'
-          - 'CNA'
-          - 'ENA'
-          - 'NCA'
-          - 'SCA'
-          - 'CAR'
-          - 'NWS'
-          - 'NSA'
-          - 'NES'
-          - 'SAM'
-          - 'SWS'
-          - 'SES'
-          - 'SSA'
-          - 'NEU'
-          - 'WCE'
-          - 'EEU'
-          - 'MED'
-          - 'SAH'
-          - 'WAF'
-          - 'CAF'
-          - 'NEAF'
-          - 'SEAF'
-          - 'WSAF'
-          - 'ESAF'
-          - 'MDG'
-          - 'RAR'
-          - 'WSB'
-          - 'ESB'
-          - 'RFE'
-          - 'WCA'
-          - 'ECA'
-          - 'TIB'
-          - 'EAS'
-          - 'ARP'
-          - 'SAS'
-          - 'SEA'
-          - 'NAU'
-          - 'CAU'
-          - 'EAU'
-          - 'SAU'
-          - 'NZ'
-          - 'WAN'
-          - 'EAN'
-    area_statistics:
-      operator: mean
-    linear_trend:
-    convert_units:
-      units: m s-1 yr-1
 
   trend_hus200:
     <<: *trend200
-    convert_units:
-      units: year-1
-
 
 diagnostics:
   tas_trends:
     variables:
       tas:
-        preprocessor: trend_tas
+        grid: g115
         mip: Amon
         timerange: 1992/2021
         branding_suffix: tavg-h2m-hxy-u
@@ -184,7 +53,55 @@ diagnostics:
              reference_for_metric: true}
     scripts:
       plot:
-        script: seaborn_diag.py
+        script: ref/regional_trends.py
+        trend_units: K yr-1
+        regions: &ar6_regions
+          - NWN
+          - NEN
+          - GIC
+          - WNA
+          - CNA
+          - ENA
+          - NCA
+          - SCA
+          - CAR
+          - NWS
+          - NSA
+          - NES
+          - SAM
+          - SWS
+          - SES
+          - SSA
+          - NEU
+          - WCE
+          - EEU
+          - MED
+          - SAH
+          - WAF
+          - CAF
+          - NEAF
+          - SEAF
+          - WSAF
+          - ESAF
+          - MDG
+          - RAR
+          - WSB
+          - ESB
+          - RFE
+          - WCA
+          - ECA
+          - TIB
+          - EAS
+          - ARP
+          - SAS
+          - SEA
+          - NAU
+          - CAU
+          - EAU
+          - SAU
+          - NZ
+          - WAN
+          - EAN
         seaborn_func: barplot
         reset_index: true
         write_netcdf: true
@@ -207,7 +124,7 @@ diagnostics:
   pr_trends:
     variables:
       pr:
-        preprocessor: trend_pr
+        grid: g115
         mip: Amon
         timerange: 1992/2021
         branding_suffix: tavg-u-hxy-u
@@ -218,7 +135,9 @@ diagnostics:
              tier: 3, reference_for_metric: true}
     scripts:
       plot:
-        script: seaborn_diag.py
+        script: ref/regional_trends.py
+        trend_units: mm kg m-3 day-1 yr-1
+        regions: *ar6_regions
         seaborn_func: barplot
         reset_index: true
         write_netcdf: true
@@ -242,7 +161,7 @@ diagnostics:
   psl_trends:
     variables:
       psl:
-        preprocessor: trend_psl
+        grid: g115
         mip: Amon
         timerange: 1992/2021
         branding_suffix: tavg-u-hxy-u
@@ -251,7 +170,9 @@ diagnostics:
              reference_for_metric: true}
     scripts:
       plot:
-        script: seaborn_diag.py
+        script: ref/regional_trends.py
+        trend_units: m-1 kg s-2 yr-1
+        regions: *ar6_regions
         seaborn_func: barplot
         reset_index: true
         write_netcdf: true
@@ -275,6 +196,7 @@ diagnostics:
     variables:
       ua:
         preprocessor: trend_ua200
+        grid: g110
         mip: Amon
         timerange: 1992/2021
         branding_suffix: tavg-p19-hxy-air
@@ -283,7 +205,9 @@ diagnostics:
              reference_for_metric: true}
     scripts:
       plot:
-        script: seaborn_diag.py
+        script: ref/regional_trends.py
+        trend_units: m s-1 yr-1
+        regions: *ar6_regions
         seaborn_func: barplot
         reset_index: true
         write_netcdf: true
@@ -306,6 +230,7 @@ diagnostics:
     variables:
       hus:
         preprocessor: trend_hus200
+        grid: g110
         mip: Amon
         timerange: 1992/2021
         branding_suffix: tavg-p19-hxy-u
@@ -314,7 +239,9 @@ diagnostics:
              reference_for_metric: true}
     scripts:
       plot:
-        script: seaborn_diag.py
+        script: ref/regional_trends.py
+        trend_units: year-1
+        regions: *ar6_regions
         seaborn_func: barplot
         reset_index: true
         write_netcdf: true
