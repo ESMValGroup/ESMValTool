@@ -98,8 +98,10 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir, latlon):
     cube.add_aux_coord(latlon[1], (1, 2))
     # add coord typesi
     area_type = AuxCoord(
-        [1.0], standard_name="area_type",
-        var_name="type", long_name="Sea Ice area type"
+        [1.0],
+        standard_name="area_type",
+        var_name="type",
+        long_name="Sea Ice area type",
     )
     cube.add_aux_coord(area_type)
 
@@ -112,8 +114,9 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir, latlon):
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
-    utils.save_variable(cube, var, out_dir,
-                        attrs, unlimited_dimensions=["time"])
+    utils.save_variable(
+        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
     return cube
 
@@ -127,9 +130,9 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
 
     area_file = os.path.join(in_dir, cfg["custom"]["area_file"])
     with open(area_file, "rb") as datfile:
-        areasdmnd = np.fromfile(
-            datfile,
-            dtype=np.int32).reshape(lat_coord.shape)
+        areasdmnd = np.fromfile(datfile, dtype=np.int32).reshape(
+            lat_coord.shape
+        )
 
     # Divide by 1000 to get km2 then multiply by 1e6 to m2 ...*1000
     ardata = areasdmnd * 1000
@@ -140,16 +143,18 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
         long_name=var_info.long_name,
         var_name=var_info.short_name,
         units="m2",
-        dim_coords_and_dims=[(sample_cube.coord("y"), 0),
-                             (sample_cube.coord("x"), 1)],
+        dim_coords_and_dims=[
+            (sample_cube.coord("y"), 0),
+            (sample_cube.coord("x"), 1),
+        ],
     )
     cube.add_aux_coord(lat_coord, (0, 1))
     cube.add_aux_coord(sample_cube.coord("longitude"), (0, 1))
     utils.fix_var_metadata(cube, var_info)
     utils.set_global_atts(cube, glob_attrs)
     utils.save_variable(
-        cube, var_info.short_name, out_dir,
-        glob_attrs, zlib=True)
+        cube, var_info.short_name, out_dir, glob_attrs, zlib=True
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
@@ -159,11 +164,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     # get aux nc file
     cubesaux = iris.load(
-        os.path.join(
-            in_dir, "G02202-ancillary-psn25-v05r00.nc")
-        )
-    coords = [_create_coord(cubesaux, "lat", "latitude"),
-              _create_coord(cubesaux, "lon", "longitude")]
+        os.path.join(in_dir, "G02202-ancillary-psn25-v05r00.nc")
+    )
+    coords = [
+        _create_coord(cubesaux, "lat", "latitude"),
+        _create_coord(cubesaux, "lon", "longitude"),
+    ]
 
     sample_cube = None
     for year in range(1979, 2025):

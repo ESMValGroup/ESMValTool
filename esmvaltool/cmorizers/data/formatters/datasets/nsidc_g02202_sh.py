@@ -170,6 +170,7 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
         zlib=True,
     )
 
+
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     glob_attrs = cfg["attributes"]
@@ -177,9 +178,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     # get aux nc file
     cubesaux = iris.load(
-        os.path.join(
-            in_dir, "G02202-ancillary-pss25-v05r00.nc")
-        )
+        os.path.join(in_dir, "G02202-ancillary-pss25-v05r00.nc")
+    )
     lat_coord = _create_coord(cubesaux, "lat", "latitude")
     lon_coord = _create_coord(cubesaux, "lon", "longitude")
 

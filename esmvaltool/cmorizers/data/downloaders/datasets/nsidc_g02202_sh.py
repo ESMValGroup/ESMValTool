@@ -56,17 +56,26 @@ def download_dataset(
     )
     downloader.download_folder(area_dat, [])
 
-    anc_path = ('https://noaadata.apps.nsidc.org/NOAA/G02202_V5/'
-                'ancillary/G02202-ancillary-pss25-v05r00.nc')
+    anc_path = (
+        "https://noaadata.apps.nsidc.org/NOAA/G02202_V5/"
+        "ancillary/G02202-ancillary-pss25-v05r00.nc"
+    )
     downloader.download_folder(anc_path, [])
 
-    base_path = ('https://noaadata.apps.nsidc.org/NOAA/G02202_V5/south/monthly'
-                 '/sic_pss25_{year}{month:02d}_{other}_v05r00.nc')
+    base_path = (
+        "https://noaadata.apps.nsidc.org/NOAA/G02202_V5/south/monthly"
+        "/sic_pss25_{year}{month:02d}_{other}_v05r00.nc"
+    )
 
-    datels = [datetime(1978, 11, 1), datetime(1987, 7, 30),
-              datetime(1991, 12, 30), datetime(1995, 9, 30),
-              datetime(2007, 12, 30), end_date]
-    suffls = ['n07', 'F08', 'F11', 'F13', 'F17']
+    datels = [
+        datetime(1978, 11, 1),
+        datetime(1987, 7, 30),
+        datetime(1991, 12, 30),
+        datetime(1995, 9, 30),
+        datetime(2007, 12, 30),
+        end_date,
+    ]
+    suffls = ["n07", "F08", "F11", "F13", "F17"]
 
     isuf = 0
     suffix = suffls[isuf]

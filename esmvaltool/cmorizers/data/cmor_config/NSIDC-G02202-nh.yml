@@ -14,7 +14,7 @@ attributes:
 variables:
   siconc:
     mip: SImon
-    raw: cdr_seaice_conc_monthly 
+    raw: cdr_seaice_conc_monthly
     compress: true
 
 
