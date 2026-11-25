@@ -23,7 +23,7 @@ For CMIP7, TCRE should be calculated from the ``esm-flat10`` experiment,
 following the experimental protocol of Sanderson et al (2024).
 
 CMIP7 REF input status
----------------------
+----------------------
 
 The REF recipe ``ref/recipe_ref_tcre.yml`` still contains dummy CMIP7 dataset
 selections and cannot yet calculate TCRE from published CMIP7 data.
