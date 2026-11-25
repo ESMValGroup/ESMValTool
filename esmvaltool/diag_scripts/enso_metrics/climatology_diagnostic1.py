@@ -47,7 +47,7 @@ def plot_level1(input_data, cfg, provenance):
             cube,
         )
 
-        if dataset["project"] == "CMIP6":
+        if dataset["project"].startswith("CMIP"):
             qplt.plot(cube, label=dataset["dataset"])
             model_data = cube.data
         else:
@@ -130,48 +130,48 @@ def provenance_record(var_grp, ancestor_files):
     caption = {
         "pr_double": (
             "Meridional bias in the time-mean precipitation structure "
-            + "across the eastern Pacific (averaged between 150-90°W), "
-            + "primarily illustrating the double intertropical convergence "
-            + "zone (ITCZ) bias."
+            "across the eastern Pacific (averaged between 150-90°W), "
+            "primarily illustrating the double intertropical convergence "
+            "zone (ITCZ) bias."
         ),
         "eq_pr_bias": (
             "Zonal bias in the time-mean precipitation structure across "
-            + "the equatorial Pacific (averaged between 5°S-5°N), "
-            + "illustrating the increased precipitation in the eastern "
-            + "Pacific and decreased precipitation in the western Pacific."
+            "the equatorial Pacific (averaged between 5°S-5°N), "
+            "illustrating the increased precipitation in the eastern "
+            "Pacific and decreased precipitation in the western Pacific."
         ),
         "eq_sst_bias": (
             "Zonal bias in the sea surface temperature structure across "
-            + "the equatorial Pacific (averaged between 5°S-5°N), primarily "
-            + "illustrating the cold tongue bias (typically warmer near "
-            + "South America and cooler further west)."
+            "the equatorial Pacific (averaged between 5°S-5°N), primarily "
+            "illustrating the cold tongue bias (typically warmer near "
+            "South America and cooler further west)."
         ),
         "eq_tauu_bias": (
             "Zonal bias in the structure of zonal wind stress across "
-            + "the equatorial Pacific (averaged between 5°S-5°N), primarily "
-            + "highlighting the trade winds bias (typically weaker "
-            + "circulation in the central Pacific and stronger in the "
-            + "western Pacific)."
+            "the equatorial Pacific (averaged between 5°S-5°N), primarily "
+            "highlighting the trade winds bias (typically weaker "
+            "circulation in the central Pacific and stronger in the "
+            "western Pacific)."
         ),
         "pr_double_seacycle": (
             "Meridional bias in the amplitude of the mean seasonal "
-            + "precipitation cycle in the eastern Pacific "
-            + "(averaged between 150-90°W). "
+            "precipitation cycle in the eastern Pacific "
+            "(averaged between 150-90°W). "
         ),
         "eq_pr_seacycle": (
             "Zonal bias in the amplitude of the mean seasonal cycle of "
-            + "precipitation in the equatorial Pacific "
-            + "(averaged between 5°S-5°N)."
+            "precipitation in the equatorial Pacific "
+            "(averaged between 5°S-5°N)."
         ),
         "eq_sst_seacycle": (
             "Zonal bias in the amplitude of the mean seasonal cycle of sea "
-            + "surface temperature in the equatorial Pacific "
-            + "(averaged between 5°S-5°N)."
+            "surface temperature in the equatorial Pacific "
+            "(averaged between 5°S-5°N)."
         ),
         "eq_tauu_seacycle": (
             "Zonal bias in the amplitude of the mean seasonal cycle of "
-            + "zonal wind stress in the equatorial Pacific "
-            + "(averaged between 5°S-5°N)."
+            "zonal wind stress in the equatorial Pacific "
+            "(averaged between 5°S-5°N)."
         ),
         "values": "List of metric values.",
     }
@@ -201,15 +201,16 @@ def main(cfg):
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
-        logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
+        datasets = [attr["dataset"] for attr in var_attr]
+        logger.info("%s : %d, %s", grp, len(var_attr), datasets)
         pairs = [var_attr[-1]]  # obs to list
-        prov = provenance_record(grp, list(cfg["input_data"].keys()))
+        prov = provenance_record(grp, [attr["filename"] for attr in var_attr])
         for metadata in var_attr:
             logger.info("iterate though datasets\n %s", pformat(metadata))
-            if metadata["project"] == "CMIP6":
+            if metadata["project"].startswith("CMIP"):
                 pairs.append(metadata)
                 fig, filename, rmse = plot_level1(pairs, cfg, prov)
-
+                logger.info("metric %s", rmse)
                 save_figure(
                     "_".join(filename),
                     prov,

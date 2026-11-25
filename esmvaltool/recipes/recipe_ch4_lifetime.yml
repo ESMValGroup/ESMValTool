@@ -1,0 +1,72 @@
+# ESMValTool
+# recipe_ch4_lifetime.yml
+---
+documentation:
+  title: CH4 lifetime.
+  description: Compute CH4 lifetime.
+  authors:
+    - winterstein_franziska
+    - schlund_manuel
+  maintainer:
+    - winterstein_franziska
+  references:
+    - acknow_project
+
+
+datasets:
+  - {project: CMIP6, dataset: BCC-ESM1, exp: historical, ensemble: r1i1p1f1, timerange: 2010/2014, grid: gn, title: BCC-ESM1 (2010-2014)}
+  - {project: CMIP6, dataset: MRI-ESM2-0, exp: historical, ensemble: r1i1p1f1, timerange: 2010/2014, grid: gn, title: MRI-ESM2-0 (2010-2014)}
+
+
+preprocessors:
+  plev19:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      target_grid: 1x1
+      scheme: nearest
+
+diagnostics:
+  lifetime:
+    scripts:
+      plot_annual_means: &script_settings
+        script: lifetime/lifetime.py
+        reactant: ch4
+        molarmass: 16.05
+        weight_type: mass CH4
+        units: years
+        oxidant:
+          oh:
+            A: 1.85e-20
+            ER: 987.0
+            b: 2.82
+        regions: [TROP, STRA]
+        facet_used_for_labels: title
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{dataset}_{real_name}'
+        plots:
+          timeseries:
+            annual_mean: both
+            annual_mean_kwargs:
+              linestyle: --
+            display_mean: true
+            plot_kwargs:
+              BCC-ESM1 (2010-2014):
+                color: C0
+              MRI-ESM2-0 (2010-2014):
+                color: C1
+    variables:
+      ch4:
+        mip: Amon
+        preprocessor: plev19
+      oh:
+        mip: AERmon
+        preprocessor: plev19
+      ta:
+        mip: Amon
+        preprocessor: plev19
+      hus:
+        mip: Amon
+        preprocessor: plev19

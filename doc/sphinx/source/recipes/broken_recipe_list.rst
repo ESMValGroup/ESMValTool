@@ -1,3 +1,5 @@
+:html_theme.sidebar_secondary.remove:
+
 .. _broken-recipe-list:
 
 Broken recipe list
@@ -17,23 +19,43 @@ More details can be found in the :ref:`broken recipe policy
      - Broken since release
      - Problem
      - GitHub issue
-   * - `recipe_check_obs.yml`
-     - All
-     - v2.12.0
-     - Various missing datasets
-     - `#3939 <https://github.com/ESMValGroup/ESMValTool/issues/3939>`_
-   * - :ref:`recipe_climwip_brunner2019_med.yml <recipe_climwip>`
-     - All (preprocessor issue)
-     - v2.11.0
-     - Failed to run preprocessor function ``fix_metadata`` on the data: Unable to convert units
-     - `#3694 <https://github.com/ESMValGroup/ESMValTool/issues/3694>`_
-   * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
-     - ``Figure_4``
-     - v2.11.0
-     - CESM1 CMIP5 Omon data no longer available
-     - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
-   * - :ref:`recipe_zmnam.yml <recipes_zmnam>`
-     - ``zmnam``
-     - v2.12.0
-     - Diagnostic failure
-     - `#3938 <https://github.com/ESMValGroup/ESMValTool/issues/3938>`_
+   * - ``recipe_kcs.yml``
+     - ``kcs/local_resampling.py``
+     - v2.14.0
+     - Diagnostic error (related to datetimes)
+     - :issue:`4353`
+   * - ``recipe_weathertyping_CMIP6.yml``
+     -
+     - v2.14.0
+     - Missing data (Observations, daily)
+     - :issue:`4533`
+   * - ``recipe_aod_aeronet_assess.yml``
+     -
+     - v2.15.0
+     - Missing data (version for AERONET)
+     - :issue:`4541`
+   * - ``recipe_miles_regimes.yml``, ``recipe_miles_eof.yml``, ``recipe_miles_block.yml``
+     - ``miles/miles_regimes.R``, ``miles/miles_eof.R``, ``miles/miles_block.R``
+     - v2.15.0
+     - Diagnostic error (hangs)
+     - :issue:`4542`
+   * - ``recipe_flato13ipcc_figures926_927.yml``
+     - ``carbon_cycle/main.ncl``
+     - v2.15.0
+     - Diagnostic error (``fig09-27bottom`` hangs)
+     - :issue:`4543`
+   * - ``recipe_ipccwg1ar6ch3_atmosphere.yml``
+     - ``ipcc_ar6/precip_anom.ncl``
+     - v2.15.0
+     - Diagnostic error (with MulitModelMean)
+     - :issue:`4544`
+   * - ``recipe_extreme_events.yml``
+     - ``extreme_events/ extreme_events.R``
+     - v2.15.0
+     - Diagnostic error (open filename)
+     - :issue:`4546`
+   * - ``recipe_climate_patterns.yml``
+     -
+     - v2.15.0
+     - Data/Fix error
+     - :issue:`4558`

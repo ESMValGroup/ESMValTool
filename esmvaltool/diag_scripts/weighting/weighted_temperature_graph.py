@@ -114,7 +114,7 @@ def visualize_and_save_temperatures(
 
     # Fix duplicate labels
     handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))  # dict removes dupes
+    by_label = dict(zip(labels, handles, strict=True))  # dict removes dupes
     axes.legend(by_label.values(), by_label.keys())
 
     start_year = cfg["settings"]["start_year"]
@@ -129,7 +129,9 @@ def visualize_and_save_temperatures(
     plt.close(figure)
 
     filename_data = get_diagnostic_filename(
-        "temperature_anomalies", cfg, extension="nc"
+        "temperature_anomalies",
+        cfg,
+        extension="nc",
     )
     temperature.to_netcdf(filename_data)
 
@@ -149,7 +151,7 @@ def main(cfg):
 
     settings = cfg["settings"]
     central_estimate_var = settings.get("central_estimate", 50)
-    if isinstance(central_estimate_var, (int, float)):
+    if isinstance(central_estimate_var, int | float):
         central_estimate = calculate_percentiles(
             model_data,
             np.array([central_estimate_var]),
@@ -162,11 +164,11 @@ def main(cfg):
     elif central_estimate_var == "mean":
         central_estimate = model_data.mean("model_ensemble")
         central_estimate_weighted = model_data.weighted(weights).mean(
-            "model_ensemble"
+            "model_ensemble",
         )
 
     percentiles = np.array(
-        [settings.get("lower_bound", 25), settings.get("upper_bound", 75)]
+        [settings.get("lower_bound", 25), settings.get("upper_bound", 75)],
     )
 
     uncertainty_range = calculate_percentiles(

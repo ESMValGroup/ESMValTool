@@ -16,7 +16,7 @@ Download and processing instructions
      - GRCTellus.JPL.200204_202108.GLO.RL06M.MSCNv02CRI.nc
      - LAND_MASK.CRI.nc
  - Download the grace months table  which holds important information
-   on data coverage. Save it in the RAWOBSDIR.
+   on data coverage. Save it in the Tier3/GRACE directory.
       https://podaac-tools.jpl.nasa.gov/drive/files/allData/gracefo/docs/GRACE_GRACE-FO_Months_RL06.csv
  - Manually inspect and check the months table
 
@@ -62,10 +62,10 @@ def _make_monthly_data_contiguous(in_file, out_file, cfg):
     time_grace[0].append(grace_months_table["YEAR"].iloc[0])
     time_grace[1].append(grace_months_table["YEAR"].iloc[-1])
     time_grace[0].append(
-        datetime.strptime(grace_months_table["MONTH"].iloc[0], "%b").month
+        datetime.strptime(grace_months_table["MONTH"].iloc[0], "%b").month,
     )
     time_grace[1].append(
-        datetime.strptime(grace_months_table["MONTH"].iloc[-1], "%b").month
+        datetime.strptime(grace_months_table["MONTH"].iloc[-1], "%b").month,
     )
     time_grace[0].append(15)
     time_grace[1].append(15)
@@ -81,7 +81,7 @@ def _make_monthly_data_contiguous(in_file, out_file, cfg):
 
     # Now fill the array with grace data
     for nmonth, recindex in enumerate(
-        grace_months_table["GRACE/GRACE-FO record index"]
+        grace_months_table["GRACE/GRACE-FO record index"],
     ):
         if not np.isnan(recindex):
             data[nmonth, :, :] = original[int(recindex - 1), :, :].data
@@ -129,7 +129,8 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
     cube = iris.load_cube(
-        str(in_file), constraint=NameConstraint(var_name=var["raw"])
+        str(in_file),
+        constraint=NameConstraint(var_name=var["raw"]),
     )
 
     # Set correct names
@@ -164,12 +165,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     cfg["work_dir"] = cfg_user.work_dir
     # Pass on some parameters to cfg file
-    cfg["rawobsdir"] = cfg_user["rootpath"]["RAWOBS"][0]
     cfg["in_dir"] = in_dir
     # If it doesn't exist, create it
     if not os.path.isdir(cfg["work_dir"]):
         logger.info(
-            "Creating working directory for resampling: %s", cfg["work_dir"]
+            "Creating working directory for resampling: %s",
+            cfg["work_dir"],
         )
         os.mkdir(cfg["work_dir"])
 
@@ -180,7 +181,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         in_file = os.path.join(in_dir, var["file"])
         logger.info("Structure monthly data")
         out_file = os.path.join(
-            cfg["work_dir"], "grace_monthly_data_contiguous.nc"
+            cfg["work_dir"],
+            "grace_monthly_data_contiguous.nc",
         )
         _make_monthly_data_contiguous(in_file, out_file, cfg)
         in_file = out_file

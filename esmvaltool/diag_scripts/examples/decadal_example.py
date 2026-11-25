@@ -19,6 +19,7 @@ class DecadalExample:
     def __init__(self, config):
         """
         Set diagnostic parameters and constants.
+
         Parameters
         ----------
             config : dict
@@ -29,7 +30,8 @@ class DecadalExample:
     @staticmethod
     def get_provenance_record(title, ancestor_files):
         """Create a provenance record describing the diagnostic data and
-        plot."""
+        plot.
+        """
         caption = (
             f"Comparison of {title} between a DCPP experiment"
             "and an observational dataset."
@@ -69,13 +71,17 @@ class DecadalExample:
             sub_exp = dataset["sub_experiment"]
             cube.coord("time").bounds = None
             plt.plot(
-                cube.coord("time").points, cube.data, label=f"{name}-{sub_exp}"
+                cube.coord("time").points,
+                cube.data,
+                label=f"{name}-{sub_exp}",
             )
             ancestors.append(dataset["filename"])
 
         plt.rcParams["figure.figsize"] = (40, 6)
         plt.legend(
-            loc="center left", bbox_to_anchor=(1, 0.5), prop={"size": 5.5}
+            loc="center left",
+            bbox_to_anchor=(1, 0.5),
+            prop={"size": 5.5},
         )
         plt.xlabel("time (days since 01-01-1850)")
         plt.ylabel("Temperature (K)")

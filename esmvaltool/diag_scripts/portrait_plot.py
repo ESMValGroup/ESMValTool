@@ -228,7 +228,7 @@ def load_data(cfg, metas):
     data = xr.Dataset({"var": var_data}, coords=coords)
     # loop over each cell (coord combination) and load data if existing
     for coord_tuple in itertools.product(*coords.values()):
-        selection = dict(zip(coords.keys(), coord_tuple))
+        selection = dict(zip(coords.keys(), coord_tuple, strict=True))
         data["var"].loc[selection] = open_file(metas, **selection)
     if cfg["default_split"] is None:
         cfg["default_split"] = data.coords[cfg["split_by"]].values[0]
@@ -290,7 +290,7 @@ def split_legend(cfg, grid, data):
                 edgecolor="black",
                 linewidth=0.5,
                 fill=True,
-            )
+            ),
         )
         label_at[i](label)
 
@@ -402,7 +402,7 @@ def plot(cfg, data):
         axes_pad=0.1,
     )
     # remap colorbar to 10 discrete steps
-    cmap = mpl.cm.get_cmap(cfg["plot_kwargs"]["cmap"], 10)
+    cmap = plt.get_cmap(cfg["plot_kwargs"]["cmap"], 10)
     cfg["plot_kwargs"]["cmap"] = cmap
     for i in range(group_count):
         group = data.isel({cfg["group_by"]: i})
@@ -477,7 +477,7 @@ def sort_data(cfg, dataset):
             dataset[cfg["y_by"]].str.lower(),
             dataset[cfg["group_by"]].str.lower(),
             dataset[cfg["split_by"]].str.lower(),
-        ]
+        ],
     )
     if cfg["x_by"] in ["alias", "dataset"]:
         # NOTE: not clean, but it works for many cases
@@ -517,7 +517,9 @@ def main(cfg):
     dataset = sort_data(cfg, dataset)
     if cfg["normalize"] is not None:
         dataset["var"] = normalize(
-            dataset["var"], cfg["normalize"], [cfg["x_by"], cfg["group_by"]]
+            dataset["var"],
+            cfg["normalize"],
+            [cfg["x_by"], cfg["group_by"]],
         )
     with mpl.rc_context(cfg["matplotlib_rc_params"]):
         plot(cfg, dataset["var"])

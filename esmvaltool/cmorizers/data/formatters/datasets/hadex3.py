@@ -71,7 +71,11 @@ def _extract_variable(var, var_info, cmor_info, attrs, filepath, out_dir):
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        var,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -88,7 +92,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         filepath = os.path.join(
             in_dir,
             filename.format(
-                raw=var_info["raw"], raw_frequency=var_info["raw_frequency"]
+                raw=var_info["raw"],
+                raw_frequency=var_info["raw_frequency"],
             ),
         )
         if os.path.isfile(filepath):
@@ -99,8 +104,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         glob_attrs["mip"] = var_info["mip"]
         cmor_info = cmor_table.get_variable(var_info["mip"], var_name)
         _extract_variable(
-            var, var_info, cmor_info, glob_attrs, filepath, out_dir
+            var,
+            var_info,
+            cmor_info,
+            glob_attrs,
+            filepath,
+            out_dir,
         )
         logger.info(
-            "CMORization of %s in %s table was successful", var_name, var_mip
+            "CMORization of %s in %s table was successful",
+            var_name,
+            var_mip,
         )

@@ -11,7 +11,7 @@ attributes:
   dataset_id: CT2019
   version: '2019'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS6
   source: 'https://www.esrl.noaa.gov/gmd/ccgg/carbontracker/index.php'
   reference: 'ct2019'

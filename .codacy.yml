@@ -1,28 +1,15 @@
 # codacy configuration file
-
 ---
-
 engines:
-    coverage:
-        enabled: false
-        exclude_paths: [
-            'tests',
-        ]
-    metrics:
-        enabled: true
-    duplication:
-        enabled: true
-    prospector:
-        enabled: true
-    pylint:
-        enabled: true
-        python_version: 3
+  coverage:
+    exclude_paths: ["tests"]
 
-exclude_paths: [
-    'archive/**',
-    'doc/sphinx/**',
-    'esmvaltool/cmor/tables/**',
-    'tests/**',
-    'esmvaltool/utils/recipe_test_workflow/app/configure/bin/test_configure.py',
-    'esmvaltool/utils/recipe_test_workflow/app/generate_report/bin/test_generate_html_report.py',
-]
+exclude_paths:
+  [
+    "archive/**",
+    "doc/sphinx/**",
+    "esmvaltool/cmor/tables/**",
+    "tests/**",
+    "esmvaltool/utils/recipe_test_workflow/app/configure/bin/test_configure.py",
+    "esmvaltool/utils/recipe_test_workflow/app/generate_report/bin/test_generate_html_report.py",
+  ]

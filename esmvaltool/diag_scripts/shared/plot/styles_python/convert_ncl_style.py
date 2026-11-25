@@ -150,8 +150,9 @@ def write_yml_file(dataset_info, file_name):
             header = header_file.read()
         outfile.write(
             header.format(
-                output_file=OUTPUT_FILE, script=os.path.basename(__file__)
-            )
+                output_file=OUTPUT_FILE,
+                script=os.path.basename(__file__),
+            ),
         )
         yaml.safe_dump(dataset_info, outfile, default_flow_style=False)
     print(f"Wrote '{file_name}'")
@@ -160,7 +161,7 @@ def write_yml_file(dataset_info, file_name):
 # Execute script if called directly
 if __name__ == "__main__":
     INPUT_PATH = os.path.normpath(
-        os.path.join(BASE_DIR, "..", "styles", INPUT_FILE)
+        os.path.join(BASE_DIR, "..", "styles", INPUT_FILE),
     )
     OUTPUT_PATH = os.path.join(BASE_DIR, OUTPUT_FILE)
     STYLES = read_ncl_style(INPUT_PATH)

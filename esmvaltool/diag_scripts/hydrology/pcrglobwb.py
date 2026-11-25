@@ -48,7 +48,7 @@ def add_spinup_year(cube, cube_climatology):
     """
     # Remove leap year day from climatology
     cube_climatology = cube_climatology.extract(
-        iris.Constraint(day_of_year=lambda cell: cell < 366)
+        iris.Constraint(day_of_year=lambda cell: cell < 366),
     )
 
     # Set climatology year in front of regular startyear
@@ -83,7 +83,7 @@ def add_spinup_year(cube, cube_climatology):
         coord.guess_bounds()
         coord_climatology = cube_climatology.coord(coord_name)
         coord_climatology.points = coord_climatology.core_points().astype(
-            "float32"
+            "float32",
         )
         coord_climatology.bounds = None
         coord_climatology.guess_bounds()
@@ -97,11 +97,14 @@ def add_spinup_year(cube, cube_climatology):
 def main(cfg):
     """Process data for use as input to the PCR-GLOBWB hydrological model."""
     for dataset, metadata in group_metadata(
-        cfg["input_data"].values(), "dataset"
+        cfg["input_data"].values(),
+        "dataset",
     ).items():
         for short_name in "pr", "tas":
             logger.info(
-                "Processing variable %s for dataset %s", short_name, dataset
+                "Processing variable %s for dataset %s",
+                short_name,
+                dataset,
             )
 
             # Load preprocessed cubes for normal data and climatology
@@ -142,14 +145,14 @@ def main(cfg):
                     "pcrglobwb",
                     Path(var["filename"]).stem,
                     cfg["basin"],
-                ]
+                ],
             )
             output_file = get_diagnostic_filename(basename, cfg)
             iris.save(cube, output_file, fill_value=1.0e20)
 
             # Store provenance
             provenance_record = get_provenance_record(
-                [var["filename"], var_climatology["filename"]]
+                [var["filename"], var_climatology["filename"]],
             )
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(output_file, provenance_record)

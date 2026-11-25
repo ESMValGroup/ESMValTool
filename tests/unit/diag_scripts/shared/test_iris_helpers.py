@@ -19,7 +19,8 @@ AUX_COORD_2 = iris.coords.AuxCoord([10.0, 20.0, 30.0], long_name="longer")
 SMALL_COORD = iris.coords.DimCoord([0.0], long_name=LONG_NAME)
 LONG_COORD_1 = iris.coords.AuxCoord([-1.0, 0.0, 1.0, 1.0], long_name=LONG_NAME)
 LONG_COORD_2 = iris.coords.DimCoord(
-    [-1.0, -0.5, 0.0, 1.0], long_name=LONG_NAME
+    [-1.0, -0.5, 0.0, 1.0],
+    long_name=LONG_NAME,
 )
 WRONG_COORD = iris.coords.DimCoord([-200.0, +200.0], long_name=LONG_NAME)
 SCALAR_COORD = iris.coords.AuxCoord(2.71, long_name="e")
@@ -224,7 +225,8 @@ def test_convert_to_iris(dict_in, dict_out):
 
 
 @mock.patch(
-    "esmvaltool.diag_scripts.shared.iris_helpers.iris.load_cube", autospec=True
+    "esmvaltool.diag_scripts.shared.iris_helpers.iris.load_cube",
+    autospec=True,
 )
 def test_get_mean_cube(mock_load_cube):
     """Test calculation of mean cubes."""
@@ -257,7 +259,8 @@ TEST_IRIS_PROJECT_CONSTRAINT = [
 
 
 @pytest.mark.parametrize(
-    "constr,negate,data,points", TEST_IRIS_PROJECT_CONSTRAINT
+    "constr,negate,data,points",
+    TEST_IRIS_PROJECT_CONSTRAINT,
 )
 def test_iris_project_constraint(constr, negate, data, points):
     """Test iris constraint for projects."""
@@ -280,15 +283,17 @@ def test_iris_project_constraint(constr, negate, data, points):
         },
     ]
     dataset_coord = iris.coords.AuxCoord(
-        ["a", "b", "c", "d", "e"], long_name="dataset"
+        ["a", "b", "c", "d", "e"],
+        long_name="dataset",
     )
     cube = iris.cube.Cube(
-        np.arange(5.0) + 2.0, aux_coords_and_dims=[(dataset_coord, 0)]
+        np.arange(5.0) + 2.0,
+        aux_coords_and_dims=[(dataset_coord, 0)],
     )
     new_cube = iris.cube.Cube(
         data,
         aux_coords_and_dims=[
-            (iris.coords.AuxCoord(points, long_name="dataset"), 0)
+            (iris.coords.AuxCoord(points, long_name="dataset"), 0),
         ],
     )
     constraint = ih.iris_project_constraint(constr, input_data, negate=negate)
@@ -315,17 +320,21 @@ VAR_ATTRS = [
     },
 ]
 DATSET_COORD_1 = iris.coords.AuxCoord(
-    ["x", "b", "c", "a", "y", "z"], long_name="dataset"
+    ["x", "b", "c", "a", "y", "z"],
+    long_name="dataset",
 )
 DATSET_COORD_1_SORTED = iris.coords.AuxCoord(
-    ["a", "b", "c", "x", "y", "z"], long_name="dataset"
+    ["a", "b", "c", "x", "y", "z"],
+    long_name="dataset",
 )
 DATSET_COORD_2 = iris.coords.AuxCoord(
-    ["t", "w", "z", "b", "x"], long_name="dataset"
+    ["t", "w", "z", "b", "x"],
+    long_name="dataset",
 )
 DATSET_COORD_3 = iris.coords.AuxCoord(["r", "s"], long_name="dataset")
 DATSET_COORD_4 = iris.coords.AuxCoord(
-    ["c", "c", "b", "a"], long_name="dataset"
+    ["c", "c", "b", "a"],
+    long_name="dataset",
 )
 DATSET_COORD_5 = iris.coords.AuxCoord(["b", "x", "z"], long_name="dataset")
 CUBE_DAT_1 = iris.cube.Cube(
@@ -401,7 +410,9 @@ def test_prepare_cube_for_merging():
     """Test preprocessing cubes before merging."""
     label = "abcde"
     aux_coord = iris.coords.AuxCoord(
-        label, var_name="cube_label", long_name="cube_label"
+        label,
+        var_name="cube_label",
+        long_name="cube_label",
     )
     cube_in = CUBE_1.copy()
     cube_in.coord(DIM_COORD_1).attributes = {"test_attr": 1}
@@ -451,7 +462,11 @@ TEST_UNIFY_1D_CUBES = [
     autospec=True,
 )
 def test_unify_1d_cubes(
-    mock_unify_time, mock_transform, cubes, coord_name, output
+    mock_unify_time,
+    mock_transform,
+    cubes,
+    coord_name,
+    output,
 ):
     """Test unifying 1D cubes."""
     # ValueErrors
@@ -493,7 +508,8 @@ def test_unify_time_coord_str(cube_with_time):
     ih.unify_time_coord(cube_with_time)
 
     expected_units = Unit(
-        "days since 1850-01-01 00:00:00", calendar="standard"
+        "days since 1850-01-01 00:00:00",
+        calendar="standard",
     )
     time_coord = cube_with_time.coord("time")
 
@@ -513,7 +529,8 @@ def test_unify_time_coord_unit(cube_with_time):
     ih.unify_time_coord(cube_with_time, target_units=target_units)
 
     expected_units = Unit(
-        "days since 1850-01-02 00:00:00", calendar="gregorian"
+        "days since 1850-01-02 00:00:00",
+        calendar="gregorian",
     )
     time_coord = cube_with_time.coord("time")
 

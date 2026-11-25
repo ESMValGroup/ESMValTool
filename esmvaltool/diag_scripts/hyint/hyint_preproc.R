@@ -22,7 +22,7 @@ hyint_preproc <- function(work_dir,
     } else {
       gridf <- rgrid
     }
-    tempf <- cdo("remapscon2", args = gridf, input = climofile)
+    tempf <- cdo("remapcon", args = gridf, input = climofile)
     unlink(gridf)
   } else {
     tempf <- cdo("addc", args = "0", input = climofile)

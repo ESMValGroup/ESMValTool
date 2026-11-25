@@ -1,11 +1,5 @@
 #!jinja2
 [runtime]
-    [[root]]
-        [[[environment]]]
-            # Warning: fragile assumption of location of esmvaltool code,
-            # issue #3437 contains more details.
-            ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.12/site-packages
-
     # COMPUTE provides defaults for computation-heavy tasks.
     # Specific tasks below override some defaults, e.g. time & memory.
     [[COMPUTE]]

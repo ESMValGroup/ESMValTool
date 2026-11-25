@@ -81,7 +81,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
         calendar=var.get("calendar", short_name),
     )
     cube.coord("time").convert_units(
-        Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+        Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
     )
 
     # Fix coordinates
@@ -113,7 +113,11 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
     # build contrainted cube on numgauge < 1
@@ -126,7 +130,8 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
             module="iris",
         )
         constr_cube = iris.load_cube(
-            filepath, NameConstraint(var_name=constraint_var)
+            filepath,
+            NameConstraint(var_name=constraint_var),
         )
 
     # fix flipped latitude
@@ -154,12 +159,16 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
             "comment": "constrained on gridpoint values being based on"
             "at least 1 station",
             "version": attrs["version"] + "-numgauge1",
-        }
+        },
     )
     attrs["mip"] = var["mip"]
 
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 

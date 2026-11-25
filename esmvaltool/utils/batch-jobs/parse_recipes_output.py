@@ -52,10 +52,10 @@ def parse_output_file(slurm_out_dir: str) -> dict[str, list[str]]:
                 if "Run was successful\n" in line:
                     results["success"].append(recipe)
                     break
-                elif "esmvalcore._task.DiagnosticError" in line:
+                if "esmvalcore._task.DiagnosticError" in line:
                     results["diagnostic error"].append(recipe)
                     break
-                elif "ERROR   Missing data for preprocessor" in line:
+                if "ERROR   Missing data for preprocessor" in line:
                     results["missing data"].append(recipe)
                     break
             else:
@@ -63,9 +63,10 @@ def parse_output_file(slurm_out_dir: str) -> dict[str, list[str]]:
                     results["unknown"].append(recipe)
                 else:
                     err = file.with_suffix(".err").read_text(encoding="utf-8")
-                    if "killed by the cgroup out-of-memory" in err:
-                        results["out of memory"].append(recipe)
-                    elif "step tasks have been OOM Killed" in err:
+                    if (
+                        "killed by the cgroup out-of-memory" in err
+                        or "step tasks have been OOM Killed" in err
+                    ):
                         results["out of memory"].append(recipe)
                     elif re.match(".* CANCELLED AT .* DUE TO TIME LIMIT", err):
                         results["out of time"].append(recipe)
@@ -94,15 +95,13 @@ def display_in_md(
     todaynow = datetime.datetime.now()
     print(f"## Recipe running session {todaynow}\n")
     with open(all_recipes_file, encoding="utf-8") as file:
-        all_recipes = [
-            os.path.basename(line.strip()) for line in file.readlines()
-        ]
+        all_recipes = [os.path.basename(line.strip()) for line in file]
     n_recipes = len(all_recipes)
 
     results = parse_output_file(slurm_out_dir)
     results["no run"] = sorted(
         set(all_recipes)
-        - set(recipe for v in results.values() for recipe in v)
+        - set(recipe for v in results.values() for recipe in v),
     )
     prefix = "Recipes that"
     err_prefix = f"{prefix} failed because"

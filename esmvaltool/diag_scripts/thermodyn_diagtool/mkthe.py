@@ -65,7 +65,9 @@ def init_mkthe_te(model, wdir, input_data):
     """
     cdo = Cdo()
     rlut_file = e.select_metadata(
-        input_data, short_name="rlut", dataset=model
+        input_data,
+        short_name="rlut",
+        dataset=model,
     )[0]["filename"]
     # Compute monthly mean fields from 2D surface daily fields
     # emission temperature
@@ -157,28 +159,44 @@ def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
     if met in {"2", "3"}:
         evspsbl_file, prr_file = wfluxes(model, wdir, input_data)
         hfss_file = e.select_metadata(
-            input_data, short_name="hfss", dataset=model
+            input_data,
+            short_name="hfss",
+            dataset=model,
         )[0]["filename"]
         hus_file = e.select_metadata(
-            input_data, short_name="hus", dataset=model
+            input_data,
+            short_name="hus",
+            dataset=model,
         )[0]["filename"]
         ps_file = e.select_metadata(
-            input_data, short_name="ps", dataset=model
+            input_data,
+            short_name="ps",
+            dataset=model,
         )[0]["filename"]
         ts_file = e.select_metadata(
-            input_data, short_name="ts", dataset=model
+            input_data,
+            short_name="ts",
+            dataset=model,
         )[0]["filename"]
         uas_file = e.select_metadata(
-            input_data, short_name="uas", dataset=model
+            input_data,
+            short_name="uas",
+            dataset=model,
         )[0]["filename"]
         uas_tres = e.select_metadata(
-            input_data, short_name="uas", dataset=model
+            input_data,
+            short_name="uas",
+            dataset=model,
         )[0]["mip"]
         vas_file = e.select_metadata(
-            input_data, short_name="vas", dataset=model
+            input_data,
+            short_name="vas",
+            dataset=model,
         )[0]["filename"]
         vas_tres = e.select_metadata(
-            input_data, short_name="vas", dataset=model
+            input_data,
+            short_name="vas",
+            dataset=model,
         )[0]["mip"]
         if uas_tres == "day":
             uasmn_file = wdir + f"/{model}_uas_mm.nc"
@@ -360,7 +378,10 @@ def mkthe_main(wdir, file_list, modelname):
     t_z = thz * (P_0 / p_z) ** (-AKAP)
     outlist = [ztlcl, t_z, htop]
     htop_file, tabl_file, tlcl_file = write_output(
-        wdir, modelname, file_list, outlist
+        wdir,
+        modelname,
+        file_list,
+        outlist,
     )
     return htop_file, tabl_file, tlcl_file
 
@@ -385,7 +406,10 @@ def mon_from_day(wdir, model, name, filein):
     move(fileaux, filein)
     fileout = wdir + f"/{model}_{name}_mm.nc"
     cdo.selvar(
-        name, input=f"-monmean {filein}", option="-b F32", output=fileout
+        name,
+        input=f"-monmean {filein}",
+        option="-b F32",
+        output=fileout,
     )
     return fileout
 
@@ -414,13 +438,17 @@ def wfluxes(model, wdir, input_data):
     """
     cdo = Cdo()
     hfls_file = e.select_metadata(
-        input_data, short_name="hfls", dataset=model
+        input_data,
+        short_name="hfls",
+        dataset=model,
     )[0]["filename"]
     pr_file = e.select_metadata(input_data, short_name="pr", dataset=model)[0][
         "filename"
     ]
     prsn_file = e.select_metadata(
-        input_data, short_name="prsn", dataset=model
+        input_data,
+        short_name="prsn",
+        dataset=model,
     )[0]["filename"]
     aux_file = wdir + "/aux.nc"
     evspsbl_file = wdir + f"/{model}_evspsbl.nc"
@@ -472,7 +500,9 @@ def write_output(wdir, model, file_list, varlist):
             fourc.extr_lat(dataset, w_nc_fid, "lat")
             fourc.extr_lon(dataset, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
-            "tlcl", "f8", ("time", "lat", "lon")
+            "tlcl",
+            "f8",
+            ("time", "lat", "lon"),
         )
         w_nc_var.setncatts(
             {
@@ -485,7 +515,7 @@ def write_output(wdir, model, file_list, varlist):
                     "adiabatic lapse ratio)",
                 ),
                 "statistic": "monthly mean",
-            }
+            },
         )
         w_nc_fid.variables["tlcl"][:] = ztlcl
     tabl_temp = wdir + "/tabl.nc"
@@ -503,7 +533,9 @@ def write_output(wdir, model, file_list, varlist):
             fourc.extr_lat(dataset_tabl, w_nc_fid, "lat")
             fourc.extr_lon(dataset_tabl, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
-            "tabl", "f8", ("time", "lat", "lon")
+            "tabl",
+            "f8",
+            ("time", "lat", "lon"),
         )
         w_nc_var.setncatts(
             {
@@ -516,7 +548,7 @@ def write_output(wdir, model, file_list, varlist):
                     "barometric equation",
                 ),
                 "statistic": "monthly mean",
-            }
+            },
         )
         w_nc_fid.variables["tabl"][:] = t_z
     htop_temp = wdir + "/htop.nc"
@@ -534,7 +566,9 @@ def write_output(wdir, model, file_list, varlist):
             fourc.extr_lat(dataset_htop, w_nc_fid, "lat")
             fourc.extr_lon(dataset_htop, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
-            "htop", "f8", ("time", "lat", "lon")
+            "htop",
+            "f8",
+            ("time", "lat", "lon"),
         )
         w_nc_var.setncatts(
             {
@@ -547,7 +581,7 @@ def write_output(wdir, model, file_list, varlist):
                     "barometric equation",
                 ),
                 "statistic": "monthly mean",
-            }
+            },
         )
         w_nc_fid.variables["htop"][:] = htop
     tlcl_file = wdir + f"/{model}_tlcl.nc"

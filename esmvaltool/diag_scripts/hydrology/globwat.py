@@ -122,13 +122,19 @@ def langbein_pet(tas):
     """
     tas.convert_units("degC")
     constant_a = iris.coords.AuxCoord(
-        np.float32(325), long_name="first constant", units=None
+        np.float32(325),
+        long_name="first constant",
+        units=None,
     )
     constant_b = iris.coords.AuxCoord(
-        np.float32(21), long_name="second constant", units=None
+        np.float32(21),
+        long_name="second constant",
+        units=None,
     )
     constant_c = iris.coords.AuxCoord(
-        np.float32(0.9), long_name="third constant", units=None
+        np.float32(0.9),
+        long_name="third constant",
+        units=None,
     )
 
     # assumption here: tas is constant over time, then the monthly/daily
@@ -273,7 +279,8 @@ def main(cfg):
 
     input_metadata = cfg["input_data"].values()
     for dataset_name, metadata in group_metadata(
-        input_metadata, "dataset"
+        input_metadata,
+        "dataset",
     ).items():
         all_vars, provenance = get_input_cubes(metadata)
 
@@ -295,7 +302,7 @@ def main(cfg):
                     rsds=all_vars["rsds"],
                     rsdt=all_vars["rsdt"],
                     tas=all_vars["tas"],
-                )
+                ),
             )
 
         # Add mip to pet cube attribute
@@ -321,7 +328,10 @@ def main(cfg):
 
                 # Make a file name
                 filename = make_filename(
-                    dataset_name, cfg, new_cube, extension="asc"
+                    dataset_name,
+                    cfg,
+                    new_cube,
+                    extension="asc",
                 )
 
                 # Save to ascii

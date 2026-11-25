@@ -88,7 +88,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         glob_attrs["mip"] = var_info["mip"]
         cmor_info = cmor_table.get_variable(var_info["mip"], var)
         var_file = os.path.join(
-            in_dir, var_info["filename"].replace(".gz", "")
+            in_dir,
+            var_info["filename"].replace(".gz", ""),
         )
         logger.info("Found input file '%s' for variable '%s'", var_file, var)
         _extract_variable(cmor_info, glob_attrs, var_file, out_dir, cfg)

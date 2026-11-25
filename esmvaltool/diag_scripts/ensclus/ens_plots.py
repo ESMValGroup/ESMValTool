@@ -133,7 +133,10 @@ def ens_plots(
 
             # Add Title
             title_obj = plt.title(
-                iens, fontsize=int(fsize * 1.8), fontweight="bold", loc="left"
+                iens,
+                fontsize=int(fsize * 1.8),
+                fontweight="bold",
+                loc="left",
             )
             title_obj.set_backgroundcolor(colors[labels[iens]])
             title_obj = plt.title(legends[iens], fontsize=fsize, loc="right")
@@ -142,7 +145,7 @@ def ens_plots(
         cbar = plt.colorbar(map_plot, cax=cax, orientation="horizontal")
         cbar.ax.tick_params(labelsize=24)
         cbar.set_ticks(
-            np.arange(rangecbarmin, rangecbarmax + delta, delta * 20)
+            np.arange(rangecbarmin, rangecbarmax + delta, delta * 20),
         )
         cbar.ax.set_ylabel(
             varname + "\n[" + varunits + "]",
@@ -193,7 +196,9 @@ def ens_plots(
         namef = os.path.join(
             dir_plot,
             ("{0}_{1}.fig{2}." + plot_type).format(
-                field_to_plot, name_outputs, ifig + 1
+                field_to_plot,
+                name_outputs,
+                ifig + 1,
             ),
         )
         fig.savefig(namef)  # bbox_inches='tight')

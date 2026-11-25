@@ -6,7 +6,7 @@ filename: 'Land_and_Ocean_LatLong1.nc'
 attributes:
   dataset_id: BerkeleyEarth
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   institution: 'Berkeley Earth Surface Temperature Project'
   source: 'http://berkeleyearth.org/data/'

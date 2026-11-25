@@ -6,7 +6,7 @@ filename: 'APHRO_MA{raw_file_var}_{version}.*.nc'
 attributes:
   dataset_id: APHRO-MA
   tier: 3
-  modeling_realm: ground
+  type: ground
   project_id: OBS
   source:
     http://aphrodite.st.hirosaki-u.ac.jp/download/

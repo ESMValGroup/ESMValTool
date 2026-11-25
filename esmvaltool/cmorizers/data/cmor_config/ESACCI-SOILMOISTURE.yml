@@ -2,7 +2,7 @@ attributes:
   project_id: 'OBS'
   dataset_id: 'ESACCI-SOILMOISTURE'
   tier: 2
-  modeling_realm: sat
+  type: sat
   institution: 'TU Wien (AUT); VanderSat B.V. (NL); Planet Labs (NL); CESBIO (FR), EODC Gmbh (AUT)'
   reference: 'esacci-soilmoisture'
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/'

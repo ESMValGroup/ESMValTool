@@ -89,7 +89,11 @@ def _extract_variable(cmor_info, attrs, filepaths, out_dir):
 
         logger.info("Saving file")
         utils.save_variable(
-            cubesave, var, out_dir, attrs, unlimited_dimensions=["time"]
+            cubesave,
+            var,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )
 
 
@@ -106,7 +110,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         glob_attrs["mip"] = var_info["mip"]
 
         raw_filename = cfg["filename"].format(
-            version=ver, raw=var_info["raw"], freq=var_info["freq"]
+            version=ver,
+            raw=var_info["raw"],
+            freq=var_info["freq"],
         )
         filepaths = _get_filepaths(in_dir, raw_filename)
 

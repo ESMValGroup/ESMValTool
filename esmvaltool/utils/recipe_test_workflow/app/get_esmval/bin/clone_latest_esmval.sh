@@ -15,5 +15,5 @@ fi
 # Checkout the specified branch for ESMValCore and ESMValTool. Use the
 # quiet ('-q') option to prevent the progress status from being reported
 # (which is done via done via 'stderr').
-git clone -q -b "${BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
-git clone -q -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
+git clone -q -b "${ESMVALTOOL_BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
+git clone -q -b "${ESMVALCORE_BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"

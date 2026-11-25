@@ -76,21 +76,20 @@ def write_plotdata(infos, modnam, values):
         + " compared to reference [%]",
     }
     # Write experiment data
-    for metric in values.keys():
+    for metric in values:
         filepath = os.path.join(
-            cfg[diag.names.WORK_DIR], "_".join([metric, var]) + ".txt"
+            cfg[diag.names.WORK_DIR],
+            f"{metric}_{var}" + ".txt",
         )
         ncol = len(regnam)
         with open(filepath, "w") as fout:
             header = "{:35} " + ncol * " {:>12}" + "\n"
             body = "{:35} " + ncol * " {:12.4f}" + "\n"
-            line = [
-                " ",
-            ] + regnam
+            line = [" ", *regnam]
             fout.write(filehead[metric] + "\n\n")
             fout.write(header.format(*line))
             for irow, row in enumerate(values[metric]):
-                line = [modnam[metric][irow]] + row
+                line = [modnam[metric][irow], *row]
                 fout.write(body.format(*line))
 
     # provenance tracking, only if comparison == variable
@@ -111,7 +110,8 @@ def init_plot(cfg, var):
     """
     if cfg.get("output_file_type", "png") == "pdf":
         filepath = os.path.join(
-            cfg[diag.names.PLOT_DIR], "_".join(["metrics", var]) + ".pdf"
+            cfg[diag.names.PLOT_DIR],
+            f"metrics_{var}" + ".pdf",
         )
         pdf = PdfPages(filepath)
     else:
@@ -131,7 +131,7 @@ def init_plot(cfg, var):
             "area": " ".join(["Accumulated", nicename.get(var, var), "area"]),
             "frac": " ".join(["Average", nicename.get(var, var), "fraction"]),
             "bias": " ".join(
-                ["Average", nicename.get(var, var), "fraction bias"]
+                ["Average", nicename.get(var, var), "fraction bias"],
             ),
         },
         # Labels for y axis
@@ -168,7 +168,9 @@ def plot_bars(info, metric, data, regnam):
     index = np.arange(0, (nbar + 1) * ncat, nbar + 1)
     xticks = (
         np.linspace(
-            (nbar + 1) / 2.0, (nbar + 1) * ncat - (nbar + 1) / 2.0, ncat
+            (nbar + 1) / 2.0,
+            (nbar + 1) * ncat - (nbar + 1) / 2.0,
+            ncat,
         )
         - 1.0
     )
@@ -195,6 +197,12 @@ def finish_plot(fig, labels, pltdir, name, pdf):
         filename for png output without extension
     pdf : obj
         pdf object collection all pages in case of pdf output
+
+    Returns
+    -------
+    str or None
+        Path to plot or None if PDF output is desired.
+
     """
     fig.subplots_adjust(bottom=0.20)
     caxe = fig.add_axes([0.05, 0.01, 0.9, 0.20])
@@ -206,12 +214,22 @@ def finish_plot(fig, labels, pltdir, name, pdf):
     if pdf is None:
         filepath = os.path.join(pltdir, name + ".png")
         fig.savefig(filepath)
-    else:
-        fig.savefig(pdf, dpi=80, format="pdf")
-        plt.close()
+        return filepath
+
+    fig.savefig(pdf, dpi=80, format="pdf")
+    plt.close()
+    return None
 
 
-def make_landcover_bars(cfg, regnam, modnam, values, var):
+def make_landcover_bars(
+    cfg,
+    regnam,
+    modnam,
+    values,
+    var,
+    *,
+    provenance_record=None,
+):
     """Make bar plots for regional values.
 
     Parameters
@@ -228,6 +246,9 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
         frac --> region average fractions in %
     var : str
         variable short name
+    provenance_record : None or dict
+        Provenance record.
+
     """
     # Get colorscheme from recipe
     plt.style.use(cfg.get("colorscheme", "seaborn"))
@@ -236,11 +257,20 @@ def make_landcover_bars(cfg, regnam, modnam, values, var):
     pdf, info = init_plot(cfg, var)
 
     # Loop over metrices
-    for metr in values.keys():
+    for metr in values:
         # Plot plot with bars
         fig = plot_bars(info, metr, values[metr], regnam)
         # Add legend and finish plot
-        finish_plot(fig, modnam[metr], info["pd"], "_".join([metr, var]), pdf)
+        plot_path = finish_plot(
+            fig,
+            modnam[metr],
+            info["pd"],
+            f"{metr}_{var}",
+            pdf,
+        )
+        if plot_path is not None and provenance_record is not None:
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
 
     if pdf is not None:
         pdf.close()
@@ -281,7 +311,7 @@ def get_timmeans(attr, cubes, refset, prov_rec):
     # Get dataset information
     var = attr["short_name"]
     # Store name of reference data for given variable
-    if var not in refset.keys():
+    if var not in refset:
         refset[var] = attr.get("reference_dataset", None)
     # Load data into iris cube
     new_cube = iris.load_cube(attr["filename"])
@@ -290,7 +320,7 @@ def get_timmeans(attr, cubes, refset, prov_rec):
         raise ValueError(
             "Unit % is expected for "
             + new_cube.long_name.lower()
-            + " area fraction"
+            + " area fraction",
         )
     # Compute long term mean
     mean_cube = new_cube.collapsed([diag.names.TIME], iris.analysis.MEAN)
@@ -302,7 +332,7 @@ def get_timmeans(attr, cubes, refset, prov_rec):
                 attr.get("dataset", ""),
                 attr.get("exp", ""),
                 attr.get("ensemble", ""),
-            ]
+            ],
         )
         .replace("__", "_")
         .strip("_")
@@ -315,9 +345,17 @@ def get_timmeans(attr, cubes, refset, prov_rec):
         cubes["exp"][var].append(mean_cube)
     # Add information to provenance record
     if prov_rec[var] == {}:
+        if "start_year" in attr and "end_year" in attr:
+            timerange_str = " between {start_year} and {end_year}".format(
+                **attr,
+            )
+        else:
+            timerange_str = ""
         caption = (
-            "Mean land cover fraction for {long_name} between "
-            "{start_year} and {end_year} for different datasets".format(**attr)
+            "Mean land cover fraction for {long_name}{timerange_str} for "
+            "different datasets".format(
+                **{**attr, "timerange_str": timerange_str},
+            )
         )
         prov_rec[var] = {
             "caption": caption,
@@ -355,7 +393,8 @@ def write_data(cfg, cubes, var, prov_rec):
     """
     # Compile output path
     filepath = os.path.join(
-        cfg[diag.names.WORK_DIR], "_".join(["postproc", var]) + ".nc"
+        cfg[diag.names.WORK_DIR],
+        f"postproc_{var}" + ".nc",
     )
 
     # Join cubes in one list with ref being the last entry
@@ -409,13 +448,14 @@ def compute_landcover(var, lcdata, cubes):
             if regdef[reg] is not None:
                 zone = iris.Constraint(
                     latitude=sel_lats(
-                        sub_cube.coord("latitude").points, regdef[reg]
-                    )
+                        sub_cube.coord("latitude").points,
+                        regdef[reg],
+                    ),
                 )
                 row["area"].append(
                     coverarea.extract(zone)
                     .collapsed(["longitude", "latitude"], iris.analysis.SUM)
-                    .data.tolist()
+                    .data.tolist(),
                 )
                 row["frac"].append(
                     sub_cube.extract(zone)
@@ -424,21 +464,22 @@ def compute_landcover(var, lcdata, cubes):
                         iris.analysis.MEAN,
                         weights=cellarea.extract(zone).data,
                     )
-                    .data.tolist()
+                    .data.tolist(),
                 )
 
             else:
                 row["area"].append(
                     coverarea.collapsed(
-                        ["longitude", "latitude"], iris.analysis.SUM
-                    ).data.tolist()
+                        ["longitude", "latitude"],
+                        iris.analysis.SUM,
+                    ).data.tolist(),
                 )
                 row["frac"].append(
                     sub_cube.collapsed(
                         ["longitude", "latitude"],
                         iris.analysis.MEAN,
                         weights=cellarea.data,
-                    ).data.tolist()
+                    ).data.tolist(),
                 )
         values["area"].append(row["area"])
         values["frac"].append(row["frac"])
@@ -446,7 +487,7 @@ def compute_landcover(var, lcdata, cubes):
     reffrac = np.array(values["frac"][-1])
     for imod, modfrac in enumerate(values["frac"][:-1]):
         values["bias"].append(
-            ((np.array(modfrac) - reffrac) / reffrac * 100.0).tolist()
+            ((np.array(modfrac) - reffrac) / reffrac * 100.0).tolist(),
         )
         modnam["bias"].append(modnam["frac"][imod])
 
@@ -469,7 +510,7 @@ def focus2model(cfg, lcdata, refset):
     """
     var = diag.Variables(cfg).short_names()[0]
     shuffle = {key: {} for key in lcdata[var]["groups"]["area"]}
-    for dset in shuffle.keys():
+    for dset in shuffle:
         ids = lcdata[var]["groups"]["area"].index(dset)
         if refset[var] in dset:
             shuffle[dset] = {
@@ -482,10 +523,10 @@ def focus2model(cfg, lcdata, refset):
                 "values": {"area": [], "frac": [], "bias": []},
             }
         for var in sorted(diag.Variables(cfg).short_names()):
-            for metric in shuffle[dset]["groups"].keys():
+            for metric in shuffle[dset]["groups"]:
                 shuffle[dset]["groups"][metric].append(var)
                 shuffle[dset]["values"][metric].append(
-                    lcdata[var]["values"][metric][ids]
+                    lcdata[var]["values"][metric][ids],
                 )
     lcdata = shuffle
 
@@ -504,7 +545,9 @@ def main(cfg):
 
     # Get metadata information
     grouped_input_data = diag.group_metadata(
-        cfg["input_data"].values(), "standard_name", sort="dataset"
+        cfg["input_data"].values(),
+        "standard_name",
+        sort="dataset",
     )
 
     # Prepare dictionaries
@@ -526,7 +569,9 @@ def main(cfg):
         write_data(cfg, timcubes, var, prov_rec)
         # Compute aggregated and fraction average land cover
         regnam = compute_landcover(
-            var, lcdata, timcubes["exp"][var] + timcubes["ref"][var]
+            var,
+            lcdata,
+            timcubes["exp"][var] + timcubes["ref"][var],
         )
 
     # Reshuffle data if models are the comparison target
@@ -534,23 +579,28 @@ def main(cfg):
         focus2model(cfg, lcdata, refset)
         prov_rec = None
     elif cfg.get("comparison", "variable") != "variable":
-        raise ValueError("Only variable or model are valid comparison targets")
+        msg = "Only variable or model are valid comparison targets"
+        raise ValueError(msg)
 
     # Output ascii files and plots
-    for target in lcdata.keys():
+    for target in lcdata:
         # Write plotdata as ascii files for user information
         infos = [cfg, regnam, prov_rec, target]
         write_plotdata(
-            infos, lcdata[target]["groups"], lcdata[target]["values"]
+            infos,
+            lcdata[target]["groups"],
+            lcdata[target]["values"],
         )
 
         # Plot area values
+        provenance_record = None if prov_rec is None else prov_rec[target]
         make_landcover_bars(
             cfg,
             regnam,
             lcdata[target]["groups"],
             lcdata[target]["values"],
             target,
+            provenance_record=provenance_record,
         )
 
 

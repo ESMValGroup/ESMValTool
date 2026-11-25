@@ -20,14 +20,15 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def calculate_diff(
-    data_clim: list, data_glob: list, observations=False
+    data_clim: list,
+    data_glob: list,
+    observations=False,
 ) -> tuple:
     """
     Read data and calculate differences.
 
     Return differences and ancestor files.
     """
-
     errmsg = "{}_{} not found but needed for anomaly calculation!"
     if not data_clim:
         raise ValueError(errmsg.format(data_clim[0]["short_name"], "CLIM"))
@@ -54,7 +55,9 @@ def _save_data(data: "xr.DataArray", name: str, cfg: dict, ancestors: list):
     """Save data to netcdf for further use."""
     varn_new = f"{data.short_name}_ANOM"
     filename_data = get_diagnostic_filename(
-        f"{name}{varn_new}", cfg, extension="nc"
+        f"{name}{varn_new}",
+        cfg,
+        extension="nc",
     )
     data.to_dataset(name=varn_new).to_netcdf(filename_data)
 
@@ -76,14 +79,17 @@ def main(cfg):
         datasets_mod_clim = models[short_name + "_CLIM"]
         datasets_mod_global = models[short_name + "_GLOBAL"]
         diff, data_files_models = calculate_diff(
-            datasets_mod_clim, datasets_mod_global
+            datasets_mod_clim,
+            datasets_mod_global,
         )
         _save_data(diff, "MODELS_", cfg, ancestors=data_files_models)
 
         obs_clim = observations[short_name + "_CLIM"]
         obs_glob = observations[short_name + "_GLOBAL"]
         diff_obs, data_files_obs = calculate_diff(
-            obs_clim, obs_glob, observations=True
+            obs_clim,
+            obs_glob,
+            observations=True,
         )
         _save_data(diff_obs, "OBS_", cfg, ancestors=data_files_obs)
 
