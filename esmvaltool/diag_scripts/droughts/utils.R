@@ -242,13 +242,13 @@ get_var_from_nc <- function(meta, custom_var=FALSE) {
 group_meta <- function(metadata) {
   grouped <- list()
   for (meta in metadata) {
-    if (! meta$dataset %in% names(grouped)) {
-      grouped[[meta$dataset]] <- list()
+    if (! meta$alias %in% names(grouped)) {
+      grouped[[meta$alias]] <- list()
     }
     entry <- list(meta)
     names(entry) <- list(meta$filename)
     entry[meta$filename] <- list(meta)
-    grouped[[meta$dataset]] <- append(grouped[[meta$dataset]], entry)
+    grouped[[meta$alias]] <- append(grouped[[meta$alias]], entry)
   }
   return(grouped)
 }
@@ -305,7 +305,13 @@ update_short_name <- function(params, meta, short_name) {
   fname <- strsplit(meta$filename, "/")[[1]]
   pcs <- strsplit(fname[length(fname)], "_")[[1]]
   pcs[which(pcs == meta$short_name)] <- short_name
-  onam <- paste0(params$work_dir, "/", paste(pcs, collapse = "_"))
+  if (length(meta$branding_suffix)==0) {
+    onam <- paste0(params$work_dir, "/", paste(pcs, collapse = "_"))
+  } else {
+    onam <- paste0(params$work_dir, "/", paste(pcs[which(pcs != meta$branding_suffix)] , collapse = "_"))
+  }
+
+
   new_meta <- meta
   new_meta$filename <- onam
   new_meta$short_name <- short_name
