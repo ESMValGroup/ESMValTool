@@ -11,20 +11,6 @@ documentation:
   maintainer:
     - chun_felicity
 
-datasets:
-  ## one CMIP6 model for REF ##
-  # - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - dataset: DUMMY-MODEL
-    project: CMIP7
-    exp: historical
-    ensemble: r1i1p1f1
-    grid: g999
-    activity: CMIP
-    institute: CCCma
-    frequency: mon
-    region: glb
-
-
 preprocessors:
   base_bias: &base_bias
     custom_order: true
@@ -129,6 +115,22 @@ diagnostics:
         frequency: mon
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - &pr_model
+            short_name: pr
+            mip: atmos
+            frequency: mon
+            branding_suffix: tavg-u-hxy-u
+            dataset: ACCESS-ESM1-6
+            project: CMIP7
+            exp: historical
+            ensemble: r1i1p1f1
+            grid: g115
+            activity: CMIP
+            institute: ACCESS-Consortium
+            region: glb
+            drs_specs: MIP-DRS7
+            start_year: 1983
+            end_year: 2021
           - {dataset: "GPCP-V3.3", project: obs4MIPs, tier: 1, start_year: 1983, end_year: 2021}
       eq_pr_bias:
         short_name: pr
@@ -137,6 +139,7 @@ diagnostics:
         frequency: mon
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - *pr_model
           - {dataset: "GPCP-V3.3", project: obs4MIPs, tier: 1, start_year: 1983, end_year: 2021}
       eq_sst_bias:
         short_name: tos
@@ -144,6 +147,22 @@ diagnostics:
         mip: ocean
         branding_suffix: tavg-u-hxy-sea
         additional_datasets:
+          - &tos_model
+            short_name: tos
+            mip: ocean
+            branding_suffix: tavg-u-hxy-sea
+            dataset: ACCESS-ESM1-6
+            project: CMIP7
+            exp: historical
+            ensemble: r1i1p1f1
+            grid: g118
+            activity: CMIP
+            institute: ACCESS-Consortium
+            frequency: mon
+            region: glb
+            drs_specs: MIP-DRS7
+            start_year: 1979
+            end_year: 2021
           - {dataset: TROPFLUX, version: v2, project: OBS6, type: reanaly, tier: 2,  mip: Omon, start_year: 1979, end_year: 2021}
       eq_tauu_bias:
         short_name: tauu
@@ -151,6 +170,22 @@ diagnostics:
         mip: atmos
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - &tauu_model
+            short_name: tauu
+            mip: atmos
+            branding_suffix: tavg-u-hxy-u
+            dataset: ACCESS-ESM1-6
+            project: CMIP7
+            exp: historical
+            ensemble: r1i1p1f1
+            grid: g109
+            activity: CMIP
+            institute: ACCESS-Consortium
+            frequency: mon
+            region: glb
+            drs_specs: MIP-DRS7
+            start_year: 1979
+            end_year: 2021
           - {dataset: TROPFLUX, version: v2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2021}
       pr_double_seacycle:
         short_name: pr
@@ -159,6 +194,7 @@ diagnostics:
         frequency: mon
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - *pr_model
           - {dataset: "GPCP-V3.3", project: obs4MIPs, tier: 1, start_year: 1983, end_year: 2021}
       eq_pr_seacycle:
         short_name: pr
@@ -167,6 +203,7 @@ diagnostics:
         frequency: mon
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - *pr_model
           - {dataset: "GPCP-V3.3", project: obs4MIPs, tier: 1, start_year: 1983, end_year: 2021}
       eq_sst_seacycle:
         short_name: tos
@@ -174,6 +211,7 @@ diagnostics:
         mip: ocean
         branding_suffix: tavg-u-hxy-sea
         additional_datasets:
+          - *tos_model
           - {dataset: TROPFLUX, version: v2, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2021}
       eq_tauu_seacycle:
         short_name: tauu
@@ -181,6 +219,7 @@ diagnostics:
         mip: atmos
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - *tauu_model
           - {dataset: TROPFLUX, version: v2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2021}
     scripts:
       plot_script:
@@ -196,6 +235,7 @@ diagnostics:
         frequency: mon
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - *pr_model
           - {dataset: "GPCP-V3.3", project: obs4MIPs, tier: 1, start_year: 1983, end_year: 2021}
       pr_seacycle:
         short_name: pr
@@ -204,6 +244,7 @@ diagnostics:
         frequency: mon
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - *pr_model
           - {dataset: "GPCP-V3.3", project: obs4MIPs, tier: 1, start_year: 1983, end_year: 2021}
       sst_bias:
         short_name: tos
@@ -211,6 +252,7 @@ diagnostics:
         mip: ocean
         branding_suffix: tavg-u-hxy-sea
         additional_datasets:
+          - *tos_model
           - {dataset: TROPFLUX, version: v2, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2021}
       tauu_bias:
         short_name: tauu
@@ -218,6 +260,7 @@ diagnostics:
         mip: atmos
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - *tauu_model
           - {dataset: TROPFLUX, version: v2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2021}
 
     scripts:
