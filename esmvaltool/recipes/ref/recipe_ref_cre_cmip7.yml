@@ -23,7 +23,6 @@ datasets:
     institute: ACCESS-Consortium
     mip: atmos
     region: glb
-    drs_specs: MIP-DRS7
 
 timerange_for_models: &time_period
   timerange: '2002/2021'
