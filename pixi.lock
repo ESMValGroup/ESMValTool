@@ -503,7 +503,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-4.1.2-pyh5ded981_0.conda
       - pypi: ./
       - pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=recipe-json-schema#90077a6c9bb2341d573be70def76e4899106add3
-      - pypi: git+https://github.com/ESMValGroup/esmvaltool-language-server.git?branch=main#4397523c7c0389918ce54a30e6e007c8ed499135
+      - pypi: git+https://github.com/ESMValGroup/esmvaltool-language-server.git?branch=main#64c8a8596e8e75bbe3788af61966ca7729c2371a
       - pypi: https://files.pythonhosted.org/packages/01/92/d01f4da5b204308a7e0da641896df9794ff28be31ef976f61a9509edf5a1/pystac_ext_pointcloud-1.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/98/ff499d0dbaa8a07d37f2758fe2f8c962cee88379f69c9e22e881827d82be/pystac_ext_eo-1.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/09/02/087e471d26a8ba2df561fea1496ee06adf5cf675a6770292a843599acddf/globus_sdk-3.66.0-py3-none-any.whl
@@ -1030,7 +1030,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-hf451053_7.conda
       - pypi: ./
       - pypi: git+https://github.com/ESMValGroup/ESMValCore.git?branch=recipe-json-schema#90077a6c9bb2341d573be70def76e4899106add3
-      - pypi: git+https://github.com/ESMValGroup/esmvaltool-language-server.git?branch=main#4397523c7c0389918ce54a30e6e007c8ed499135
+      - pypi: git+https://github.com/ESMValGroup/esmvaltool-language-server.git?branch=main#64c8a8596e8e75bbe3788af61966ca7729c2371a
       - pypi: https://files.pythonhosted.org/packages/01/92/d01f4da5b204308a7e0da641896df9794ff28be31ef976f61a9509edf5a1/pystac_ext_pointcloud-1.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/08/98/ff499d0dbaa8a07d37f2758fe2f8c962cee88379f69c9e22e881827d82be/pystac_ext_eo-1.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/09/02/087e471d26a8ba2df561fea1496ee06adf5cf675a6770292a843599acddf/globus_sdk-3.66.0-py3-none-any.whl
@@ -37718,13 +37718,14 @@ packages:
   - xarray
   - zarr>3
   requires_python: '>=3.12'
-- pypi: git+https://github.com/ESMValGroup/esmvaltool-language-server.git?branch=main#4397523c7c0389918ce54a30e6e007c8ed499135
+- pypi: git+https://github.com/ESMValGroup/esmvaltool-language-server.git?branch=main#64c8a8596e8e75bbe3788af61966ca7729c2371a
   name: esmvaltool-language-server
-  version: 0.1.0.dev34+g4397523c7
+  version: 0.1.0.dev39+g64c8a8596
   requires_dist:
   - esmvalcore>=2.16.0.dev0
   - globus-sdk
   - intake-esgf
+  - pandas
   - pybtex
   - pygls>=2.0
   - pyyaml
