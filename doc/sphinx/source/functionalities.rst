@@ -49,10 +49,9 @@ Data finding
 -  read the data requirements from the :ref:`datasets section
    <esmvalcore:Datasets>` of the recipe and assemble the data request to
    locate the data;
--  find the data using the specified root paths and DRS types in the
-   configuration file (note the flexibility allowed by the
-   :ref:`data finder
-   <esmvalcore:findingdata>`);
+-  find the data using the :ref:`data sources
+   <esmvalcore:config-data-sources>` in the configuration (note the
+   flexibility allowed by the :ref:`data finder <esmvalcore:findingdata>`);
 
 Data selection
 --------------

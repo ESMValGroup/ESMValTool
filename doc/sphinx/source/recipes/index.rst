@@ -35,6 +35,7 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
+   recipe_mjo
    recipe_climate_patterns
    recipe_clouds
    recipe_cmug_h2o
@@ -62,6 +63,7 @@ Atmosphere
    recipe_autoassess_landsurface_soilmoisture
    recipe_zmnam
    recipe_thermodyn_diagtool
+   recipe_tropical_cpt_hovmoeller
    recipe_validation
    recipe_radiation_budget
    recipe_aod_aeronet_assess
