@@ -182,8 +182,8 @@ def calc_zec_x(zec, x_i):
     """Calculate ZEC mean of 20 years centered on year x."""
     zec_x = {}
     for model in zec:
-        # ZEC_X is the 20-year anomaly centered at year x
-        zec_x[model] = np.mean(zec[model].data[x_i - 10 : x_i + 9])
+        # For year x, use indices x-10 through x+9 inclusive (20 years).
+        zec_x[model] = np.mean(zec[model].data[x_i - 10 : x_i + 10])
     return zec_x
 
 

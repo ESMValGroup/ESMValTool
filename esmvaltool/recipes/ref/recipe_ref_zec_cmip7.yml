@@ -3,8 +3,7 @@
 ---
 documentation:
   title: >
-    Zero Emission Commitment (ZEC) test for fake CMIP7 data.
-    To be updated when real CMIP7 data is available.
+    Zero Emissions Commitment (ZEC) for CMIP7.
 
   description: >
     Calculate Zero Emission Commitment (ZEC) temperature.
@@ -46,31 +45,31 @@ diagnostics:
         preprocessor: anomaly_base
         exp: esm-flat10
         project: CMIP7
-        grid: g999
+        grid: g120
         activity: C4MIP
-        institute: MOHC
+        institute: CCCma
         mip: atmos
         frequency: mon
         region: glb
         branding_suffix: tavg-h2m-hxy-u
+        drs_specs: MIP-DRS7
         additional_datasets:
-          - {dataset: DUMMY-MODEL, ensemble: r1i1p1f3, start_year: 1906,
-             end_year: 1925} # real esm-flat10 range should be 90-110
+          - {dataset: CanESM5-1, ensemble: r1i1p2f1, timerange: 1940/1959}
       tas:
         short_name: tas
         preprocessor: spatial_mean
         exp: esm-flat10-zec
         project: CMIP7
-        grid: g999
+        grid: g120
         activity: C4MIP
-        institute: MOHC
+        institute: CCCma
         mip: atmos
         frequency: mon
         region: glb
         branding_suffix: tavg-h2m-hxy-u
+        drs_specs: MIP-DRS7
         additional_datasets:
-          - {dataset: DUMMY-MODEL, ensemble: r1i1p1f3, start_year: 1916,
-             end_year: 2015} # real esm-flat10-zec timerange should start at 100
+          - {dataset: CanESM5-1, ensemble: r1i1p2f1, timerange: 1950/2049}
     scripts:
       zec:
         script: climate_metrics/zec.py
