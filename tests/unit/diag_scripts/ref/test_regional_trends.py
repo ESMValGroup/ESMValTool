@@ -31,8 +31,8 @@ def test_regional_trend_matches_decomposed_preprocessor():
     rng = np.random.default_rng(1)
     data = rng.normal(size=(36, 18, 36)) + np.arange(36)[:, None, None]
     mask = np.zeros(data.shape, dtype=bool)
-    mask[:, 2, 2] = True
-    mask[:6, 10, 20] = True
+    mask[:, 13, 24] = True  # 45°N, 115°W in WNA.
+    mask[:6, 12, 11] = True  # 35°N, 115°E in EAS.
     cube = Cube(
         np.ma.array(data, mask=mask),
         standard_name="air_temperature",
@@ -40,6 +40,19 @@ def test_regional_trend_matches_decomposed_preprocessor():
         dim_coords_and_dims=[(time, 0), (latitude, 1), (longitude, 2)],
     )
     regions = ["WNA", "EAS", "SAH", "NAU"]
+    unmasked_cube = cube.copy(data=data)
+    for region, missing_count in (("WNA", 36), ("EAS", 6)):
+        kwargs = {"decomposed": True, "ids": {"Acronym": [region]}}
+        selected = pp.extract_shape(cube, "ar6", **kwargs)
+        unmasked = pp.extract_shape(unmasked_cube, "ar6", **kwargs)
+        assert (
+            np.ma.count_masked(selected.data)
+            - np.ma.count_masked(
+                unmasked.data,
+            )
+            == missing_count
+        )
+
     original = pp.extract_shape(
         cube,
         "ar6",
