@@ -79,20 +79,6 @@ regions: &regions
   - "West&Central-Europe"
   - "Western-Africa"
 
-datasets:
-  # Dataset to be benchmarked
-  - dataset: DUMMY-MODEL
-    drs_specs: MIP-DRS7
-    project: CMIP7
-    exp: historical
-    ensemble: r1i1p1f2
-    grid: g999
-    activity: CMIP
-    institute: MOHC
-    mip: atmos
-    frequency: mon
-    region: glb
-
 preprocessors:
   pp_abs:
     regrid:
@@ -138,6 +124,10 @@ diagnostics:
         branding_suffix: tavg-h2m-hxy-u
         mip: Amon
         additional_datasets:
+          - &cmip7_model {dataset: ACCESS-ESM1-6, drs_specs: MIP-DRS7, project: CMIP7,
+                          exp: historical, ensemble: r1i1p1f1, grid: g115,
+                          activity: CMIP, institute: ACCESS-Consortium, mip: atmos,
+                          frequency: mon, region: glb}
           - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2}
     scripts:
       figures: &figures
@@ -188,6 +178,7 @@ diagnostics:
         <<: *var_default_abs
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - {<<: *cmip7_model}
           - {dataset: GPCP-V3.3, project: obs4MIPs, tier: 1}
     scripts:
       figures: *figures
@@ -198,6 +189,7 @@ diagnostics:
         <<: *var_default_abs
         branding_suffix: tavg-u-hxy-u
         additional_datasets:
+          - {<<: *cmip7_model}
           - {dataset: ERA-5, project: obs4MIPs, tier: 1}
     scripts:
       figures: *figures
@@ -210,6 +202,7 @@ diagnostics:
         preprocessor: pp_abs_200
         branding_suffix: tavg-p19-hxy-u
         additional_datasets:
+          - {<<: *cmip7_model, grid: g110}
           - {dataset: ERA-5, project: obs4MIPs, tier: 1}
     scripts:
       figures: *figures
@@ -222,6 +215,7 @@ diagnostics:
         preprocessor: pp_abs_200
         branding_suffix: tavg-p19-hxy-air
         additional_datasets:
+          - {<<: *cmip7_model, grid: g110}
           - {dataset: ERA-5, project: obs4MIPs, tier: 1}
     scripts:
       figures: *figures
