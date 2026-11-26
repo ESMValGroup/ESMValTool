@@ -1,13 +1,13 @@
 ---
-filename: seaice_conc_monthly_sh_{year}.*.nc
+filename: sic_pss25_{year}.*.nc
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: NSIDC-G02202-sh
-  version: '4'
+  version: '5'
   tier: 3
   type: reanaly
   project_id: OBS6
-  source: 'https://nsidc.org/data/g02202/versions/4'
+  source: 'https://nsidc.org/data/g02202/versions/5'
   reference: 'nsidc-g02202'
   comment: ''
 

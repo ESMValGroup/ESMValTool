@@ -1,24 +1,30 @@
-"""ESMValTool CMORizer for Sea Ice Concentration CDR.
+# pylint: disable=unused-argument
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-function-args
+# pylint: disable=R0917
+# pylint: disable=E1121
+# flake8: noqa
+"""ESMValTool CMORizer for Sea Ice Concentration CDR (Southern Hemisphere).
 
 Tier
    Tier 3: restricted dataset.
 
 Source
-   https://nsidc.org/data/g02202/versions/4
+   https://nsidc.org/data/g02202/versions/5
 
 Last access
-   20231213
+   20250124
 
 Download and processing instructions
     Download data from:
-    https://noaadata.apps.nsidc.org/NOAA/G02202_V4/south/monthly
+    https://noaadata.apps.nsidc.org/NOAA/G02202_V5/south/monthly
     lat and lon from:
-    https://noaadata.apps.nsidc.org/NOAA/G02202_V4/ancillary/
+    https://noaadata.apps.nsidc.org/NOAA/G02202_V5/ancillary/
     area file:
     ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/
     pss25area_v3.dat
 
-    https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf
+    https://nsidc.org/sites/default/files/documents/user-guide/g02202-v005-userguide.pdf
 
 """
 
@@ -171,14 +177,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     cmor_table = cfg["cmor_table"]
 
     # get aux nc file
-    cubesaux = iris.load(os.path.join(in_dir, "G02202-cdr-ancillary-sh.nc"))
+    cubesaux = iris.load(
+        os.path.join(in_dir, "G02202-ancillary-pss25-v05r00.nc")
+    )
     lat_coord = _create_coord(cubesaux, "lat", "latitude")
     lon_coord = _create_coord(cubesaux, "lon", "longitude")
 
-    year = 1978
-    # split by year..
     sample_cube = None
-    for year in range(1979, 2022, 1):
+
+    for year in range(1979, 2025, 1):
         filepaths = _get_filepaths(in_dir, cfg["filename"], year)
 
         if len(filepaths) > 0:
@@ -202,7 +209,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     out_dir,
                     [lat_coord, lon_coord],
                 )
-
         else:
             logger.info(
                 "No files found year: %d basename: %s",
