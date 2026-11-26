@@ -21,7 +21,9 @@ as used in the various
 
 .. note::
 
-    CORDEX support is available for selected domains and variables.
+    CORDEX support is `in progress <https://github.com/orgs/ESMValGroup/projects/33>`_:
+    many preprocessor functions are available for use with CORDEX data, but not
+    all of them work with the CORDEX grids yet.
     An example workflow for CORDEX-CMIP5 EUR-11 models is described in the
     :ref:`perfmetrics documentation <nml_perfmetrics>`.
     Contributions improving CORDEX data handling and coverage are welcome.
