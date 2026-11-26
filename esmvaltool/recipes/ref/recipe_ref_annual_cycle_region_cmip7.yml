@@ -123,7 +123,7 @@ diagnostics:
         preprocessor: pp_abs
         mip: Amon
         additional_datasets:
-          - &cmip7_model {dataset: ACCESS-ESM1-6, drs_specs: MIP-DRS7, project: CMIP7,
+          - &cmip7_model {dataset: ACCESS-ESM1-6, project: CMIP7,
                           exp: historical, ensemble: r1i1p1f1, grid: g115,
                           activity: CMIP, institute: ACCESS-Consortium, mip: atmos,
                           frequency: mon, region: glb, branding_suffix: tavg-h2m-hxy-u}
