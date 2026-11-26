@@ -12,3 +12,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+    labels:
+      - dependencies
+      - github_actions
+      - automatedPR

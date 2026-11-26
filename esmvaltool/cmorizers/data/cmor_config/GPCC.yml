@@ -11,7 +11,7 @@ attributes:
     v3: 'v2018-05'
     v4: 'v2018-025'
   tier: 2
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'https://opendata.dwd.de/climate_environment/GPCC/html/fulldata-monthly_v2018_doi_download.html'
   reference: 'gpcc'

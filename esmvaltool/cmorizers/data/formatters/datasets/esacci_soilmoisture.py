@@ -14,7 +14,7 @@ Download and processing instructions
       daily_files/COMBINED/v08.1/
       ancillary/v08.1/
     Put all files under a single directory (no subdirectories with years).
-    in ${RAWOBS}/Tier2/ESACCI-SOILMOISTURE
+    in Tier2/ESACCI-SOILMOISTURE
 
 """
 
@@ -72,7 +72,7 @@ def fix_coords(cube):
                 Unit(
                     "days since 1970-01-01T00:00:00+00:00",
                     calendar="proleptic_gregorian",
-                )
+                ),
             )
 
         # Fix latitude
@@ -92,10 +92,11 @@ def extract_variable(raw_info):
     constraint = iris.Constraint(name=rawvar)
     if rawvar == "sm_uncertainty":
         sm_cube = iris.load_cube(
-            raw_info["file"], iris.NameConstraint(var_name="sm")
+            raw_info["file"],
+            iris.NameConstraint(var_name="sm"),
         )
         ancillary_var = sm_cube.ancillary_variable(
-            "Volumetric Soil Moisture Uncertainty"
+            "Volumetric Soil Moisture Uncertainty",
         )
         cube = sm_cube.copy(ancillary_var.core_data())
     else:
@@ -121,14 +122,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         all_data_cubes = []
         if not isinstance(vals, dict):  # Ensure vals is a dictionary
             raise ValueError(
-                f"Invalid format for variable {var_name}: {type(vals)}"
+                f"Invalid format for variable {var_name}: {type(vals)}",
             )
         var_info = cfg["cmor_table"].get_variable(vals["mip"], var_name)
         glob_attrs["mip"] = vals["mip"]
         raw_info = {"name": vals["raw"]}
         inpfile_pattern = os.path.join(in_dir, vals["filename"])
         logger.info(
-            "CMORizing var %s from file type %s", var_name, inpfile_pattern
+            "CMORizing var %s from file type %s",
+            var_name,
+            inpfile_pattern,
         )
 
         for year in range(start_date.year, end_date.year + 1):

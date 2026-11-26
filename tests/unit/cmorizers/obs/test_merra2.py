@@ -39,7 +39,10 @@ def _create_sample_cube():
         coord_system=coord_sys,
     )
     lats = iris.coords.DimCoord(
-        [1.5, 2.5], standard_name="latitude", units="K", coord_system=coord_sys
+        [1.5, 2.5],
+        standard_name="latitude",
+        units="K",
+        coord_system=coord_sys,
     )
     coords_spec = [(time, 0), (zcoord, 1), (lats, 2), (lons, 3)]
     cube = iris.cube.Cube(cube_data, dim_coords_and_dims=coords_spec)
@@ -347,7 +350,8 @@ def test_vertical_levels(tmp_path):
     assert cmorized_cube.coord("air_pressure").has_bounds()
     assert cmorized_cube.coord("air_pressure").units == "Pa"
     np.testing.assert_array_equal(
-        cmorized_cube.coord("air_pressure").points, [50.0, 500.0, 5000.0]
+        cmorized_cube.coord("air_pressure").points,
+        [50.0, 500.0, 5000.0],
     )
     # test unlimited time dim
     with netCDF4.Dataset(str(cmorized_data), "r") as handler:

@@ -38,7 +38,7 @@ def load_ncl_color_map(name, colorpath):
                 or item.startswith(";")
             ):
                 out.append(
-                    [int(elem) / 256 for elem in item.split()[0:3]] + [1]
+                    [int(elem) / 256 for elem in item.split()[0:3]] + [1],
                 )
         return out
 
@@ -58,6 +58,7 @@ def get_color_map(name, colorpath):
     ----------
     name: str
         Name of ncl color map
+
     Returns
     -------
     matplotlib.colors.ListedColorMap object
@@ -84,7 +85,7 @@ def list_ncl_color_maps(colorpath):
                 _format(filename)
                 for filename in filenames
                 if "rgb" in filename.split(".")
-            ]
+            ],
         )
     return out
 
@@ -96,7 +97,7 @@ def plot_example_for_colormap(name, colorpath, outdir="./"):
 
     import matplotlib
 
-    matplotlib.use("Agg")  # noqa
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -140,8 +141,9 @@ def main_plot_ncl_cm(colorpath, outpath):
     with tempfile.NamedTemporaryFile(mode="w", suffix="ncl") as fname:
         fname.write(
             template.render(
-                list_of_snippets=sorted(list_of_snippets), outdir=outpath
-            )
+                list_of_snippets=sorted(list_of_snippets),
+                outdir=outpath,
+            ),
         )
         subprocess.check_call(["ncl", fname.name])
 
@@ -155,8 +157,8 @@ class ColorTables:
         console_handler.setLevel(logging.INFO)
         console_handler.setFormatter(
             logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            ),
         )
         logger.addHandler(console_handler)
         self._colorpath = None
@@ -191,7 +193,6 @@ class ColorTables:
 
         Parameters
         ----------
-
         colorpath: str
             Folder to search for colormaps. Default is installed colormaps
         outpath: str
@@ -209,7 +210,6 @@ class ColorTables:
 
         Parameters
         ----------
-
         colorpath: str
             Folder to search for colormaps. Default is installed colormaps
         outpath: str

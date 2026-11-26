@@ -49,7 +49,7 @@ def get_provenance_record(cfg, attributes, obsname, ancestor_files):
     if obsname != "":
         caption = (
             "{long_name} bias for average between {start_year} and {end_year}".format(
-                **attributes
+                **attributes,
             )
             + " against "
             + obsname
@@ -58,7 +58,7 @@ def get_provenance_record(cfg, attributes, obsname, ancestor_files):
     else:
         caption = (
             "Average {long_name} between {start_year} and {end_year} ".format(
-                **attributes
+                **attributes,
             )
         )
 
@@ -133,7 +133,9 @@ def add_map_plot(fig, axs, plot_cube, cols):
         elif max(nspace) > 100.0:
             cformat = "%.0f"
         cbar = plt.colorbar(
-            orientation="horizontal", cax=axins, format=cformat
+            orientation="horizontal",
+            cax=axins,
+            format=cformat,
         )
         cbar.set_ticks(nspace[::2])
 
@@ -170,7 +172,12 @@ def make_subplots(cubes, layout, obsname, fig, projection):
 
     # Adjust subplots size & position
     plt.subplots_adjust(
-        top=0.92, bottom=0.08, left=0.05, right=0.95, hspace=0.2, wspace=0.15
+        top=0.92,
+        bottom=0.08,
+        left=0.05,
+        right=0.95,
+        hspace=0.2,
+        wspace=0.15,
     )
 
     # Vertically detach OBS plot and center
@@ -340,7 +347,7 @@ def make_plots(cfg, metadata, obsname):
     if len(filenames) > (layout[0] * layout[1]):
         raise ValueError(
             "Number of inputfiles is larger than layout scheme (rows x cols). "
-            "Revise layout_rowcol size in recipe."
+            "Revise layout_rowcol size in recipe.",
         )
 
     # Make a plot for each layer
@@ -350,7 +357,10 @@ def make_plots(cfg, metadata, obsname):
 
         # select cubes to plot
         plot_cubes = select_cubes(
-            cubes, layer, obsname, metadata[filenames[0]]
+            cubes,
+            layer,
+            obsname,
+            metadata[filenames[0]],
         )
 
         # create individual subplot
@@ -381,7 +391,10 @@ def make_plots(cfg, metadata, obsname):
 
         # Provenance
         provenance_record = get_provenance_record(
-            cfg, metadata[filenames[-1]], obsname, filenames
+            cfg,
+            metadata[filenames[-1]],
+            obsname,
+            filenames,
         )
         logger.info(
             "Recording provenance of %s:\n%s",
@@ -424,7 +437,9 @@ def main(cfg):
         obs_filename = None
         if model_type in cfg.keys():
             obs_filename = diagtools.match_model_to_key(
-                "observational_dataset", cfg[model_type], metadatas
+                "observational_dataset",
+                cfg[model_type],
+                metadatas,
             )
             if not os.path.isfile(obs_filename):
                 logger.info("OBS file not found %s", obs_filename)

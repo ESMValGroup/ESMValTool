@@ -15,7 +15,7 @@ The original method created 8 resampled datasets:
 * 2 time horizons: Mid-century (MOC; 2050) and end-of-century (EOC; 2085)
 * Each scenario consists of changes calculated between 2 periods: Control (e.g. 1981-2010) and future (variable).
 
-The configuration settings for these resamples can be found in table 1 of Lenderink 2014's `supplementary data <https://iopscience.iop.org/1748-9326/9/11/115008/media/erl503687suppdata.pdf>`_.
+The configuration settings for these resamples can be found in table 1 of Lenderink 2014's `supplementary data <https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/data>`_.
 
 Implementation
 --------------
@@ -30,7 +30,7 @@ In the second diagnostic, for both the control and future periods, the N target 
 2. Further constrain the selection by picking samples that represent either high or low changes in summer precipitation and summer and winter temperature, by limiting the remaining samples to certain percentile ranges: relatively wet/cold in the control and dry/warm in the future, or vice versa. The percentile ranges are listed in table 1 of Lenderink 2014's supplement. This should result is approximately 50 remaining samples for each scenario, for both control and future.
 3. Use a Monte-Carlo method to make a final selection of 8 resamples with minimal reuse of the same ensemble member/segment.
 
-Datasets have been split in two parts: the CMIP datasets and the target model datasets. An example use case for this recipe is to compare between CMIP5 and CMIP6, for example. The recipe can work with a target model that is not part of CMIP, provided that the data are CMOR compatible, and using the same data reference syntax as the CMIP data. Note that you can specify :ref:`multiple data paths<config_option_rootpath>` in the configuration.
+Datasets have been split in two parts: the CMIP datasets and the target model datasets. An example use case for this recipe is to compare between CMIP5 and CMIP6, for example. The recipe can work with a target model that is not part of CMIP, provided that the data are CMOR compatible, and using the same data reference syntax as the CMIP data.
 
 
 Available recipes and diagnostics

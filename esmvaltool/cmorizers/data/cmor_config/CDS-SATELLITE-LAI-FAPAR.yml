@@ -5,7 +5,7 @@ attributes:
   project_id: OBS
   tier: 3
   version: 'V1'  # Version as listed on source
-  modeling_realm: sat
+  type: sat
   source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar'
   reference: 'cds-satellite-lai-fapar'
   comment: |

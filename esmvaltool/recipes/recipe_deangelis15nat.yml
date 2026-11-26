@@ -256,9 +256,7 @@ diagnostics:
         derive: true
         force_derivation: false
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, type: satellite,
-             level: L3B, version: Ed2-8, start_year: 2001,
-             end_year: 2009, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, start_year: 2001, end_year: 2009, tier: 1}
       tas:
         <<: *spatial_mean3_cmip5_r1i1p1_amon_t2ms
         derive: false
@@ -268,8 +266,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
              start_year: 2001, end_year: 2009, tier: 3}
-          - {dataset: SSMI, project: obs4MIPs, type: satellite, level: L3,
-             version: RSSv07r00, start_year: 2001, end_year: 2009, tier: 1}
+          - {dataset: RSS-v7, project: obs4MIPs, start_year: 2001, end_year: 2009, tier: 1}
     additional_datasets:
       - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
       - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}

@@ -53,14 +53,19 @@ class Fluxogram:
         """Add a storage to the storages of the fluxogram."""
         self.storages.append(
             Storage(
-                name, self.grid_size, len(self.storages), amount, order, offset
-            )
+                name,
+                self.grid_size,
+                len(self.storages),
+                amount,
+                order,
+                offset,
+            ),
         )
 
     def add_flux(self, name, from_storage, to_storage, amount):
         """Add a flux to the fluxes of the fluxogram."""
         self.fluxes.append(
-            Flux(name, self.grid_size, from_storage, to_storage, amount)
+            Flux(name, self.grid_size, from_storage, to_storage, amount),
         )
 
     def update_all_storages(self, amounts):
@@ -89,12 +94,9 @@ class Fluxogram:
         smallest_offset = 0
         largest_order = 0
         for storage in self.storages:
-            if storage.offset > largest_offset:
-                largest_offset = storage.offset
-            if storage.offset < smallest_offset:
-                smallest_offset = storage.offset
-            if storage.order > largest_order:
-                largest_order = storage.order
+            largest_offset = max(largest_offset, storage.offset)
+            smallest_offset = min(smallest_offset, storage.offset)
+            largest_order = max(largest_order, storage.order)
         # set y and x limits
         y_max = 0
         y_min = (largest_order + 1) * 2 * self.grid_size * -1
@@ -182,7 +184,10 @@ class Fluxogram:
                 * self.grid_size
             )
             rectangle = plt.Rectangle(
-                (x_p, y_p), scaled_amount_stor, -scaled_amount_stor, alpha=0.4
+                (x_p, y_p),
+                scaled_amount_stor,
+                -scaled_amount_stor,
+                alpha=0.4,
             )
             # label all storages
             plt.text(

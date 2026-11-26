@@ -10,14 +10,19 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    original_data_dir,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
     Parameters
     ----------
-    config : dict
-        ESMValTool's user configuration
+    original_data_dir : Path
+        Directory where original data will be stored.
     dataset : str
         Name of the dataset
     dataset_info : dict
@@ -30,7 +35,7 @@ def download_dataset(
         Overwrite already downloaded files
     """
     downloader = WGetDownloader(
-        config=config,
+        original_data_dir=original_data_dir,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -38,17 +43,17 @@ def download_dataset(
 
     def download(file):
         downloader.download_file(
-            "https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/" + file,
+            "https://www.ncei.noaa.gov/data/oceans/woa/WOA23/DATA/" + file,
             wget_options=[],
         )
 
     data_paths = [
-        "nitrate/netcdf/all/1.00/woa18_all_n00_01.nc",
-        "oxygen/netcdf/all/1.00/woa18_all_o00_01.nc",
-        "phosphate/netcdf/all/1.00/woa18_all_p00_01.nc",
-        "salinity/netcdf/decav81B0/1.00/woa18_decav81B0_s00_01.nc",
-        "silicate/netcdf/all/1.00/woa18_all_i00_01.nc",
-        "temperature/netcdf/decav81B0/1.00/woa18_decav81B0_t00_01.nc",
+        "nitrate/netcdf/all/1.00/woa23_all_n00_01.nc",
+        "oxygen/netcdf/all/1.00/woa23_all_o00_01.nc",
+        "phosphate/netcdf/all/1.00/woa23_all_p00_01.nc",
+        "salinity/netcdf/decav/1.00/woa23_decav_s00_01.nc",
+        "silicate/netcdf/all/1.00/woa23_all_i00_01.nc",
+        "temperature/netcdf/decav/1.00/woa23_decav_t00_01.nc",
     ]
 
     for source_file in data_paths:
@@ -58,5 +63,6 @@ def download_dataset(
         os.makedirs(os.path.join(downloader.local_folder, var), exist_ok=True)
         filepath = os.path.join(downloader.local_folder, filename)
         shutil.move(
-            filepath, os.path.join(downloader.local_folder, var, filename)
+            filepath,
+            os.path.join(downloader.local_folder, var, filename),
         )

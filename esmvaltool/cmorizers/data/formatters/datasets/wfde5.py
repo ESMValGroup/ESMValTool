@@ -36,10 +36,11 @@ def _fix_time_coord(cube, var):
     """Correct wrong time points."""
     # Fix units
     cube.coord("time").units = Unit(
-        cube.coord("time").units.origin, calendar=var["calendar"]
+        cube.coord("time").units.origin,
+        calendar=var["calendar"],
     )
     cube.coord("time").convert_units(
-        Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+        Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
     )
 
     # time points are XX:00:00, should be XX:30:00
@@ -90,7 +91,11 @@ def _extract_variable(var, cfg, filenames, out_dir):
     cube = daily_statistics(cube)
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
     if var["add_mon"]:
@@ -107,7 +112,11 @@ def _extract_variable(var, cfg, filenames, out_dir):
 
         # Save variable
         utils.save_variable(
-            cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+            cube,
+            short_name,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )
 
 

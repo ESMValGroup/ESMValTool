@@ -25,6 +25,7 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
+   recipe_sanity_checks
    recipe_seaborn
    recipe_ref
 
@@ -34,6 +35,7 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
+   recipe_mjo
    recipe_climate_patterns
    recipe_clouds
    recipe_cmug_h2o
@@ -44,14 +46,13 @@ Atmosphere
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_extreme_index
-   recipe_eyring06jgr
-   recipe_eyring13jgr
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
    recipe_iht_toa
    recipe_impact
    recipe_lifetime
+   recipe_mjo_hovmoeller
    recipe_modes_of_variability
    recipe_mpqb_xch4
    recipe_quantilebias
@@ -62,9 +63,12 @@ Atmosphere
    recipe_autoassess_landsurface_soilmoisture
    recipe_zmnam
    recipe_thermodyn_diagtool
+   recipe_tropical_cpt_hovmoeller
    recipe_validation
    recipe_radiation_budget
    recipe_aod_aeronet_assess
+   recipe_surface_trace_gas
+   recipe_weathertyping
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -83,14 +87,11 @@ Future projections
    recipe_li17natcc
    recipe_meehl20sciadv
    recipe_emergent_constraints
-   recipe_wenzel14jgr
    recipe_schlund20esd
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
    recipe_kcs
-   recipe_wenzel16jclim
-   recipe_wenzel16nat
    recipe_tcr
    recipe_tcre
    recipe_tebaldi21esd
@@ -120,6 +121,7 @@ Land
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et
+   recipe_ref_fire
 
 Ocean
 ^^^^^
@@ -131,6 +133,8 @@ Ocean
    recipe_combined_indices
    recipe_esacci_oc
    recipe_enso_ref
+   recipe_enso_clivar
+   recipe_ocean_transport
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr

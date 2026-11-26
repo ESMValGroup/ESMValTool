@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 3
   version: '5.12.4'
-  modeling_realm: reanaly
+  type: reanaly
   source: ''
   reference: 'merra2'
   comment: |

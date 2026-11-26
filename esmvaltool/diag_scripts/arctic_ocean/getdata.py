@@ -71,7 +71,8 @@ def load_meta(datapath, fxpath=None):
     lat = datafile.variables["lat"][:]
     lev = datafile.variables["lev"][:]
     time = num2date(
-        datafile.variables["time"][:], datafile.variables["time"].units
+        datafile.variables["time"][:],
+        datafile.variables["time"].units,
     )
     # hack for HadGEM2-ES
     lat[lat > 90] = 90
@@ -102,7 +103,8 @@ def hofm_extract_region(metadata, cmor_var, indexes, level, time=0):
         level_pp = np.ma.masked_equal(level_pp, 0)
     data_mask = level_pp[indexes[0], indexes[1]].mask
     area_masked = np.ma.masked_where(
-        data_mask, metadata["areacello"][indexes[0], indexes[1]]
+        data_mask,
+        metadata["areacello"][indexes[0], indexes[1]],
     )
     result = (
         area_masked * level_pp[indexes[0], indexes[1]]
@@ -112,7 +114,6 @@ def hofm_extract_region(metadata, cmor_var, indexes, level, time=0):
 
 def hofm_save_data(cfg, data_info, oce_hofm):
     """Save data for Hovmoeller diagrams."""
-
     ofiles = {}
     ofiles["ofilename"] = genfilename(**data_info, data_type="hofm")
     ofiles["ofilename_levels"] = genfilename(**data_info, data_type="levels")
@@ -136,14 +137,16 @@ def hofm_save_data(cfg, data_info, oce_hofm):
     provenance_record = get_provenance_record(data_info, "lev", "npy")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            ofiles["ofilename_levels"] + ".npy", provenance_record
+            ofiles["ofilename_levels"] + ".npy",
+            provenance_record,
         )
 
     np.save(ofiles["ofilename_time"], data_info["time"])
     provenance_record = get_provenance_record(data_info, "time", "npy")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            ofiles["ofilename_time"] + ".npy", provenance_record
+            ofiles["ofilename_time"] + ".npy",
+            provenance_record,
         )
 
 
@@ -176,7 +179,8 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
     logger.info("Extract  %s data for %s, region %s", cmor_var, mmodel, region)
     areacello_fx = get_fx_filenames(cfg, "areacello")
     metadata = load_meta(
-        datapath=model_filenames[mmodel], fxpath=areacello_fx[mmodel]
+        datapath=model_filenames[mmodel],
+        fxpath=areacello_fx[mmodel],
     )
 
     lev_limit = (
@@ -191,7 +195,11 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
     for mon in range(series_lenght):
         for ind, _ in enumerate(metadata["lev"][0:lev_limit]):
             oce_hofm[ind, mon] = hofm_extract_region(
-                metadata, cmor_var, indexes, ind, mon
+                metadata,
+                cmor_var,
+                indexes,
+                ind,
+                mon,
             )
     data_info = {}
     data_info["basedir"] = cfg["work_dir"]
@@ -211,7 +219,6 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
 
 def transect_level(datafile, cmor_var, level, grid, locstream):
     """Interpolation for one level of transect."""
-
     sourcefield = esmpy.Field(
         grid,
         staggerloc=esmpy.StaggerLoc.CENTER,
@@ -252,7 +259,6 @@ def transect_level(datafile, cmor_var, level, grid, locstream):
 
 def transect_save_data(cfg, data_info, secfield, lon_s4new, lat_s4new):
     """Save data for transects."""
-
     ofiles = {}
     ofiles["ofilename"] = genfilename(**data_info, data_type="transect")
     ofiles["ofilename_depth"] = genfilename(
@@ -285,14 +291,16 @@ def transect_save_data(cfg, data_info, secfield, lon_s4new, lat_s4new):
     provenance_record = get_provenance_record(data_info, "levels", "npy")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            ofiles["ofilename_depth"] + ".npy", provenance_record
+            ofiles["ofilename_depth"] + ".npy",
+            provenance_record,
         )
 
     np.save(ofiles["ofilename_dist"], point_distance(lon_s4new, lat_s4new))
     provenance_record = get_provenance_record(data_info, "distance", "npy")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            ofiles["ofilename_dist"] + ".npy", provenance_record
+            ofiles["ofilename_dist"] + ".npy",
+            provenance_record,
         )
     print(ofiles["ofilename_dist"])
 
@@ -317,11 +325,18 @@ def transect_data(cfg, mmodel, cmor_var, region, mult=2):
         name of the observation dataset.
     """
     logger.info(
-        "Extract  %s transect data for %s, region %s", cmor_var, mmodel, region
+        "Extract  %s transect data for %s, region %s",
+        cmor_var,
+        mmodel,
+        region,
     )
     # get the path to preprocessed file
     ifilename = genfilename(
-        cfg["work_dir"], cmor_var, mmodel, data_type="timmean", extension=".nc"
+        cfg["work_dir"],
+        cmor_var,
+        mmodel,
+        data_type="timmean",
+        extension=".nc",
     )
     # open with netCDF4
     datafile = Dataset(ifilename)
@@ -349,17 +364,22 @@ def transect_data(cfg, mmodel, cmor_var, region, mult=2):
     locstream["ESMF:Lat"] = lat_s4new
     # if domask:
     locstream["ESMF:Mask"] = np.array(
-        np.ones(lon_s4new.shape[0]), dtype=np.int32
+        np.ones(lon_s4new.shape[0]),
+        dtype=np.int32,
     )
     # initialise array for the section
     secfield = np.zeros(
-        (lon_s4new.shape[0], datafile.variables[cmor_var].shape[1])
+        (lon_s4new.shape[0], datafile.variables[cmor_var].shape[1]),
     )
 
     # loop over depth levels
-    for level in range(0, datafile.variables[cmor_var].shape[1]):
+    for level in range(datafile.variables[cmor_var].shape[1]):
         secfield[:, level] = transect_level(
-            datafile, cmor_var, level, grid, locstream
+            datafile,
+            cmor_var,
+            level,
+            grid,
+            locstream,
         ).data
     data_info = {}
     data_info["basedir"] = cfg["work_dir"]
@@ -377,7 +397,6 @@ def transect_data(cfg, mmodel, cmor_var, region, mult=2):
 
 def tsplot_extract_data(mmodel, observations, metadata_t, metadata_s, ind):
     """Extracts level data from the files for TS plots."""
-
     if mmodel != observations:
         level_pp = metadata_t["datafile"].variables["thetao"][0, ind, :, :]
         level_pp_s = metadata_s["datafile"].variables["so"][0, ind, :, :]
@@ -394,7 +413,6 @@ def tsplot_extract_data(mmodel, observations, metadata_t, metadata_s, ind):
 
 def tsplot_save_data(cfg, data_info, temp, salt, depth_model):
     """Save data for TS plots."""
-
     ofiles = {}
     data_info["variable"] = "thetao"
     ofiles["ofilename_t"] = genfilename(**data_info, data_type="tsplot")
@@ -402,7 +420,8 @@ def tsplot_save_data(cfg, data_info, temp, salt, depth_model):
     provenance_record = get_provenance_record(data_info, "tsplot", "npy")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            ofiles["ofilename_t"] + ".npy", provenance_record
+            ofiles["ofilename_t"] + ".npy",
+            provenance_record,
         )
 
     data_info["variable"] = "so"
@@ -411,7 +430,8 @@ def tsplot_save_data(cfg, data_info, temp, salt, depth_model):
     provenance_record = get_provenance_record(data_info, "tsplot", "npy")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            ofiles["ofilename_s"] + ".npy", provenance_record
+            ofiles["ofilename_s"] + ".npy",
+            provenance_record,
         )
 
     data_info["variable"] = "depth"
@@ -420,7 +440,8 @@ def tsplot_save_data(cfg, data_info, temp, salt, depth_model):
     provenance_record = get_provenance_record(data_info, "tsplot", "npy")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
-            ofiles["ofilename_depth"] + ".npy", provenance_record
+            ofiles["ofilename_depth"] + ".npy",
+            provenance_record,
         )
 
 
@@ -429,7 +450,6 @@ def tsplot_data(cfg, mmodel, region, observations="PHC"):
 
     Parameters
     ----------
-
     mmodel: str
         model name
     max_level: int
@@ -448,10 +468,18 @@ def tsplot_data(cfg, mmodel, region, observations="PHC"):
     # generate input names for T and S. The files are generated by the
     # `timmean` function.
     ifilename_t = genfilename(
-        cfg["work_dir"], "thetao", mmodel, data_type="timmean", extension=".nc"
+        cfg["work_dir"],
+        "thetao",
+        mmodel,
+        data_type="timmean",
+        extension=".nc",
     )
     ifilename_s = genfilename(
-        cfg["work_dir"], "so", mmodel, data_type="timmean", extension=".nc"
+        cfg["work_dir"],
+        "so",
+        mmodel,
+        data_type="timmean",
+        extension=".nc",
     )
     # get the metadata for T and S
 
@@ -472,15 +500,19 @@ def tsplot_data(cfg, mmodel, region, observations="PHC"):
     # loop over depths
     for ind, depth in enumerate(metadata_t["lev"][0:lev_limit]):
         level_pp, level_pp_s = tsplot_extract_data(
-            mmodel, observations, metadata_t, metadata_s, ind
+            mmodel,
+            observations,
+            metadata_t,
+            metadata_s,
+            ind,
         )
         # select individual points for T, S and depth
         temp = np.hstack((temp, level_pp[indexes[0], indexes[1]].compressed()))
         salt = np.hstack(
-            (salt, level_pp_s[indexes[0], indexes[1]].compressed())
+            (salt, level_pp_s[indexes[0], indexes[1]].compressed()),
         )
         depth_temp = np.zeros_like(
-            level_pp[indexes[0], indexes[1]].compressed()
+            level_pp[indexes[0], indexes[1]].compressed(),
         )
         depth_temp[:] = depth
         depth_model = np.hstack((depth_model, depth_temp))
@@ -533,13 +565,26 @@ def aw_core(model_filenames, diagworkdir, region, cmor_var):
     for mmodel in model_filenames:
         aw_core_parameters[mmodel] = {}
         logger.info(
-            "Plot profile %s data for %s, region %s", cmor_var, mmodel, region
+            "Plot profile %s data for %s, region %s",
+            cmor_var,
+            mmodel,
+            region,
         )
         ifilename = genfilename(
-            diagworkdir, cmor_var, mmodel, region, "hofm", ".npy"
+            diagworkdir,
+            cmor_var,
+            mmodel,
+            region,
+            "hofm",
+            ".npy",
         )
         ifilename_levels = genfilename(
-            diagworkdir, cmor_var, mmodel, region, "levels", ".npy"
+            diagworkdir,
+            cmor_var,
+            mmodel,
+            region,
+            "levels",
+            ".npy",
         )
 
         hofdata = np.load(ifilename, allow_pickle=True)

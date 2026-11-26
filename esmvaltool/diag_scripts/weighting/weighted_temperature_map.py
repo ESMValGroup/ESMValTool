@@ -63,7 +63,12 @@ def set_antimeridian(dataarray, to: str):
 
 
 def mapplot(
-    dataarray, cfg, title_pattern, filename_part, ancestors, **colormesh_args
+    dataarray,
+    cfg,
+    title_pattern,
+    filename_part,
+    ancestors,
+    **colormesh_args,
 ):
     """Visualize weighted temperature."""
     metadata = read_metadata(cfg)
@@ -137,19 +142,26 @@ def visualize_and_save_temperature(temperature, cfg: dict, ancestors: list):
     )
     filename_part = "temperature_change_weighted_map"
     mapplot(
-        temperature, cfg, title_pattern, filename_part, ancestors, cmap="Reds"
+        temperature,
+        cfg,
+        title_pattern,
+        filename_part,
+        ancestors,
+        cmap="Reds",
     )
 
 
 def visualize_and_save_difference(
-    temperature_difference, cfg: dict, ancestors: list
+    temperature_difference,
+    cfg: dict,
+    ancestors: list,
 ):
     """Wrap mapplot: temperature difference between weighted and unweighted."""
     title_pattern = "\n".join(
         [
             "Weighted minus unweighted {metric} temperature",
             r"{period} ($\degree$C)",
-        ]
+        ],
     )
     filename_part = "temperature_change_difference_map"
     mapplot(
@@ -166,7 +178,8 @@ def model_aggregation(dataset, metric, weights=None):
     """Call mean or percentile calculation."""
     if isinstance(metric, int):
         return calculate_percentiles(dataset, [metric], weights).squeeze(
-            "percentile", drop=True
+            "percentile",
+            drop=True,
         )
     if metric.lower() == "mean":
         if weights is not None:
@@ -175,7 +188,8 @@ def model_aggregation(dataset, metric, weights=None):
 
     if metric.lower() == "median":
         return calculate_percentiles(dataset, [50], weights).squeeze(
-            "percentile", drop=True
+            "percentile",
+            drop=True,
         )
 
     errmsg = f"model_aggregation {metric} is not implemented!"

@@ -166,7 +166,8 @@ def mk_colo_cont(
         )
         if not tick_locs:
             tick_locator = mpl.ticker.MaxNLocator(
-                nbins=nticks, min_n_ticks=nticks
+                nbins=nticks,
+                min_n_ticks=nticks,
             )
         else:
             tick_locator = mpl.ticker.FixedLocator(tick_locs)
@@ -226,7 +227,7 @@ def put_ticks(nticks=5, which_ax="both", axlw=0.3):
         for label in labels:
             label.set_y(-0.02)
         plt.gca().xaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks)
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks),
         )
 
     if which_ax == "y":
@@ -237,7 +238,7 @@ def put_ticks(nticks=5, which_ax="both", axlw=0.3):
             line.set_marker(mpl.lines.TICKLEFT)
             line.set_linewidth(axlw)
         plt.gca().yaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks)
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks),
         )
     if which_ax == "both":
         plt.gca().yaxis.set_ticks_position("left")
@@ -247,14 +248,14 @@ def put_ticks(nticks=5, which_ax="both", axlw=0.3):
             line.set_marker(mpl.lines.TICKLEFT)
             line.set_linewidth(axlw)
         plt.gca().yaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks)
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks),
         )
         plt.gca().xaxis.set_ticks_position("bottom")
         lines = plt.gca().get_xticklines()
         for line in lines:
             line.set_marker(mpl.lines.TICKDOWN)
         plt.gca().xaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks)
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks),
         )
 
 
@@ -300,5 +301,8 @@ def rotate_labels(which_ax="both", rot=0, axfs=6):
 def save_figure(plot_path, _extr_art=None):
     """Write the figure to a file."""
     plt.savefig(
-        plot_path, bbox_inches="tight", bbox_extra_artists=_extr_art, dpi=450
+        plot_path,
+        bbox_inches="tight",
+        bbox_extra_artists=_extr_art,
+        dpi=450,
     )

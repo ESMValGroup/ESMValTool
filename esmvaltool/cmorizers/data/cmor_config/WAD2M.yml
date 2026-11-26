@@ -7,7 +7,7 @@ attributes:
   dataset_id: WAD2M
   version: '2.0'
   tier: 2
-  modeling_realm: sat
+  type: sat
   project_id: OBS6
   source: 'https://zenodo.org/record/5553187'
   reference: 'wad2m_zhang21essd'

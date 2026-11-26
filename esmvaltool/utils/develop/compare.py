@@ -83,7 +83,7 @@ def diff_attrs(ref: dict, cur: dict) -> str:
         elif not np.array_equal(ref[key], cur[key]):
             msg.append(
                 f"value of attribute '{key}' is different: "
-                f"expected '{ref[key]}' but found '{cur[key]}'"
+                f"expected '{ref[key]}' but found '{cur[key]}'",
             )
     for key in cur:
         if key not in ref:
@@ -101,7 +101,8 @@ def diff_array(ref: np.ndarray, cur: np.ndarray) -> str:
     if cur.shape != ref.shape:
         msg.append("data has different shape")
     elif np.issubdtype(ref.dtype, np.inexact) and np.issubdtype(
-        cur.dtype, np.inexact
+        cur.dtype,
+        np.inexact,
     ):
         if not np.array_equal(ref, cur, equal_nan=True):
             if np.allclose(ref, cur, equal_nan=True):
@@ -159,7 +160,9 @@ def diff_dataset(ref: xr.Dataset, cur: xr.Dataset) -> str:
 
 
 def adapt_attributes(
-    attributes: dict, ignore_attributes: tuple[str, ...], recipe_name: str
+    attributes: dict,
+    ignore_attributes: tuple[str, ...],
+    recipe_name: str,
 ) -> dict:
     """Remove ignored attributes and make absolute paths relative."""
     new_attrs = {}
@@ -193,11 +196,15 @@ def load_nc(filename: Path) -> xr.Dataset:
 
     # Remove ignored attributes and modify attributes that contain paths
     dataset.attrs = adapt_attributes(
-        dataset.attrs, IGNORE_GLOBAL_ATTRIBUTES, recipe_name
+        dataset.attrs,
+        IGNORE_GLOBAL_ATTRIBUTES,
+        recipe_name,
     )
     for var in dataset:
         dataset[var].attrs = adapt_attributes(
-            dataset[var].attrs, IGNORE_VARIABLE_ATTRIBUTES, recipe_name
+            dataset[var].attrs,
+            IGNORE_VARIABLE_ATTRIBUTES,
+            recipe_name,
         )
 
     return dataset
@@ -289,7 +296,10 @@ def files_equal(reference_file: Path, current_file: Path) -> bool:
 
 
 def compare_files(
-    reference_dir: Path, current_dir: Path, files: list[Path], verbose: bool
+    reference_dir: Path,
+    current_dir: Path,
+    files: list[Path],
+    verbose: bool,
 ) -> list[str]:
     """Compare files from the reference dir to the current dir."""
     different = []
@@ -306,14 +316,16 @@ def compare_files(
 
 
 def compare(
-    reference_dir: Path | None, current_dir: Path, verbose: bool
+    reference_dir: Path | None,
+    current_dir: Path,
+    verbose: bool,
 ) -> bool:
     """Compare a recipe run to a reference run.
 
     Returns True if the runs were identical, False otherwise.
     """
     recipe_name = get_recipe_name_from_dir(current_dir)
-    print("")
+    print()
     print(f"recipe_{recipe_name}.yml: ", end="")
     if reference_dir is None:
         print("no reference run found, unable to check")
@@ -417,7 +429,7 @@ def find_successful_runs(dirname: Path, recipe_name: str = "*") -> list[Path]:
     runs = []
     for recipe_file in sorted(
         list(dirname.glob(f"run/recipe_{recipe_name}.yml"))
-        + list(dirname.glob(f"*/run/recipe_{recipe_name}.yml"))
+        + list(dirname.glob(f"*/run/recipe_{recipe_name}.yml")),
     ):
         recipe_dir = recipe_file.parent.parent
         log = recipe_dir / "run" / "main_log.txt"
@@ -428,7 +440,8 @@ def find_successful_runs(dirname: Path, recipe_name: str = "*") -> list[Path]:
 
 
 def find_recipes(
-    reference: Path, current: list[Path]
+    reference: Path,
+    current: list[Path],
 ) -> Iterator[tuple[Path, Path | None]]:
     """Yield tuples of current and reference directories."""
     for current_dir in current:
@@ -476,14 +489,15 @@ def main() -> int:
 
     print(
         "Comparing recipe run(s) in:\n{}".format(
-            "\n".join(str(f) for f in args.current)
-        )
+            "\n".join(str(f) for f in args.current),
+        ),
     )
     print(f"to reference in {args.reference}")
     fail = []
     success = []
     for current_dir, reference_dir in find_recipes(
-        args.reference, args.current
+        args.reference,
+        args.current,
     ):
         same = compare(reference_dir, current_dir, verbose=args.verbose)
         recipe = f"recipe_{get_recipe_name_from_dir(current_dir)}.yml"
@@ -500,7 +514,7 @@ def main() -> int:
                 "",
                 "The following recipe runs were identical to previous runs:",
                 *success,
-            ]
+            ],
         )
     if fail:
         summary.extend(
@@ -508,15 +522,15 @@ def main() -> int:
                 "",
                 "The following recipe runs need to be inspected by a human:",
                 *fail,
-            ]
+            ],
         )
     print("\n".join(summary))
-    print("")
+    print()
 
     if fail:
         print(
             f"Action required: {len(fail)} out of {len(success) + len(fail)}"
-            " recipe runs need to be inspected by a human."
+            " recipe runs need to be inspected by a human.",
         )
     else:
         print(f"All {len(success)} recipe runs were identical.")

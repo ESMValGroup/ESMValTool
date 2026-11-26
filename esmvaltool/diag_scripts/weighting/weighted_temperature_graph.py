@@ -129,7 +129,9 @@ def visualize_and_save_temperatures(
     plt.close(figure)
 
     filename_data = get_diagnostic_filename(
-        "temperature_anomalies", cfg, extension="nc"
+        "temperature_anomalies",
+        cfg,
+        extension="nc",
     )
     temperature.to_netcdf(filename_data)
 
@@ -162,11 +164,11 @@ def main(cfg):
     elif central_estimate_var == "mean":
         central_estimate = model_data.mean("model_ensemble")
         central_estimate_weighted = model_data.weighted(weights).mean(
-            "model_ensemble"
+            "model_ensemble",
         )
 
     percentiles = np.array(
-        [settings.get("lower_bound", 25), settings.get("upper_bound", 75)]
+        [settings.get("lower_bound", 25), settings.get("upper_bound", 75)],
     )
 
     uncertainty_range = calculate_percentiles(

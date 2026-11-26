@@ -113,12 +113,16 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     # add time coord
     year = raw_info["reference_year"]
     time = Unit(
-        "months since " + str(year) + "-01-01 00:00:00", calendar="gregorian"
+        "months since " + str(year) + "-01-01 00:00:00",
+        calendar="gregorian",
     )
     cube = iris.util.new_axis(cube)
     cube.add_dim_coord(
         iris.coords.DimCoord(
-            6.0, standard_name="time", units=time, bounds=[0.0, 12.0]
+            6.0,
+            standard_name="time",
+            units=time,
+            bounds=[0.0, 12.0],
         ),
         0,
     )
@@ -144,7 +148,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             {
                 "var": var,
                 "reference_year": cfg["custom"]["reference_year"],
-            }
+            },
         )
         glob_attrs["mip"] = vals["mip"]
         extract_variable(in_files, out_dir, glob_attrs, raw_info, cmor_table)

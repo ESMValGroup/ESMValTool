@@ -48,10 +48,10 @@ from copy import deepcopy
 
 import iris
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib import ticker
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
@@ -113,13 +113,13 @@ def _get_style(dataset_name, cfg):
         if column not in data_frame.columns:
             raise ValueError(
                 f"Marker file '{marker_file}' does not contain necessary "
-                f"column '{column}'"
+                f"column '{column}'",
             )
     marker = data_frame[marker_column][data_frame["dataset"] == dataset_name]
     if len(marker) != 1:
         raise ValueError(
             f"Expected exactly one entry for marker of '{dataset_name}' in "
-            f"file '{marker_file}', got {len(marker):d}"
+            f"file '{marker_file}', got {len(marker):d}",
         )
     style["mark"] = marker.values[0]
     return style
@@ -277,17 +277,18 @@ def main(cfg):
 
     # Project
     if ecs_cube.attributes.get("project", "a") != tcr_cube.attributes.get(
-        "project", "b"
+        "project",
+        "b",
     ):
         raise ValueError(
             "ECS and TCR input files have either no 'project' attribute or "
-            "differ in it"
+            "differ in it",
         )
     project = ecs_cube.attributes["project"]
 
     # Remove missing data and use equal coordinate
     [ecs_cube, tcr_cube] = iris_helpers.intersect_dataset_coordinates(
-        [ecs_cube, tcr_cube]
+        [ecs_cube, tcr_cube],
     )
 
     # Create plot
@@ -302,7 +303,7 @@ def main(cfg):
     provenance_record.update(
         {
             "plot_types": ["scatter"],
-        }
+        },
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)

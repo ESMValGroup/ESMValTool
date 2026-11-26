@@ -36,7 +36,8 @@ DEPRECATION_MSG = (
 
 # Variable class containing all relevant information
 BaseVariable = collections.namedtuple(
-    "Variable", [n.SHORT_NAME, n.STANDARD_NAME, n.LONG_NAME, n.UNITS]
+    "Variable",
+    [n.SHORT_NAME, n.STANDARD_NAME, n.LONG_NAME, n.UNITS],
 )
 
 
@@ -58,7 +59,11 @@ class Variable(BaseVariable):
             stacklevel=2,
         )
         self = super().__new__(
-            cls, short_name, standard_name, long_name, units
+            cls,
+            short_name,
+            standard_name,
+            long_name,
+            units,
         )
         return self
 
@@ -138,7 +143,7 @@ class Variables:
             logger.warning(
                 "Empty recipe configuration: the automatic "
                 "import of variables does not work for chained "
-                "scripts (using 'ancestors' key)"
+                "scripts (using 'ancestors' key)",
             )
 
         # Add custom variables
@@ -245,7 +250,7 @@ class Variables:
         """
         if var not in self._dict:
             raise ValueError(
-                f"Variable '{var}' does not exist yet and cannot be modified"
+                f"Variable '{var}' does not exist yet and cannot be modified",
             )
         old_var = self._dict.pop(var)
         new_var = {}
@@ -435,13 +440,13 @@ class Datasets:
         else:
             success = False
         if not success:
-            raise TypeError(f"{repr(cfg)} is not a valid configuration file")
+            raise TypeError(f"{cfg!r} is not a valid configuration file")
         self._n_datasets = len(self._paths)
         if not self._paths:
             logger.warning("No datasets found!")
             logger.warning(
                 "Note: the automatic import of datasets does not "
-                "work for chained scripts (using 'ancestors' key)"
+                "work for chained scripts (using 'ancestors' key)",
             )
 
     def __repr__(self):
@@ -459,7 +464,7 @@ class Datasets:
     def __next__(self):
         """Allow iteration through class."""
         if self._iter_counter >= self._n_datasets:
-            raise StopIteration()
+            raise StopIteration
         next_element = self._paths[self._iter_counter]
         self._iter_counter += 1
         return next_element
@@ -571,12 +576,12 @@ class Datasets:
         if path is not None:
             if self._is_valid_path(path):
                 self._data[path] += data
-                return None
-            return None
+                return
+            return
         paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
         if paths:
             self._data[paths[0]] += data
-        return None
+        return
 
     def get_data(self, path=None, **dataset_info):
         """Access a dataset's data.
@@ -741,7 +746,9 @@ class Datasets:
         output = self._datasets[paths[0]].get(key)
         if output is None:
             logger.warning(
-                "Dataset %s does not contain '%s' information", path, key
+                "Dataset %s does not contain '%s' information",
+                path,
+                key,
             )
         return output
 
@@ -770,7 +777,8 @@ class Datasets:
         output = [self._datasets[path].get(key) for path in paths]
         if None in output:
             logger.warning(
-                "One or more datasets do not contain '%s' information", key
+                "One or more datasets do not contain '%s' information",
+                key,
             )
         return output
 
@@ -852,9 +860,9 @@ class Datasets:
         if path is not None:
             if self._is_valid_path(path):
                 self._data[path] = data
-                return None
-            return None
+                return
+            return
         paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
         if paths:
             self._data[paths[0]] = data
-        return None
+        return

@@ -1,6 +1,7 @@
 """Recipe tests."""
 
 import textwrap
+from functools import cache
 from pathlib import Path
 
 import pytest
@@ -11,15 +12,25 @@ from tests.integration.test_recipes_loading import IDS, RECIPES
 
 ESMVALTOOL_ROOT = Path(esmvaltool.__file__).absolute().parent
 REFERENCES_PATH = ESMVALTOOL_ROOT / "references"
+DIAG_SCRIPTS_PATH = ESMVALTOOL_ROOT / "diag_scripts"
 
 CONFIG_REFERENCES_PATH = ESMVALTOOL_ROOT / "config-references.yml"
 AUTHORS = yaml.safe_load(CONFIG_REFERENCES_PATH.read_text())["authors"]
 
 
+@cache
+def load_recipe(recipe_file: Path) -> dict:
+    """Load a recipe only once and use the fast C-based loader."""
+    return yaml.load(
+        recipe_file.read_text(encoding="utf-8"),
+        Loader=yaml.CSafeLoader,
+    )
+
+
 @pytest.mark.parametrize("recipe_file", RECIPES, ids=IDS)
 def test_reference_tags(recipe_file):
     """Check bibtex file is added to REFERENCES_PATH."""
-    recipe = yaml.safe_load(recipe_file.read_text())
+    recipe = load_recipe(recipe_file)
     tags = recipe.get("documentation", {}).get("references", [])
     msg = textwrap.dedent("""
         The tag '{tag}' is mentioned in recipe '{recipe}'.
@@ -30,14 +41,16 @@ def test_reference_tags(recipe_file):
     for tag in tags:
         bibtex_file = REFERENCES_PATH / f"{tag}.bibtex"
         assert bibtex_file.is_file(), msg.format(
-            tag=tag, recipe=recipe_file, path=REFERENCES_PATH
+            tag=tag,
+            recipe=recipe_file,
+            path=REFERENCES_PATH,
         )
 
 
 @pytest.mark.parametrize("recipe_file", RECIPES, ids=IDS)
 def test_maintainers(recipe_file):
     """Check recipe maintainers."""
-    recipe = yaml.safe_load(recipe_file.read_text())
+    recipe = load_recipe(recipe_file)
 
     # Make sure that 'documentation' and 'maintainer' entries are present
     msg = "'documentation' missing in recipe"
@@ -61,12 +74,28 @@ def test_maintainers(recipe_file):
         assert len(maintainers) == 1, msg
 
     # Check that maintainers are valid
-    invalid_maintainers = []
-    for maintainer in maintainers:
-        if maintainer not in AUTHORS:
-            invalid_maintainers.append(maintainer)
+    invalid_maintainers = [m for m in maintainers if m not in AUTHORS]
     msg = (
         f"Got invalid maintainers: {invalid_maintainers}. Valid entries "
         f"are authors from {CONFIG_REFERENCES_PATH}."
     )
     assert not invalid_maintainers, msg
+
+
+@pytest.mark.parametrize("recipe_file", RECIPES, ids=IDS)
+def test_diagnostic_scripts(recipe_file):
+    """Check that diagnostic scripts are relative to the diag_scripts directory.
+
+    Other relative paths only work from a particular working directory, for
+    example the root of the repository, and not for an installed ESMValTool.
+    """
+    recipe = load_recipe(recipe_file)
+    for diagnostic_name, diagnostic in recipe["diagnostics"].items():
+        for script_name, script in (diagnostic.get("scripts") or {}).items():
+            path = script["script"]
+            msg = (
+                f"Script '{path}' of '{diagnostic_name}/{script_name}' is "
+                f"not a file in {DIAG_SCRIPTS_PATH}. Give the path relative to "
+                "that directory."
+            )
+            assert (DIAG_SCRIPTS_PATH / path).is_file(), msg

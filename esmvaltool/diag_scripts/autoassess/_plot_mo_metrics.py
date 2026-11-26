@@ -37,6 +37,10 @@ FAKELINES = [
 ]
 
 
+class TestError(Exception):
+    """Error with the tests provided."""
+
+
 def merge_obs_acc(obs, acc):
     """
     Merge observation errors.
@@ -264,18 +268,18 @@ def read_obs_metrics(csvfile, required=False):
                     #  should be uncertainty ranges (i.e. multiple obs sources)
                     if len(row) == 1:
                         obs[metric] = tuple(
-                            sorted([float(row[0]), float(row[0])])
+                            sorted([float(row[0]), float(row[0])]),
                         )
                     elif len(row) == 2:
                         obs[metric] = tuple(
-                            sorted([float(row[0]), float(row[1])])
+                            sorted([float(row[0]), float(row[1])]),
                         )
                     elif len(row) == 4:
                         obs[metric] = tuple(
-                            sorted([float(row[0]), float(row[1])])
+                            sorted([float(row[0]), float(row[1])]),
                         )
                         acc[metric] = tuple(
-                            sorted([float(row[2]), float(row[3])])
+                            sorted([float(row[2]), float(row[3])]),
                         )
                     else:
                         msg = "Obs metrics file is not properly configured"
@@ -352,13 +356,12 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
         # Get GREEN automatically if test within observational uncertainty
         if is_test_in_obs:
             colour = GREEN
-        else:
-            # If test outside model uncertainty, but reference outside
-            #  observational uncertainty and test is better than reference
-            #  then get AMBER.
-            if not is_test_in_var:
-                if (not is_ref_in_obs) and is_test_better:
-                    colour = AMBER
+        # If test outside model uncertainty, but reference outside
+        #  observational uncertainty and test is better than reference
+        #  then get AMBER.
+        elif not is_test_in_var:
+            if (not is_ref_in_obs) and is_test_better:
+                colour = AMBER
 
     return colour
 
@@ -395,31 +398,31 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     else:
         # Create reference metrics dictionary with values of 1.0 to match
         #  test metrics dictionary
-        ref = {metric: 1.0 for metric in test.keys()}
+        ref = dict.fromkeys(test.keys(), 1.0)
 
     for metric in test.keys():
         colours[metric] = metric_colour(
             test[metric],
             ref=ref[metric],
-            var=var.get(metric, None),
-            obs=obs.get(metric, None),
-            acc=acc.get(metric, None),
+            var=var.get(metric),
+            obs=obs.get(metric),
+            acc=acc.get(metric),
         )
 
     return colours
 
 
-def normalise(test, ref, strict=True):
+def normalise(test, ref, same=False):
     """
     Routine to normalise contents of test by contents of ref.
 
     :param dict test: Dictionary of test metrics
     :param dict ref: Dictionary of reference metrics
-    :param bool strict: if True then test and ref must have same metrics
+    :param bool same: if True then test and ref must have same metrics
     :returns: Dictionary of normalised test metrics
     :rtype: dict.
     """
-    if strict:
+    if same:
         # Test to make sure reference metrics dictionary contains the same
         # metrics as test metrics dictionary
         assert sorted(test.keys()) == sorted(ref.keys()), (
@@ -437,14 +440,13 @@ def normalise(test, ref, strict=True):
                 else:
                     ref[metric] = 1.0e-20
                     norm[metric] = test[metric] / ref[metric]
+            elif ref[metric] != 0:
+                norm[metric] = tuple(x / ref[metric] for x in test[metric])
             else:
-                if ref[metric] != 0:
-                    norm[metric] = tuple(x / ref[metric] for x in test[metric])
-                else:
-                    ref[metric] = 1.0
-                    norm[metric] = tuple(
-                        x * 0.0 / ref[metric] for x in test[metric]
-                    )
+                ref[metric] = 1.0
+                norm[metric] = tuple(
+                    x * 0.0 / ref[metric] for x in test[metric]
+                )
 
     return norm
 
@@ -651,10 +653,16 @@ def plot_nac(
     plot_obs(ax, metrics, n_obs, color=OBS_GREY, zorder=2)
 
     # Plot metric data
+    # Check enough MARKERS for number of tests
+    if len(tests) > len(MARKERS):
+        raise TestError(
+            f"Number of tests, {len(tests)}, is larger than available "
+            f"plot MARKERS, {len(MARKERS)}.",
+        )
     n_tests = []
-    for test, marker in zip(tests, MARKERS, strict=True):
+    for test, marker in zip(tests, MARKERS[: len(tests)], strict=True):
         # Normalise test by ref
-        n_test = normalise(test, ref, strict=True)
+        n_test = normalise(test, ref, same=True)
 
         # Check for green/amber/red/grey
         colours = metric_colours(n_test, var=n_var, obs=n_obs, acc=n_acc)

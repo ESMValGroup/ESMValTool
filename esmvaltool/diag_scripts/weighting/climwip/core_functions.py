@@ -25,7 +25,8 @@ def area_weighted_mean(data_array: "xr.DataArray") -> "xr.DataArray":
 
 
 def distance_matrix(
-    values: "np.ndarray", weights: "np.ndarray" = None
+    values: "np.ndarray",
+    weights: "np.ndarray" = None,
 ) -> "np.ndarray":
     """Calculate the pairwise distance between model members.
 
@@ -57,7 +58,8 @@ def distance_matrix(
 
 
 def calculate_model_distances(
-    data_array: "xr.DataArray", dimension: str = "model_ensemble_reference"
+    data_array: "xr.DataArray",
+    dimension: str = "model_ensemble_reference",
 ) -> "xr.DataArray":
     """Calculate pair-wise distances between all values in data_array.
 
@@ -104,7 +106,8 @@ def calculate_model_distances(
 
 
 def compute_overall_mean(
-    dataset: "xr.Dataset", weights: dict
+    dataset: "xr.Dataset",
+    weights: dict,
 ) -> "xr.DataArray":
     """Normalize all variables in a dataset and return their weighted mean.
 
@@ -271,7 +274,9 @@ def calculate_weights(
 
 
 def weighted_quantile(
-    values: list, quantiles: list, weights: list = None
+    values: list,
+    quantiles: list,
+    weights: list = None,
 ) -> "np.array":
     """Calculate weighted quantiles.
 

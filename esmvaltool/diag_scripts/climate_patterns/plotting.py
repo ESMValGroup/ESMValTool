@@ -70,7 +70,7 @@ def plot_patterns(cube_list, plot_path):
         # plots patterns for an arbitrary grid cell
         axis[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
         axis[x_pos, y_pos].set_ylabel(
-            str(cube.var_name) + " / " + str(cube.units)
+            str(cube.var_name) + " / " + str(cube.units),
         )
         if j > 5:
             axis[x_pos, y_pos].set_xlabel("Time")

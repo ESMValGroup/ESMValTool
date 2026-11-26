@@ -49,7 +49,7 @@ def _fix_climatological_time(cube):
     # https://www.ncei.noaa.gov/access/metadata/landing-page/bin/
     # iso?id=gov.noaa.nodc%3A0221526
     time_points = TIME_UNITS.date2num(
-        [datetime(2011, m, 15) for m in range(1, 13)]
+        [datetime(2011, m, 15) for m in range(1, 13)],
     )
     time_bounds = [
         [datetime(2004, m, 1), datetime(2017, m + 1, 1)] for m in range(1, 12)
@@ -88,7 +88,7 @@ def _fix_time(cube):
     base_year = datetime_base.year
     base_month = datetime_base.month
     all_months = list(julian_day_coord.points.astype(int)) + [
-        julian_day_coord.points.astype(int).max() + 1  # 1 more month for bnds
+        julian_day_coord.points.astype(int).max() + 1,  # 1 more month for bnds
     ]
     bounds_datetimes = [
         datetime(base_year + (m - 1) // 12, base_month + (m - 1) % 12, 1)

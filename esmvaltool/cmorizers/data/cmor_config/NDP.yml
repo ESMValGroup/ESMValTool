@@ -9,7 +9,7 @@ attributes:
   dataset_id: NDP
   version: 017b
   tier: 3
-  modeling_realm: reanaly
+  type: reanaly
   project_id: OBS
   source: 'https://data.ess-dive.lbl.gov/view/doi:10.3334/CDIAC/LUE.NDP017.2006'
   reference: 'ndp'

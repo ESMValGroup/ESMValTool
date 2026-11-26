@@ -60,11 +60,12 @@ class SeaIceDrift:
         logger.info("Loading sea ice concentration")
         siconc_original = {}
         siconc_files = self.datasets.get_path_list(
-            standard_name="sea_ice_area_fraction"
+            standard_name="sea_ice_area_fraction",
         )
         for filename in siconc_files:
             reference_dataset = self._get_reference_dataset(
-                "sic", self.datasets.get_info("reference_dataset", filename)
+                "sic",
+                self.datasets.get_info("reference_dataset", filename),
             )
             alias = self._get_alias(filename, reference_dataset)
             siconc = iris.load_cube(filename, "sea_ice_area_fraction")
@@ -72,12 +73,13 @@ class SeaIceDrift:
             siconc_original[alias] = siconc
 
             self.siconc[alias] = self._compute_mean(
-                siconc, self._get_mask(siconc, filename)
+                siconc,
+                self._get_mask(siconc, filename),
             )
 
         logger.info("Loading sea ice thickness")
         sithick_files = self.datasets.get_path_list(
-            standard_name="sea_ice_thickness"
+            standard_name="sea_ice_thickness",
         )
         for filename in sithick_files:
             reference_dataset = self._get_reference_dataset(
@@ -87,12 +89,13 @@ class SeaIceDrift:
             alias = self._get_alias(filename, reference_dataset)
             sithick = iris.load_cube(filename, "sea_ice_thickness")
             self.sivol[alias] = self._compute_mean(
-                sithick, self._get_mask(sithick, filename)
+                sithick,
+                self._get_mask(sithick, filename),
             )
 
         logger.info("Load sea ice velocities")
         sispeed_files = self.datasets.get_path_list(
-            standard_name="sea_ice_speed"
+            standard_name="sea_ice_speed",
         )
         obs_file = self.cfg.get("sispeed_obs", "")
         for filename in sispeed_files:
@@ -106,22 +109,26 @@ class SeaIceDrift:
                 obs_data = obs_data.reshape((12, 35), order="F")
                 logger.debug(obs_data)
                 sispeed = iris.cube.Cube(
-                    obs_data, "sea_ice_speed", units="km day-1"
+                    obs_data,
+                    "sea_ice_speed",
+                    units="km day-1",
                 )
                 sispeed.add_dim_coord(
                     iris.coords.DimCoord(
-                        range(1, 13), var_name="month_number"
+                        range(1, 13),
+                        var_name="month_number",
                     ),
                     0,
                 )
                 sispeed.add_dim_coord(
                     iris.coords.DimCoord(
-                        range(1979, 1979 + 35), var_name="year"
+                        range(1979, 1979 + 35),
+                        var_name="year",
                     ),
                     1,
                 )
                 sispeed.extract(
-                    iris.Constraint(year=lambda c: 1979 <= c <= 2005)
+                    iris.Constraint(year=lambda c: 1979 <= c <= 2005),
                 )
                 sispeed = sispeed.collapsed("year", iris.analysis.MEAN)
                 logger.debug(sispeed)
@@ -130,7 +137,8 @@ class SeaIceDrift:
                 sispeed = iris.load_cube(filename, "sea_ice_speed")
                 sispeed.convert_units("km day-1")
                 self.sispeed[alias] = self._compute_mean(
-                    sispeed, self._get_mask(sispeed, filename)
+                    sispeed,
+                    self._get_mask(sispeed, filename),
                 )
 
         self._compute_metrics()
@@ -143,7 +151,8 @@ class SeaIceDrift:
             dataset = self.datasets.get_info(n.DATASET, filename)
             if dataset == reference_dataset:
                 self.references[var] = self.datasets.get_info(
-                    n.ALIAS, filename
+                    n.ALIAS,
+                    filename,
                 )
                 return filename
         raise ValueError(f"Reference dataset {reference_dataset} not found")
@@ -171,10 +180,12 @@ class SeaIceDrift:
 
         dataset_info = self.datasets.get_dataset_info(filename)
         var_info = esmvaltool.diag_scripts.shared.group_metadata(
-            self.cfg["input_data"].values(), "alias"
+            self.cfg["input_data"].values(),
+            "alias",
         )[dataset_info[n.ALIAS]]
         var_info = esmvaltool.diag_scripts.shared.group_metadata(
-            var_info, "short_name"
+            var_info,
+            "short_name",
         )
         if "areacello" in var_info:
             area_file = var_info["areacello"][0]["filename"]
@@ -192,7 +203,8 @@ class SeaIceDrift:
             logger.debug("Sispeed: %s", self.sispeed[dataset].data)
             logger.info("Slope ratio (no unit)")
             slope, intercept, _, _ = self._get_slope_ratio(
-                self.siconc[dataset], self.sispeed[dataset]
+                self.siconc[dataset],
+                self.sispeed[dataset],
             )
             self.slope_drift_sic[dataset] = slope
             self.intercept_drift_siconc[dataset] = intercept
@@ -202,7 +214,8 @@ class SeaIceDrift:
             logger.debug("Sispeed: %s", self.sispeed[dataset].data)
             logger.info("Slope ratio (no unit)")
             slope, intercept, _, _ = self._get_slope_ratio(
-                self.sivol[dataset], self.sispeed[dataset]
+                self.sivol[dataset],
+                self.sispeed[dataset],
             )
             self.slope_drift_sivol[dataset] = slope
             self.intercept_drift_sivol[dataset] = intercept
@@ -249,7 +262,7 @@ class SeaIceDrift:
     @staticmethod
     def _compute_mean(data, weights):
         mapping = set(
-            data.coord_dims("latitude") + data.coord_dims("longitude")
+            data.coord_dims("latitude") + data.coord_dims("longitude"),
         )
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -269,8 +282,8 @@ class SeaIceDrift:
         return 100.0 * np.nanmean(
             np.sqrt(
                 SeaIceDrift._var_error(var, var_obs)
-                + SeaIceDrift._var_error(drift, drift_obs)
-            )
+                + SeaIceDrift._var_error(drift, drift_obs),
+            ),
         )
 
     @staticmethod
@@ -284,7 +297,10 @@ class SeaIceDrift:
     def _get_slope_ratio(siconc, drift):
         slope, intercept = np.polyfit(siconc.data, drift.data, 1)
         std_dev, sig = SeaIceDrift._sd_slope(
-            slope, intercept, siconc.data, drift.data
+            slope,
+            intercept,
+            siconc.data,
+            drift.data,
         )
         return slope, intercept, std_dev, sig
 
@@ -329,16 +345,16 @@ class SeaIceDrift:
                 self.cfg.get("polygon_name", "SCICEX"),
             )
         logger.info(
-            f"Slope ratio Drift-Concentration = {self.slope_ratio_drift_siconc[model]:.3}"
+            f"Slope ratio Drift-Concentration = {self.slope_ratio_drift_siconc[model]:.3}",
         )
         logger.info(
-            f"Mean error Drift-Concentration (%) = {self.error_drift_siconc[model]:.4}"
+            f"Mean error Drift-Concentration (%) = {self.error_drift_siconc[model]:.4}",
         )
         logger.info(
-            f"Slope ratio Drift-Thickness = {self.slope_ratio_drift_sivol.get(model, math.nan):.3}"
+            f"Slope ratio Drift-Thickness = {self.slope_ratio_drift_sivol.get(model, math.nan):.3}",
         )
         logger.info(
-            f"Mean error Drift-Thickness (%) = {self.error_drift_sivol.get(model, math.nan):.4}"
+            f"Mean error Drift-Thickness (%) = {self.error_drift_sivol.get(model, math.nan):.4}",
         )
 
     def _save(self):
@@ -365,20 +381,23 @@ class SeaIceDrift:
                     self.intercept_drift_siconc[dataset],
                     self.slope_ratio_drift_siconc.get(dataset, None),
                     self.error_drift_siconc.get(dataset, None),
-                )
+                ),
             )
 
         sic_data, ancestors_sic = self._get_data_and_ancestors(dataset, "sic")
         _, ancestors_sispeed = self._get_data_and_ancestors(dataset, "sispeed")
         sithick_data, ancestors_sithick = self._get_data_and_ancestors(
-            dataset, "sithick"
+            dataset,
+            "sithick",
         )
         caption = (
             f"Drift - siconc metric between {sic_data[n.START_YEAR]} and "
             f"{sic_data[n.END_YEAR]} according to {dataset}"
         )
         self._create_prov_record(
-            siconc_path, caption, ancestors_sic + ancestors_sispeed
+            siconc_path,
+            caption,
+            ancestors_sic + ancestors_sispeed,
         )
 
         with open(sivol_path, "w") as csvfile:
@@ -390,14 +409,16 @@ class SeaIceDrift:
                     self.intercept_drift_sivol[dataset],
                     self.slope_ratio_drift_sivol.get(dataset, None),
                     self.error_drift_sivol.get(dataset, None),
-                )
+                ),
             )
         caption = (
             f"Drift - sithick metric between {sithick_data[n.START_YEAR]} and "
             f"{sithick_data[n.END_YEAR]} according to {dataset}"
         )
         self._create_prov_record(
-            sivol_path, caption, ancestors_sithick + ancestors_sispeed
+            sivol_path,
+            caption,
+            ancestors_sithick + ancestors_sispeed,
         )
 
     def _plot_results(self):
@@ -417,7 +438,8 @@ class SeaIceDrift:
         if not os.path.isdir(base_path):
             os.makedirs(base_path)
         plot_path = os.path.join(
-            base_path, f"drift-strength.{self.cfg[n.OUTPUT_FILE_TYPE]}"
+            base_path,
+            f"drift-strength.{self.cfg[n.OUTPUT_FILE_TYPE]}",
         )
         fig.savefig(plot_path)
 
@@ -427,10 +449,12 @@ class SeaIceDrift:
 
         _, ancestors_sic_ref = self._get_data_and_ancestors("reference", "sic")
         _, ancestors_sispeed_ref = self._get_data_and_ancestors(
-            "reference", "sispeed"
+            "reference",
+            "sispeed",
         )
         _, ancestors_sithick_ref = self._get_data_and_ancestors(
-            "reference", "sithick"
+            "reference",
+            "sithick",
         )
 
         caption = (
@@ -466,11 +490,17 @@ class SeaIceDrift:
         sivol_obs = self.sivol["reference"].data
 
         axes.plot(
-            [sivol[-1], sivol[0]], [drift[-1], drift[0]], "r-", linewidth=2
+            [sivol[-1], sivol[0]],
+            [drift[-1], drift[0]],
+            "r-",
+            linewidth=2,
         )
         axes.plot(sivol, drift, "ro-", label="model", linewidth=2)
         axes.plot(
-            sivol, slope_sivol * sivol + intercept_sivol, "r:", linewidth=2
+            sivol,
+            slope_sivol * sivol + intercept_sivol,
+            "r:",
+            linewidth=2,
         )
 
         axes.plot(
@@ -525,7 +555,10 @@ class SeaIceDrift:
 
         axes.plot(siconc, drift, "ro", label="model")
         axes.plot(
-            siconc, slope_siconc * siconc + intercept_siconc, "r:", linewidth=2
+            siconc,
+            slope_siconc * siconc + intercept_siconc,
+            "r:",
+            linewidth=2,
         )
 
         axes.plot(siconc_obs, drift_obs, "bo", label="reference")
@@ -583,10 +616,12 @@ class SeaIceDrift:
             dataset = self.references[var]
 
         data = esmvaltool.diag_scripts.shared.group_metadata(
-            self.cfg["input_data"].values(), "alias"
+            self.cfg["input_data"].values(),
+            "alias",
         )[dataset]
         data = esmvaltool.diag_scripts.shared.group_metadata(
-            data, "short_name"
+            data,
+            "short_name",
         )
         return (
             data[var][0],
@@ -618,7 +653,9 @@ class InsidePolygonFactory(AuxCoordFactory):
 
         polygon.append(polygon[0])
         self.transformer = Transformer.from_crs(
-            "WGS84", "North_Pole_Stereographic", always_xy=True
+            "WGS84",
+            "North_Pole_Stereographic",
+            always_xy=True,
         )
 
         transformed = []
@@ -630,6 +667,9 @@ class InsidePolygonFactory(AuxCoordFactory):
     def dependencies(self):
         """Return a dict mapping from constructor names to coordinates."""
         return {"lat": self.lat, "lon": self.lon}
+
+    def _calculate_array(self):
+        pass
 
     def _derive(self, lat, lon):
         def in_polygon(lat, lon):

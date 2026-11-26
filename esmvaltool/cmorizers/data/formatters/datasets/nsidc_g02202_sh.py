@@ -109,11 +109,16 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir, latlon):
     cube = siconc.fix_metadata(cubes=[cube])[0]
     # time bounds
     cube.coord("time").bounds = get_time_bounds(
-        cube.coord("time"), cmor_info.frequency
+        cube.coord("time"),
+        cmor_info.frequency,
     )
 
     utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        var,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
     return cube
@@ -129,7 +134,7 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
     area_file = os.path.join(in_dir, cfg["custom"]["area_file"])
     with open(area_file, "rb") as datfile:
         areasdmnd = np.fromfile(datfile, dtype=np.int32).reshape(
-            lat_coord.shape
+            lat_coord.shape,
         )
 
     # Divide by 1000 to get km2 then multiply by 1e6 to m2 ...*1000
@@ -152,7 +157,11 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
     utils.fix_var_metadata(cube, var_info)
     utils.set_global_atts(cube, glob_attrs)
     utils.save_variable(
-        cube, var_info.short_name, out_dir, glob_attrs, zlib=True
+        cube,
+        var_info.short_name,
+        out_dir,
+        glob_attrs,
+        zlib=True,
     )
 
 
@@ -174,7 +183,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         if len(filepaths) > 0:
             logger.info(
-                "Year %d: Found %d files in '%s'", year, len(filepaths), in_dir
+                "Year %d: Found %d files in '%s'",
+                year,
+                len(filepaths),
+                in_dir,
             )
 
             for var, var_info in cfg["variables"].items():
@@ -193,7 +205,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         else:
             logger.info(
-                "No files found year: %d basename: %s", year, cfg["filename"]
+                "No files found year: %d basename: %s",
+                year,
+                cfg["filename"],
             )
 
     if sample_cube is not None:
