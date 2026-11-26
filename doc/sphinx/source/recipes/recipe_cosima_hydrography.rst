@@ -1,22 +1,25 @@
-.. _recipe_cmip_hydrography:
+.. _recipe_cosima_hydrography:
 
-CMIP ocean hydrography and density compensation
+Ocean hydrography and density compensation
 ===============================================
 
-The `hydrographic benchmark recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/recipe_cmip_hydrographic_benchmark.yml>`_
+Overview
+--------
+
+The `hydrographic benchmark recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cosima/recipe_hydrographic_benchmark.yml>`_
 compares CMIP6 ``thetao`` and ``so`` with WOA18 at 10, 100, 500, 1000, and
 2000 m. It reports area-weighted historical-minus-WOA mean differences, root
 mean square differences, and paired wet-cell coverage by depth and latitude
 band. It also estimates piControl drift from annual fixed-depth fields and
-from archived whole-ocean ``thetaoga``. The
-`density compensation recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/recipe_cmip_density_compensation.yml>`_
+from archived whole-ocean ``thetaoga``.
+The `density compensation recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cosima/recipe_density_compensation.yml>`_
 uses the same hydrographic comparison to attribute the density difference to
 temperature and salinity with TEOS-10. Both recipes save numeric NetCDF outputs
 and figures. With two or more models, they also save a comparison using cells
 that are valid in WOA and every model.
 
-Input and interpretation
-------------------------
+Observations input and interpretation
+-------------------------------------
 
 * The historical comparison uses 1981–2010 annual model means. The intended
   reference is the WOA18 ``decav81B0`` 1981–2010 climate normal, supplied as
@@ -47,6 +50,36 @@ Input and interpretation
 The diagnostic scripts require ``gsw`` from the ESMValTool ``all`` optional
 dependency set. Confirm the WOA source filenames and run both complete recipes
 on the target archive before interpreting scientific results.
+
+CMORiser: WOA version 2018 which before the version 2023 update in
+the `CMORiser <https://github.com/ESMValGroup/ESMValTool/pull/4337/changes>`_
+
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/cosima/
+
+* recipe_hydrographic_benchmark.yml
+* recipe_density_compensation.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/cosima/
+
+* hydrographic_benchmark.py: Fixed-depth historical hydrographic differences and piControl drift.
+
+   *Optional settings for script when there is a reference dataset*
+
+   * reference_dataset: dataset used as reference (default WOA)
+   * reference_version: version of the dataset (eg for WOA: 2018)
+   * reference_period: period tuple of years for reference climatology(eg. [1981, 2010] )
+
+* desnsity_compensation.py: Explain hydrographic density bias as temperature and salinity effects.
+
+   *Required settings for script*
+
+   * reference_dataset: WOA
+   * reference_version: 2018
+   * reference_period: [1981, 2010]
+
 
 Gadi validation and example figures
 -----------------------------------
@@ -103,35 +136,35 @@ regional investigation. The archived ``thetaoga`` control slope over
 0950–0989 is +0.060 °C per century; this short-window estimate is not a
 long-term drift constraint.
 
-.. figure:: /recipes/figures/cmip_hydrography/hydrography_ACCESS-CM2_thetao_reference.png
+.. figure:: /recipes/figures/cosima_hydrography/hydrography_ACCESS-CM2_thetao_reference.png
    :width: 90%
 
    ACCESS-CM2 historical-minus-WOA18 potential temperature by region and depth.
    The right panel is spatial, not temporal, root mean square difference.
 
-.. figure:: /recipes/figures/cmip_hydrography/hydrography_ACCESS-CM2_so_reference.png
+.. figure:: /recipes/figures/cosima_hydrography/hydrography_ACCESS-CM2_so_reference.png
    :width: 90%
 
    Practical salinity differences and spatial root mean square differences.
 
-.. figure:: /recipes/figures/cmip_hydrography/density_compensation_ACCESS-CM2.png
+.. figure:: /recipes/figures/cosima_hydrography/density_compensation_ACCESS-CM2.png
    :width: 90%
 
    Density difference and the area-and-effect-weighted local cancellation
    fraction of temperature and salinity contributions.
 
-.. figure:: /recipes/figures/cmip_hydrography/hydrography_ACCESS-CM2_thetao_drift.png
+.. figure:: /recipes/figures/cosima_hydrography/hydrography_ACCESS-CM2_thetao_drift.png
    :width: 90%
 
    piControl temperature anomalies relative to 0950 at five sampled depths.
    Each row is a separate depth level, not a continuous vertical section.
 
-.. figure:: /recipes/figures/cmip_hydrography/hydrography_ACCESS-CM2_so_drift.png
+.. figure:: /recipes/figures/cosima_hydrography/hydrography_ACCESS-CM2_so_drift.png
    :width: 90%
 
    piControl practical salinity anomalies at the same sampled depths.
 
-.. figure:: /recipes/figures/cmip_hydrography/hydrography_ACCESS-CM2_global_mean_drift.png
+.. figure:: /recipes/figures/cosima_hydrography/hydrography_ACCESS-CM2_global_mean_drift.png
    :width: 80%
 
    Archived whole-ocean ``thetaoga`` anomaly and fitted 40-year control slope.
