@@ -1,0 +1,12 @@
+---
+# ESMValTool configuration for running the RTW.
+auxiliary_data_dir: /work/bd0854/DATA/ESMValTool2/AUX
+dask:
+  use: local_threaded
+  profiles:
+    local_threaded:
+      scheduler: threads
+      num_workers: 2
+max_parallel_tasks: 4
+output_dir: ${OUTPUT_DIR}
+remove_preproc_dir: false
