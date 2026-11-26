@@ -1,0 +1,65 @@
+documentation:
+  title: CORDEX-CMIP6 surface temperature map
+  description: >
+    Climatology map of near-surface air temperature (tas) for the
+    EURO-CORDEX CMIP6 historical simulations available on EUR-12,
+    2003-2005, and the bias against ESA CCI land surface temperature.
+  authors:
+    - ghosh_supriyo
+  maintainer:
+    - ghosh_supriyo
+
+preprocessors:
+  climatology:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: EUR-12
+    convert_units:
+      units: degC
+
+datasets:
+  - {dataset: ICON-CLM-202407-1-1, driver: CNRM-ESM2-1, ensemble: r1i1p1f2, institute: CLMcom-BTU, alias: ICON-CLM-202407-1-1_CNRM-ESM2-1, use_standard_grid: true}
+  - {dataset: ICON-CLM-202407-1-1, driver: MPI-ESM1-2-HR, institute: CLMcom-DWD, alias: ICON-CLM-202407-1-1_MPI-ESM1-2-HR}
+  - {dataset: ICON-CLM-202407-1-3, driver: NorESM2-MM, institute: CLMcom-ETH, alias: ICON-CLM-202407-1-3_NorESM2-MM}
+  - {dataset: ICON-CLM-202407-1-1, driver: EC-Earth3-Veg, institute: CLMcom-Hereon, alias: ICON-CLM-202407-1-1_EC-Earth3-Veg}
+  - {dataset: CCLM6-0-1, driver: EC-Earth3-Veg, institute: CLMcom-KIT, alias: CCLM6-0-1_EC-Earth3-Veg}
+  - {dataset: CCLM6-0-1, driver: MIROC6, institute: CLMcom-KIT, alias: CCLM6-0-1_MIROC6}
+  - {dataset: ICON-CLM-202407-1-1, driver: MIROC6, institute: CLMcom-KIT, alias: ICON-CLM-202407-1-1_MIROC6}
+  - {dataset: ICON-CLM-202407-1-1, driver: CMCC-CM2-SR5, institute: CLMcom-WEGC, alias: ICON-CLM-202407-1-1_CMCC-CM2-SR5}
+  - {dataset: CNRM-ALADIN64E1, driver: CMCC-CM2-SR5, institute: CNRM-MF, alias: CNRM-ALADIN64E1_CMCC-CM2-SR5}
+  - {dataset: CNRM-ALADIN64E1, driver: NorESM2-MM, institute: CNRM-MF, alias: CNRM-ALADIN64E1_NorESM2-MM}
+
+diagnostics:
+  lst:
+    additional_datasets:
+      - {dataset: ESACCI-LST, alias: ESACCI-LST, mip: Amon, project: OBS, short_name: ts, reference_for_monitor_diags: true, tier: 2, type: sat, version: '1.00', supplementary_variables: [{short_name: sftlf, skip: true}]}
+    variables:
+      lst:
+        activity: DD
+        domain: EUR-12
+        ensemble: r1i1p1f1
+        exp: historical
+        mip: mon
+        preprocessor: climatology
+        project: CORDEX-CMIP6
+        rcm_version: v1-r1
+        reference_dataset: ESACCI-LST
+        short_name: tas
+        timerange: 2003/2005
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        group_variables_by: variable_group
+        plot_filename: '{plot_type}_{variable_group}_{alias}_{mip}'
+        plot_folder: '{plot_dir}'
+        plots:
+          map:
+            common_cbar: false
+            fontsize: 6
