@@ -57,6 +57,8 @@ year 100 of ``esm-flat10``.
 
    * ``zec_year``, *list*, optional (default: ``[50]``): Calculate ZEC for
      the 20-year average centered around year x, multiple values are possible.
+     The window includes annual sample indices x-10 through x+9; ZEC at
+     year 50 uses indices 40--59 inclusive.
      Barplots are generated for all ZEC\ :sub:`x`.
    * ``experiments``, *dict*, optional: When using non-default experiments
      to calculate ZEC, the experiment setting is required with values for
