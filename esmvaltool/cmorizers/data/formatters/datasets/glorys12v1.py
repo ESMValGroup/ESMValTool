@@ -123,6 +123,15 @@ def _extract_variable(
         _fix_depth_coordinate(cube_var)
     attributes = cfg["attributes"].copy()
     attributes["mip"] = var["mip"]
+    if short_name == "siconc":
+        # Add typesi coordinate
+        area_type = iris.coords.AuxCoord(
+            ["sea_ice"],
+            standard_name="area_type",
+            var_name="typesi",
+            long_name="Sea Ice area type",
+        )
+        cube_var.add_aux_coord(area_type)
     # Save cube
     save_variable(
         cube_var,
