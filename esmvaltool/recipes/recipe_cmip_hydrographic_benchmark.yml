@@ -1,0 +1,118 @@
+# ESMValTool
+# recipe_cmip_hydrographic_benchmark.yml
+---
+documentation:
+  title: CMIP ocean hydrography and control drift benchmark
+  description: |
+    Evaluate potential temperature and salinity at fixed depths. Historical
+    1981-2010 annual means are compared with the WOA18 1981-2010 climate
+    normal on the same grid and wet-cell mask. WOA in-situ temperature is
+    converted to potential temperature using WOA salinity and TEOS-10;
+    piControl annual means are used to quantify unforced model drift. The
+    diagnostic reports area-weighted bias, root-mean-square error, spatial
+    coverage, depth-time control anomalies and linear drift per century for
+    the global ocean and three latitude bands. A separate archived thetaoga
+    diagnostic reports the model-provided whole-ocean temperature drift.
+
+    WOA18 is a climatology, not an annual observation. The
+    historical-minus-WOA result is a climatological reference difference.
+    Set each model's piControl years to
+    an appropriate contiguous segment before running. Fixed-depth means
+    are area-weighted; they are not ocean-volume or heat-content metrics.
+  authors:
+    - beucher_romain
+  maintainer:
+    - beucher_romain
+  references:
+    - demora2018gmd
+  projects: []
+
+# The WOA18 OBS6 files must come from the decav81B0 1981-2010 normal.
+# Existing Gadi files have version 2018 and representative year 2000.
+# The piControl segment is model-specific; these years are ACCESS-CM2 examples.
+# For each additional model, add a historical and a piControl entry below.
+# Use one ensemble/grid per model and choose that model's own piControl years.
+# The diagnostic writes per-model results plus comparative profiles and NetCDF
+# metrics whenever at least two historical models have a WOA comparison.
+datasets: []
+
+preprocessors:
+  annual_depth_levels:
+    # Reduce depth and time before the costly horizontal regrid.
+    custom_order: true
+    extract_levels:
+      levels: [10., 100., 500., 1000., 2000.]
+      scheme: linear
+    annual_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+  reference_depth_levels:
+    extract_levels:
+      levels: [10., 100., 500., 1000., 2000.]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+  annual_global_mean:
+    annual_statistics:
+      operator: mean
+
+diagnostics:
+  hydrographic_benchmark:
+    description: Fixed-depth hydrographic reference differences and piControl drift.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao_model:
+        short_name: thetao
+        mip: Omon
+        preprocessor: annual_depth_levels
+        additional_datasets: &model_datasets
+          - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+             ensemble: r1i1p1f1, grid: gn, timerange: 1981/2010}
+          - {dataset: ACCESS-CM2, project: CMIP6, exp: piControl,
+             ensemble: r1i1p1f1, grid: gn, timerange: 0950/0989}
+      so_model:
+        short_name: so
+        mip: Omon
+        preprocessor: annual_depth_levels
+        additional_datasets: *model_datasets
+      thetao_woa:
+        short_name: thetao
+        mip: Omon
+        preprocessor: reference_depth_levels
+        additional_datasets: &woa_datasets
+          - {dataset: WOA, project: OBS6, type: clim,
+             version: 2018, start_year: 2000, end_year: 2000, tier: 2}
+      so_woa:
+        short_name: so
+        mip: Omon
+        preprocessor: reference_depth_levels
+        additional_datasets: *woa_datasets
+    scripts:
+      benchmark:
+        script: cosima_cmip/hydrographic_benchmark.py
+        reference_dataset: WOA
+        reference_version: 2018
+        reference_period: [1981, 2010]
+  whole_ocean_drift:
+    description: Archived whole-ocean temperature drift from piControl thetaoga.
+    themes:
+      - phys
+    realms:
+      - ocean
+    additional_datasets:
+      # Add each additional model's piControl thetaoga entry here too.
+      - {dataset: ACCESS-CM2, project: CMIP6, exp: piControl,
+         ensemble: r1i1p1f1, grid: gn, timerange: 0950/0989}
+    variables:
+      thetaoga:
+        mip: Omon
+        preprocessor: annual_global_mean
+    scripts:
+      benchmark:
+        script: cosima_cmip/hydrographic_benchmark.py

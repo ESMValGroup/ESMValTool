@@ -66,6 +66,7 @@ all = [
     "fire",
     "fsspec",
     "GDAL",
+    "gsw",
     "ipython",
     "jinja2",
     "joblib",
@@ -174,6 +175,7 @@ select = ["ALL"]
 ignore = [
     "ANN",    # Type hints are not required for diagnostic scripts.
     "CPY001", # Disable copyright notice in every file check.
+    "COM812", # Conflicts with the Ruff formatter's trailing comma choices.
     "D105",   # Disable missing docstring in magic method as these are well defined.
     'D107',   # __init__ docstring is usually part of the class docstring.
     "E501",   # Disable line-too-long as this is taken care of by the formatter.
@@ -341,6 +343,7 @@ test-py314 = { features = ["py314", "esmvalcore", "all", "test"], solve-group = 
 "fire" = "*"
 "fsspec" = "*"
 "gdal" = ">=3.9.0"
+"gsw" = "*"
 "ipython" = "*"
 "imagehash" = "*"
 "iris-esmf-regrid" = ">=0.11.0"
