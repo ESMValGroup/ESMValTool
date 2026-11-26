@@ -71,6 +71,10 @@ plot_object_methods: dict, optional
     :obj:`dict` to specify keyword arguments). Example (for
     :func:`~seaborn.relplot`): ``{'set': {'xlabel': 'X [km]'}, 'set_titles':
     'Model {col_name}'}``.
+provenance_ancestors: list of str, optional
+    Files to record as ancestors of the plot and plotted data. By default,
+    use the files in `input_data`. A diagnostic can use this when it creates
+    intermediate files from its original preprocessed inputs.
 reset_index: bool, optional (default: False)
     Put coordinate information of datasets into columns instead of (multi-)
     indices. This avoids the deletion of coordinate information if different
@@ -224,7 +228,10 @@ def _create_plot(
 
     # Provenance tracking
     caption = f"Seaborn {cfg['seaborn_func']} for one or more dataset(s)"
-    ancestors = [d["filename"] for d in cfg["input_data"].values()]
+    ancestors = cfg.get(
+        "provenance_ancestors",
+        [d["filename"] for d in cfg["input_data"].values()],
+    )
     provenance_record = {
         "ancestors": ancestors,
         "authors": ["schlund_manuel"],
