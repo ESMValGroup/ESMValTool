@@ -22,6 +22,27 @@ different emissions scenarios.
 For CMIP7, TCRE should be calculated from the ``esm-flat10`` experiment,
 following the experimental protocol of Sanderson et al (2024).
 
+CMIP7 REF input status
+----------------------
+
+The REF recipe ``ref/recipe_ref_tcre.yml`` still contains dummy CMIP7 dataset
+selections and cannot yet calculate TCRE from published CMIP7 data.
+The diagnostic needs near-surface air temperature (``tas``) from matching
+``esm-flat10`` and ``esm-piControl`` simulations, together with anthropogenic
+CO\ :sub:`2` emissions (``fco2antt``) from ``esm-flat10``.
+
+As checked on 25 November 2026, monthly ``tas`` is available for
+ACCESS-ESM1-6, member ``r1i1p1f1``, grid ``g115``, in both experiments.
+The ``esm-flat10`` simulation covers years 0201 onward, so years 0201--0310
+provide the 110 annual samples required by the default diagnostic window.
+However, the checked ESGF catalogues contained no published CMIP7
+``esm-flat10`` dataset for ``fco2antt`` at any frequency.
+The matching ACCESS-ESM1-6 input was absent from the checked NCI Gadi
+CMIP7 holdings.
+The recipe therefore needs either publication of a compatible emissions field
+or a scientifically reviewed method for supplying cumulative emissions before
+the dummy selections can be replaced and a CMIP7 TCRE value reported.
+
 Available recipes and diagnostics
 ---------------------------------
 
