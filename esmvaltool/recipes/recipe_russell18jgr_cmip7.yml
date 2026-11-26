@@ -1,0 +1,691 @@
+# ESMValTool
+# CMIP7 companion; the CMIP5 and CMIP6 recipes are retained.
+---
+documentation:
+  title: Southern Ocean Metrics with CMIP7
+  description: |
+    CMIP7 companion to recipe_russell18jgr.yml for historical 1986-2005.
+    Includes ACCESS-ESM1-6, CanESM6-0-MR and UKESM1-3-LL, with
+    model selection depending on field availability. Figures 9a-c are
+    omitted because a multi-model set with the required area and flux
+    fields was unavailable. Legacy climatological transport estimates
+    are retained, including their limitations for monthly volcello.
+  authors:
+    - russell_joellen
+    - pandde_amarjiit
+  maintainer:
+    - russell_joellen
+    - pandde_amarjiit
+  references:
+    - russell18jgr
+  projects:
+    - russell_project
+preprocessors:
+  preprocessor_time_land:
+    climate_statistics:
+      operator: mean
+      period: full
+    mask_landsea:
+      mask_out: land
+  preprocessor_time:
+    climate_statistics:
+      operator: mean
+      period: full
+diagnostics:
+  Figure_1:
+    description: Annual mean atmospheric zonal wind stress (tauu), land masked.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      tauu:
+        mip: atmos
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-u
+        start_year: 1986
+        end_year: 2005
+        preprocessor: preprocessor_time_land
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g109
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g150
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g108
+            ensemble: r1i1p1f2
+    scripts:
+      polar-tauu:
+        script: russell18jgr/russell18jgr_polar.py
+        styleset: CMIP7
+        grid_min: -0.4
+        grid_max: 0.4
+        grid_step: 0.1
+        colors:
+          - [237.6, 237.6, 0.0]
+          - [255, 255, 66.4]
+          - [255, 255, 119.6]
+          - [255, 255, 191.8]
+          - [223.8, 191.8, 223.8]
+          - [192.8, 127.5, 190.8]
+          - [161.6, 65.3, 158.6]
+          - [129.5, 1.0, 126.5]
+        labelBar_end_type: ExcludeOuterBoxes
+        max_lat: -30.0
+        max_vert: 2
+        max_hori: 1
+  Figure_2:
+    description: |
+      Zonal and annual mean ocean surface zonal stress (tauuo).
+      This follows the CMIP5 recipe; tauuo differs from Figure 1 tauu.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      tauuo:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        preprocessor: preprocessor_time
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g116
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g148
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g125
+            ensemble: r1i1p1f2
+    scripts:
+      tauu-lineplot:
+        script: russell18jgr/russell18jgr_fig2.py
+        styleset: CMIP7
+  Figure_3b:
+    description: |
+      Diagnostic for russell et al figure 3b. Plots the latitudinal position of
+      Subantarctic Front. Using definitions from Orsi et al (1995), the
+      Subantarctic Front is defined here as the poleward location of
+      the 4C(277.15K) isotherm at(closest to and less than) 400 m.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g147
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      Subantarctic-Front:
+        script: russell18jgr/russell18jgr_fig3b.py
+        styleset: CMIP7
+  Figure_3b-2:
+    description: |
+      Diagnostic for russell et al figure 3b-2 (Polar fronts). Plots the
+      latitudinal position of Polar Front. Using definitions from Orsi et
+      al. (1995). The Polar Front is defined here as the poleward location
+      of the 2C (275.15K) isotherm of the temperature minimum between 0 and
+      200 m (closest to and less than 200m).
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g147
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      Polar-front:
+        script: russell18jgr/russell18jgr_fig3b_2.py
+        styleset: CMIP7
+  Figure_4:
+    description: |
+      Zonal velocity at Drake Passage (69W). Climatological transport
+      estimates use monthly volcello for ACCESS-ESM1-6 and UKESM1-3-LL.
+      CanESM6-0-MR shows velocity only because volcello was unavailable.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      uo:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g116
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g148
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g125
+            ensemble: r1i1p1f2
+      volcello:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      Drake-passage:
+        script: russell18jgr/russell18jgr_fig4.py
+        styleset: CMIP7
+        max_vert: 2
+        max_hori: 1
+        unitCorrectionalFactor: 100
+        new_units: cm/s
+  Figure_5:
+    description: |
+      Sea ice extent above 15% concentration in September and March.
+      March follows the legacy CMIP5 recipe; the paper uses February.
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      siconc:
+        mip: seaIce
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-u
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g147
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      sic-polar:
+        script: russell18jgr/russell18jgr_fig5.py
+        styleset: CMIP7
+        max_lat: -45.0
+        max_vert: 2
+        max_hori: 2
+  Figure_5g:
+    description: Monthly climatology of Southern Hemisphere sea ice area.
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      siconc:
+        mip: seaIce
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-u
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g147
+      areacello:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: fx
+        region: glb
+        branding_suffix: ti-u-hxy-u
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: CanESM6-0-MR
+            institute: CCCma
+            grid: g147
+            exp: 1pctCO2
+    scripts:
+      sic-line:
+        script: russell18jgr/russell18jgr_fig5g.py
+        styleset: CMIP7
+  Figure_6a:
+    description: |
+      Density-layer volume transport across 30S from climatological
+      velocity, temperature, salinity and monthly cell volume. These
+      legacy estimates are not mean monthly density-layer transports.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+      so:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+      vo:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g116
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g124
+            ensemble: r1i1p1f2
+      volcello:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      Figure6a:
+        script: russell18jgr/russell18jgr_fig6a.py
+        styleset: CMIP7
+  Figure_6b:
+    description: |
+      Density-layer heat transport across 30S from climatological fields,
+      using the legacy fixed density and heat capacity. Monthly covariance,
+      density-layer migration and native face geometry are not resolved.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+      so:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+      vo:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g116
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g124
+            ensemble: r1i1p1f2
+      volcello:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      Figure6b:
+        script: russell18jgr/russell18jgr_fig6b.py
+        styleset: CMIP7
+  Figure_7:
+    description: Annual mean sea-to-air carbon flux; positive values are ocean outgassing.
+    themes:
+      - carbon
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        mip: ocnBgchem
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        preprocessor: preprocessor_time
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      fgco2-polar:
+        script: russell18jgr/russell18jgr_polar.py
+        styleset: CMIP7
+        grid_min: -30
+        grid_max: 30
+        grid_step: 2.5
+        colormap: BlWhRe
+        labelBar_end_type: both_triangle
+        max_lat: -30.0
+        max_vert: 2
+        max_hori: 1
+        unitCorrectionalFactor: -31540000000.0
+        new_units: gC/ (m~S~2~N~ * yr)
+  Figure_7h:
+    description: Zonal mean sea-to-air carbon flux.
+    themes:
+      - carbon
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        mip: ocnBgchem
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        preprocessor: preprocessor_time
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      fgco2_line:
+        script: russell18jgr/russell18jgr_fig7h.py
+        styleset: CMIP7
+  Figure_7i:
+    description: Cumulative sea-to-air carbon flux from 90S to 30S.
+    themes:
+      - carbon
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        mip: ocnBgchem
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-u-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        preprocessor: preprocessor_time
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+      areacello:
+        mip: ocean
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: fx
+        region: glb
+        branding_suffix: ti-u-hxy-u
+        additional_datasets:
+          - dataset: ACCESS-ESM1-6
+            institute: ACCESS-Consortium
+            grid: g118
+    scripts:
+      fgco2_cumulative_line:
+        script: russell18jgr/russell18jgr_fig7i.py
+        styleset: CMIP7
+  Figure_8:
+    description: |
+      Surface pH for UKESM1-3-LL. Historical ph was unavailable for
+      ACCESS-ESM1-6 and CanESM6-0-MR in the inspected Gadi archives.
+    themes:
+      - bgchem
+    realms:
+      - ocnBgchem
+    variables:
+      ph:
+        mip: ocnBgchem
+        project: CMIP7
+        activity: CMIP
+        exp: historical
+        ensemble: r1i1p1f1
+        frequency: mon
+        region: glb
+        branding_suffix: tavg-ol-hxy-sea
+        start_year: 1986
+        end_year: 2005
+        preprocessor: preprocessor_time
+        additional_datasets:
+          - dataset: UKESM1-3-LL
+            institute: UKNCSP
+            grid: g126
+            ensemble: r1i1p1f2
+    scripts:
+      Polar-ph:
+        script: russell18jgr/russell18jgr_polar.py
+        styleset: CMIP7
+        grid_min: 8.0
+        grid_max: 8.2
+        grid_step: 0.01
+        labelBar_end_type: both_triangle
+        max_lat: -30.0
+        max_vert: 2
+        max_hori: 1
+        grid_color: blue4
+        colors:
+          - [132, 12, 127]
+          - [147, 5, 153]
+          - [172, 12, 173]
+          - [195, 33, 196]
+          - [203, 63, 209]
+          - [215, 89, 225]
+          - [229, 117, 230]
+          - [243, 129, 238]
+          - [253, 155, 247]
+          - [255, 178, 254]
+          - [255, 255, 255]
+          - [255, 255, 255]
+          - [126, 240, 138]
+          - [134, 234, 138]
+          - [95, 219, 89]
+          - [57, 201, 54]
+          - [39, 182, 57]
+          - [33, 161, 36]
+          - [16, 139, 22]
+          - [0, 123, 10]
+          - [6, 96, 6]
+          - [12, 77, 9.0]

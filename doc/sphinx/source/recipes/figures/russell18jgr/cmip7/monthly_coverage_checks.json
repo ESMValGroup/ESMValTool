@@ -1,0 +1,386 @@
+[
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_3b/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_3b/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_3b/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g147_CanESM6-0-MR_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_3b-2/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_3b-2/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_3b-2/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g147_CanESM6-0-MR_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_4/uo/uo_tavg-ol-hxy-sea_mon_glb_g116_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_4/uo/uo_tavg-ol-hxy-sea_mon_glb_g125_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_4/uo/uo_tavg-ol-hxy-sea_mon_glb_g148_CanESM6-0-MR_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_4/volcello/volcello_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_4/volcello/volcello_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5/siconc/siconc_tavg-u-hxy-u_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5/siconc/siconc_tavg-u-hxy-u_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5/siconc/siconc_tavg-u-hxy-u_mon_glb_g147_CanESM6-0-MR_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5g/siconc/siconc_tavg-u-hxy-u_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_5g/siconc/siconc_tavg-u-hxy-u_mon_glb_g147_CanESM6-0-MR_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/so/so_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/so/so_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/vo/vo_tavg-ol-hxy-sea_mon_glb_g116_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/vo/vo_tavg-ol-hxy-sea_mon_glb_g124_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/volcello/volcello_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6a/volcello/volcello_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/so/so_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/so/so_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/thetao/thetao_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/vo/vo_tavg-ol-hxy-sea_mon_glb_g116_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/vo/vo_tavg-ol-hxy-sea_mon_glb_g124_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/volcello/volcello_tavg-ol-hxy-sea_mon_glb_g118_ACCESS-ESM1-6_historical_r1i1p1f1_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  },
+  {
+    "file": "output/recipe_russell18jgr_cmip7_20261107_011215/preproc/Figure_6b/volcello/volcello_tavg-ol-hxy-sea_mon_glb_g126_UKESM1-3-LL_historical_r1i1p1f2_1986-2005.nc",
+    "months": 240,
+    "first": [
+      1986,
+      1
+    ],
+    "last": [
+      2005,
+      12
+    ]
+  }
+]

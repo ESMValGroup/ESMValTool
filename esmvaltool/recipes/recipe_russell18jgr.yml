@@ -44,12 +44,9 @@ diagnostics:
   Figure_1:
     description: |
       Diagnostic for russell et al figure 1. Plots Annual-mean zonal wind
-       stress as polar contour map. Here, we are using tauuo. Figures in
-      russell18jgr paper were  made using tauuo, but tauu can also be used if
-      tauuo file is not available. To use tauu variable in this recipe just
-      uncomment variable 'tauu' and add dataset names in additional datasets of
-      respective variable. If there are no dataset in a variable, entire
-      variable section needs to be commented out.
+      stress as a polar contour map. Use Amon tauu to reproduce the existing
+      documentation figure; Omon tauuo is an alternative input with a
+      different spatial pattern and amplitude.
     themes:
       - phys
     realms:
@@ -66,20 +63,9 @@ diagnostics:
         additional_datasets:
           - {dataset: CanESM2}
           - {dataset: GFDL-ESM2M}
-    #  tauuo:
-    #    preprocessor: preprocessor_time
-    #    mip: Omon
-    #    project: CMIP5
-    #    exp: historical
-    #    ensemble: r1i1p1
-    #    start_year: 1986
-    #    end_year: 2005
-    #    additional_datasets:
-    #      - {dataset: CanESM2}
-    #      - {dataset: GFDL-ESM2M}
     scripts:
       polar-tauu:
-        script: russell18jgr/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr_polar.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -134,7 +120,7 @@ diagnostics:
           - {dataset: GFDL-ESM2M}
     scripts:
       tauu-lineplot:
-        script: russell18jgr/russell18jgr-fig2.ncl
+        script: russell18jgr/russell18jgr_fig2.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -189,7 +175,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       Subantarctic-Front:
-        script: russell18jgr/russell18jgr-fig3b.ncl
+        script: russell18jgr/russell18jgr_fig3b.py
         # Plot style
         styleset: CMIP5
         ncdf: CMIP5
@@ -245,7 +231,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Polar-front:
-        script: russell18jgr/russell18jgr-fig3b-2.ncl
+        script: russell18jgr/russell18jgr_fig3b_2.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -306,7 +292,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       Drake-passage:
-        script: russell18jgr/russell18jgr-fig4.ncl
+        script: russell18jgr/russell18jgr_fig4.py
         styleset: CMIP5
         ncdf: default
         max_vert: 2
@@ -320,7 +306,7 @@ diagnostics:
     description: |
       Diagnostic for russell et al figure 5 (polar). Plots the mean extent of
       sea ice for September(max) in blue and mean extent of sea ice for
-      February(min) in red. The edge of full coverage is defined by the 15%
+      March(min) in red. The edge of full coverage is defined by the 15%
       areal coverage.
     themes:
       - seaIce
@@ -366,7 +352,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       sic-polar:
-        script: russell18jgr/russell18jgr-fig5.ncl
+        script: russell18jgr/russell18jgr_fig5.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -430,7 +416,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       sic-line:
-        script: russell18jgr/russell18jgr-fig5g.ncl
+        script: russell18jgr/russell18jgr_fig5g.py
         # Plot style
         styleset: CMIP5
 
@@ -507,7 +493,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure6a:
-        script: russell18jgr/russell18jgr-fig6a.ncl
+        script: russell18jgr/russell18jgr_fig6a.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -585,7 +571,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure6b:
-        script: russell18jgr/russell18jgr-fig6b.ncl
+        script: russell18jgr/russell18jgr_fig6b.py
         styleset: CMIP5
         ncdf: default
 
@@ -629,7 +615,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
     scripts:
       fgco2-polar:
-        script: russell18jgr/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr_polar.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -685,7 +671,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_line:
-        script: russell18jgr/russell18jgr-fig7h.ncl
+        script: russell18jgr/russell18jgr_fig7h.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -736,7 +722,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_cumulative_line:
-        script: russell18jgr/russell18jgr-fig7i.ncl
+        script: russell18jgr/russell18jgr_fig7i.py
         # Plot style
         styleset: CMIP5
         ncdf: default
@@ -770,7 +756,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
     scripts:
       Polar-ph:
-        script: russell18jgr/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr_polar.py
         styleset: CMIP5
         ncdf: default
         grid_min: 8.0
@@ -854,7 +840,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure9a:
-        script: russell18jgr/russell18jgr-fig9a.ncl
+        script: russell18jgr/russell18jgr_fig9a.py
         styleset: CMIP5
         ncdf: default
 
@@ -922,7 +908,7 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure9b:
-        script: russell18jgr/russell18jgr-fig9b.ncl
+        script: russell18jgr/russell18jgr_fig9b.py
         styleset: CMIP5
         ncdf: default
 
@@ -982,6 +968,6 @@ diagnostics:
       # - {dataset: NorESM1-ME}
     scripts:
       Figure9c:
-        script: russell18jgr/russell18jgr-fig9c.ncl
+        script: russell18jgr/russell18jgr_fig9c.py
         styleset: CMIP5
         ncdf: default

@@ -1,0 +1,864 @@
+{
+  "run": "/g/data/tm70/rb5533/ESMValTool_Russel/pr4612_cmip7/output/recipe_russell18jgr_cmip7_20261107_011215",
+  "groups": {
+    "Figure_1": {
+      "plots": [
+        "Russell_polar-contour_tauu_1986-2005_page1.png",
+        "Russell_polar-contour_tauu_1986-2005_page2.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_polar_tauu_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "surface_downward_eastward_stress",
+              "shape": [
+                145,
+                192
+              ],
+              "units": "Pa",
+              "finite_values": 18716,
+              "nonfinite_values": 0,
+              "min": -0.21947094798088074,
+              "max": 0.4347422122955322
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_polar_tauu_CanESM6-0-MR_1986-2005.nc",
+          "fields": [
+            {
+              "name": "surface_downward_eastward_stress",
+              "shape": [
+                180,
+                360
+              ],
+              "units": "Pa",
+              "finite_values": 42977,
+              "nonfinite_values": 0,
+              "min": -0.8636994361877441,
+              "max": 1.2240108251571655
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_polar_tauu_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "surface_downward_eastward_stress",
+              "shape": [
+                144,
+                192
+              ],
+              "units": "Pa",
+              "finite_values": 18612,
+              "nonfinite_values": 0,
+              "min": -0.19033177196979523,
+              "max": 0.4409533143043518
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_2": {
+      "plots": [
+        "russell18jgr_fig2_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_fig2_tauuo_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "zonal mean surface eastward wind stress",
+              "shape": [
+                300
+              ],
+              "units": "N m-2",
+              "finite_values": 299,
+              "nonfinite_values": 0,
+              "min": -0.07141042025584095,
+              "max": 0.18660365451465954
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig2_tauuo_CanESM6-0-MR_1986-2005.nc",
+          "fields": [
+            {
+              "name": "zonal mean surface eastward wind stress",
+              "shape": [
+                331
+              ],
+              "units": "N m-2",
+              "finite_values": 291,
+              "nonfinite_values": 0,
+              "min": -0.06593705620957818,
+              "max": 0.2182129251081391
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig2_tauuo_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "zonal mean surface eastward wind stress",
+              "shape": [
+                330
+              ],
+              "units": "N m-2",
+              "finite_values": 291,
+              "nonfinite_values": 0,
+              "min": -0.07500717077362404,
+              "max": 0.18908001743467515
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_3b": {
+      "plots": [
+        "Russell18jgr_fig3_Subantarctic-Fronts_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_fig3b_subantarctic-front-position_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "row 0: longitude and row 1: latitude of the 277.15K isoline",
+              "shape": [
+                2,
+                1058
+              ],
+              "units": "unknown",
+              "finite_values": 2112,
+              "nonfinite_values": 4,
+              "min": -288.5,
+              "max": 719.5
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig3b_subantarctic-front-position_CanESM6-0-MR_1986-2005.nc",
+          "fields": [
+            {
+              "name": "row 0: longitude and row 1: latitude of the 277.15K isoline",
+              "shape": [
+                2,
+                1412
+              ],
+              "units": "unknown",
+              "finite_values": 2820,
+              "nonfinite_values": 4,
+              "min": -359.5,
+              "max": 719.5
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig3b_subantarctic-front-position_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "row 0: longitude and row 1: latitude of the 277.15K isoline",
+              "shape": [
+                2,
+                1280
+              ],
+              "units": "unknown",
+              "finite_values": 2556,
+              "nonfinite_values": 4,
+              "min": -308.7682150599687,
+              "max": 719.5
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_3b-2": {
+      "plots": [
+        "russell18jgr_fig3_Polar-Front-position_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_fig3b-2_polar-front-position_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "row 0: longitude and row 1: latitude of the 275.15K isoline",
+              "shape": [
+                2,
+                1298
+              ],
+              "units": "unknown",
+              "finite_values": 2592,
+              "nonfinite_values": 4,
+              "min": -359.5,
+              "max": 719.5
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig3b-2_polar-front-position_CanESM6-0-MR_1986-2005.nc",
+          "fields": [
+            {
+              "name": "row 0: longitude and row 1: latitude of the 275.15K isoline",
+              "shape": [
+                2,
+                1637
+              ],
+              "units": "unknown",
+              "finite_values": 3270,
+              "nonfinite_values": 4,
+              "min": -359.5,
+              "max": 719.5
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig3b-2_polar-front-position_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "row 0: longitude and row 1: latitude of the 275.15K isoline",
+              "shape": [
+                2,
+                1433
+              ],
+              "units": "unknown",
+              "finite_values": 2862,
+              "nonfinite_values": 4,
+              "min": -359.5,
+              "max": 719.5
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_4": {
+      "plots": [
+        "Russell18jgr-fig4_1986-2005_page1.png",
+        "Russell18jgr-fig4_1986-2005_page2.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_fig4_uo_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "sea_water_x_velocity",
+              "shape": [
+                50,
+                300,
+                360
+              ],
+              "units": "m s-1",
+              "finite_values": 2524992,
+              "nonfinite_values": 0,
+              "min": -0.8619859218597412,
+              "max": 0.8346788883209229
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig4_uo_CanESM6-0-MR_1986-2005.nc",
+          "fields": [
+            {
+              "name": "sea_water_x_velocity",
+              "shape": [
+                74,
+                331,
+                360
+              ],
+              "units": "m s-1",
+              "finite_values": 3767352,
+              "nonfinite_values": 0,
+              "min": -0.8289778828620911,
+              "max": 0.6754993200302124
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig4_uo_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "sea_water_x_velocity",
+              "shape": [
+                75,
+                330,
+                360
+              ],
+              "units": "m s-1",
+              "finite_values": 3996749,
+              "nonfinite_values": 0,
+              "min": -1.0536383390426636,
+              "max": 1.6439958810806274
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_5": {
+      "plots": [
+        "russell18jgr-fig5_siconc_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_fig5_siconc_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "sea ice extent (1 September / 2 March)",
+              "shape": [
+                300,
+                360
+              ],
+              "units": "unknown",
+              "finite_values": 18046,
+              "nonfinite_values": 0,
+              "min": 1.0,
+              "max": 2.0
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig5_siconc_CanESM6-0-MR_1986-2005.nc",
+          "fields": [
+            {
+              "name": "sea ice extent (1 September / 2 March)",
+              "shape": [
+                331,
+                360
+              ],
+              "units": "unknown",
+              "finite_values": 17491,
+              "nonfinite_values": 0,
+              "min": 1.0,
+              "max": 2.0
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig5_siconc_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "sea ice extent (1 September / 2 March)",
+              "shape": [
+                330,
+                360
+              ],
+              "units": "unknown",
+              "finite_values": 17295,
+              "nonfinite_values": 0,
+              "min": 1.0,
+              "max": 2.0
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_5g": {
+      "plots": [
+        "russell18jgr-fig5g_siconc_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr-fig5g_siconc_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "southern hemisphere area under sea ice",
+              "shape": [
+                12
+              ],
+              "units": "1e12 m2",
+              "finite_values": 12,
+              "nonfinite_values": 0,
+              "min": 2.1146139670478483,
+              "max": 15.671929324432716,
+              "values": [
+                3.5681500195225424,
+                2.1146139670478483,
+                2.3405440489793086,
+                4.332361563618547,
+                7.84616760634163,
+                11.699038133110696,
+                14.240486316714037,
+                15.53686827655727,
+                15.671929324432716,
+                14.57632086556824,
+                11.751037747920526,
+                7.093682522346782
+              ]
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr-fig5g_siconc_CanESM6-0-MR_1986-2005.nc",
+          "fields": [
+            {
+              "name": "southern hemisphere area under sea ice",
+              "shape": [
+                12
+              ],
+              "units": "1e12 m2",
+              "finite_values": 12,
+              "nonfinite_values": 0,
+              "min": 5.507509687635241,
+              "max": 18.330480673277666,
+              "values": [
+                6.82211406232013,
+                5.507509687635241,
+                7.330701071306356,
+                10.07530184264527,
+                12.964263853007083,
+                15.44376412252891,
+                17.213289762657954,
+                18.330480673277666,
+                18.319781125713124,
+                17.182968280328357,
+                14.808138496408057,
+                11.14110846150577
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_6a": {
+      "plots": [
+        "russell18jgr-fig6a_ACCESS-ESM1-6_1986-2005.png",
+        "russell18jgr-fig6a_UKESM1-3-LL_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr-figure6a_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "transport in main layers (blue bars, i=0-11) and sub layers (red bars, i=12-55) at 30.00S",
+              "shape": [
+                56
+              ],
+              "units": "1e6 m3 s-1",
+              "finite_values": 56,
+              "nonfinite_values": 0,
+              "min": -9.223798297694598,
+              "max": 10.359848847894986,
+              "values": [
+                1.050498827814156,
+                -0.2576103618215031,
+                7.470736130156032,
+                10.359848847894986,
+                1.4429660780620903,
+                -6.088573789565259,
+                -4.342501817039872,
+                -8.224305514338791,
+                -1.6745033303860852,
+                -1.7023648585717486,
+                -3.5207289537330517,
+                7.587536397157358,
+                -9.223798297694598,
+                -0.4194145070868389,
+                3.1493502750405384,
+                6.236252167919396,
+                -1.1424439261142092,
+                4.452984515653398,
+                2.787185281794674,
+                1.3730102588221726,
+                5.55625307834531,
+                0.42770046000406925,
+                2.886146952006113,
+                1.4897483575394912,
+                1.6546218075934664,
+                -3.0911685672110747,
+                0.34547792907735464,
+                2.5340349086023437,
+                -2.870922776532745,
+                -0.9725678316863751,
+                1.619875649993791,
+                -3.8649588313399303,
+                0.0007463112996379251,
+                -2.735358083461054,
+                -0.8730218825931249,
+                -0.734868162285331,
+                -1.0580659238832648,
+                -2.2454147596289187,
+                -1.3959640222957164,
+                -3.6966463349430274,
+                -0.06055648161913968,
+                0.02819152679266522,
+                -0.1085405641584005,
+                -1.5335978114012103,
+                -0.520146272024426,
+                -0.07113932636114641,
+                -0.6202202409004955,
+                -0.4908590192856807,
+                -1.0376455883112137,
+                -0.2391522550474654,
+                -1.89441379108009,
+                -0.34951731929428254,
+                -1.9566142431677331,
+                -0.18528813018559107,
+                4.0533489609706574,
+                5.6760898095400245
+              ]
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr-figure6a_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "transport in main layers (blue bars, i=0-11) and sub layers (red bars, i=12-55) at 30.02S",
+              "shape": [
+                56
+              ],
+              "units": "1e6 m3 s-1",
+              "finite_values": 56,
+              "nonfinite_values": 0,
+              "min": -15.741834818533192,
+              "max": 10.816370331029006,
+              "values": [
+                0.8398934164835334,
+                -5.566703326076151,
+                5.8865227470431964,
+                10.816370331029006,
+                -0.5225878019431363,
+                -0.3203982938895826,
+                -4.000193940887604,
+                -8.901538198184216,
+                -3.166756067076872,
+                -2.9047305090410527,
+                8.501999248609556,
+                1.0179092269003909,
+                -15.741834818533192,
+                0.18976121981266103,
+                3.836486245475297,
+                6.148884027169083,
+                0.2025766732591489,
+                1.4873144949544042,
+                0.3164312990541549,
+                3.880200279775489,
+                5.458831587578435,
+                3.7744800969685413,
+                1.0778532429948264,
+                0.5052054034872047,
+                -1.4834557634486054,
+                0.8864785509088817,
+                -0.8671321732629687,
+                0.9415215838595563,
+                -1.4462825838573403,
+                1.3491828452962364,
+                -1.310474965446397,
+                1.0871764101179175,
+                -0.3626944910977007,
+                -2.4872516937858546,
+                -0.1307321808311645,
+                -1.0195155751728844,
+                -1.5134721618053646,
+                -3.582613744028966,
+                -2.3943393952019014,
+                -1.4427567464692834,
+                -0.7240334092715394,
+                -0.5824670925224633,
+                -1.1921080465305545,
+                -0.6681475187523149,
+                -0.9788156977666032,
+                -0.8788087307350085,
+                -0.29662230350490226,
+                -0.7504837770345382,
+                -0.18582079841502713,
+                1.2216099432998977,
+                2.288442557757712,
+                5.177767545966972,
+                0.7657499810512177,
+                0.25215924584917304,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_6b": {
+      "plots": [
+        "russell18jgr-fig6b_ACCESS-ESM1-6_1986-2005.png",
+        "russell18jgr-fig6b_UKESM1-3-LL_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr-figure6b_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "transport in main layers (blue bars, i=0-11) and sub layers (red bars, i=12-55) at 30.00S",
+              "shape": [
+                56
+              ],
+              "units": "PW",
+              "finite_values": 56,
+              "nonfinite_values": 0,
+              "min": -0.974668107448259,
+              "max": 0.424294484344941,
+              "values": [
+                -0.1853349700658449,
+                -0.42171299622759134,
+                0.3813496122562573,
+                0.3610640683538715,
+                0.02175912777024195,
+                -0.17955697643023388,
+                -0.1097943411743929,
+                -0.15283893068899082,
+                -0.019503323348966803,
+                -0.014518012909807518,
+                -0.026391740076994005,
+                -0.02519145758923839,
+                -0.974668107448259,
+                -0.07485675094150404,
+                0.20351737781723078,
+                0.424294484344941,
+                -0.07888659334862999,
+                0.26350411132754414,
+                0.14156120643883652,
+                0.05517088783850674,
+                0.252736048407525,
+                -0.009143981177698832,
+                0.09261340829238587,
+                0.024858592831659483,
+                0.05400229326973366,
+                -0.11390390401492284,
+                0.008967808701629899,
+                0.07269292981380122,
+                -0.09567507105621165,
+                -0.02953473116018162,
+                0.03928533915024312,
+                -0.0936325133640837,
+                -0.0007537371856453975,
+                -0.06776404870580852,
+                -0.029485382949472675,
+                -0.011791172333466316,
+                -0.029860844340858946,
+                -0.041759116430504804,
+                -0.02465454015205439,
+                -0.057294602996312435,
+                -0.0006514612988847582,
+                0.0006091712305099234,
+                -0.0016701110102227273,
+                -0.017790922270369238,
+                -0.00294041409005091,
+                -0.0002129238507901207,
+                -0.0067543284460152815,
+                -0.0046103465229512045,
+                -0.008637413855418694,
+                -0.0015791762656762235,
+                -0.013885486035345587,
+                -0.0022896639205535084,
+                -0.00963410406392232,
+                -0.0022323518856383045,
+                -0.00030230308251140957,
+                -0.013022698557166357
+              ]
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr-figure6b_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "transport in main layers (blue bars, i=0-11) and sub layers (red bars, i=12-55) at 30.02S",
+              "shape": [
+                56
+              ],
+              "units": "PW",
+              "finite_values": 56,
+              "nonfinite_values": 0,
+              "min": -1.5634181551401898,
+              "max": 0.3878635235530471,
+              "values": [
+                -0.6031912531418464,
+                -0.9830922041873846,
+                0.3258755635112952,
+                0.3841811719726028,
+                -0.0392124694895053,
+                -0.023617681586230385,
+                -0.09372999376965457,
+                -0.1567564166212851,
+                -0.028528097057335503,
+                -0.018652187748059875,
+                0.0289344004569462,
+                0.0014066613767647676,
+                -1.5634181551401898,
+                -0.04703964573435679,
+                0.23950207313411506,
+                0.3878635235530471,
+                0.011588733855803925,
+                0.0871763347461495,
+                0.01686424057143307,
+                0.21024625433790872,
+                0.24773094358093053,
+                0.12549576364422654,
+                0.01548459089194545,
+                -0.004530126144499769,
+                -0.05638600666766048,
+                0.023779607053529443,
+                -0.0306359018915476,
+                0.024029832016173314,
+                -0.04151656525180977,
+                0.02954505475393661,
+                -0.031973339309889555,
+                0.020327168221532337,
+                -0.011140314220319684,
+                -0.060229421427281986,
+                -0.0012385042431984606,
+                -0.021121753878854448,
+                -0.03485561533044674,
+                -0.06787009937136695,
+                -0.034855084196993666,
+                -0.019371318138556064,
+                -0.007904791186404319,
+                -0.005681411005429924,
+                -0.00967369563661644,
+                -0.005268199228884823,
+                -0.006640516999181537,
+                -0.00571024878986582,
+                -0.0015603076480591423,
+                -0.004741114310953373,
+                -0.0011715266716021179,
+                0.0057807135472097365,
+                0.008752644499515374,
+                0.015572569081823206,
+                0.0013136764312777223,
+                9.298494548704538e-05,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_7": {
+      "plots": [
+        "Russell_polar-contour_fgco2_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_polar_fgco2_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "Surface upward mass flux of carbon as CO2",
+              "shape": [
+                300,
+                360
+              ],
+              "units": "g m-2 yr-1",
+              "finite_values": 69782,
+              "nonfinite_values": 0,
+              "min": -84.5350786882193,
+              "max": 221.60790481784431
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_polar_fgco2_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "Surface upward mass flux of carbon as CO2",
+              "shape": [
+                330,
+                360
+              ],
+              "units": "g m-2 yr-1",
+              "finite_values": 67615,
+              "nonfinite_values": 0,
+              "min": -84.76480050312318,
+              "max": 243.44276653209818
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_7h": {
+      "plots": [
+        "Russell_figure7h_fgco2_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_fig-7h_fgco2_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "zonal mean CO2 flux (sea to air)",
+              "shape": [
+                300
+              ],
+              "units": "g m-2 yr-1",
+              "finite_values": 299,
+              "nonfinite_values": 0,
+              "min": -34.80812934709442,
+              "max": 14.566686269898504
+            }
+          ]
+        },
+        {
+          "file": "russell18jgr_fig-7h_fgco2_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "zonal mean CO2 flux (sea to air)",
+              "shape": [
+                330
+              ],
+              "units": "g m-2 yr-1",
+              "finite_values": 325,
+              "nonfinite_values": 0,
+              "min": -30.199342707167574,
+              "max": 14.078631421423488
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_7i": {
+      "plots": [
+        "Russell_figure7i_fgco2_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell_figure-7i_fgco2_ACCESS-ESM1-6_1986-2005.nc",
+          "fields": [
+            {
+              "name": "cumulative integrated carbon flux from 90S",
+              "shape": [
+                300
+              ],
+              "units": "Pg yr-1",
+              "finite_values": 299,
+              "nonfinite_values": 0,
+              "min": -2.2249735413575666,
+              "max": -0.00019367790015069434
+            }
+          ]
+        }
+      ]
+    },
+    "Figure_8": {
+      "plots": [
+        "Russell_polar-contour_ph_1986-2005.png"
+      ],
+      "netcdf": [
+        {
+          "file": "russell18jgr_polar_ph_UKESM1-3-LL_1986-2005.nc",
+          "fields": [
+            {
+              "name": "sea_water_ph_reported_on_total_scale",
+              "shape": [
+                330,
+                360
+              ],
+              "units": "1",
+              "finite_values": 65183,
+              "nonfinite_values": 0,
+              "min": 7.510867118835449,
+              "max": 8.299737930297852
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "plot_count": 17,
+  "netcdf_count": 30
+}
