@@ -60,15 +60,13 @@ preprocessors:
       maximum: 4
   common_grid_levels_ta:
     custom_order: true
-    <<: *extracting_levels
-    <<: *regridding
+    <<: [*regridding, *extracting_levels]
     mask_outside_range:
       minimum: 200
       maximum: 280
   common_grid_levels_cli:
     custom_order: true
-    <<: *extracting_levels
-    <<: *regridding
+    <<: [*regridding, *extracting_levels]
     convert_units:
       units: g kg-1
     mask_outside_range:
