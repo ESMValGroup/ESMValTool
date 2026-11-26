@@ -28,7 +28,7 @@ documentation:
     - andela_bouwe
   maintainer:
     - kalverla_peter
-  project:
+  projects:
     - isenes3
 
 datasets:

@@ -12,14 +12,6 @@ documentation:
     - schlund_manuel
   references:
     - sanderson24gmd  # https://doi.org/10.5194/egusphere-2024-3356
-  domains:
-    - global
-  realms:
-    - atmos
-  themes:
-    - carbon
-    - bgphys
-
 
 datasets_target_exp: &datasets_target_exp
   - {project: CMIP6, dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, timerange: 1850/1914}
@@ -54,6 +46,11 @@ preprocessors:
 
 diagnostics:
   tcre:
+    themes:
+      - carbon
+      - bgphys
+    realms:
+      - atmos
     variables:
       tas_esm-1pctCO2:
         short_name: tas
@@ -92,6 +89,11 @@ diagnostics:
 
   barplot:
     description: Create barplot of TCRE.
+    themes:
+      - carbon
+      - bgphys
+    realms:
+      - atmos
     scripts:
       barplot:
         script: climate_metrics/create_barplot.py

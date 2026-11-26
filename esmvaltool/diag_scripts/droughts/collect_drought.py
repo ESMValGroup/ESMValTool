@@ -82,7 +82,7 @@ def _get_provenance_record(
         "caption": caption,
         "statistics": ["mean"],
         "domains": domains,
-        "plot_type": plot_type,
+        "plot_types": [plot_type],
         "themes": ["phys"],
         "authors": [
             "weigel_katja",

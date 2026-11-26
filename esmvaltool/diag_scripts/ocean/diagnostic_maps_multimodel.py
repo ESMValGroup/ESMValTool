@@ -66,8 +66,8 @@ def get_provenance_record(cfg, attributes, obsname, ancestor_files):
         cfg,
         caption=caption,
         statistics=["mean"],
-        domain=["global"],
-        plot_type=["map"],
+        domains=["global"],
+        plot_types=["map"],
         ancestors=ancestor_files,
     )
 

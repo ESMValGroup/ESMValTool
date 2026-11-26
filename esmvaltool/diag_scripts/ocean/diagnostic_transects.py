@@ -303,8 +303,8 @@ def make_transects_plots(
             cfg,
             caption=f"Transect of {title}",
             statistics=["mean"],
-            domain=["reg"],
-            plot_type=[
+            domains=["reg"],
+            plot_types=[
                 "sect",
                 "zonal",
             ],
@@ -440,8 +440,8 @@ def make_transect_contours(
             cfg,
             caption=f"Transect of {title}",
             statistics=["mean"],
-            domain=["reg"],
-            plot_type=[
+            domains=["reg"],
+            plot_types=[
                 "sect",
                 "zonal",
             ],
@@ -593,8 +593,8 @@ def multi_model_contours(
             cfg,
             caption=f"Transect of {title}",
             statistics=["mean"],
-            domain=["reg"],
-            plot_type=[
+            domains=["reg"],
+            plot_types=[
                 "sect",
                 "zonal",
             ],
