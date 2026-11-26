@@ -87,6 +87,8 @@ datasets:
   - {dataset: ICON-CLM-202407-1-1, driver: CMCC-CM2-SR5, institute: CLMcom-WEGC, alias: ICON-CLM-202407-1-1_CMCC-CM2-SR5}
   - {dataset: CNRM-ALADIN64E1, driver: CMCC-CM2-SR5, institute: CNRM-MF, alias: CNRM-ALADIN64E1_CMCC-CM2-SR5}
   - {dataset: CNRM-ALADIN64E1, driver: NorESM2-MM, institute: CNRM-MF, alias: CNRM-ALADIN64E1_NorESM2-MM}
+  # clivi download from esgf.ipsl.fr timed out (200101-201012)
+  # - {dataset: CNRM-ALADIN64E1, driver: CNRM-ESM2-1, ensemble: r1i1p1f2, institute: CNRM-MF, alias: CNRM-ALADIN64E1_CNRM-ESM2-1}
 
 diagnostics:
   diagnostic:
@@ -101,7 +103,7 @@ diagnostics:
         project: CORDEX-CMIP6
         rcm_version: v1-r1
         reference_dataset: ESACCI-CLOUD
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-CLOUD, mip: Amon, project: OBS6, reference_for_metric: true, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
       clt:
@@ -114,9 +116,16 @@ diagnostics:
         project: CORDEX-CMIP6
         rcm_version: v1-r1
         reference_dataset: ESACCI-CLOUD
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-CLOUD, mip: day, project: OBS6, reference_for_metric: true, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
+          - {dataset: HCLIM43-ALADIN, driver: NorESM2-MM, institute: HCLIMcom-METNo, alias: HCLIM43-ALADIN_NorESM2-MM}
+          - {dataset: HCLIM43-ALADIN, driver: CNRM-ESM2-1, ensemble: r1i1p1f2, institute: HCLIMcom-SMHI, alias: HCLIM43-ALADIN_CNRM-ESM2-1}
+          - {dataset: HCLIM43-ALADIN, driver: EC-Earth3-Veg, institute: HCLIMcom-SMHI, alias: HCLIM43-ALADIN_EC-Earth3-Veg}
+          - {dataset: HCLIM43-ALADIN, driver: EC-Earth3-Veg, ensemble: r2i1p1f1, institute: HCLIMcom-SMHI, alias: HCLIM43-ALADIN_EC-Earth3-Veg_r2}
+          - {dataset: HCLIM43-ALADIN, driver: EC-Earth3-Veg, ensemble: r3i1p1f1, institute: HCLIMcom-SMHI, alias: HCLIM43-ALADIN_EC-Earth3-Veg_r3}
+          - {dataset: HCLIM43-ALADIN, driver: MPI-ESM1-2-HR, institute: HCLIMcom-SMHI, alias: HCLIM43-ALADIN_MPI-ESM1-2-HR}
+          - {dataset: HCLIM43-ALADIN, driver: MIROC6, institute: HCLIMcom-SMHI, alias: HCLIM43-ALADIN_MIROC6}
       lst:
         activity: DD
         domain: EUR-12
@@ -128,7 +137,7 @@ diagnostics:
         rcm_version: v1-r1
         reference_dataset: ESACCI-LST
         short_name: ts
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-LST, mip: Amon, project: OBS, reference_for_metric: true, tier: 2, type: sat, version: '1.00', supplementary_variables: [{short_name: sftlf, skip: true}]}
       lwp:
@@ -142,7 +151,7 @@ diagnostics:
         project: CORDEX-CMIP6
         rcm_version: v1-r1
         reference_dataset: ESACCI-CLOUD
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-CLOUD, derive: false, mip: Amon, project: OBS6, reference_for_metric: true, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
       prw:
@@ -155,7 +164,7 @@ diagnostics:
         project: CORDEX-CMIP6
         rcm_version: v1-r1
         reference_dataset: ESACCI-WATERVAPOUR
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-WATERVAPOUR, mip: Eday, project: OBS6, reference_for_metric: true, tier: 3, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1}
       rlut:
@@ -168,7 +177,7 @@ diagnostics:
         project: CORDEX-CMIP6
         rcm_version: v1-r1
         reference_dataset: ESACCI-CLOUD
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-CLOUD, mip: Amon, project: OBS6, reference_for_metric: true, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
       rsus:
@@ -181,7 +190,7 @@ diagnostics:
         project: CORDEX-CMIP6
         rcm_version: v1-r1
         reference_dataset: ESACCI-CLOUD
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-CLOUD, mip: Amon, project: OBS6, reference_for_metric: true, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
       # sic: monthly siconc is not available for these CORDEX-CMIP6 models
@@ -196,7 +205,7 @@ diagnostics:
       #   rcm_version: v1-r1
       #   reference_dataset: ESACCI-SEAICE
       #   short_name: siconc
-      #   timerange: 2003/2004
+      #   timerange: 2003/2005
       #   additional_datasets:
       #     - {dataset: ESACCI-SEAICE, mip: SIday, project: OBS6, reference_for_metric: true, short_name: sic, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH}
       snw:
@@ -209,7 +218,7 @@ diagnostics:
         project: CORDEX-CMIP6
         rcm_version: v1-r1
         reference_dataset: ESACCI-SNOW
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-SNOW, mip: day, project: OBS6, reference_for_metric: true, tier: 2, type: sat, version: v2.0}
       sst:
@@ -223,7 +232,7 @@ diagnostics:
         rcm_version: v1-r1
         reference_dataset: ESACCI-SST
         short_name: ts
-        timerange: 2003/2004
+        timerange: 2003/2005
         additional_datasets:
           - {dataset: ESACCI-SST, mip: Oday, project: OBS6, reference_for_metric: true, short_name: tos, tier: 2, type: sat, version: 3.0-L4-analysis, supplementary_variables: [{short_name: sftof, skip: true}]}
     scripts:
