@@ -185,6 +185,7 @@ ignore = [
 ]
 exclude = [
     "archive/*",                          # No longer maintained code.
+    "esmvaltool/diag_scripts/rf_shap/_vendor/**",  # Vendored scientific kernel (developed upstream).
     "doc/sphinx/source/conf.py",          # Partly automatically generated.
     "esmvaltool/utils/nclcodestyle/*.py", # This is a slightly modified copy of pycodestyle.
 ]
