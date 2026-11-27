@@ -13,19 +13,20 @@ documentation:
     - chun_felicity
 
 datasets:
-  ## one CMIP6 model for REF ##
-  # - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - dataset: DUMMY-MODEL #mock CMIP7 data
+  - dataset: ACCESS-ESM1-6
     project: CMIP7
     exp: historical
     ensemble: r1i1p1f1
-    grid: g999
+    grid: g118
     activity: CMIP
-    institute: CCCma
+    institute: ACCESS-Consortium
     mip: ocean
     branding_suffix: tavg-u-hxy-sea
     frequency: mon
     region: glb
+    drs_specs: MIP-DRS7
+    start_year: 1979
+    end_year: 2021
 
   # observations - use one
   # - {dataset: NOAA-ERSSTv5, version: v5, project: OBS6, type: reanaly, tier: 2, mip: Omon, start_year: 1979, end_year: 2021}
@@ -205,7 +206,6 @@ diagnostics:
 
       tos_pat_map:  # pattern 2,4 map
         short_name: tos
-        mip: Omon
         preprocessor: ssta_pattern_map
 
     scripts:
@@ -227,24 +227,19 @@ diagnostics:
     variables:
       tos_seas_area:  # seasonality
         short_name: tos
-        mip: Omon
         preprocessor: enso_seas_2
       tos_seas_meri:  # seasonality
         short_name: tos
-        mip: Omon
         preprocessor: enso_seas_3
       tos_seas_split:  # seasonality
         short_name: tos
-        mip: Omon
         preprocessor: enso_seas_4
 
       tos_amp:  # amplitude
         short_name: tos
-        mip: Omon
         preprocessor: enso_amp3  # amp2 tos_seas_split
       tos_asym:
         short_name: tos
-        mip: Omon
         preprocessor: enso_asymmetry
 
     scripts:
