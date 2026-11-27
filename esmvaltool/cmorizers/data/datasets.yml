@@ -1319,11 +1319,11 @@ datasets:
 
   NSIDC-G02202-sh:
     tier: 3
-    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
-    last_access: 2023-05-13
+    source: https://noaadata.apps.nsidc.org/NOAA/G02202_V6/south/monthly/
+    last_access: 2026-11-24
     info: |
       Download monthly data.
-      Login required for download, and also requires citation only to use
+      Requires citation only to use
 
   OceanSODA-ETHZ:
     tier: 2
