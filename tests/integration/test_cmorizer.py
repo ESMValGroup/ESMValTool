@@ -30,15 +30,13 @@ def keep_cwd():
         os.chdir(curr_path)
 
 
-def write_config_file(dirname: Path, *, add_rootpath: bool = False) -> str:
+def write_config_file(dirname: Path) -> str:
     """Replace configuration values for testing."""
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
         "log_level": "debug",
     }
-    if add_rootpath:
-        cfg["rootpath"] = {"RAWOBS": str(dirname / "original_data")}
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
     return str(config_file)
 
@@ -197,10 +195,12 @@ def test_cmorize_obs_woa_data(
 
 def test_cmorize_obs_woa_data_no_original_data_dir(tmp_path: Path) -> None:
     """Test for example run of cmorize_obs command."""
-    write_config_file(tmp_path, add_rootpath=True)
+    write_config_file(tmp_path)
     data_path = os.path.join(tmp_path, "original_data", "Tier2", "WOA")
     put_dummy_data(data_path)
     with keep_cwd():
+        # The current working directory is the default original data directory.
+        os.chdir(tmp_path / "original_data")
         DataCommand().format(
             "WOA",
             config_dir=tmp_path,

@@ -1,4 +1,4 @@
-.. :orphan:  # uncomment before merging!
+:orphan:
 
 .. How to use this template
 ..
@@ -75,7 +75,7 @@ Add content here.
 * Include other files within the documentation:
 
   .. include:: files/esmvaltool_output_header.txt
-     :code:
+     :code: text
 
 Question 2
 ----------

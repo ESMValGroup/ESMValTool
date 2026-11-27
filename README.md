@@ -42,13 +42,11 @@ scientific community, and included after a scientific and technical review proce
 
 ESMValTool can run with the following types of [data as input](https://docs.esmvaltool.org/en/latest/input.html):
 
-- CMIP6
-- CMIP5
-- CMIP3
-- [observational and re-analysis datasets](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets-for-which-a-cmorizer-script-is-available)
-- obs4MIPs
-- ana4mips
-- CORDEX ([work in progress](https://docs.esmvaltool.org/en/latest/input.html#cordex-note))
+- CMIP7/CMIP6/CMIP5/CMIP3
+- CORDEX-CMIP6/CORDEX ([work in progress](https://docs.esmvaltool.org/en/latest/input.html#cordex-note))
+- obs4MIPs/ana4MIPs
+- [observational and re-analysis datasets](https://docs.esmvaltool.org/en/latest/input.html#observations)
+- [model data as written by the model for some models](https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/find_data.html#supported-native-models)
 
 # Getting started
 

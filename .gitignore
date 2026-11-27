@@ -117,6 +117,9 @@ imagehashes_*.yml
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
 
+# Personal Claude Code instructions
+CLAUDE.local.md
+
 # pixi environments
 .pixi/*
 !.pixi/config.toml
