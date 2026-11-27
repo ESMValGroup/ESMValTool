@@ -14,11 +14,6 @@ documentation:
     - gregory04grl
 
 
-datasets:
-  - {project: CMIP7, dataset: DUMMY-MODEL, mip: atmos, frequency: mon, region: glb, exp: piControl,    ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
-  - {project: CMIP7, dataset: DUMMY-MODEL, mip: atmos, frequency: mon, region: glb, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: g999, institute: MPI-M, timerange: 18500101/19991231}
-
-
 preprocessors:
   spatial_mean:
     area_statistics:
@@ -32,10 +27,36 @@ diagnostics:
       tas:
         branding_suffix: tavg-h2m-hxy-u
         preprocessor: spatial_mean
+        additional_datasets:
+          - {short_name: tas, branding_suffix: tavg-h2m-hxy-u,
+             project: CMIP7, dataset: ACCESS-ESM1-6, mip: atmos,
+             frequency: mon, region: glb, exp: piControl,
+             ensemble: r1i1p1f1, grid: g115,
+             institute: ACCESS-Consortium, timerange: 0201/0350,
+             drs_specs: MIP-DRS7}
+          - {short_name: tas, branding_suffix: tavg-h2m-hxy-u,
+             project: CMIP7, dataset: ACCESS-ESM1-6, mip: atmos,
+             frequency: mon, region: glb, exp: abrupt-4xCO2,
+             ensemble: r1i1p1f1, grid: g115,
+             institute: ACCESS-Consortium, timerange: 0201/0350,
+             drs_specs: MIP-DRS7}
       rtnt:
         branding_suffix: tavg-u-hxy-u
         derive: true
         preprocessor: spatial_mean
+        additional_datasets:
+          - {short_name: rtnt, branding_suffix: tavg-u-hxy-u,
+             project: CMIP7, dataset: ACCESS-ESM1-6, mip: atmos,
+             frequency: mon, region: glb, exp: piControl,
+             ensemble: r1i1p1f1, grid: g115,
+             institute: ACCESS-Consortium, timerange: 0201/0350,
+             drs_specs: MIP-DRS7}
+          - {short_name: rtnt, branding_suffix: tavg-u-hxy-u,
+             project: CMIP7, dataset: ACCESS-ESM1-6, mip: atmos,
+             frequency: mon, region: glb, exp: abrupt-4xCO2,
+             ensemble: r1i1p1f1, grid: g115,
+             institute: ACCESS-Consortium, timerange: 0201/0350,
+             drs_specs: MIP-DRS7}
     scripts:
       calculate:
         script: climate_metrics/ecs.py
