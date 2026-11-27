@@ -658,9 +658,9 @@ diagnostics:
       tasa:
     additional_datasets:
       - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-         type: ground, version: 5.0.1.0-analysis, start_year: 1850, end_year: 2021}
+         type: ground, version: 5.2.0.0-analysis, start_year: 1850, end_year: 2025}
       - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-         type: ground, version: 5.0.1.0-noninfilled, start_year: 1850, end_year: 2021}
+         type: ground, version: 5.2.0.0-noninfilled, start_year: 1850, end_year: 2025}
     scripts: null
 
 

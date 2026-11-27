@@ -1,4 +1,4 @@
-"""Script to download HadCRUT5 version 5.0.1.0 from its webpage."""
+"""Script to download HadCRUT5 version 5.2.0.0 from its webpage."""
 
 import logging
 import os
@@ -43,7 +43,7 @@ def download_dataset(
     os.makedirs(downloader.local_folder, exist_ok=True)
     downloader.download_file(
         "https://crudata.uea.ac.uk/cru/data/temperature/"
-        "HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc",
+        "HadCRUT.5.2.0.0.analysis.anomalies.ensemble_mean.nc",
         wget_options=[],
     )
     downloader.download_file(
@@ -52,10 +52,6 @@ def download_dataset(
     )
     downloader.download_file(
         "https://crudata.uea.ac.uk/cru/data/temperature/"
-        "HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc",
-        wget_options=[],
-    )
-    downloader.download_file(
-        "https://crudata.uea.ac.uk/cru/data/temperature/absolute.nc",
+        "HadCRUT.5.2.0.0.noninfilled.anomalies.ensemble_mean.nc",
         wget_options=[],
     )

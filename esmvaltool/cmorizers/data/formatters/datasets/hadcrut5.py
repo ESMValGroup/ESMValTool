@@ -12,9 +12,9 @@ Last access
 Download and processing instructions
     Download the following files:
         infilling
-            [Source]/HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc
+            [Source]/HadCRUT.5.2.0.0.analysis.anomalies.ensemble_mean.nc
         no-infilling
-            [Source]/HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc
+            [Source]/HadCRUT.5.2.0.0.anomalies.ensemble_mean.nc
         climatology
             [Source]/absolute_v5.nc
 """
