@@ -1,0 +1,79 @@
+# ESMValTool
+# recipe_cosima_seaice_seasonality.yml
+---
+documentation:
+  title: Antarctic sea-ice seasonality (COSIMA)
+
+  description: |
+    Antarctic sea-ice advance, retreat and season duration, translated
+    from the COSIMA recipe Sea_Ice_Seasonality_Statistics.ipynb,
+    following Massom et al. (2013):
+
+    - advance is the first day of the first run of five consecutive days
+      at or above 15% concentration;
+    - retreat is the last day at or above 15%;
+    - duration is the difference.
+
+    The five-day rule is what separates a real advance from a transient
+    excursion and it is kept; a "first day above threshold" definition
+    gives systematically earlier advance dates.
+
+    A sea-ice year runs 15 February to 14 February, so the timerange
+    below spans exactly that window and the day numbers are relative to
+    15 February. Change the timerange to analyse a different year, but
+    keep the 15 February boundaries.
+
+    Daily data (SIday) is required. Models that publish only SImon
+    cannot support this diagnostic.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+    - massom13plosone
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  southern_ocean_daily:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -80.
+      end_latitude: -50.
+    regrid:
+      target_grid: 1x1
+      scheme: nearest
+
+diagnostics:
+
+  seaice_seasonality:
+    description: |
+      Day of sea-ice advance, day of retreat and season duration over
+      one sea-ice year.
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      siconc:
+        mip: SIday
+        preprocessor: southern_ocean_daily
+        timerange: 20000215/20010214
+    scripts:
+      seasonality:
+        script: cosima/seaice_seasonality.py
+        concentration_threshold: 0.15
+        consecutive_days: 5
+        max_latitude: -50.0

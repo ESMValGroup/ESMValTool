@@ -1,0 +1,98 @@
+# ESMValTool
+# recipe_cosima_overturning_circulation.yml
+---
+documentation:
+  title: Meridional overturning circulation in depth and density space (COSIMA)
+
+  description: |
+    Meridional overturning circulation, translated from the COSIMA
+    recipe Overturning_Circulation.ipynb and merged with
+    Transformation_from_Depth_to_Potential_Density.ipynb, which is the
+    density-space half of the same diagnostic.
+
+    In depth space the streamfunction is published directly as msftyz
+    (or msftmz), so the diagnostic only selects the basin, converts to
+    Sv and time-averages.
+
+    In density space MOM bins the meridional transport online into
+    ty_trans_rho. CMIP6 has no such variable, so the diagnostic rebins
+    period-mean z-coordinate vmo using sigma2 derived from period-mean
+    thetao and so. This also omits seasonal transport-density covariance,
+    beyond the within-month covariance unavailable from CMIP6. This is a
+    known methodological difference and the figure is labelled as such; do
+    not present the offline rebin as equivalent to ty_trans_rho.
+
+    Latitudes north of 65N are excluded. On a tripolar grid the local
+    y-direction there is not northward, so a zonal sum of vmo is
+    meaningless (COSIMA/cosima-recipes#510).
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  # Nothing is regridded, and that is deliberate.
+  #
+  # vmo is an *extensive* quantity: kg s-1 through one cell face, not a
+  # flux per unit area. Interpolation does not rescale it for the new
+  # cell size, so regridding and then summing scales the total with the
+  # cell count -- a 1x1 to 0.5x0.5 regrid inflates a transport by about
+  # four, silently, because the numbers stay plausible.
+  #
+  # Staying native is also the correct choice scientifically: on a
+  # tripolar grid the rows follow latitude circles closely south of
+  # 65N, so a sum along the i index *is* a zonal integral there, and
+  # vmo, thetao and so already share that grid, so the cell-by-cell
+  # density binning is exact rather than an interpolation artefact.
+  # North of 65N none of this holds, which is why the diagnostic cuts
+  # the plot at 65N.
+  climatology_native:
+    climate_statistics:
+      operator: mean
+      period: full
+
+diagnostics:
+
+  overturning_circulation:
+    description: |
+      Overturning streamfunction in depth space from msftyz and in
+      sigma2 space by rebinning vmo.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      msftyz:
+        mip: Omon
+        preprocessor: climatology_native
+        timerange: 1990/2009
+      vmo:
+        mip: Omon
+        preprocessor: climatology_native
+        timerange: 1990/2009
+      thetao:
+        mip: Omon
+        preprocessor: climatology_native
+        timerange: 1990/2009
+      so:
+        mip: Omon
+        preprocessor: climatology_native
+        timerange: 1990/2009
+    scripts:
+      moc:
+        script: cosima/overturning_circulation.py
+        max_streamfunction: 25.0

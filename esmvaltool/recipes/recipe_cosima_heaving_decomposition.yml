@@ -1,0 +1,86 @@
+# ESMValTool
+# recipe_cosima_heaving_decomposition.yml
+---
+documentation:
+  title: Heave and along-isopycnal decomposition of temperature anomalies (COSIMA)
+
+  description: |
+    Decomposition of a temperature anomaly into isopycnal heave and
+    along-isopycnal (water-mass) change, translated from the COSIMA
+    recipe Heaving_Water_mass_transformation_decomposition.ipynb.
+
+    A temperature difference between two states has two causes that the
+    raw difference conflates: the water on a given density surface
+    actually changing temperature, and the density surfaces moving up or
+    down while the water on them is unchanged. The decomposition
+    separates them by remapping temperature onto density coordinates,
+    differencing there, remapping back to depth, and taking the residual
+    as heave.
+
+    The notebook contrasts a control and a perturbation run of
+    ACCESS-OM2. Here the two states are two experiments of the same
+    dataset; set reference_experiment to name the control. The default
+    pairs historical against piControl, which is the closest CMIP6
+    analogue, but any two experiments of the same model work.
+
+    xgcm's transform does the remapping upstream; here it is a
+    per-column linear interpolation, which is the same operation for a
+    monotonic density profile. Columns whose profile is statically
+    unstable are masked rather than silently reordered, and the three
+    output fields are averaged over the same columns so that the
+    decomposition still closes in the zonal mean.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn, timerange: 1995/2014}
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: piControl,
+     ensemble: r1i1p1f1, grid: gn, timerange: 0950/0969}
+
+preprocessors:
+
+  southern_ocean_climatology:
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -90.
+      end_latitude: -30.
+
+diagnostics:
+
+  heaving_decomposition:
+    description: |
+      Total, along-isopycnal and heave contributions to the temperature
+      anomaly between two experiments.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+      so:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+    scripts:
+      decomposition:
+        script: cosima/heaving_decomposition.py
+        reference_experiment: piControl
+        reference_pressure: 1000

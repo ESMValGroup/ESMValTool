@@ -1,0 +1,95 @@
+# ESMValTool
+# recipe_cosima_along_slope_velocities.yml
+---
+documentation:
+  title: Antarctic slope current from along-slope velocities (COSIMA)
+
+  description: |
+    Antarctic Slope Current, translated from the COSIMA recipe
+    Along-slope-velocities.ipynb. The horizontal velocity is projected
+    onto the local bathymetric contour to separate the along-slope flow,
+    which is the slope current, from the cross-slope flow that exchanges
+    water with the shelf:
+
+      u_along = u * h_y/|grad h| - v * h_x/|grad h|
+      v_cross = u * h_x/|grad h| + v * h_y/|grad h|
+
+    The notebook takes the bathymetric gradient with xgcm on MOM5's
+    B-grid. On the regular grid that regrid produces, the gradient is a
+    central difference with spherical metrics and uo, vo and deptho are
+    already colocated.
+
+    The along-slope component is additionally averaged into bathymetry
+    bins, giving the slope-current profile against depth.
+
+    deptho must be regridded with the same target grid as the
+    velocities, or the projection mixes fields from different grids.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  southern_ocean_climatology:
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -80.
+      end_latitude: -55.
+
+  southern_ocean_fx:
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -80.
+      end_latitude: -55.
+
+diagnostics:
+
+  along_slope_velocities:
+    description: |
+      Along- and cross-slope surface velocity components and the
+      along-slope flow binned by bathymetry.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      uo:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 2000/2009
+      vo:
+        mip: Omon
+        preprocessor: southern_ocean_climatology
+        timerange: 2000/2009
+      deptho:
+        mip: Ofx
+        preprocessor: southern_ocean_fx
+    scripts:
+      slope_current:
+        script: cosima/along_slope_velocities.py
+        max_latitude: -59.0

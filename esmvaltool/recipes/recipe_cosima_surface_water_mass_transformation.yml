@@ -1,0 +1,96 @@
+# ESMValTool
+# recipe_cosima_surface_water_mass_transformation.yml
+---
+documentation:
+  title: Southern Ocean surface water-mass transformation (COSIMA)
+
+  description: |
+    Surface water-mass transformation south of 60S, translated from the
+    COSIMA recipe Surface_Water_Mass_Transformation.ipynb, following
+    Newsom et al. (2016) and Abernathey et al. (2016).
+
+    The transformation is the volume flux into a density class driven by
+    surface buoyancy forcing, and it separates linearly into a heat and
+    a salt contribution:
+
+      heat  =  alpha * hfds / c_p
+      salt  =  beta * (SA * wfo - 1000 * sfdsi)
+
+    Both are accumulated into sigma1 bins using the surface density of
+    the same cell and month, normalised by the number of days and the
+    bin width, and sign-flipped so positive means densification.
+
+    Variable mapping: the notebook's MOM6 salt_flux becomes sfdsi, which
+    is the sea-ice salt flux only. Models that also restore surface
+    salinity fold that term elsewhere, so where restoring matters the
+    salt contribution here is a lower bound.
+
+    Monthly fields are used because CMIP6 does not publish daily surface
+    fluxes for most models; the notebook is monthly too.
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - cosima_recipes
+    - newsom16jclim
+
+  projects: []
+
+datasets:
+  - {dataset: ACCESS-CM2, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+
+  # The monthly time axis must survive: the binning needs the density
+  # of each cell in each month, not of the climatology.
+  southern_ocean:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -90.
+      end_latitude: -60.
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+
+  surface_water_mass_transformation:
+    description: |
+      Surface water-mass transformation south of 60S in sigma1 space,
+      partitioned into heat and salt contributions.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      tos:
+        mip: Omon
+        preprocessor: southern_ocean
+        timerange: 2000/2009
+      sos:
+        mip: Omon
+        preprocessor: southern_ocean
+        timerange: 2000/2009
+      hfds:
+        mip: Omon
+        preprocessor: southern_ocean
+        timerange: 2000/2009
+      wfo:
+        mip: Omon
+        preprocessor: southern_ocean
+        timerange: 2000/2009
+      sfdsi:
+        mip: Omon
+        preprocessor: southern_ocean
+        timerange: 2000/2009
+    scripts:
+      swmt:
+        script: cosima/surface_water_mass_transformation.py
