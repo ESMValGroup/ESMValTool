@@ -106,7 +106,7 @@ def get_plot_fname(
     for key, value in replace.items():
         basename = basename.replace(key, value)
     fpath = Path(cfg["plot_dir"]) / basename
-    return str(fpath.with_suffix(cfg["output_file_type"]))
+    return str(fpath.with_suffix("." + cfg["output_file_type"]))
 
 
 def add_ancestor_input(cfg: dict) -> None:
@@ -354,13 +354,13 @@ def daily_to_monthly(
     cube.units = units
 
 
-def _get_data_hlp(axis, data, ilat, ilon):
+def _get_data_hlp(axis, data, ilat, ilon) -> np.ndarray:
     """Get data_help dependend on axis."""
     if axis == 0:
         data_help = (data[:, ilat, ilon])[:, 0]
     elif axis == 1:
         data_help = (data[ilat, :, ilon])[:, 0]
-    elif axis == 2:
+    elif axis == 2:  # noqa: PLR2004
         data_help = data[ilat, ilon, :]
     else:
         data_help = None
@@ -553,7 +553,7 @@ def mmm(
     mdtol: float = 0,
     dropcoords: list | None = None,
     *,
-    dropmethods=False,
+    dropmethods: bool = False,
 ) -> tuple:
     """Calculate mean and stdev along a cube list over all cubes.
 
@@ -696,6 +696,50 @@ def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
     filter_cfg = clean_meta(this_cfg)  # remove non meta keys
     this_meta = select_metadata(meta, **filter_cfg)[0]
     return this_meta, this_cfg
+
+
+def _compare_dicts(dict1, dict2, sort) -> bool:
+    if dict1.kyes() != dict2.keys():
+        return False
+    return all(
+        _compare_values(dict1[key], dict2.get(key), sort) for key in dict1
+    )
+
+
+def _compare_values(val1, val2, sort) -> bool:
+    if isinstance(val1, dict) and isinstance(val2, dict):
+        return _compare_dicts(val1, val2)
+    if isinstance(val1, list) and isinstance(val2, list):
+        if len(val1) != len(val2):
+            return False
+        if sort:
+            val1 = sorted(val1)
+            val2 = sorted(val2)
+        return all(_compare_values(v1, v2, sort) for v1, v2 in zip(val1, val2))
+    try:
+        return val1 == val2
+    except ValueError:
+        return False
+
+
+def get_common_meta(metas: list, *, sort: bool = False) -> dict:
+    """Return a dictionary of meta data, that is common between all inputs.
+
+    Parameters
+    ----------
+    metas : list
+        List of meta data dictionaries.
+    sort : bool, optional
+        Sort lists before comparison. If true lists with same elements but
+        different order are considered to be equal. By default False.
+    """
+    common = {}
+    for key in metas[0]:
+        if all(
+            _compare_values(metas[0][key], m.get(key), sort) for m in metas
+        ):
+            common[key] = metas[0][key]
+    return common
 
 
 def list_meta_keys(meta: list, group: dict) -> list:
@@ -931,6 +975,6 @@ def font_color(background: str | tuple | float) -> str:
     background : str, tuple, or float
         color as string (grayscale value, name, hex) or tuple (rgb, rgba)
     """
-    if sum(mpl.colors.to_rgb(background)) > 1.5:
+    if sum(mpl.colors.to_rgb(background)) > 1.5:  # noqa: PLR2004
         return "black"
     return "white"
