@@ -17,9 +17,18 @@ documentation:
     - lenhardt_julien
 
 datasets:
-  - {dataset: DUMMY-MODEL, institute: MOHC, project: CMIP7, activity: CMIP,
-    ensemble: r1i1p1f2, exp: historical, start_year: 2002, end_year: 2021,
-    region: glb, grid: g999, frequency: mon}
+  - dataset: CanESM6-0-MR
+    institute: CCCma
+    project: CMIP7
+    activity: CMIP
+    ensemble: r1i1p1f1
+    exp: historical
+    start_year: 2002
+    end_year: 2021
+    region: glb
+    grid: g150
+    frequency: mon
+    drs_specs: MIP-DRS7
 
 preprocessors:
 
@@ -39,7 +48,7 @@ diagnostics:
   fire_evaluation:
     description: Climate drivers for fire
     variables:
-      #Precipitation
+      # Precipitation
       pr:
         mip: atmos
         branding_suffix: tavg-u-hxy-u
@@ -80,7 +89,6 @@ diagnostics:
     scripts:
       fire_evaluation:
         script: fire/fire_diagnostic.py
-        # confire_param: https://zenodo.org/records/14917245
-        confire_param: /home/b/b381312/esmvaltool/auxiliary_data/ConFire_parameter_files/
+        confire_param: https://zenodo.org/records/14917245
         # IMPORTANT = the order of the variables should fit the configuration files of the ConFire model run
         var_order: ['pr', 'tasmax', 'treeFrac', 'vegFrac', 'vpd', 'cVeg']

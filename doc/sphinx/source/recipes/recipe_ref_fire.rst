@@ -37,10 +37,18 @@ The ConFire model relies on a variety of observational datasets (see references)
 
 For the CMIP7 version of the recipe, the time period is chosen to overlap
 with reliable burned area observations, namely GFED5.
+The recipe evaluates CanESM6-0-MR historical member ``r1i1p1f1`` for
+2002–2021 using its published monthly atmospheric and land fields on grid
+``g150``. The ConFire parameters are retrieved from the fixed Zenodo record
+`14917245 <https://zenodo.org/records/14917245>`_ when the diagnostic runs.
+For offline runs, download the record's ``trace*.nc``,
+``none_trace-params*.txt``, and ``scalers*.csv`` files into one directory and
+set ``confire_param`` to that directory in the recipe. The GFED5 observations
+inform the trained ConFire parameters; this recipe does not directly compare
+its output against a GFED5 field.
 
-Note: If custom ConFire run files are to be used for the diagnostic,
-they need to be present inside the auxiliary directory defined in the
-user configuration file `config_user.yml`.
+For custom ConFire parameters, ``confire_param`` may instead point to an
+existing directory containing the three files listed above.
 
 
 Available recipes and diagnostics
@@ -49,6 +57,7 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/:
 
 * recipe_ref_fire.yml
+* ref/recipe_ref_fire_cmip7.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/fire/:
 
@@ -70,9 +79,7 @@ User settings in recipe
 
    * `confire_param`: path to the directory containing the required files to run
      the ConFire model or Zenodo URL to retrieve files from a Zenodo archive.
-     If custom files are used, the corresponding directory needs to be present
-     inside the auxiliary data directory defined inside the user configuration.
-     This defaults to the original Zenodo archive otherwise.
+     This defaults to Zenodo record 14917245 otherwise.
    * `remove_vpd_files`: Removing or not the computed vapor pressure deficit files.
      It will only apply if the vapor pressure deficit is part of var_order.
      This defaults to `False`.
@@ -163,6 +170,15 @@ References
 
 Example plots
 -------------
+
+.. _fig_ref_fire_cmip7_burnt_fraction:
+.. figure:: /recipes/figures/ref/burnt_fraction_CanESM6-0-MR_historical_2002_2021.png
+   :align: center
+
+   Burnt fraction from the CMIP7 CanESM6-0-MR historical simulation for
+   2002–2021. The panels show the 5th and 95th percentiles across ConFire
+   parameter samples, averaged over time. This is an example diagnostic
+   output, not a comparison with observed burnt area.
 
 .. _fig_ref_fire_burnt_area:
 .. figure::  /recipes/figures/ref/burnt_fraction_MPI-ESM1-2-LR_historical_2013_2014.png
