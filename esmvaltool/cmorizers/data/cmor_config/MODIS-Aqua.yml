@@ -1,0 +1,47 @@
+---
+# Author: 2026-01-29 Kristi Webb
+
+# Common global attributes for Cmorizer output
+attributes:
+
+  project_id: CMIP6
+  dataset_id: MODIS-Aqua
+  modeling_realm: atmos
+  type: sat
+  tier: 3
+  version: MYD08_M3
+  source: https://ladsweb.modaps.eosdis.nasa.gov/search/order
+  reference: modis1
+
+  filename_fmt: "MYD08_M3.A*.hdf"
+
+variables:
+  clwvi:
+    raw_name: Cloud_Water_Path_Liquid_Mean_Mean
+    mip: Amon
+    frequency: mon
+  clivi:
+    raw_name: Cloud_Water_Path_Ice_Mean_Mean
+    mip: Amon
+    frequency: mon
+  clt:
+    raw_name: Cloud_Fraction_Mean_Mean
+    mip: Amon
+    frequency: mon
+  lwpStderr:
+    raw_name: Cloud_Water_Path_Liquid_Mean_Uncertainty
+    mip: custom
+    frequency: mon
+  iwpStderr:
+    raw_name: Cloud_Water_Path_Ice_Mean_Uncertainty
+    mip: custom
+    frequency: mon
+  od550aer:
+    raw_name: AOD_550_Dark_Target_Deep_Blue_Combined_Mean_Mean
+    mip: AERmon
+    frequency: mon
+    reference: modis2
+  reffclwtop:
+    raw_name: Cloud_Effective_Radius_Liquid_Mean_Mean
+    mip: AERmon
+    frequency: mon
